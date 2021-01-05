@@ -48,7 +48,6 @@
     <Compile Remove="IEcoregionClimateVariables.cs" />
     <Compile Remove="IHydrology.cs" />
     <Compile Remove="InitialCommunity\Pixel.cs" />
-    <Compile Remove="PressureHeadSaxton_Rawls.cs" />
     <Compile Remove="SpeciesPnETVariables.cs" />
     <Compile Remove="WaterStressTable.cs" />
   </ItemGroup>
@@ -69,6 +68,9 @@
     <Reference Include="Landis.Library.Cohorts-v2">
       <HintPath>lib\Landis.Library.Cohorts-v2.dll</HintPath>
     </Reference>
+    <Reference Include="Landis.Library.InitialCommunity-vBiomassCohorts">
+      <HintPath>lib\Landis.Library.InitialCommunity-vBiomassCohorts.dll</HintPath>
+    </Reference>
     <Reference Include="Landis.Library.LeafBiomassCohorts-v2">
       <HintPath>lib\Landis.Library.LeafBiomassCohorts-v2.dll</HintPath>
     </Reference>
@@ -78,8 +80,8 @@
     <Reference Include="Landis.Library.Parameters-v2">
       <HintPath>lib\Landis.Library.Parameters-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Succession-InputAGB">
-      <HintPath>lib\Landis.Library.Succession-InputAGB.dll</HintPath>
+    <Reference Include="Landis.Library.Succession-v8">
+      <HintPath>lib\Landis.Library.Succession-v8.dll</HintPath>
     </Reference>
   </ItemGroup>
 

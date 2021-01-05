@@ -1,11 +1,10 @@
 
 using Landis.Core;
+using Landis.Extension.Succession.BiomassPnET;
+using Landis.Library.Climate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Landis.Library.Climate;
-using System.Net.NetworkInformation;
-//using Landis.Extension.Succession.BiomassPnET;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -15,25 +14,50 @@ namespace Landis.Library.PnETCohorts
     public class EcoregionData : IEcoregionPnET
     {
         #region private variables
+        #region private variables
         private Landis.Core.IEcoregion ecoregion;
+        private float _precintconst;
+        private float _preclossfrac;
+        private float _rootingdepth;
+        private string _soiltype;
+        private float _leakagefrac;
+        private float _runoffcapture;
+        private float _fieldcap;
+        private float _wiltpnt;
+        private float _porosity;
+        private float _snowsublimfrac;
         private float _latitude;
+        private int _precipEvents;
+        private float _leakageFrostDepth;
+        private float _winterSTD;
+        private float _mossDepth;
+        IEcoregionPnETVariables _variables;
+        #endregion
         #endregion
 
         #region private static variables
         private static bool wythers;
         private static bool dtemp;
 
-        private static Dictionary<IEcoregion, IEcoregionData> AllEcoregions;
+        private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
+        private static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> rootingdepth;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> precintconst;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> preclossfrac;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakagefrac;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> runoffcapture;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> snowsublimfrac;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> latitude;
-
-        public static Landis.Library.Parameters.Ecoregions.AuxParm<double> GSO1;
-        public static Landis.Library.Parameters.Ecoregions.AuxParm<double> GSO2;
-        public static Landis.Library.Parameters.Ecoregions.AuxParm<double> GSO3;
-        public static Landis.Library.Parameters.Ecoregions.AuxParm<double> GSO4;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<int> precipEvents;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakageFrostDepth;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> winterSTD;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> mossDepth;
         #endregion
 
         #region accessors for private static variables
-        public static List<IEcoregionData> Ecoregions
+        public static List<IEcoregionPnET> Ecoregions
         {
             get 
             {
@@ -43,7 +67,7 @@ namespace Landis.Library.PnETCohorts
 
         /// <summary>Returns the PnET Ecoregion for a given Landis Core Ecoregion</summary>
         /// <param name="landisCoreEcoregion"></param>
-        public static IEcoregionData GetPnETEcoregion(IEcoregion landisCoreEcoregion)
+        public static IEcoregionPnET GetPnETEcoregion(IEcoregion landisCoreEcoregion)
         {
             return AllEcoregions[landisCoreEcoregion];
         }
@@ -51,7 +75,97 @@ namespace Landis.Library.PnETCohorts
 
         #region accessors for private variables
 
-        
+        public IEcoregionPnETVariables Variables
+        {
+            get
+            {
+                return _variables;
+            }
+            set
+            {
+                _variables = value;
+            }
+
+        }
+
+        public float FieldCap
+        {
+            get
+            {
+                return _fieldcap;
+            }
+            set
+            {
+                _fieldcap = value;
+            }
+        }
+        public float WiltPnt
+        {
+            get
+            {
+                return _wiltpnt;
+            }
+            set
+            {
+                _wiltpnt = value;
+            }
+        }
+        public float Porosity
+        {
+            get
+            {
+                return _porosity;
+            }
+            set
+            {
+                _porosity = value;
+            }
+        }
+
+        public float LeakageFrac
+        {
+            get
+            {
+                return _leakagefrac;
+            }
+        }
+        public float RunoffCapture
+        {
+            get
+            {
+                return _runoffcapture;
+            }
+        }
+        public float PrecIntConst
+        {
+            get
+            {
+                return _precintconst;
+            }
+        }
+        public float RootingDepth
+        {
+            get
+            {
+                return _rootingdepth;
+            }
+        }
+
+        public string SoilType
+        {
+            get
+            {
+                return _soiltype;
+            }
+        }
+        public float PrecLossFrac
+        {
+            get
+            {
+                return _preclossfrac;
+            }
+        }
+
         public string Description
         {
             get
@@ -87,11 +201,46 @@ namespace Landis.Library.PnETCohorts
                 return ecoregion.Name;
             }
         }
+        public float SnowSublimFrac
+        {
+            get
+            {
+                return _snowsublimfrac;
+            }
+        }
         public float Latitude
         {
             get
             {
                 return _latitude;
+            }
+        }
+        public int PrecipEvents
+        {
+            get
+            {
+                return _precipEvents;
+            }
+        }
+        public float LeakageFrostDepth
+        {
+            get
+            {
+                return _leakageFrostDepth;
+            }
+        }
+        public float WinterSTD
+        {
+            get
+            {
+                return _winterSTD;
+            }
+        }
+        public float MossDepth
+        {
+            get
+            {
+                return _mossDepth;
             }
         }
         #endregion
@@ -110,6 +259,83 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        public static List<IEcoregionPnETVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end, Climate.Climate.Phase spinupOrfuture)
+        {
+            // Monthly simulation data untill but not including end
+            List<IEcoregionPnETVariables> data = new List<IEcoregionPnETVariables>();
+
+            // Date: the last date in the collection of running data
+            DateTime date = new DateTime(start.Ticks);
+
+            var oldYear = -1;
+
+            while (end.Ticks > date.Ticks)
+            {
+                if (!all_values[ecoregion].ContainsKey(date))
+                {
+                    if (date.Year != oldYear)
+                    {
+                        //PlugIn.ModelCore.UI.WriteLine($"Retrieving Climate Library for year {date.Year}.");
+
+                        if (spinupOrfuture == Climate.Climate.Phase.Future_Climate)
+                        {
+                            if (Climate.Climate.Future_MonthlyData.ContainsKey(date.Year))
+                                ClimateRegionData.AnnualWeather[ecoregion] = Climate.Climate.Future_MonthlyData[date.Year][ecoregion.Index];
+                        }
+                        else
+                        {
+                            if (Climate.Climate.Spinup_MonthlyData.ContainsKey(date.Year))
+                                ClimateRegionData.AnnualWeather[ecoregion] = Climate.Climate.Spinup_MonthlyData[date.Year][ecoregion.Index];
+                        }
+
+                        oldYear = date.Year;
+                    }
+
+                    var monthlyData = new MonthlyClimateRecord(ecoregion, date);
+
+                    List<ISpeciesPnET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
+
+                    IEcoregionPnETVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
+
+                    all_values[ecoregion].Add(date, ecoregion_variables);
+
+                }
+                data.Add(all_values[ecoregion][date]);
+
+                date = date.AddMonths(1);
+            }
+            return data;
+        }
+
+        public static List<IEcoregionPnETVariables> GetData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
+        {
+            // Monthly simulation data untill but not including end
+            List<IEcoregionPnETVariables> data = new List<IEcoregionPnETVariables>();
+
+            // Date: the last date in the collection of running data
+            DateTime date = new DateTime(start.Ticks);
+
+
+            while (end.Ticks > date.Ticks)
+            {
+                if (all_values[ecoregion].ContainsKey(date) == false)
+                {
+                    IObservedClimate observedClimate = ObservedClimate.GetData(ecoregion, date);
+
+                    List<ISpeciesPnET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
+
+                    IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species, ecoregion.Latitude);
+
+                    all_values[ecoregion].Add(date, ecoregion_variables);
+
+                }
+                data.Add(all_values[ecoregion][date]);
+
+                date = date.AddMonths(1);
+            }
+            return data;
+        }
+
         public static void InitializeCore(ICore mCore)
         {
             ModelCore = mCore;
@@ -117,11 +343,33 @@ namespace Landis.Library.PnETCohorts
 
         public static void Initialize()
         {
-            latitude = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)GetParameter("Latitude", -90, 90);
-            AllEcoregions = new Dictionary<IEcoregion, IEcoregionData>();
-            foreach (IEcoregion ecoregion in ModelCore.Ecoregions)
+            soiltype = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("SoilType");
+            climateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("ClimateFileName");
+            rootingdepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("RootingDepth", 0, 1000);
+            precintconst = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecIntConst", 0, 1);
+            preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecLossFrac", 0, 1);
+            snowsublimfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("SnowSublimFrac", 0, 1);
+            latitude = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("Latitude", -90, 90);
+            leakageFrostDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrostDepth", 0, 999999);
+            precipEvents = (Landis.Library.Parameters.Ecoregions.AuxParm<int>)(Parameter<int>)PlugIn.GetParameter("PrecipEvents", 1, 100);
+            winterSTD = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WinterSTD", 0, 100);
+            mossDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MossDepth", 0, 1000);
+
+            wythers = ((Parameter<bool>)PlugIn.GetParameter("Wythers")).Value;
+            dtemp = ((Parameter<bool>)PlugIn.GetParameter("DTemp")).Value;
+
+            leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
+            runoffcapture = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter(Names.RunoffCapture, 0, 999999);
+            AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
+            foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
             {
                 AllEcoregions.Add(ecoregion, new EcoregionData(ecoregion));
+            }
+
+            all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
+            foreach (IEcoregionPnET ecoregion in EcoregionData.AllEcoregions.Values)
+            {
+                all_values[ecoregion] = new Dictionary<DateTime, IEcoregionPnETVariables>();
             }
 
         }
@@ -129,67 +377,19 @@ namespace Landis.Library.PnETCohorts
         public EcoregionData(Landis.Core.IEcoregion ecoregion)
         {
             this.ecoregion = ecoregion;
+            this._rootingdepth = rootingdepth[ecoregion];
+            this._soiltype = soiltype[ecoregion];
+            this._precintconst = precintconst[ecoregion];
+            this._preclossfrac = preclossfrac[ecoregion];
+            this._leakagefrac = leakagefrac[ecoregion];
+            this._runoffcapture = runoffcapture[ecoregion];
+            this._snowsublimfrac = snowsublimfrac[ecoregion];
             this._latitude = latitude[ecoregion];
+            this._precipEvents = precipEvents[ecoregion];
+            this._leakageFrostDepth = leakageFrostDepth[ecoregion];
+            this._winterSTD = winterSTD[ecoregion];
+            this._mossDepth = mossDepth[ecoregion];
         }
-
-        public static void EcoregionDynamicChange(IDynamicEcoregionRecord[] TimestepData)
-        {
-
-           //if (DynamicEcoregions.EcoRegData.ContainsKey(year))
-            //{
-                GSO1 = new Landis.Library.Parameters.Ecoregions.AuxParm<double>(ModelCore.Ecoregions);
-                GSO2 = new Landis.Library.Parameters.Ecoregions.AuxParm<double>(ModelCore.Ecoregions);
-                GSO3 = new Landis.Library.Parameters.Ecoregions.AuxParm<double>(ModelCore.Ecoregions);
-                GSO4 = new Landis.Library.Parameters.Ecoregions.AuxParm<double>(ModelCore.Ecoregions);
-
-                //DynamicEcoregions.TimestepData = DynamicEcoregions.EcoRegData[year];
-
-                foreach (IEcoregion ecoregion in ModelCore.Ecoregions)
-                {
-                    if (!ecoregion.Active)
-                        continue;
-
-                    if (TimestepData[ecoregion.Index] == null)
-                        continue;
-
-                    GSO1[ecoregion] = TimestepData[ecoregion.Index].GSO1;
-                    GSO2[ecoregion] = TimestepData[ecoregion.Index].GSO2;
-                    GSO3[ecoregion] = TimestepData[ecoregion.Index].GSO3;
-                    GSO4[ecoregion] = TimestepData[ecoregion.Index].GSO4;
-                }
-            //}
-
-        }
-
-        public static void EcoregionDynamicChange(Landis.Extension.Succession.BiomassPnET.IDynamicEcoregionRecord[] TimestepData)
-        {
-
-            //if (DynamicEcoregions.EcoRegData.ContainsKey(year))
-            //{
-            GSO1 = new Landis.Library.Parameters.Ecoregions.AuxParm<double>(ModelCore.Ecoregions);
-            GSO2 = new Landis.Library.Parameters.Ecoregions.AuxParm<double>(ModelCore.Ecoregions);
-            GSO3 = new Landis.Library.Parameters.Ecoregions.AuxParm<double>(ModelCore.Ecoregions);
-            GSO4 = new Landis.Library.Parameters.Ecoregions.AuxParm<double>(ModelCore.Ecoregions);
-
-            //DynamicEcoregions.TimestepData = DynamicEcoregions.EcoRegData[year];
-
-            foreach (IEcoregion ecoregion in ModelCore.Ecoregions)
-            {
-                if (!ecoregion.Active)
-                    continue;
-
-                if (TimestepData[ecoregion.Index] == null)
-                    continue;
-
-                GSO1[ecoregion] = TimestepData[ecoregion.Index].GSO1;
-                GSO2[ecoregion] = TimestepData[ecoregion.Index].GSO2;
-                GSO3[ecoregion] = TimestepData[ecoregion.Index].GSO3;
-                GSO4[ecoregion] = TimestepData[ecoregion.Index].GSO4;
-            }
-            //}
-
-        }
-
 
         public static bool TryGetParameter(string label, out Parameter<string> parameter)
         {

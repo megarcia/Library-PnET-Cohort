@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Landis.Extension.Succession.BiomassPnET;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,7 +8,7 @@ namespace Landis.Library.PnETCohorts
     class SpeciesParameters
     {
         public static biomassUtil biomass_util = new biomassUtil();
-        public static SpeciesDensity SpeciesDensity;
+        public static SpeciesPnET SpeciesPnET;
 
         //private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -63,9 +64,9 @@ namespace Landis.Library.PnETCohorts
 
         }
 
-        public static void LoadParameters(SpeciesDensity modelSpecies)
+        public static void LoadParameters(SpeciesPnET modelSpecies)
         {
-            SpeciesDensity = modelSpecies;
+            SpeciesPnET = modelSpecies;
         }
     }
 }

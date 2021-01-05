@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Landis.Extension.Succession.BiomassPnET;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Landis.Library.PnETCohorts

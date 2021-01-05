@@ -1,5 +1,5 @@
 ﻿using Landis.Core;
-using Landis.Library.DensityCohorts;
+using Landis.Library.PnETCohorts;
 using Landis.SpatialModeling;
 
 namespace Landis.Extension.Succession.BiomassPnET.DisturbanceReductions

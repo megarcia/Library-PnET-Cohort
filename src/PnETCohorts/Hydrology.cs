@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Landis.Extension.Succession.BiomassPnET;
+using System;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -112,7 +113,7 @@ namespace Landis.Library.PnETCohorts
             }
             
             PlugIn.ModelCore.UI.WriteLine("Eco\tSoilt\tWiltPnt\tFieldCap(mm)\tFC-WP\tPorosity");
-            foreach (IEcoregionPnET eco in EcoregionPnET.Ecoregions) if (eco.Active)
+            foreach (IEcoregionPnET eco in EcoregionData.Ecoregions) if (eco.Active)
             {
 
                     // Volumetric water content (mm/m) at field capacity

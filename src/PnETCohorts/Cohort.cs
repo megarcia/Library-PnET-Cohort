@@ -1,6 +1,7 @@
 // uses dominance to allocate psn and subtract transpiration from soil water, average cohort vars over layer
 
 using Landis.Core;
+using Landis.Extension.Succession.BiomassPnET;
 using Landis.SpatialModeling;
 using Landis.Utilities;
 using System;
@@ -9,16 +10,13 @@ using System.Linq;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class Cohort : Landis.Library.AgeOnlyCohorts.ICohort, Landis.Library.BiomassCohorts.ICohort , Landis.Library.PnETCohorts.ICohort
+    public class Cohort : Landis.Library.AgeOnlyCohorts.ICohort, Landis.Library.BiomassCohorts.ICohort, Landis.Library.PnETCohorts.ICohort
     {
-        public static event Landis.Library.BiomassCohorts.DeathEventHandler<Landis.Library.BiomassCohorts.DeathEventArgs> DeathEvent;
-        public static event Landis.Library.BiomassCohorts.DeathEventHandler<Landis.Library.BiomassCohorts.DeathEventArgs> AgeOnlyDeathEvent;
-
         public byte Layer;
 
-        public delegate void SubtractTranspiration(float transpiration, ISpeciesPNET Species);
+        public delegate void SubtractTranspiration(float transpiration, ISpeciesPnET Species);
         public delegate void AddWoodyDebris(float Litter, float KWdLit);
-        public delegate void AddLitter(float AddLitter, ISpeciesPNET Species);
+        public delegate void AddLitter(float AddLitter, ISpeciesPnET Species);
 
         private bool leaf_on = false;
 
@@ -49,7 +47,7 @@ namespace Landis.Library.PnETCohorts
 
         public ushort index;
         
-        private ISpeciesPNET species;
+        private ISpeciesPnET species;
         private LocalOutput cohortoutput;
 
         // Leaf area index per subcanopy layer (m/m)
@@ -296,7 +294,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
         // Species with PnET parameter additions
-        public ISpeciesPNET SpeciesPNET
+        public ISpeciesPnET SpeciesPNET
         {
             get
             {
@@ -347,7 +345,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         // Constructor
-        public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
+        public Cohort(ISpeciesPnET species, ushort year_of_birth, string SiteName) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
         {
             this.species =  species;
             age = 1;
@@ -380,7 +378,7 @@ namespace Landis.Library.PnETCohorts
             this.lastSeasonFRad = cohort.lastSeasonFRad;
         }
 
-        public Cohort(ISpeciesPNET species, ushort age, int woodBiomass, string SiteName, ushort firstYear)
+        public Cohort(ISpeciesPnET species, ushort age, int woodBiomass, string SiteName, ushort firstYear)
         {
             InitializeSubLayers();
             this.species = species;
@@ -997,6 +995,17 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
+        /// Occurs when a cohort is killed by an age-only disturbance.
+        /// </summary>
+        public static event DeathEventHandler<DeathEventArgs> AgeOnlyDeathEvent;
+
+        /// <summary>
+        /// Occurs when a cohort dies either due to senescence or biomass
+        /// disturbances.
+        /// </summary>
+        public static event DeathEventHandler<DeathEventArgs> DeathEvent;
+
+        /// <summary>
         /// Raises a Cohort.AgeOnlyDeathEvent.
         /// </summary>
         public static void KilledByAgeOnlyDisturbance(object sender,
@@ -1189,7 +1198,7 @@ namespace Landis.Library.PnETCohorts
 
         }
 
-        public float CalculateLAI(ISpeciesPNET species, float fol, int index)
+        public float CalculateLAI(ISpeciesPnET species, float fol, int index)
         {
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
@@ -1225,9 +1234,9 @@ namespace Landis.Library.PnETCohorts
             //}
             if (DeathEvent != null)
             {
-                DeathEvent(sender, new Landis.Library.BiomassCohorts.DeathEventArgs(cohort, site, disturbanceType));
+                DeathEvent(sender, new Landis.Library.PnETCohorts.DeathEventArgs(cohort, site, disturbanceType));
             }
-           
+
         }
 
         

@@ -25,40 +25,38 @@
 //   NOTE: This uses a version (v4?) of the climate library that exposes AnnualClimate_Monthly.MonthlyOzone[] and .MonthlyCO2[].
 
 using Landis.Core;
-using Landis.Library.DensityCohorts.InitialCommunities;
+using Landis.Library.InitialCommunities;
+using Landis.Library.PnETCohorts;
 using Landis.Library.Succession;
 using Landis.SpatialModeling;
 using Landis.Library.Climate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Landis.Library.DensityCohorts;
-using System.Net;
-//using Landis.Library.AgeOnlyCohorts;
+
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
     public class PlugIn  : Landis.Library.Succession.ExtensionBase 
     {
-        //================================== Density variables ================================
-        //public static ISiteVar<float> SiteRD;
-        public static SpeciesDensity SpeciesDensity;
-        //=====================================================================================
-        //public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
-        //public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
-        //public static ISiteVar<Double> FineFuels;
+        public static SpeciesPnET SpeciesPnET;
+        //public static float Latitude;// Now an ecoregion parameter
+        public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
+        public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
+        public static ISiteVar<Double> FineFuels;
+        public static ISiteVar<float> PressureHead;
+        public static ISiteVar<float> ExtremeMinTemp;
         public static DateTime Date;
         public static ICore ModelCore;
         private static ISiteVar<SiteCohorts> sitecohorts;
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
-        //public static ushort IMAX;
-        //public static float FTimeStep;
+        public static ushort IMAX;
+        public static float FTimeStep;
 
-        public static biomassUtil biomass_util = new biomassUtil();
         public static bool UsingClimateLibrary;
         private ICommunity initialCommunity;
-        //public static int CohortBinSize;
+        public static int CohortBinSize;
 
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
@@ -147,7 +145,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             return value;
         }
 
-        public void DeathEvent(object sender, Landis.Library.DensityCohorts.DeathEventArgs eventArgs)
+        public void DeathEvent(object sender, Landis.Library.PnETCohorts.DeathEventArgs eventArgs)
         {
             ExtensionType disturbanceType = eventArgs.DisturbanceType;
             if (disturbanceType != null)
@@ -162,18 +160,18 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
        
-        /*string PnETDefaultsFolder
+        string PnETDefaultsFolder
         {
             get
             {
                 return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Defaults");
             }
-        }*/
+        }
         
         public PlugIn()
             : base(Names.ExtensionName)
         {
-            //LocalOutput.PNEToutputsites = Names.PNEToutputsites;
+            LocalOutput.PNEToutputsites = Names.PNEToutputsites;
         }
 
         public static Dictionary<string, Parameter<string>> LoadTable(string label, List<string> RowLabels, List<string> Columnheaders, bool transposed = false)
@@ -188,7 +186,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public override void LoadParameters(string InputParameterFile, ICore mCore)
         {
             ModelCore = mCore;
-            EcoregionData.InitializeCore(mCore);
+
             parameters.Add(Names.ExtensionName, new Parameter<string>(Names.ExtensionName, InputParameterFile));
 
             //-------------PnET-Succession input files
@@ -197,9 +195,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             //-------------Read Species parameters input file
             List<string> SpeciesNames = PlugIn.ModelCore.Species.ToList().Select(x => x.Name).ToList();
-            List<string> SpeciesPars = SpeciesDensity.ParameterNames;
-            SpeciesPars.Add(Names.DensitySpeciesParameters);
-            Dictionary<string, Parameter<string>> speciesparameters = LoadTable(Names.DensitySpeciesParameters, SpeciesNames, SpeciesPars);
+            List<string> SpeciesPars = SpeciesPnET.ParameterNames;
+            SpeciesPars.Add(Names.PnETSpeciesParameters);
+            Dictionary<string, Parameter<string>> speciesparameters = LoadTable(Names.PnETSpeciesParameters, SpeciesNames, SpeciesPars);
             foreach (string key in speciesparameters.Keys)
             {
                 if (parameters.ContainsKey(key)) throw new System.Exception("Parameter " + key + " was provided twice");
@@ -216,7 +214,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             ecoregionparameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
-                       
+
+
+
             //---------------DisturbanceReductionsParameterFile
             Parameter<string> DisturbanceReductionsParameterFile;
             if (TryGetParameter(Names.DisturbanceReductions, out DisturbanceReductionsParameterFile))
@@ -225,19 +225,48 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Cohort.AgeOnlyDeathEvent += DisturbanceReductions.Events.CohortDied;
             }
 
+             
+            //---------------SaxtonAndRawlsParameterFile
+            if (parameters.ContainsKey(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters) == false)
+            {
+                Parameter<string> SaxtonAndRawlsParameterFile = new Parameter<string>(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters, (string)PnETDefaultsFolder + "\\SaxtonAndRawlsParameters.txt");
+                parameters.Add(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters, SaxtonAndRawlsParameterFile);
+            }
+            Dictionary<string, Parameter<string>> SaxtonAndRawlsParameters = LoadTable(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters, null, PressureHeadSaxton_Rawls.ParameterNames);
+            foreach (string key in SaxtonAndRawlsParameters.Keys)
+            {
+                if (parameters.ContainsKey(key)) throw new System.Exception("Parameter " + key + " was provided twice");
+            }
+            SaxtonAndRawlsParameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
 
-            //----------------Read biomass estimation parameters
-            
-            string BiomassVariableFile = GetParameter(Names.BiomassVariables).Value;
-            if (System.IO.File.Exists(BiomassVariableFile) == false) throw new System.Exception("File not found " + BiomassVariableFile);
+            //--------------PnETGenericParameterFile
 
-            BiomassParamParser bioparser = new BiomassParamParser();
-            Landis.Data.Load<BiomassParam>(BiomassVariableFile, bioparser);
+            //----------See if user supplied overwriting default parameters
+            List<string> RowLabels = new List<string>(Names.AllNames);
+            RowLabels.AddRange(SpeciesPnET.ParameterNames); 
 
-            //----------------Read diameter growth tables
+            if (parameters.ContainsKey(Names.PnETGenericParameters))
+            {
+                Dictionary<string, Parameter<string>> genericparameters = LoadTable(Names.PnETGenericParameters,  RowLabels, null, true);
+                foreach (KeyValuePair<string, Parameter<string>> par in genericparameters)
+                {
+                    if (parameters.ContainsKey(par.Key)) throw new System.Exception("Parameter " + par.Key + " was provided twice");
+                    parameters.Add(par.Key, par.Value);
+                }
+            }
 
-            string DiameterFile = GetParameter(Names.DiameterInputFile).Value;
-            if (System.IO.File.Exists(DiameterFile) == false) throw new System.Exception("File not found " + DiameterFile);
+            //----------Load in default parameters to fill the gaps
+            Parameter<string> PnETGenericDefaultParameterFile = new Parameter<string>(Names.PnETGenericDefaultParameters, (string)PnETDefaultsFolder + "\\PnETGenericDefaultParameters.txt");
+            parameters.Add(Names.PnETGenericDefaultParameters, PnETGenericDefaultParameterFile);
+            Dictionary<string, Parameter<string>> genericdefaultparameters = LoadTable(Names.PnETGenericDefaultParameters, RowLabels, null, true);
+
+            foreach (KeyValuePair<string, Parameter<string>> par in genericdefaultparameters)
+            {
+                if (parameters.ContainsKey(par.Key) == false)
+                {
+                    parameters.Add(par.Key, par.Value);
+                }
+            }
 
             SiteOutputNames = new Dictionary<ActiveSite, string>();
             Parameter<string> OutputSitesFile;
@@ -254,39 +283,57 @@ namespace Landis.Extension.Succession.BiomassPnET
             PlugIn.ModelCore.UI.WriteLine("Initializing " + Names.ExtensionName + " version " + typeof(PlugIn).Assembly.GetName().Version);
             Cohort.DeathEvent += DeathEvent;
 
-            sitecohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.DensityCohorts.SiteCohorts>();
+            Litter = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
+            WoodyDebris = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
+            sitecohorts = PlugIn.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
+            FineFuels = ModelCore.Landscape.NewSiteVar<Double>();
+            PressureHead = ModelCore.Landscape.NewSiteVar<float>();
+            ExtremeMinTemp = ModelCore.Landscape.NewSiteVar<float>();
             Landis.Utilities.Directory.EnsureExists("output");
-            Landis.Library.DensityCohorts.Names.LoadParameters(parameters);
+
             Timestep = ((Parameter<int>)GetParameter(Names.Timestep)).Value;
+            Parameter<string> CohortBinSizeParm = null;
+            if (TryGetParameter(Names.CohortBinSize, out CohortBinSizeParm))
+            {
+                if (Int32.TryParse(CohortBinSizeParm.Value, out CohortBinSize))
+                {
+                    if(CohortBinSize < Timestep)
+                    {
+                        throw new System.Exception("CohortBinSize cannot be smaller than Timestep.");
+                    }
+                    else
+                        PlugIn.ModelCore.UI.WriteLine("Succession timestep = " + Timestep + "; CohortBinSize = " + CohortBinSize + ".");
+                }
+                else
+                {
+                    throw new System.Exception("CohortBinSize is not an integer value.");
+                }
+            }
+            else
+                CohortBinSize = Timestep;
+
+        
+                FTimeStep = 1.0F / Timestep;
+
+            //Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value; // Now an ecoregion parameter
 
             ObservedClimate.Initialize();
 
-            SpeciesDensity = new SpeciesDensity();
-            Landis.Library.DensityCohorts.SpeciesParameters.LoadParameters(SpeciesDensity);
+            SpeciesPnET = new SpeciesPnET();
+             
             EcoregionData.Initialize();
-            SiteVars.Initialize();
-            string DynamicEcoregionFile = ((Parameter<string>)GetParameter(Names.DynamicEcoregionFile)).Value;
-            DynamicEcoregions.Initialize(DynamicEcoregionFile, false);
-            var TimestepData = DynamicEcoregions.EcoRegData[0];
-
-            EcoregionData.EcoregionDynamicChange(TimestepData);
-
-            string DynamicInputFile = ((Parameter<string>)GetParameter(Names.DynamicInputFile)).Value;
-            DynamicInputs.Initialize(DynamicInputFile, false);
-
-            string DiameterInputFile = ((Parameter<string>)GetParameter(Names.DiameterInputFile)).Value;
-            DiameterInputs.Initialize(DiameterInputFile, false);
-
-            DynamicEcoregions.ChangeDynamicParameters(0);  // Year 0
-
-            Landis.Library.DensityCohorts.Cohorts.Initialize(Timestep);
-            // This creates the cohorts - FIXME
+            Hydrology.Initialize();
             SiteCohorts.Initialize();
-
+ 
             // John McNabb: initialize climate library after EcoregionPnET has been initialized
             InitializeClimateLibrary();
 
             EstablishmentProbability.Initialize(Timestep);
+            
+            IMAX = ((Parameter<ushort>)GetParameter(Names.IMAX)).Value;
+            //LeakageFrostDepth = ((Parameter<float>)GetParameter(Names.LeakageFrostDepth)).Value; //Now an ecoregion parameter
+            //PrecipEvents = ((Parameter<float>)GetParameter(Names.PrecipEvents)).Value;// Now an ecoregion parameter
+          
 
             // Initialize Reproduction routines:
             Reproduction.SufficientResources = SufficientResources;
@@ -294,50 +341,76 @@ namespace Landis.Extension.Succession.BiomassPnET
             Reproduction.AddNewCohort = AddNewCohort;
             Reproduction.MaturePresent = MaturePresent;
             Reproduction.PlantingEstablish = PlantingEstablish;
-            Reproduction.DensitySeeds = DensitySeeds;
+
             
-
-
+            SeedingAlgorithms SeedAlgorithm = (SeedingAlgorithms)Enum.Parse(typeof(SeedingAlgorithms), parameters["SeedingAlgorithm"].Value);
+            
+            base.Initialize(ModelCore, SeedAlgorithm);
+             
+             
             StartDate = new DateTime(((Parameter<int>)GetParameter(Names.StartYear)).Value, 1, 15);
 
             PlugIn.ModelCore.UI.WriteLine("Spinning up biomass or reading from maps...");
 
             string InitialCommunitiesTXTFile = GetParameter(Names.InitialCommunities).Value;
             string InitialCommunitiesMapFile = GetParameter(Names.InitialCommunitiesMap).Value;
+            Parameter<string> LitterMapFile;
+            bool litterMapFile = TryGetParameter(Names.LitterMap, out LitterMapFile);
+            Parameter<string> WoodyDebrisMapFile;
+            bool woodyDebrisMapFile = TryGetParameter(Names.WoodyDebrisMap, out WoodyDebrisMapFile);
+            //Console.ReadLine();
             InitializeSites(InitialCommunitiesTXTFile, InitialCommunitiesMapFile, ModelCore);
+            if(litterMapFile)
+                MapReader.ReadLitterFromMap(LitterMapFile.Value);
+            if(woodyDebrisMapFile)
+                MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile.Value);
 
-            SeedingAlgorithms SeedAlgorithm = (SeedingAlgorithms)Enum.Parse(typeof(SeedingAlgorithms), parameters["SeedingAlgorithm"].Value);
-
-            base.Initialize(ModelCore, SeedAlgorithm);
-
-
-            ISiteVar<Landis.Library.DensityCohorts.ISiteCohorts> DensityCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.DensityCohorts.ISiteCohorts>();
-            // Convert Density cohorts to biomasscohorts
+            // Convert PnET cohorts to biomasscohorts
             ISiteVar<Landis.Library.BiomassCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.BiomassCohorts.ISiteCohorts>();
-            // Convert Density cohorts to agecohorts
-            ISiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts> AgeCohortSiteVar = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts>();
-           
+            
+            
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
-                Cohort.SetSiteAccessFunctions(sitecohorts[site]);
-                float tempRD = SiteVars.SiteRD[site];
-                DensityCohorts[site] = sitecohorts[site];
-
                 biomassCohorts[site] = sitecohorts[site];
+                
                 if (sitecohorts[site] != null && biomassCohorts[site] == null)
                 {
-                    throw new System.Exception("Cannot convert Density SiteCohorts to biomass site cohorts");
-                }
-
-                AgeCohortSiteVar[site] = sitecohorts[site];
-                if (sitecohorts[site] != null && AgeCohortSiteVar[site] == null)
-                {
-                    throw new System.Exception("Cannot convert Density SiteCohorts to age-only site cohorts");
+                    throw new System.Exception("Cannot convert PnET SiteCohorts to biomass site cohorts");
                 }
             }
-            ModelCore.RegisterSiteVar(DensityCohorts, "Succession.CohortsDensity");
             ModelCore.RegisterSiteVar(biomassCohorts, "Succession.BiomassCohorts");
-            ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");          
+            ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
+            ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
+            
+
+            ISiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts> AgeCohortSiteVar = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts>();
+            ISiteVar<ISiteCohorts> PnETCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<ISiteCohorts>();
+          
+
+            foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
+            {
+                AgeCohortSiteVar[site] = sitecohorts[site];
+                PnETCohorts[site] = sitecohorts[site];
+                FineFuels[site] = Litter[site].Mass;
+                IEcoregionPnET ecoregion = EcoregionData.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
+                IHydrology hydrology = new Hydrology(ecoregion.FieldCap);
+                PressureHead[site] = hydrology.GetPressureHead(ecoregion);
+                if (UsingClimateLibrary)
+                {
+                    ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.Future_MonthlyData[Climate.Future_MonthlyData.Keys.Min()][ecoregion.Index].MonthlyTemp) - (float)(3.0 * ecoregion.WinterSTD));  
+                }
+                else
+                {
+                    ExtremeMinTemp[site] = 999;
+                }
+            }
+
+            ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");
+            ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
+            ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
+            ModelCore.RegisterSiteVar(PressureHead, "Succession.PressureHead");
+            ModelCore.RegisterSiteVar(ExtremeMinTemp, "Succession.ExtremeMinTemp");
+
         }
 
         /// <summary>This must be called after EcoregionPnET.Initialize() has been called</summary>
@@ -360,35 +433,49 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public void AddNewCohort(ISpecies species, ActiveSite site, string reproductionType, double propBiomass = 1.0)
+        public void AddNewCohort(ISpecies species, ActiveSite site, string reproductionType)
         {
-            ISpeciesDensity spc = SpeciesDensity[species];
-            Cohort cohort = new Cohort(spc, (ushort)Date.Year, (SiteOutputNames.ContainsKey(site)) ? SiteOutputNames[site] : null);
+            ISpeciesPnET spc = PlugIn.SpeciesPnET[species];
+            bool addCohort = true;
+            if (sitecohorts[site].cohorts.ContainsKey(species))
+            {
+                // This should deliver only one KeyValuePair
+                KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(sitecohorts[site].cohorts.Where(o => o.Key == species))[0];
+                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < CohortBinSize));
+                if (Cohorts.Count() > 0)
+                {
+                    addCohort = false;
+                }
+            }
+            bool addSiteOutput = false;
+            addSiteOutput = (SiteOutputNames.ContainsKey(site) && addCohort);
+            Cohort cohort = new Cohort(spc, (ushort)Date.Year, (addSiteOutput) ? SiteOutputNames[site] : null);
             
-            sitecohorts[site].AddNewCohort(cohort);
+            addCohort = sitecohorts[site].AddNewCohort(cohort);
 
-            if (reproductionType == "plant")
+            if (addCohort)
             {
-                if (!sitecohorts[site].SpeciesEstablishedByPlant.Contains(species))
-                    sitecohorts[site].SpeciesEstablishedByPlant.Add(species);
+                if (reproductionType == "plant")
+                {
+                    if (!sitecohorts[site].SpeciesEstablishedByPlant.Contains(species))
+                        sitecohorts[site].SpeciesEstablishedByPlant.Add(species);
+                }
+                else if (reproductionType == "serotiny")
+                {
+                    if (!sitecohorts[site].SpeciesEstablishedBySerotiny.Contains(species))
+                        sitecohorts[site].SpeciesEstablishedBySerotiny.Add(species);
+                }
+                else if (reproductionType == "resprout")
+                {
+                    if (!sitecohorts[site].SpeciesEstablishedByResprout.Contains(species))
+                        sitecohorts[site].SpeciesEstablishedByResprout.Add(species);
+                }
+                else if (reproductionType == "seed")
+                {
+                    if (!sitecohorts[site].SpeciesEstablishedBySeed.Contains(species))
+                        sitecohorts[site].SpeciesEstablishedBySeed.Add(species);
+                }
             }
-            else if(reproductionType == "serotiny")
-            {
-                if (!sitecohorts[site].SpeciesEstablishedBySerotiny.Contains(species))
-                    sitecohorts[site].SpeciesEstablishedBySerotiny.Add(species);
-            }
-            else if(reproductionType == "resprout")
-            {
-                if (!sitecohorts[site].SpeciesEstablishedByResprout.Contains(species))
-                    sitecohorts[site].SpeciesEstablishedByResprout.Add(species);
-            }
-            else if(reproductionType == "seed")
-            {
-                if (!sitecohorts[site].SpeciesEstablishedBySeed.Contains(species))
-                    sitecohorts[site].SpeciesEstablishedBySeed.Add(species);
-            }
-
-
         }
         public bool MaturePresent(ISpecies species, ActiveSite site)
         {
@@ -416,10 +503,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
 
             ModelCore.UI.WriteLine("   Loading initial communities from file \"{0}\" ...", initialCommunitiesText);
-            Landis.Library.DensityCohorts.InitialCommunities.DatasetParser parser = new Landis.Library.DensityCohorts.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
+            Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(CohortBinSize, ModelCore.Species);
 
             //Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
-            Landis.Library.DensityCohorts.InitialCommunities.IDataset communities = Landis.Data.Load<Landis.Library.DensityCohorts.InitialCommunities.IDataset>(initialCommunitiesText, parser);
+            Landis.Library.InitialCommunities.IDataset communities = Landis.Data.Load<Landis.Library.InitialCommunities.IDataset>(initialCommunitiesText, parser);
 
             ModelCore.UI.WriteLine("   Reading initial communities map \"{0}\" ...", initialCommunitiesMap);
             IInputRaster<uintPixel> map;
@@ -460,33 +547,24 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             DateTime EndDate = date.AddYears(years);
 
-            //IEcoregionPnET ecoregion_pnet = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
+            IEcoregionPnET ecoregion_pnet = EcoregionData.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
 
-            //List<IEcoregionClimateVariables> climate_vars = UsingClimateLibrary ? EcoregionPnET.GetClimateRegionData(ecoregion_pnet, date, EndDate, Climate.Phase.Future_Climate) : EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
-            
-            sitecohorts[site].Grow(site, successionTimestep.HasValue);
-           
+            List<IEcoregionPnETVariables> climate_vars = UsingClimateLibrary ? EcoregionData.GetClimateRegionData(ecoregion_pnet, date, EndDate, Climate.Phase.Future_Climate) : EcoregionData.GetData(ecoregion_pnet, date, EndDate);
+
+            sitecohorts[site].Grow(climate_vars);
+
             Date = EndDate;
              
         }
-
-        // Shade is calculated internally during the growth calculations
         public override byte ComputeShade(ActiveSite site)
         {
+
+
             return 0;
         }
         
         public override void Run()
         {
-            bool isSuccessionTimestep = (ModelCore.CurrentTime % Timestep == 0);
-            //FIXME --- JSF --- Better way to check dynamic parameters?
-            if (isSuccessionTimestep && DynamicEcoregions.EcoRegData.ContainsKey(ModelCore.CurrentTime))
-            {
-                Landis.Library.DensityCohorts.IDynamicEcoregionRecord[] TimestepData = (Landis.Library.DensityCohorts.IDynamicEcoregionRecord[])DynamicEcoregions.EcoRegData[ModelCore.CurrentTime];
-
-                EcoregionData.EcoregionDynamicChange(TimestepData);
-            } 
-            
             base.Run();
         }
 
@@ -508,7 +586,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         }
         
-        // Resources (growing space) is calculated internally during the growth calculations
         public bool SufficientResources(ISpecies species, ActiveSite site)
         {
             return true;
@@ -516,10 +593,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public bool Establish(ISpecies species, ActiveSite site)
         {
-            ISpeciesDensity spc = PlugIn.SpeciesDensity[species];
-            double establishProbability = DynamicEcoregions.EstablishProbability[species, PlugIn.ModelCore.Ecoregion[site]];
-            //bool Establish = sitecohorts[site].EstablishmentProbability.HasEstablished(spc);
-            return ModelCore.GenerateUniform() < establishProbability;
+            ISpeciesPnET spc = PlugIn.SpeciesPnET[species];
+
+            bool Establish = sitecohorts[site].EstablishmentProbability.HasEstablished(spc);
+            return Establish;
         }
 
         
@@ -533,57 +610,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             return true;
            
-        }
-        //---------------------------------------------------------------------
-        /// <summary>
-        /// Determines if a species can establish on a site.
-        /// This is a Delegate method to the succession library.
-        /// </summary>
-        public double DensitySeeds(ISpecies species, ActiveSite site)
-        {
-            double availableSeed = 0;
-            int totalseed_m_timestep = SpeciesDensity[species].TotalSeed * Timestep;
-            if (SpeciesDensity[species].SpType < 0)
-                availableSeed += (uint)totalseed_m_timestep; //site.cs Ln 1971
-            else
-            {
-                if (SpeciesDensity[species].MaxSeedDist < 0)
-                {
-                    SiteCohorts mySiteCohorts = sitecohorts[site];
-                    foreach (Cohort cohort in mySiteCohorts[species])
-                    {
-                        double loc_term = Math.Pow(cohort.Diameter / 25.4, 1.605);
-                        //wenjuan changed on mar 30 2011
-                        double double_val = loc_term * cohort.Treenumber * totalseed_m_timestep; //site.cs Ln 1991
-                        availableSeed += double_val;
-                    }
-                }
-                else
-                {
-                    SiteCohorts mySiteCohorts = sitecohorts[site];
-                    double matureTrees = 0;
-                    if (mySiteCohorts[species] != null)
-                    {
-                        foreach (Cohort cohort in mySiteCohorts[species])
-                        {
-                            if (cohort.Age > SpeciesDensity[species].Maturity)
-                            {
-                                matureTrees += cohort.Treenumber;
-                            }
-                        }
-                    }
-
-                    int local_tseed = SpeciesDensity[species].TotalSeed;
-
-                    double double_val = matureTrees * totalseed_m_timestep;  //modified from site.cs Ln 2024
-                    availableSeed += double_val;
-                }
-            }
-            float float_rand = (float)ModelCore.ContinuousUniformDistribution.NextDouble();
-            double double_value = availableSeed * (0.95 + float_rand * 0.1);  //from site.cs Ln 2045
-            availableSeed = (uint)double_value;
-
-            return availableSeed;
         }
         //---------------------------------------------------------------------
 

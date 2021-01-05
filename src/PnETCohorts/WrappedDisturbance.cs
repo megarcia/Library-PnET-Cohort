@@ -47,7 +47,7 @@ namespace Landis.Library.PnETCohorts
                 Cohort.KilledByAgeOnlyDisturbance(this, cohort,
                                                   ageCohortDisturbance.CurrentSite,
                                                   ageCohortDisturbance.Type);
-                return cohort.Treenumber;
+                return cohort.Biomass;
             }
             else
                 return 0;

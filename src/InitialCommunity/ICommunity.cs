@@ -1,4 +1,4 @@
-using Landis.Library.DensityCohorts;
+using Landis.Library.PnETCohorts;
 using System.Collections.Generic;
 
 namespace Landis.Library.PnETCohorts.InitialCommunities

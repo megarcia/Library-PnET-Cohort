@@ -3,6 +3,7 @@
 
 using Landis.Utilities;
 using Landis.Core;
+using Landis.Extension.Succession.BiomassPnET;
 using Landis.Library.InitialCommunities;
 using Landis.SpatialModeling;
 using System;
@@ -36,7 +37,7 @@ namespace Landis.Library.PnETCohorts
         private float transpiration;
         private double HeterotrophicRespiration;
         public ActiveSite Site;
-        private Dictionary<ISpecies, List<Cohort>> cohorts = null;
+        public Dictionary<ISpecies, List<Cohort>> cohorts = null;
         IEstablishmentProbability establishmentProbability = null;
         private IHydrology hydrology = null;
         public List<ISpecies> SpeciesEstablishedByPlant = null;
@@ -265,7 +266,7 @@ namespace Landis.Library.PnETCohorts
                 CohortBinSize = Timestep;
             maxHalfSat = 0;
             minHalfSat = float.MaxValue;
-            foreach(ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+            foreach(ISpeciesPnET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
                 if (spc.HalfSat > maxHalfSat)
                     maxHalfSat = spc.HalfSat;
@@ -277,7 +278,7 @@ namespace Landis.Library.PnETCohorts
         public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string SiteOutputName = null)
         {
             Cohort.SetSiteAccessFunctions(this);
-            this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
+            this.Ecoregion = EcoregionData.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
             this.Site = site;
             cohorts = new Dictionary<ISpecies, List<Cohort>>();
             SpeciesEstablishedByPlant = new List<ISpecies>();
@@ -331,7 +332,7 @@ namespace Landis.Library.PnETCohorts
                 {
                     initialSites.Add(key, this);
                 }
-                List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionPnET.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
+                List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
                 hydrology = new Hydrology(Ecoregion.FieldCap);
                 watermax = hydrology.Water;
                 subcanopypar = ecoregionInitializer[0].PAR0;
@@ -426,7 +427,7 @@ namespace Landis.Library.PnETCohorts
                     // Simulation time runs untill the next cohort is added
                     DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - (sortedAgeCohorts[0].Age-1)), 1, 15);
 
-                    var climate_vars = usingClimateLibrary ? EcoregionPnET.GetClimateRegionData(Ecoregion, date, EndDate, Climate.Phase.SpinUp_Climate) : EcoregionPnET.GetData(Ecoregion, date, EndDate);
+                    var climate_vars = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, date, EndDate, Climate.Climate.Phase.SpinUp_Climate) : EcoregionData.GetData(Ecoregion, date, EndDate);
 
                     Grow(climate_vars);
 
@@ -528,7 +529,7 @@ namespace Landis.Library.PnETCohorts
             {
                 Dictionary<string, Dictionary<int,int>> speciesLayerIndex = new Dictionary<string, Dictionary<int,int>>();
                 List<int> addedValues = new List<int>();
-                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                foreach (ISpeciesPnET spc in PlugIn.SpeciesPnET.AllSpecies)
                 {
                     foreach (int thisAge in cohortAges)
                     {
@@ -623,17 +624,17 @@ namespace Landis.Library.PnETCohorts
             grosspsn = new float[13];
             maintresp = new float[13];
 
-            Dictionary<ISpeciesPNET, List<float>> annualEstab = new Dictionary<ISpeciesPNET, List<float>>();
-            Dictionary<ISpeciesPNET, float> cumulativeEstab = new Dictionary<ISpeciesPNET, float>();
-            Dictionary<ISpeciesPNET, List<float>> annualFwater = new Dictionary<ISpeciesPNET, List<float>>();
-            Dictionary<ISpeciesPNET, float> cumulativeFwater = new Dictionary<ISpeciesPNET, float>();
-            Dictionary<ISpeciesPNET, List<float>> annualFrad = new Dictionary<ISpeciesPNET, List<float>>();
-            Dictionary<ISpeciesPNET, float> cumulativeFrad = new Dictionary<ISpeciesPNET, float>();
-            Dictionary<ISpeciesPNET, float> monthlyEstab = new Dictionary<ISpeciesPNET, float>();
-            Dictionary<ISpeciesPNET, int> monthlyCount = new Dictionary<ISpeciesPNET, int>();
-            Dictionary<ISpeciesPNET, int> coldKillMonth = new Dictionary<ISpeciesPNET, int>(); // month in which cold kills each species
+            Dictionary<ISpeciesPnET, List<float>> annualEstab = new Dictionary<ISpeciesPnET, List<float>>();
+            Dictionary<ISpeciesPnET, float> cumulativeEstab = new Dictionary<ISpeciesPnET, float>();
+            Dictionary<ISpeciesPnET, List<float>> annualFwater = new Dictionary<ISpeciesPnET, List<float>>();
+            Dictionary<ISpeciesPnET, float> cumulativeFwater = new Dictionary<ISpeciesPnET, float>();
+            Dictionary<ISpeciesPnET, List<float>> annualFrad = new Dictionary<ISpeciesPnET, List<float>>();
+            Dictionary<ISpeciesPnET, float> cumulativeFrad = new Dictionary<ISpeciesPnET, float>();
+            Dictionary<ISpeciesPnET, float> monthlyEstab = new Dictionary<ISpeciesPnET, float>();
+            Dictionary<ISpeciesPnET, int> monthlyCount = new Dictionary<ISpeciesPnET, int>();
+            Dictionary<ISpeciesPnET, int> coldKillMonth = new Dictionary<ISpeciesPnET, int>(); // month in which cold kills each species
 
-            foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+            foreach (ISpeciesPnET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
                 annualEstab[spc] = new List<float>();
                 cumulativeEstab[spc] = 1;
@@ -670,7 +671,7 @@ namespace Landis.Library.PnETCohorts
                     }
                 }
                 PlugIn.ExtremeMinTemp[Site] = extremeMinTemp;
-                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                foreach (ISpeciesPnET spc in PlugIn.SpeciesPnET.AllSpecies)
                 {
                         // Check if low temp kills species
                     if (extremeMinTemp < spc.ColdTol)
@@ -962,7 +963,7 @@ namespace Landis.Library.PnETCohorts
                     lastO3 = (data[m-1].O3/1000f);
                 float O3_ppmh_month = Math.Max(0,O3_ppmh - lastO3);
 
-                List<ISpeciesPNET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
+                List<ISpeciesPnET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
                 Dictionary<string, float> DelAmax_spp = new Dictionary<string, float>();
                 Dictionary<string, float> JCO2_spp = new Dictionary<string, float>();
                 Dictionary<string, float> Amax_spp = new Dictionary<string, float>();
@@ -992,7 +993,7 @@ namespace Landis.Library.PnETCohorts
                                 }
                             }
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
-                            ISpeciesPNET spc = c.SpeciesPNET;
+                            ISpeciesPnET spc = c.SpeciesPNET;
                             if (coldKillMonth[spc] == m)
                                 coldKillBoolean = true;
                             float O3Effect = lastOzoneEffect[subCanopyIndex - 1];
@@ -1126,7 +1127,7 @@ namespace Landis.Library.PnETCohorts
                 {
                     monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat, invertPest);
 
-                    foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                    foreach (ISpeciesPnET spc in PlugIn.SpeciesPnET.AllSpecies)
                     {
                         if (monthlyEstab.ContainsKey(spc))
                         {
@@ -1161,7 +1162,7 @@ namespace Landis.Library.PnETCohorts
                     // When > 3 months of growing season, exlcude 1st month, assuming trees focus on foliage growth in first month
                     // When > 4 months, ignore the 4th month and beyond as not primarily relevant for establishment
                     // When < 3 months, include all months
-                    foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                    foreach (ISpeciesPnET spc in PlugIn.SpeciesPnET.AllSpecies)
                     {
                         if (annualEstab[spc].Count > 3)
                         {
@@ -1201,7 +1202,7 @@ namespace Landis.Library.PnETCohorts
             } //for (int m = 0; m < data.Count(); m++ )
             if (PlugIn.ModelCore.CurrentTime > 0)
             {
-                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                foreach (ISpeciesPnET spc in PlugIn.SpeciesPnET.AllSpecies)
                 {
                     bool estab = false;
                     float pest = 0;
@@ -1287,7 +1288,7 @@ namespace Landis.Library.PnETCohorts
             {
                 Dictionary<string, Dictionary<int, int>> speciesLayerIndex = new Dictionary<string, Dictionary<int, int>>();
                 List<int> addedValues = new List<int>();
-                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                foreach (ISpeciesPnET spc in PlugIn.SpeciesPnET.AllSpecies)
                 {
                     foreach (int thisAge in cohortAges)
                     {
@@ -1377,7 +1378,7 @@ namespace Landis.Library.PnETCohorts
 
             List<List<int>> random_range = GetRandomRange(bins);
 
-            List<IEcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
+            List<IEcoregionPnETVariables> climate_vars = EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
 
             if (climate_vars != null && climate_vars.Count > 0)
             {
@@ -1460,7 +1461,7 @@ namespace Landis.Library.PnETCohorts
                             }
                         }
                         Cohort c = SubCanopyCohorts.Values.ToArray()[r];
-                        ISpeciesPNET spc = c.SpeciesPNET;
+                        ISpeciesPnET spc = c.SpeciesPNET;
 
         
 
@@ -2230,7 +2231,7 @@ namespace Landis.Library.PnETCohorts
 
         public bool IsMaturePresent(ISpecies species)
         {
-            ISpeciesPNET pnetSpecies = PlugIn.SpeciesPnET[species];
+            ISpeciesPnET pnetSpecies = PlugIn.SpeciesPnET[species];
 
             bool speciesPresent = cohorts.ContainsKey(species);
 
@@ -2239,8 +2240,9 @@ namespace Landis.Library.PnETCohorts
             return IsMaturePresent;
         }
 
-        public void AddNewCohort(Cohort newCohort)
+        public bool AddNewCohort(Cohort newCohort)
         {
+            bool addCohort = false;
             if (cohorts.ContainsKey(newCohort.Species))
             {
                 // This should deliver only one KeyValuePair
@@ -2260,14 +2262,18 @@ namespace Landis.Library.PnETCohorts
                 if (Cohorts.Count() > 0)
                 {
                     Cohorts[0].Accumulate(newCohort);
-                    return;
+                    return addCohort;
                 }
-
-                cohorts[newCohort.Species].Add(newCohort);
-
-                return;
+                else
+                {
+                    cohorts[newCohort.Species].Add(newCohort);
+                    addCohort = true;
+                    return addCohort;
+                }
             }
             cohorts.Add(newCohort.Species, new List<Cohort>(new Cohort[] { newCohort }));
+            addCohort = true;
+            return addCohort;
         }
 
         Landis.Library.BiomassCohorts.SpeciesCohorts GetSpeciesCohort(List<Cohort> cohorts)
@@ -2291,7 +2297,7 @@ namespace Landis.Library.PnETCohorts
         {
             PlugIn.WoodyDebris[Site].ReduceMass(percentReduction);
         }
-        public void AddLitter(float AddLitter, ISpeciesPNET spc)
+        public void AddLitter(float AddLitter, ISpeciesPnET spc)
         {
             
             double KNwdLitter = Math.Max(0.3, (-0.5365 + (0.00241 * AET.Sum())) - (((-0.01586 + (0.000056 * AET.Sum())) * spc.FolLignin * 100)));

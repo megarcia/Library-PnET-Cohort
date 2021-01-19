@@ -82,35 +82,15 @@ namespace Landis.Library.PnETCohorts
         }
 
         //---------------------------------------------------------------------
-
         /// <summary>
         /// Initializes a new instance with one young cohort (age = 1).
         /// </summary>
-        public SpeciesCohorts(ISpecies species,
-                              ushort initialAge,
-                              int   initialTrees,
-                              IEcoregion ecoregion)
+        public SpeciesCohorts(Cohort cohort)
         {
-            this.species = species;
+            this.species = cohort.Species;
             this.cohortData = new List<CohortData>();
             this.isMaturePresent = false;
-            AddNewCohort(initialAge, initialTrees, ecoregion);
-            
-        }
-
-        //---------------------------------------------------------------------
-        /// <summary>
-        /// Initializes a new instance with one young cohort (age = 1).
-        /// </summary>
-        public SpeciesCohorts(ISpecies species,
-                              ushort initialAge,
-                              int initialTrees)
-        {
-            this.species = species;
-            this.cohortData = new List<CohortData>();
-            this.isMaturePresent = false;
-            IEcoregion ecoregion = EcoregionData.ModelCore.Ecoregions.SkipWhile(Eco => !Eco.Active).First();
-            AddNewCohort(initialAge, initialTrees, ecoregion);
+            AddNewCohort(cohort);
 
         }
         //---------------------------------------------------------------------
@@ -144,11 +124,9 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Adds a new cohort.
         /// </summary>
-        public void AddNewCohort(ushort age, int initialTrees, IEcoregion ecoregion)
+        public void AddNewCohort(Cohort c)
         {
-            CohortData newCohortData = new CohortData(age, initialTrees);
-            Cohort cohort = new Cohort(species, age, initialTrees, ecoregion);           
-            this.cohortData.Add(newCohortData);
+            this.cohortData.Add(new CohortData(c));
         }
 
         //---------------------------------------------------------------------
@@ -185,12 +163,10 @@ namespace Landis.Library.PnETCohorts
             //  Work from the end of cohort data since the array is in old-to-
             //  young order.
             int youngCount = 0;
-            int totalTrees = 0;
             for (int i = cohortData.Count - 1; i >= 0; i--) {
                 CohortData data = cohortData[i];
                 if (data.Age <= Cohorts.SuccessionTimeStep) {
                     youngCount++;
-                    totalTrees += data.Treenumber;
                 }
                 else
                     break;
@@ -392,6 +368,8 @@ namespace Landis.Library.PnETCohorts
         //---------------------------------------------------------------------
 
         private static AgeOnlyCohorts.SpeciesCohortBoolArray isSpeciesCohortDamaged;
+        private ushort age_key;
+        private int initialWoodBiomass;
 
         //---------------------------------------------------------------------
 

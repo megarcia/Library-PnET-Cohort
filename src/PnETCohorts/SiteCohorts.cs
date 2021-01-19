@@ -2276,15 +2276,14 @@ namespace Landis.Library.PnETCohorts
             return addCohort;
         }
 
-        Landis.Library.BiomassCohorts.SpeciesCohorts GetSpeciesCohort(List<Cohort> cohorts)
+        Landis.Library.PnETCohorts.SpeciesCohorts GetSpeciesCohort(List<Cohort> cohorts)
         {
-            Landis.Library.BiomassCohorts.SpeciesCohorts spc = new Library.BiomassCohorts.SpeciesCohorts(cohorts[0].Species, cohorts[0].Age, cohorts[0].Biomass);
+            Landis.Library.PnETCohorts.SpeciesCohorts spc = new Library.PnETCohorts.SpeciesCohorts(cohorts[0]);
 
             for (int c = 1; c < cohorts.Count; c++)
             {
-                spc.AddNewCohort(cohorts[c].Age, cohorts[c].Biomass);
+                spc.AddNewCohort(cohorts[c]);
             }
-            
 
             return spc;
         }

@@ -1,4 +1,5 @@
 using Landis.Core;
+using Landis.Extension.Succession.BiomassPnET;
 using Landis.SpatialModeling;
 using System.Collections.Generic;
 
@@ -240,8 +241,8 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="age">
-        /// The cohort's age.
+        /// <param name="cohort">
+        /// The cohort we are extracting data from.
         public CohortData(Cohort cohort)
         {
             this.AdjFolN = cohort.AdjFolN;
@@ -276,6 +277,49 @@ namespace Landis.Library.PnETCohorts
             this.PressHead = cohort.PressHead;
             this.Transpiration = cohort.Transpiration;
             this.Water = cohort.Water;
+        }
+
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="age">
+        /// The age of the cohort.
+        /// <param name="totalBioamss">
+        /// The biomamss of the cohort
+        public CohortData(ushort age, float totalBiomass)
+        {
+            this.AdjFolN = new float[PlugIn.IMAX];
+            this.adjFolN = 0; ;
+            this.AdjFracFol = new float[PlugIn.IMAX];
+            this.adjFracFol = 0;
+            this.AdjHalfSat = 0;
+            this.Age = age;
+            this.Biomass = totalBiomass;
+            this.BiomassMax = totalBiomass;
+            this.CiModifier = new float[PlugIn.IMAX];
+            this.ColdKill = 0;
+            this.DeFolProp = 0;
+            this.DelAmax = new float[PlugIn.IMAX];
+            this.Fol = 0;
+            this.FolResp = new float[PlugIn.IMAX];
+            this.FOzone = new float[PlugIn.IMAX];
+            this.FRad = new float[PlugIn.IMAX];
+            this.FWater = new float[PlugIn.IMAX];
+            this.GrossPsn = new float[PlugIn.IMAX];
+            this.Interception = new float[PlugIn.IMAX];
+            this.LAI = new float[PlugIn.IMAX];
+            this.LastFoliageSenescence = 0;
+            this.LastFRad = 0;
+            this.LastSeasonFRad = new List<float>();
+            this.LastWoodySenescence = 0;
+            this.Layer = 0;
+            this.Leaf_On = false;
+            this.MaintenanceRespiration = new float[PlugIn.IMAX];
+            this.NetPsn = new float[PlugIn.IMAX];
+            this.NSC = 0;
+            this.PressHead = new float[PlugIn.IMAX];
+            this.Transpiration = new float[PlugIn.IMAX];
+            this.Water = new float[PlugIn.IMAX];
         }
     }
 }

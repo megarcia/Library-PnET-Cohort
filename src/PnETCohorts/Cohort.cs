@@ -33,6 +33,17 @@ namespace Landis.Library.PnETCohorts
         private bool firstDefol = true; // First defoliation applied to cohort
         private bool firstAlloc = true;  //First foliage allocation applied to cohort (to avoid multiple applications for each sublayer)
 
+        /// <summary>
+        /// The cohort's data
+        /// </summary>
+        public CohortData Data
+        {
+            get
+            {
+                return data;
+            }
+        }
+
         // Age (years)
         public ushort Age
         {
@@ -494,6 +505,23 @@ namespace Landis.Library.PnETCohorts
             data.Biomass += c.Biomass;
             data.BiomassMax = Math.Max(BiomassMax, Biomass);
             data.Fol += c.Fol;
+        }
+
+        /// <summary>
+        /// Increments the cohort's age by one year.
+        /// </summary>
+        public void IncrementAge()
+        {
+            data.Age += 1;
+        }
+
+        /// <summary>
+        /// Changes the cohort's biomass.
+        /// </summary>
+        public void ChangeBiomass(int delta)
+        {
+            float newBiomass = data.Biomass + delta;
+            data.Biomass = System.Math.Max(0, newBiomass);
         }
 
         // Constructor
@@ -1146,6 +1174,31 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
+        /// Raises a Cohort.DeathEvent.
+        /// </summary>
+        public static void Died(object sender,
+                                ICohort cohort,
+                                ActiveSite site,
+                                ExtensionType disturbanceType)
+        {
+            if (DeathEvent != null)
+                DeathEvent(sender, new DeathEventArgs(cohort, site, disturbanceType));
+        }
+
+        /// <summary>
+        /// Raises a Cohort.DeathEvent if partial mortality.
+        /// </summary>
+        public static void PartialMortality(object sender,
+                                ICohort cohort,
+                                ActiveSite site,
+                                ExtensionType disturbanceType,
+                                float reduction)
+        {
+            if (PartialDeathEvent != null)
+                PartialDeathEvent(sender, new PartialDeathEventArgs(cohort, site, disturbanceType, reduction));
+        }
+
+        /// <summary>
         /// Occurs when a cohort is killed by an age-only disturbance.
         /// </summary>
         public static event DeathEventHandler<DeathEventArgs> AgeOnlyDeathEvent;
@@ -1155,6 +1208,8 @@ namespace Landis.Library.PnETCohorts
         /// disturbances.
         /// </summary>
         public static event DeathEventHandler<DeathEventArgs> DeathEvent;
+        //---------------------------------------------------------------------
+        public static event PartialDeathEventHandler<PartialDeathEventArgs> PartialDeathEvent;
 
         /// <summary>
         /// Raises a Cohort.AgeOnlyDeathEvent.

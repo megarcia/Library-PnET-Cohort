@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Landis.Library.PnETCohorts;
+using System.Collections.Generic;
+using System;
 
 namespace Landis.Extension.Succession.BiomassPnET
-{
-
+{ 
     public static class Names
     {
+        public static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
+
         public const string ExtensionName = "PnET-Succession";
         public const string PNEToutputsites = "PNEToutputsites";
         public const string EcoregionParameters = "EcoregionParameters";
@@ -31,13 +34,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string PressureHeadCalculationMethod = "PressureHeadCalculationMethod";
         public const string Wythers = "Wythers";
         public const string DTemp = "DTemp";
-        public const string CO2AMaxBEff = "CO2AMaxBEff";       
+        public const string CO2AMaxBEff = "CO2AMaxBEff";
         public const string Permafrost = "Permafrost";
         public const string LeakageFrostDepth = "LeakageFrostDepth";
         public const string CohortBinSize = "CohortBinSize";
         public const string InvertPest = "InvertPest";
         //public const string PermafrostMinVegBiomass = "PermafrostMinVegBiomass";
-        
+
 
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";
@@ -93,6 +96,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 return Names;
             }
+        }
+
+        public static void LoadParameters(SortedDictionary<string, Parameter<string>> modelParameters)
+        {
+            parameters = modelParameters;
         }
 
     }

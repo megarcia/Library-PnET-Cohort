@@ -333,6 +333,10 @@ namespace Landis.Library.PnETCohorts
             {
                 return data.Layer;
             }
+            set
+            {
+                data.Layer = value;
+            }
         }
 
         public bool Leaf_On

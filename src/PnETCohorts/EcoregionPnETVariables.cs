@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Library.PnETCohorts
 {
     public class EcoregionPnETVariables : IEcoregionPnETVariables
     {

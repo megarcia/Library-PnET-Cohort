@@ -1,8 +1,7 @@
-﻿using Landis.Library.PnETCohorts;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Library.PnETCohorts
 { 
     public static class Names
     {
@@ -101,6 +100,67 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static void LoadParameters(SortedDictionary<string, Parameter<string>> modelParameters)
         {
             parameters = modelParameters;
+        }
+
+        public static bool TryGetParameter(string label, out Parameter<string> parameter)
+        {
+            parameter = null;
+            if (label == null)
+            {
+                return false;
+            }
+
+            if (parameters.ContainsKey(label) == false) return false;
+
+            else
+            {
+                parameter = parameters[label];
+                return true;
+            }
+        }
+
+        public static Dictionary<string, Parameter<string>> LoadTable(string label, List<string> RowLabels, List<string> Columnheaders, bool transposed = false)
+        {
+            string filename = GetParameter(label).Value;
+            if (System.IO.File.Exists(filename) == false) throw new System.Exception("File not found " + filename);
+            ParameterTableParser parser = new ParameterTableParser(filename, label, RowLabels, Columnheaders, transposed);
+            Dictionary<string, Parameter<string>> parameters = Landis.Data.Load<Dictionary<string, Parameter<string>>>(filename, parser);
+            return parameters;
+        }
+
+        public static Parameter<string> GetParameter(string label)
+        {
+            if (parameters.ContainsKey(label) == false)
+            {
+                throw new System.Exception("No value provided for parameter " + label);
+            }
+
+            return parameters[label];
+
+        }
+        public static Parameter<string> GetParameter(string label, float min, float max)
+        {
+            if (parameters.ContainsKey(label) == false)
+            {
+                throw new System.Exception("No value provided for parameter " + label);
+            }
+
+            Parameter<string> p = parameters[label];
+
+            foreach (KeyValuePair<string, string> value in p)
+            {
+                float f;
+                if (float.TryParse(value.Value, out f) == false)
+                {
+                    throw new System.Exception("Unable to parse value " + value.Value + " for parameter " + label + " unexpected format.");
+                }
+                if (f > max || f < min)
+                {
+                    throw new System.Exception("Parameter value " + value.Value + " for parameter " + label + " is out of range. [" + min + "," + max + "]");
+                }
+            }
+            return p;
+
         }
 
     }

@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Reflection;
 using Landis.Library.BiomassCohorts;
 using log4net;
-//using Landis.Extension.Succession.BiomassPnET;
 using System.Linq;
 
 namespace Landis.Library.PnETCohorts

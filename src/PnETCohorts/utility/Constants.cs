@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Landis.Extension.Succession.BiomassPnET 
+namespace Landis.Library.PnETCohorts
 {
     public class Constants 
     {

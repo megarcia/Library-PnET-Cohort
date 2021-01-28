@@ -1,5 +1,4 @@
 using Landis.Core;
-using Landis.Extension.Succession.BiomassPnET;
 using Landis.SpatialModeling;
 using System.Collections.Generic;
 
@@ -288,38 +287,38 @@ namespace Landis.Library.PnETCohorts
         /// The biomamss of the cohort
         public CohortData(ushort age, float totalBiomass)
         {
-            this.AdjFolN = new float[PlugIn.IMAX];
+            this.AdjFolN = new float[EcoregionData.IMAX];
             this.adjFolN = 0; ;
-            this.AdjFracFol = new float[PlugIn.IMAX];
+            this.AdjFracFol = new float[EcoregionData.IMAX];
             this.adjFracFol = 0;
             this.AdjHalfSat = 0;
             this.Age = age;
             this.Biomass = totalBiomass;
             this.BiomassMax = totalBiomass;
-            this.CiModifier = new float[PlugIn.IMAX];
+            this.CiModifier = new float[EcoregionData.IMAX];
             this.ColdKill = 0;
             this.DeFolProp = 0;
-            this.DelAmax = new float[PlugIn.IMAX];
+            this.DelAmax = new float[EcoregionData.IMAX];
             this.Fol = 0;
-            this.FolResp = new float[PlugIn.IMAX];
-            this.FOzone = new float[PlugIn.IMAX];
-            this.FRad = new float[PlugIn.IMAX];
-            this.FWater = new float[PlugIn.IMAX];
-            this.GrossPsn = new float[PlugIn.IMAX];
-            this.Interception = new float[PlugIn.IMAX];
-            this.LAI = new float[PlugIn.IMAX];
+            this.FolResp = new float[EcoregionData.IMAX];
+            this.FOzone = new float[EcoregionData.IMAX];
+            this.FRad = new float[EcoregionData.IMAX];
+            this.FWater = new float[EcoregionData.IMAX];
+            this.GrossPsn = new float[EcoregionData.IMAX];
+            this.Interception = new float[EcoregionData.IMAX];
+            this.LAI = new float[EcoregionData.IMAX];
             this.LastFoliageSenescence = 0;
             this.LastFRad = 0;
             this.LastSeasonFRad = new List<float>();
             this.LastWoodySenescence = 0;
             this.Layer = 0;
             this.Leaf_On = false;
-            this.MaintenanceRespiration = new float[PlugIn.IMAX];
-            this.NetPsn = new float[PlugIn.IMAX];
+            this.MaintenanceRespiration = new float[EcoregionData.IMAX];
+            this.NetPsn = new float[EcoregionData.IMAX];
             this.NSC = 0;
-            this.PressHead = new float[PlugIn.IMAX];
-            this.Transpiration = new float[PlugIn.IMAX];
-            this.Water = new float[PlugIn.IMAX];
+            this.PressHead = new float[EcoregionData.IMAX];
+            this.Transpiration = new float[EcoregionData.IMAX];
+            this.Water = new float[EcoregionData.IMAX];
         }
     }
 }

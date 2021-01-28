@@ -1,5 +1,4 @@
-﻿using Landis.Extension.Succession.BiomassPnET;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace Landis.Library.PnETCohorts
@@ -62,7 +61,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 catch (System.IO.IOException e)
                 {
-                    PlugIn.ModelCore.UI.WriteLine("Cannot write to " + System.IO.Path.Combine(Path, FileName) + " " + e.Message);
+                    EcoregionData.ModelCore.UI.WriteLine("Cannot write to " + System.IO.Path.Combine(Path, FileName) + " " + e.Message);
                     
                 }
             }

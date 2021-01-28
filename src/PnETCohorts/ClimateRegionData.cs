@@ -1,7 +1,6 @@
 ﻿//  Author: Robert Scheller, Melissa Lucash
 
 using Landis.Core;
-using Landis.Extension.Succession.BiomassPnET;
 using Landis.Library.Climate;
 using System.Linq;
 
@@ -15,9 +14,9 @@ namespace Landis.Library.PnETCohorts
         //public static void Initialize(IInputParameters parameters)
         public static void Initialize()
         {
-            AnnualWeather = new Library.Parameters.Ecoregions.AuxParm<AnnualClimate_Monthly>(PlugIn.ModelCore.Ecoregions);
+            AnnualWeather = new Library.Parameters.Ecoregions.AuxParm<AnnualClimate_Monthly>(EcoregionData.ModelCore.Ecoregions);
 
-            foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
+            foreach (IEcoregion ecoregion in EcoregionData.ModelCore.Ecoregions)
             {
                 if (ecoregion.Active)
                 {

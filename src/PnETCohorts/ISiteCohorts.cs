@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Landis.Core;
 
-
 namespace Landis.Library.PnETCohorts
 {
     public interface ISiteCohorts : Landis.Library.BiomassCohorts.ISiteCohorts
@@ -14,7 +13,6 @@ namespace Landis.Library.PnETCohorts
         float[] GrossPsn{ get; }
 
         float[] FolResp { get; }
-        
         
         byte CanopyLAImax{get;}
 
@@ -76,6 +74,5 @@ namespace Landis.Library.PnETCohorts
         List<int> CohortsByFire { get; set; }
         List<int> CohortsByWind { get; set; }
         List<int> CohortsByOther { get; set; }
-
     }
 }

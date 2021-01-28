@@ -1,7 +1,6 @@
 ﻿using Landis.Core;
 using System;
 using System.Collections.Generic;
-using Landis.Extension.Succession.BiomassPnET;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -25,10 +24,10 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<byte> probability = new Library.Parameters.Species.AuxParm<byte>(PlugIn.ModelCore.Species);
-                foreach (ISpecies spc in PlugIn.ModelCore.Species)
+                Landis.Library.Parameters.Species.AuxParm<byte> probability = new Library.Parameters.Species.AuxParm<byte>(EcoregionData.ModelCore.Species);
+                foreach (ISpecies spc in EcoregionData.ModelCore.Species)
                 {
-                    ISpeciesPnET speciespnet = PlugIn.SpeciesPnET[spc];
+                    ISpeciesPnET speciespnet = SpeciesParameters.SpeciesPnET[spc];
                     probability[spc] = (byte)(100F * _pest[speciespnet]);
                 }
                 return probability;
@@ -122,7 +121,7 @@ namespace Landis.Library.PnETCohorts
             //_frad = new Dictionary<ISpeciesPnET, float>();
             float halfSatRange = maxHalfSat - minHalfSat;
 
-            foreach (ISpeciesPnET spc in PlugIn.SpeciesPnET.AllSpecies)
+            foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
                 if (pnetvars.Tmin > spc.PsnTMin && pnetvars.Tmax < spc.PsnTMax)
                 {
@@ -181,7 +180,7 @@ namespace Landis.Library.PnETCohorts
             _frad = new Dictionary<ISpeciesPnET, float>();
             _hasEstablished = new List<ISpeciesPnET>();
 
-            foreach (ISpeciesPnET spc in PlugIn.SpeciesPnET.AllSpecies)
+            foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
                 _pest.Add(spc, 0);
                 _fwater.Add(spc, 0);

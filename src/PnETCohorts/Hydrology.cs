@@ -1,5 +1,4 @@
-﻿using Landis.Extension.Succession.BiomassPnET;
-using System;
+﻿using System;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -98,21 +97,20 @@ namespace Landis.Library.PnETCohorts
         }
         public static void Initialize()
         {
-
             Parameter<string> PressureHeadCalculationMethod = null;
-            if (PlugIn.TryGetParameter(Names.PressureHeadCalculationMethod, out PressureHeadCalculationMethod))
+            if (Names.TryGetParameter(Names.PressureHeadCalculationMethod, out PressureHeadCalculationMethod))
             {
-                Parameter<string> p = PlugIn.GetParameter(Names.PressureHeadCalculationMethod);
+                Parameter<string> p = Names.GetParameter(Names.PressureHeadCalculationMethod);
 
                 pressureheadtable = new PressureHeadSaxton_Rawls();
             }
             else
             {
-                string msg = "Missing presciption for calculating pressurehead, expected keyword " + Names.PressureHeadCalculationMethod + " in " + PlugIn.GetParameter(Names.PnETGenericParameters).Value + " or in " + PlugIn.GetParameter(Names.ExtensionName).Value; 
+                string msg = "Missing presciption for calculating pressurehead, expected keyword " + Names.PressureHeadCalculationMethod + " in " + Names.GetParameter(Names.PnETGenericParameters).Value + " or in " + Names.GetParameter(Names.ExtensionName).Value; 
                 throw new System.Exception(msg);
             }
             
-            PlugIn.ModelCore.UI.WriteLine("Eco\tSoilt\tWiltPnt\tFieldCap(mm)\tFC-WP\tPorosity");
+            EcoregionData.ModelCore.UI.WriteLine("Eco\tSoilt\tWiltPnt\tFieldCap(mm)\tFC-WP\tPorosity");
             foreach (IEcoregionPnET eco in EcoregionData.Ecoregions) if (eco.Active)
             {
 
@@ -130,7 +128,7 @@ namespace Landis.Library.PnETCohorts
                     eco.Porosity = (float)pressureheadtable.Porosity(eco.SoilType);
 
                 float f = eco.FieldCap - eco.WiltPnt;
-                PlugIn.ModelCore.UI.WriteLine(eco.Name + "\t" + eco.SoilType + "\t" + eco.WiltPnt + "\t" + eco.FieldCap + "\t" + f + "\t" + eco.Porosity );
+                EcoregionData.ModelCore.UI.WriteLine(eco.Name + "\t" + eco.SoilType + "\t" + eco.WiltPnt + "\t" + eco.FieldCap + "\t" + f + "\t" + eco.Porosity );
             }
         }
          

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Library.PnETCohorts
 {
     public class ObservedClimate : IObservedClimate
     {
@@ -87,11 +87,11 @@ namespace Landis.Extension.Succession.BiomassPnET
          
         public static void Initialize()
         {
-            ClimateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)PlugIn.GetParameter("climateFileName");
+            ClimateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)Names.GetParameter("climateFileName");
 
             Dictionary<IEcoregion, IObservedClimate> dict = new Dictionary<IEcoregion, IObservedClimate>();
 
-            foreach(IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
+            foreach(IEcoregion ecoregion in EcoregionData.ModelCore.Ecoregions)
             {
                 if (ecoregion.Active == false) continue;
 

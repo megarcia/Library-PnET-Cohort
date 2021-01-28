@@ -1,10 +1,9 @@
 ﻿using Landis.Core;
-using Landis.Library.PnETCohorts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Library.PnETCohorts
 {
     public class PressureHeadSaxton_Rawls  
     {
@@ -33,7 +32,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         static Dictionary<string, float> lambda_s = new Dictionary<string, float>();
         static Dictionary<string, float> Fs = new Dictionary<string, float>();
 
-        Landis.Library.Parameters.Ecoregions.AuxParm<float[]> table = new Library.Parameters.Ecoregions.AuxParm<float[]>(PlugIn.ModelCore.Ecoregions);
+        Landis.Library.Parameters.Ecoregions.AuxParm<float[]> table = new Library.Parameters.Ecoregions.AuxParm<float[]>(EcoregionData.ModelCore.Ecoregions);
 
         // mm/m of active soil
         public float Porosity(string SoilType)
@@ -110,19 +109,19 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         public PressureHeadSaxton_Rawls()
         {
-            Landis.Library.Parameters.Ecoregions.AuxParm<string> SoilType = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)PlugIn.GetParameter(Names.SoilType);
-            Landis.Library.Parameters.Ecoregions.AuxParm<float> RootingDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter(Names.RootingDepth, 0, float.MaxValue);
+            Landis.Library.Parameters.Ecoregions.AuxParm<string> SoilType = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)Names.GetParameter(Names.SoilType);
+            Landis.Library.Parameters.Ecoregions.AuxParm<float> RootingDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter(Names.RootingDepth, 0, float.MaxValue);
 
 
-            table = new Library.Parameters.Ecoregions.AuxParm<float[]>(PlugIn.ModelCore.Ecoregions);
+            table = new Library.Parameters.Ecoregions.AuxParm<float[]>(EcoregionData.ModelCore.Ecoregions);
              
-            Sand = PlugIn.GetParameter("sand");
-            Clay = PlugIn.GetParameter("clay");
-            PctOM  = PlugIn.GetParameter("pctOM");
-            DensFactor = PlugIn.GetParameter("densFactor");
-            Gravel = PlugIn.GetParameter("gravel");
+            Sand = Names.GetParameter("sand");
+            Clay = Names.GetParameter("clay");
+            PctOM  = Names.GetParameter("pctOM");
+            DensFactor = Names.GetParameter("densFactor");
+            Gravel = Names.GetParameter("gravel");
             
-            foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions) if (ecoregion.Active)
+            foreach (IEcoregion ecoregion in EcoregionData.ModelCore.Ecoregions) if (ecoregion.Active)
             {
                 List<float> PressureHead = new List<float>();
 

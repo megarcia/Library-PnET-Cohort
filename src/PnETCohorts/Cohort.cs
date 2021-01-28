@@ -1,7 +1,6 @@
 // uses dominance to allocate psn and subtract transpiration from soil water, average cohort vars over layer
 
 using Landis.Core;
-using Landis.Extension.Succession.BiomassPnET;
 using Landis.SpatialModeling;
 using Landis.Utilities;
 using System;
@@ -428,22 +427,22 @@ namespace Landis.Library.PnETCohorts
         {
             // Initialize subcanopy layers
             index = 0;
-            data.LAI = new float[PlugIn.IMAX];
-            data.GrossPsn = new float[PlugIn.IMAX];
-            data.FolResp = new float[PlugIn.IMAX];
-            data.NetPsn = new float[PlugIn.IMAX];
-            data.Transpiration = new float[PlugIn.IMAX];
-            data.FRad = new float[PlugIn.IMAX];
-            data.FWater = new float[PlugIn.IMAX];
-            data.Water = new float[PlugIn.IMAX];
-            data.PressHead = new float[PlugIn.IMAX];
-            data.FOzone = new float[PlugIn.IMAX];
-            data.MaintenanceRespiration = new float[PlugIn.IMAX];
-            data.Interception = new float[PlugIn.IMAX];
-            data.AdjFolN = new float[PlugIn.IMAX];
-            data.AdjFracFol = new float[PlugIn.IMAX];
-            data.CiModifier = new float[PlugIn.IMAX];
-            data.DelAmax = new float[PlugIn.IMAX];
+            data.LAI = new float[EcoregionData.IMAX];
+            data.GrossPsn = new float[EcoregionData.IMAX];
+            data.FolResp = new float[EcoregionData.IMAX];
+            data.NetPsn = new float[EcoregionData.IMAX];
+            data.Transpiration = new float[EcoregionData.IMAX];
+            data.FRad = new float[EcoregionData.IMAX];
+            data.FWater = new float[EcoregionData.IMAX];
+            data.Water = new float[EcoregionData.IMAX];
+            data.PressHead = new float[EcoregionData.IMAX];
+            data.FOzone = new float[EcoregionData.IMAX];
+            data.MaintenanceRespiration = new float[EcoregionData.IMAX];
+            data.Interception = new float[EcoregionData.IMAX];
+            data.AdjFolN = new float[EcoregionData.IMAX];
+            data.AdjFracFol = new float[EcoregionData.IMAX];
+            data.CiModifier = new float[EcoregionData.IMAX];
+            data.DelAmax = new float[EcoregionData.IMAX];
         }
 
         public void StoreFRad()
@@ -699,14 +698,14 @@ namespace Landis.Library.PnETCohorts
             //    if (success == false) throw new System.Exception("Error adding water, frozenWater = " + frozenWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             //}
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature
-            data.MaintenanceRespiration[index] = (1 / (float)PlugIn.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * Biomass);//gC //IMAXinverse
+            data.MaintenanceRespiration[index] = (1 / (float)EcoregionData.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * Biomass);//gC //IMAXinverse
 
             // Subtract mainenance respiration (gC/mo)
             data.NSC -= data.MaintenanceRespiration[index];
 
 
             // Woody decomposition: do once per year to reduce unnescessary computation time so with the last subcanopy layer 
-            if (index == PlugIn.IMAX - 1)
+            if (index == EcoregionData.IMAX - 1)
             {
 
                 // In the last month
@@ -717,7 +716,7 @@ namespace Landis.Library.PnETCohorts
                     {
                         data.NSC = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
                     }
-                    else if(PlugIn.ModelCore.CurrentTime > 0 && this.TotalBiomass < (uint)speciesPnET.InitBiomass)  //Check if biomass < Initial Biomass -> cohort dies
+                    else if(EcoregionData.ModelCore.CurrentTime > 0 && this.TotalBiomass < (uint)speciesPnET.InitBiomass)  //Check if biomass < Initial Biomass -> cohort dies
                     {
                         data.NSC = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
                         data.Leaf_On = false;
@@ -866,7 +865,7 @@ namespace Landis.Library.PnETCohorts
             // Reduction water for sub or supra optimal soil water content
 
             float fWaterOzone = 1.0f;  //fWater for ozone functions; ignores H1 and H2 parameters because only impacts when drought-stressed
-            if (PlugIn.ModelCore.CurrentTime > 0)
+            if (EcoregionData.ModelCore.CurrentTime > 0)
             {
                 data.FWater[index] = ComputeFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
                 data.Water[index] = hydrology.Water;
@@ -1001,7 +1000,7 @@ namespace Landis.Library.PnETCohorts
 
                 // Compute net psn from stress factors and reference net psn (gC/g Fol/month)
                 // FTempPSNRefNetPsn units are gC/g Fol/mo
-                float nonOzoneNetPsn = (1 / (float)PlugIn.IMAX) * data.FWater[index] * data.FRad[index] * Fage * FTempPSNRefNetPsn * Fol;  // gC/m2 ground/mo
+                float nonOzoneNetPsn = (1 / (float)EcoregionData.IMAX) * data.FWater[index] * data.FRad[index] * Fage * FTempPSNRefNetPsn * Fol;  // gC/m2 ground/mo
 
                 // Convert Psn gC/m2 ground/mo to umolCO2/m2 fol/s
                 // netPsn_ground = LayerNestPsn*1000000umol*(1mol/12gC) * (1/(60s*60min*14hr*30day))
@@ -1047,7 +1046,7 @@ namespace Landis.Library.PnETCohorts
                 float FTempRespDayRefResp = ecoregion.Variables[speciesPnET.Name].FTempRespDay * ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion * Amax;
 
                 // Actal foliage respiration (growth respiration) 
-                data.FolResp[index] = data.FWater[index] * FTempRespDayRefResp * Fol / (float)PlugIn.IMAX;
+                data.FolResp[index] = data.FWater[index] * FTempRespDayRefResp * Fol / (float)EcoregionData.IMAX;
 
                 // Gross psn depends on net psn and foliage respiration
                 data.GrossPsn[index] = data.NetPsn[index] + data.FolResp[index];
@@ -1089,7 +1088,7 @@ namespace Landis.Library.PnETCohorts
                 data.FOzone[index] = 1;
             }
 
-            if (index < PlugIn.IMAX - 1) index++;
+            if (index < EcoregionData.IMAX - 1) index++;
             return success;
         }
 
@@ -1399,11 +1398,11 @@ namespace Landis.Library.PnETCohorts
                 LAISum += data.LAI[i];
             }
             float LAIlayerMax = (float)Math.Max(0.01, 25.0F - LAISum); // Cohort LAI is capped at 25; once LAI reaches 25 subsequent sublayers get LAI of 0.01
-            float LAIlayer = (1 / (float)PlugIn.IMAX) * fol / (speciesPnET.SLWmax - speciesPnET.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
+            float LAIlayer = (1 / (float)EcoregionData.IMAX) * fol / (speciesPnET.SLWmax - speciesPnET.SLWDel * index * (1 / (float)EcoregionData.IMAX) * fol);
             if (fol > 0 && LAIlayer <= 0)
             {
-                PlugIn.ModelCore.UI.WriteLine("\n Warning: LAI was calculated to be negative for " + speciesPnET.Name + ". This could be caused by a low value for SLWmax.  LAI applied in this case is a max of 25 for each cohort.");
-                LAIlayer = LAIlayerMax/(PlugIn.IMAX - index);
+                EcoregionData.ModelCore.UI.WriteLine("\n Warning: LAI was calculated to be negative for " + speciesPnET.Name + ". This could be caused by a low value for SLWmax.  LAI applied in this case is a max of 25 for each cohort.");
+                LAIlayer = LAIlayerMax/(EcoregionData.IMAX - index);
             }
             else
                 LAIlayer = (float)Math.Min(LAIlayerMax, LAIlayer);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Landis.Library.PnETCohorts;
 
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Library.PnETCohorts
 {
     /// <summary>
     /// Allocates litters that result from disturbanches. 
@@ -18,7 +18,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public static void Initialize(string fn,   SortedDictionary<string, Parameter<string>> parameters)
         {
-            Dictionary<string, Parameter<string>> DisturbanceReductionParameters = PlugIn.LoadTable(Names.DisturbanceReductions, Reductions, Disturbances);
+            Dictionary<string, Parameter<string>> DisturbanceReductionParameters = Names.LoadTable(Names.DisturbanceReductions, Reductions, Disturbances);
             foreach (KeyValuePair<string, Parameter<string>> parameter in DisturbanceReductionParameters)
             {
                 if (parameters.ContainsKey(parameter.Key)) throw new System.Exception("Parameter " + parameter.Key + " was provided twice");
@@ -47,7 +47,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float plitterlost = 0;
             Parameter<string> parameter;
 
-            if (disturbanceType != null && PlugIn.TryGetParameter(disturbanceType.Name, out parameter))
+            if (disturbanceType != null && Names.TryGetParameter(disturbanceType.Name, out parameter))
             {
                 // If parameters are available, then set the loss fractions here.
                 if (parameter.ContainsKey("DeadWoodReduction"))
@@ -82,7 +82,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             Parameter<string> parameter;
 
-            if (disturbanceType != null && PlugIn.TryGetParameter(disturbanceType.Name, out parameter))
+            if (disturbanceType != null && Names.TryGetParameter(disturbanceType.Name, out parameter))
             {
                 // If parameters are available, then set the loss fractions here.
                 if (parameter.ContainsKey("WoodReduction"))

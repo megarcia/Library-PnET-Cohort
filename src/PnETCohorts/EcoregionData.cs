@@ -1,6 +1,5 @@
 
 using Landis.Core;
-using Landis.Extension.Succession.BiomassPnET;
 using Landis.Library.Climate;
 using System;
 using System.Collections.Generic;
@@ -246,6 +245,7 @@ namespace Landis.Library.PnETCohorts
         #endregion
 
         public static ICore ModelCore;
+        public static ushort IMAX { get; private set; }
 
         public static List<string> ParameterNames
         {
@@ -293,7 +293,7 @@ namespace Landis.Library.PnETCohorts
 
                     var monthlyData = new MonthlyClimateRecord(ecoregion, date);
 
-                    List<ISpeciesPnET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
+                    List<ISpeciesPnET> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
 
                     IEcoregionPnETVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
 
@@ -322,7 +322,7 @@ namespace Landis.Library.PnETCohorts
                 {
                     IObservedClimate observedClimate = ObservedClimate.GetData(ecoregion, date);
 
-                    List<ISpeciesPnET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
+                    List<ISpeciesPnET> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
 
                     IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species, ecoregion.Latitude);
 
@@ -336,32 +336,33 @@ namespace Landis.Library.PnETCohorts
             return data;
         }
 
-        public static void InitializeCore(ICore mCore)
+        public static void InitializeCore(ICore mCore, ushort IMAX)
         {
             ModelCore = mCore;
+            EcoregionData.IMAX = IMAX;
         }
 
         public static void Initialize()
         {
-            soiltype = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("SoilType");
-            climateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("ClimateFileName");
-            rootingdepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("RootingDepth", 0, 1000);
-            precintconst = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecIntConst", 0, 1);
-            preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecLossFrac", 0, 1);
-            snowsublimfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("SnowSublimFrac", 0, 1);
-            latitude = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("Latitude", -90, 90);
-            leakageFrostDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrostDepth", 0, 999999);
-            precipEvents = (Landis.Library.Parameters.Ecoregions.AuxParm<int>)(Parameter<int>)PlugIn.GetParameter("PrecipEvents", 1, 100);
-            winterSTD = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WinterSTD", 0, 100);
-            mossDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MossDepth", 0, 1000);
+            soiltype = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)Names.GetParameter("SoilType");
+            climateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)Names.GetParameter("ClimateFileName");
+            rootingdepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("RootingDepth", 0, 1000);
+            precintconst = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("PrecIntConst", 0, 1);
+            preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("PrecLossFrac", 0, 1);
+            snowsublimfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("SnowSublimFrac", 0, 1);
+            latitude = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("Latitude", -90, 90);
+            leakageFrostDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeakageFrostDepth", 0, 999999);
+            precipEvents = (Landis.Library.Parameters.Ecoregions.AuxParm<int>)(Parameter<int>)Names.GetParameter("PrecipEvents", 1, 100);
+            winterSTD = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("WinterSTD", 0, 100);
+            mossDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("MossDepth", 0, 1000);
 
-            wythers = ((Parameter<bool>)PlugIn.GetParameter("Wythers")).Value;
-            dtemp = ((Parameter<bool>)PlugIn.GetParameter("DTemp")).Value;
+            wythers = ((Parameter<bool>)Names.GetParameter("Wythers")).Value;
+            dtemp = ((Parameter<bool>)Names.GetParameter("DTemp")).Value;
 
-            leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
-            runoffcapture = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter(Names.RunoffCapture, 0, 999999);
+            leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeakageFrac", 0, 1);
+            runoffcapture = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter(Names.RunoffCapture, 0, 999999);
             AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
-            foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
+            foreach (IEcoregion ecoregion in EcoregionData.ModelCore.Ecoregions)
             {
                 AllEcoregions.Add(ecoregion, new EcoregionData(ecoregion));
             }

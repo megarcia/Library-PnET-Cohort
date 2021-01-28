@@ -1,5 +1,4 @@
 using Landis.Core;
-using Landis.Extension.Succession.BiomassPnET;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -161,56 +160,56 @@ namespace Landis.Library.PnETCohorts
         public SpeciesPnET()
         {
             #region initialization of private static species variables
-            co2HalfSatEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CO2HalfSatEff"));
+            co2HalfSatEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CO2HalfSatEff"));
             //wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
-            dnsc =  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("DNSC"));
-            cfracbiomass=  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CFracBiomass"));
-            kwdlit = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("kwdlit"));
-            fracbelowg = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fracbelowg"));
-            fracfol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fracfol"));
-            fractWd = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fractWd"));
-            psnagered = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psnagered"));
-            h1 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("h1"));
-            h2 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("h2"));
-            h3 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("h3"));
-            h4 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("h4"));
-            slwdel = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("slwdel"));
-            slwmax = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("slwmax"));
-            tofol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("tofol"));
-            halfsat = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("halfsat"));
-            toroot = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("toroot"));
-            initialnsc = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("initialnsc")); ;
-            k = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("k")); ;
-            towood = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("towood")); ;
-            estrad = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("estrad")); ;
-            estmoist = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("estmoist"));
-            maxPest = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MaxPest"));
-            follignin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("follignin"));
-            preventestablishment = ((Landis.Library.Parameters.Species.AuxParm<bool>)(Parameter<bool>)PlugIn.GetParameter("preventestablishment"));
-            psntopt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntopt"));
-            q10 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("q10"));
-            psntmin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntmin"));
-            psntmax = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntmax"));
-            dvpd1 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("dvpd1"));
-            dvpd2 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("dvpd2"));
-            foln = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("foln"));
-            amaxa = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxa"));
-            amaxb = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxb"));
-            co2AMaxBEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CO2AMaxBEff"));
-            maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maintresp"));
-            bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
-            ozoneSens = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("O3StomataSens"));
-            folNShape = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNShape"));
-            maxFolN = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MaxFolN"));
+            dnsc =  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("DNSC"));
+            cfracbiomass=  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CFracBiomass"));
+            kwdlit = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("kwdlit"));
+            fracbelowg = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("fracbelowg"));
+            fracfol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("fracfol"));
+            fractWd = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("fractWd"));
+            psnagered = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psnagered"));
+            h1 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h1"));
+            h2 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h2"));
+            h3 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h3"));
+            h4 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h4"));
+            slwdel = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("slwdel"));
+            slwmax = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("slwmax"));
+            tofol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("tofol"));
+            halfsat = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("halfsat"));
+            toroot = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("toroot"));
+            initialnsc = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("initialnsc")); ;
+            k = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("k")); ;
+            towood = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("towood")); ;
+            estrad = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("estrad")); ;
+            estmoist = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("estmoist"));
+            maxPest = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxPest"));
+            follignin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("follignin"));
+            preventestablishment = ((Landis.Library.Parameters.Species.AuxParm<bool>)(Parameter<bool>)Names.GetParameter("preventestablishment"));
+            psntopt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psntopt"));
+            q10 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("q10"));
+            psntmin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psntmin"));
+            psntmax = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psntmax"));
+            dvpd1 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("dvpd1"));
+            dvpd2 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("dvpd2"));
+            foln = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("foln"));
+            amaxa = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("amaxa"));
+            amaxb = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("amaxb"));
+            co2AMaxBEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CO2AMaxBEff"));
+            maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("maintresp"));
+            bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("bfolresp"));
+            ozoneSens = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("O3StomataSens"));
+            folNShape = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolNShape"));
+            maxFolN = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxFolN"));
             if (maxFolN[this] == -9999F)
                 maxFolN = foln;
-            fracFolShape = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FracFolShape"));
-            maxFracFol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MaxFracFol"));
+            fracFolShape = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FracFolShape"));
+            maxFracFol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxFracFol"));
             if (maxFracFol[this] == -9999F)
                 maxFracFol = fracfol;
-            o3Coeff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3GrowthSens"));            
-            coldTol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("ColdTol"));
-            leafOnMinT = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeafOnMinT")); //Optional
+            o3Coeff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("O3GrowthSens"));            
+            coldTol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("ColdTol"));
+            leafOnMinT = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeafOnMinT")); //Optional
             // If LeafOnMinT is not provided, then set to PsnMinT
             if (leafOnMinT[this] == -9999F)
                 leafOnMinT = psntmin;
@@ -218,7 +217,7 @@ namespace Landis.Library.PnETCohorts
 
             SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPnET>>();
              
-            foreach (ISpecies spc in PlugIn.ModelCore.Species)
+            foreach (ISpecies spc in EcoregionData.ModelCore.Species)
             {
                 SpeciesPnET species = new SpeciesPnET(spc);
 

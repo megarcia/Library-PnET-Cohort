@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Landis.Library.PnETCohorts
 {
-    class SpeciesParameters
+    public class SpeciesParameters
     {
         public static biomassUtil biomass_util = new biomassUtil();
         public static SpeciesPnET SpeciesPnET;

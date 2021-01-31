@@ -1,5 +1,5 @@
 ﻿
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Library.PnETCohorts
 {
     public class SpeciesPnETVariables
     {

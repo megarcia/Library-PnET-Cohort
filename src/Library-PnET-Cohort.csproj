@@ -42,13 +42,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="ClimateRegionPnETVariables.cs" />
     <Compile Remove="EcoregionClimateVariables.cs" />
-    <Compile Remove="Hydrology.cs" />
     <Compile Remove="IEcoregionClimateVariables.cs" />
-    <Compile Remove="IHydrology.cs" />
     <Compile Remove="InitialCommunity\Pixel.cs" />
-    <Compile Remove="SpeciesPnETVariables.cs" />
     <Compile Remove="WaterStressTable.cs" />
   </ItemGroup>
 

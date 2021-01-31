@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace Landis.Extension.Succession.BiomassPnET 
+namespace Landis.Library.PnETCohorts
 {
     public class LocalOutput
     {
@@ -61,7 +61,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 catch (System.IO.IOException e)
                 {
-                    PlugIn.ModelCore.UI.WriteLine("Cannot write to " + System.IO.Path.Combine(Path, FileName) + " " + e.Message);
+                    EcoregionData.ModelCore.UI.WriteLine("Cannot write to " + System.IO.Path.Combine(Path, FileName) + " " + e.Message);
                     
                 }
             }

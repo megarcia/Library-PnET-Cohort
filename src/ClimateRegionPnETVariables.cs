@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Library.PnETCohorts
 {
     /// <summary>John McNabb: This is a copy of EcoregionPnETVariables substituting MonthlyClimateRecord _monthlyClimateRecord for IObservedClimate obs_clim</summary>
-    public class ClimateRegionPnETVariables : IEcoregionClimateVariables
+    public class ClimateRegionPnETVariables : IEcoregionPnETVariables
     {
         #region private fields
 
@@ -23,7 +23,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         #region constructor
 
-        public ClimateRegionPnETVariables(MonthlyClimateRecord monthlyClimateRecord, DateTime date, bool wythers, bool dTemp, List<ISpeciesDensity> Species, float latitude)
+        public ClimateRegionPnETVariables(MonthlyClimateRecord monthlyClimateRecord, DateTime date, bool wythers, bool dTemp, List<ISpeciesPnET> Species, float latitude)
         {
             _monthlyClimateRecord = monthlyClimateRecord;
 
@@ -44,12 +44,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             _vpd = Calculate_VPD(Tday, (float)monthlyClimateRecord.Tmin);
 
 
-            /*foreach (ISpeciesDensity spc in Species)
+            foreach (ISpeciesPnET spc in Species)
             {
                 SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, Daylength, nightlength, spc);
 
                 speciesVariables.Add(spc.Name, speciespnetvars);
-            }*/
+            }
         }
 
         #endregion
@@ -224,13 +224,13 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         #region private methods
 
-        /*private SpeciesPnETVariables GetSpeciesVariables(MonthlyClimateRecord monthlyClimateRecord, bool wythers, bool dTemp, float daylength, float nightlength, ISpeciesDensity spc)
+        private SpeciesPnETVariables GetSpeciesVariables(MonthlyClimateRecord monthlyClimateRecord, bool wythers, bool dTemp, float daylength, float nightlength, ISpeciesPnET spc)
         {
             // Class that contains species specific PnET variables for a certain month
             SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
 
             // Gradient of effect of vapour pressure deficit on growth. 
-            //speciespnetvars.DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
+            speciespnetvars.DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
 
             // ** CO2 effect on growth **
             // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
@@ -304,16 +304,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Growth respiration factor
             speciespnetvars.FTempRespDay = BaseFolResp * CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
 
-    
-            return speciespnetvars;
-        }*/
 
-        /*private float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
+            return speciespnetvars;
+        }
+
+        private float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
         {
             // Generic computation for a Q10 reduction factor used for respiration calculations
             float q10Fact = ((float)Math.Pow(Q10, (Tday - PsnTOpt) / 10));
             return q10Fact;
-        }*/
+        }
 
         #endregion
 

@@ -526,6 +526,7 @@ namespace Landis.Library.PnETCohorts
         // Constructor
         public Cohort(ISpeciesPnET speciesPnET, ushort year_of_birth, string SiteName) // : base(speciesPnET, 0, (int)(1F / speciesPnET.DNSC * (ushort)speciesPnET.InitialNSC))
         {
+            this.species = (ISpecies)speciesPnET;
             this.speciesPnET =  speciesPnET;
             data.Age = 1;
             data.ColdKill = int.MaxValue;

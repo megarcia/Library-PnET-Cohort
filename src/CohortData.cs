@@ -17,10 +17,15 @@ namespace Landis.Library.PnETCohorts
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// The cohort's biomass (g/m2).
+        /// The cohort's live aboveground biomass (g/m2).
         /// </summary>
         public float Biomass;
+        //---------------------------------------------------------------------
 
+        /// <summary>
+        /// The cohort's live total biomass (wood + root) (g/m2).
+        /// </summary>
+        public float TotalBiomass;
         //---------------------------------------------------------------------
 
         /// <summary>
@@ -250,7 +255,8 @@ namespace Landis.Library.PnETCohorts
             this.adjFracFol = cohort.adjFracFol;
             this.AdjHalfSat = cohort.AdjHalfSat;
             this.Age = cohort.Age;
-            this.Biomass = cohort.Biomass;
+            this.Biomass = (1 - cohort.SpeciesPNET.FracBelowG) * cohort.TotalBiomass;
+            this.TotalBiomass = cohort.TotalBiomass;
             this.BiomassMax = cohort.BiomassMax;
             this.CiModifier = cohort.CiModifier;
             this.ColdKill = cohort.ColdKill;
@@ -285,7 +291,7 @@ namespace Landis.Library.PnETCohorts
         /// The age of the cohort.
         /// <param name="totalBioamss">
         /// The biomamss of the cohort
-        public CohortData(ushort age, float totalBiomass)
+        public CohortData(ushort age, float totalBiomass, ISpecies species)
         {
             this.AdjFolN = new float[EcoregionData.IMAX];
             this.adjFolN = 0; ;
@@ -293,7 +299,9 @@ namespace Landis.Library.PnETCohorts
             this.adjFracFol = 0;
             this.AdjHalfSat = 0;
             this.Age = age;
-            this.Biomass = totalBiomass;
+            ISpeciesPnET spc = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
+            this.Biomass = (1- spc.FracBelowG) * totalBiomass;
+            this.TotalBiomass = totalBiomass;
             this.BiomassMax = totalBiomass;
             this.CiModifier = new float[EcoregionData.IMAX];
             this.ColdKill = 0;

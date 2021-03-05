@@ -39,6 +39,7 @@ namespace Landis.Library.PnETCohorts
         public const string CohortBinSize = "CohortBinSize";
         public const string InvertPest = "InvertPest";
         //public const string PermafrostMinVegBiomass = "PermafrostMinVegBiomass";
+        public const string PrecipEventsWithReplacement = "PrecipEventsWithReplacement";
 
 
         //Ecoregion parameters

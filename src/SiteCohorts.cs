@@ -61,6 +61,7 @@ namespace Landis.Library.PnETCohorts
         private static float precLoss;
         private static byte Timestep;
         private static int CohortBinSize;
+        private static bool PrecipEventsWithReplacement;
         private static int nlayers;
         private static bool permafrost;
         private static bool invertPest;
@@ -263,6 +264,12 @@ namespace Landis.Library.PnETCohorts
             }
             else
                 CohortBinSize = Timestep;
+
+            string precipEventsWithReplacement = ((Parameter<string>)Names.GetParameter(Names.PrecipEventsWithReplacement)).Value;
+            PrecipEventsWithReplacement = true;
+            if (precipEventsWithReplacement == "false" || precipEventsWithReplacement == "no")
+                PrecipEventsWithReplacement = false;
+
             maxHalfSat = 0;
             minHalfSat = float.MaxValue;
             foreach(ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
@@ -942,10 +949,26 @@ namespace Landis.Library.PnETCohorts
                 // Randomly choose which layers will receive the precip events
                 // If # of layers < precipEvents, some layers will show up multiple times in number list.  This ensures the same number of precip events regardless of the number of cohorts
                 List<int> randomNumbers = new List<int>();
-                while (randomNumbers.Count < numEvents)
+                if (PrecipEventsWithReplacement)// Sublayer selection with replacement
                 {
-                    int rand = Statistics.DiscreteUniformRandom(1, SubCanopyCohorts.Count());
-                    randomNumbers.Add(rand);
+                    while (randomNumbers.Count < numEvents)
+                    {
+                        int rand = Statistics.DiscreteUniformRandom(1, SubCanopyCohorts.Count());
+                        randomNumbers.Add(rand);
+                    }
+                }
+                else // Sublayer selection without replacement
+                {
+                    while (randomNumbers.Count < numEvents)
+                    {
+                        List<int> subCanopyList = Enumerable.Range(1, SubCanopyCohorts.Count()).ToList();
+                        while ((randomNumbers.Count < numEvents) && (subCanopyList.Count() > 0))
+                        {
+                            int rand = Statistics.DiscreteUniformRandom(0, subCanopyList.Count() - 1);
+                            randomNumbers.Add(subCanopyList[rand]);
+                            subCanopyList.RemoveAt(rand);
+                        }
+                    }
                 }
                 var groupList = randomNumbers.GroupBy(i => i);
 
@@ -1428,10 +1451,27 @@ namespace Landis.Library.PnETCohorts
             // Randomly choose which layers will receive the precip events
             // If # of layers < precipEvents, some layers will show up multiple times in number list.  This ensures the same number of precip events regardless of the number of cohorts
             List<int> randomNumbers = new List<int>();
-            while (randomNumbers.Count < numEvents)
+            if (PrecipEventsWithReplacement)// Sublayer selection with replacement
             {
-                int rand = Statistics.DiscreteUniformRandom(1, SubCanopyCohorts.Count());
-                randomNumbers.Add(rand);
+                while (randomNumbers.Count < numEvents)
+                {
+                    int rand = Statistics.DiscreteUniformRandom(1, SubCanopyCohorts.Count());
+                    randomNumbers.Add(rand);
+                }
+            }
+            else // Sublayer selection without replacement
+            {
+                while (randomNumbers.Count < numEvents)
+                {
+                    List<int> subCanopyList = Enumerable.Range(1, SubCanopyCohorts.Count()).ToList();
+                    while ((randomNumbers.Count < numEvents) && (subCanopyList.Count() > 0))
+                    {
+                        int rand = Statistics.DiscreteUniformRandom(0, subCanopyList.Count() - 1);
+                        randomNumbers.Add(subCanopyList[rand]);
+                        subCanopyList.RemoveAt(rand);
+                    }
+                }
+
             }
             var groupList = randomNumbers.GroupBy(i => i);
 
@@ -2273,9 +2313,9 @@ namespace Landis.Library.PnETCohorts
         {
             ISpeciesPnET pnetSpecies = SpeciesParameters.SpeciesPnET[species];
 
-            bool speciesPresent = cohorts.ContainsKey(species);
+            bool speciesPresent = cohorts.ContainsKey(pnetSpecies);
 
-            bool IsMaturePresent = (speciesPresent && (cohorts[species].Max(o => o.Age) >= species.Maturity)) ? true : false;
+            bool IsMaturePresent = (speciesPresent && (cohorts[pnetSpecies].Max(o => o.Age) >= species.Maturity)) ? true : false;
 
             return IsMaturePresent;
         }

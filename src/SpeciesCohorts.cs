@@ -169,7 +169,7 @@ namespace Landis.Library.PnETCohorts
                 if (data.Age <= Cohorts.SuccessionTimeStep)
                 {
                     youngCount++;
-                    totalBiomass += data.Biomass;
+                    totalBiomass += data.TotalBiomass;
                 }
                 else
                     break;
@@ -178,8 +178,7 @@ namespace Landis.Library.PnETCohorts
             if (youngCount > 0)
             {
                 cohortData.RemoveRange(cohortData.Count - youngCount, youngCount);
-                cohortData.Add(new CohortData((ushort)(Cohorts.SuccessionTimeStep - 1),
-                                              totalBiomass));
+                cohortData.Add(new CohortData((ushort)(Cohorts.SuccessionTimeStep - 1), totalBiomass, this.Species));
             }
         }
 
@@ -234,7 +233,7 @@ namespace Landis.Library.PnETCohorts
 
             int biomassChange = (int)Cohorts.BiomassCalculator.ComputeChange(cohort, site); //, siteBiomass, prevYearSiteMortality);
 
-            Debug.Assert(-(cohort.Biomass) <= biomassChange);  // Cohort can't loss more biomass than it has
+            Debug.Assert(-(cohort.TotalBiomass) <= biomassChange);  // Cohort can't loss more biomass than it has
 
             cohort.ChangeBiomass(biomassChange);
 
@@ -263,7 +262,7 @@ namespace Landis.Library.PnETCohorts
                                   ExtensionType disturbanceType)
         {
             if (isDebugEnabled)
-                log.DebugFormat("  cohort removed: {0}, {1} yrs, {2} Mg/ha ({3})",
+                log.DebugFormat("  cohort removed: {0}, {1} yrs, {2} g/m2 ({3})",
                                 cohort.Species.Name, cohort.Age, cohort.Biomass,
                                 disturbanceType != null
                                     ? disturbanceType.Name
@@ -322,7 +321,7 @@ namespace Landis.Library.PnETCohorts
             {
                 Cohort cohort = new Cohort(species, cohortData[i]);
                 int reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
-                //Console.WriteLine("  Reduction: {0}, {1} yrs, {2} Mg/ha, reduction={3}", cohort.Species.Name, cohort.Age, cohort.Biomass, reduction);
+                //Console.WriteLine("  Reduction: {0}, {1} yrs, {2} g/m2, reduction={3}", cohort.Species.Name, cohort.Age, cohort.Biomass, reduction);
                 if (reduction > 0)
                 {
                     totalReduction += reduction;

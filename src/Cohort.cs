@@ -79,7 +79,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return (int)Math.Round((1 - speciesPnET.FracBelowG) * data.Biomass) + (int)data.Fol;
+                return (int)Math.Round((1 - speciesPnET.FracBelowG) * data.TotalBiomass) + (int)data.Fol;
             }
         }
 
@@ -88,7 +88,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return (int)Math.Round(data.Biomass);
+                return (int)Math.Round(data.TotalBiomass);
             }
         }
 
@@ -97,7 +97,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return (uint)Math.Round((1 - speciesPnET.FracBelowG) * data.Biomass);
+                return (uint)Math.Round((1 - speciesPnET.FracBelowG) * data.TotalBiomass);
             }
         }
 
@@ -106,7 +106,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return (uint)Math.Round(speciesPnET.FracBelowG * data.Biomass);
+                return (uint)Math.Round(speciesPnET.FracBelowG * data.TotalBiomass);
             }
         }
 
@@ -160,7 +160,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return NSC / (FActiveBiom * (Biomass + Fol));
+                return NSC / (FActiveBiom * (data.TotalBiomass + Fol));
             }
         }
 
@@ -401,7 +401,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return (float)Math.Exp(-speciesPnET.FrActWd * Biomass);
+                return (float)Math.Exp(-speciesPnET.FrActWd * data.TotalBiomass);
             }
         }
 
@@ -502,7 +502,8 @@ namespace Landis.Library.PnETCohorts
         public void Accumulate(Cohort c)
         {
             data.Biomass += c.Biomass;
-            data.BiomassMax = Math.Max(BiomassMax, Biomass);
+            data.TotalBiomass += c.TotalBiomass;
+            data.BiomassMax = Math.Max(BiomassMax, data.TotalBiomass);
             data.Fol += c.Fol;
         }
 
@@ -521,6 +522,8 @@ namespace Landis.Library.PnETCohorts
         {
             float newBiomass = data.Biomass + delta;
             data.Biomass = System.Math.Max(0, newBiomass);
+            float newTotalBiomass = data.TotalBiomass + delta;
+            data.TotalBiomass = System.Math.Max(0, newTotalBiomass);
         }
 
         // Constructor
@@ -534,9 +537,10 @@ namespace Landis.Library.PnETCohorts
             this.data.NSC = (ushort)speciesPnET.InitialNSC;
            
             // Initialize biomass assuming fixed concentration of NSC
-            this.data.Biomass = (uint)(1F / speciesPnET.DNSC * (ushort)speciesPnET.InitialNSC);
+            this.data.TotalBiomass = (uint)(1F / speciesPnET.DNSC * (ushort)speciesPnET.InitialNSC);
+            this.data.Biomass = (1 - speciesPnET.FracBelowG) * this.data.TotalBiomass;
 
-            data.BiomassMax = Biomass;
+            data.BiomassMax = this.data.TotalBiomass;
 
             // Then overwrite them if you need stuff for outputs
             if (SiteName != null)
@@ -562,6 +566,7 @@ namespace Landis.Library.PnETCohorts
             this.speciesPnET = cohort.speciesPnET;
             this.data.Age = cohort.Age;
             this.data.NSC = cohort.NSC;
+            this.data.TotalBiomass = cohort.TotalBiomass;
             this.data.Biomass = cohort.Biomass;
             this.data.BiomassMax = cohort.BiomassMax;
             this.data.Fol = cohort.Fol;
@@ -573,10 +578,11 @@ namespace Landis.Library.PnETCohorts
             InitializeSubLayers();
             this.speciesPnET = speciesPnET;
             this.data.Age = age;
+            this.data.Biomass = woodBiomass;
             //incoming biomass is aboveground wood, calculate total biomass
-            int biomass = (int) (woodBiomass / (1 - speciesPnET.FracBelowG));
-            this.data.Biomass = biomass;
-            this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * this.Biomass;
+            float biomass = (woodBiomass / (1 - speciesPnET.FracBelowG));
+            this.data.TotalBiomass = biomass;            
+            this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * this.data.Biomass;
             this.data.BiomassMax = biomass;
             this.data.LastSeasonFRad = new List<float>();
             this.data.adjFracFol = speciesPnET.FracFol;
@@ -699,7 +705,7 @@ namespace Landis.Library.PnETCohorts
             //    if (success == false) throw new System.Exception("Error adding water, frozenWater = " + frozenWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             //}
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature
-            data.MaintenanceRespiration[index] = (1 / (float)EcoregionData.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * Biomass);//gC //IMAXinverse
+            data.MaintenanceRespiration[index] = (1 / (float)EcoregionData.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * data.TotalBiomass);//gC //IMAXinverse
 
             // Subtract mainenance respiration (gC/mo)
             data.NSC -= data.MaintenanceRespiration[index];
@@ -717,7 +723,7 @@ namespace Landis.Library.PnETCohorts
                     {
                         data.NSC = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
                     }
-                    else if(EcoregionData.ModelCore.CurrentTime > 0 && this.TotalBiomass < (uint)speciesPnET.InitBiomass)  //Check if biomass < Initial Biomass -> cohort dies
+                    else if(EcoregionData.ModelCore.CurrentTime > 0 && data.TotalBiomass < (uint)speciesPnET.InitBiomass)  //Check if biomass < Initial Biomass -> cohort dies
                     {
                         data.NSC = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
                         data.Leaf_On = false;
@@ -733,9 +739,9 @@ namespace Landis.Library.PnETCohorts
 
                     // Release of nsc, will be added to biomass components next year
                     // Assumed that NSC will have a minimum concentration, excess is allocated to biomass
-                    float Allocation = Math.Max(NSC - (speciesPnET.DNSC * FActiveBiom * Biomass), 0);
-                    data.Biomass += Allocation;
-                    data.BiomassMax = Math.Max(BiomassMax, Biomass);
+                    float Allocation = Math.Max(NSC - (speciesPnET.DNSC * FActiveBiom * data.TotalBiomass), 0);
+                    data.TotalBiomass += Allocation;
+                    data.BiomassMax = Math.Max(BiomassMax, data.TotalBiomass);
                     data.NSC -= Allocation;
                     data.Age++;
 
@@ -778,7 +784,7 @@ namespace Landis.Library.PnETCohorts
                 //float IdealFol = (speciesPnET.FracFol * FActiveBiom * biomass);
                 if (firstYear)
                     data.adjFracFol = speciesPnET.FracFol;
-                float IdealFol = (data.adjFracFol * FActiveBiom * Biomass); // Using adjusted FracFol
+                float IdealFol = (data.adjFracFol * FActiveBiom *data.TotalBiomass); // Using adjusted FracFol
 
                 if (ecoregion.Variables.Month < (int)Constants.Months.June) //Growing season before defoliation outbreaks
                 {
@@ -1370,7 +1376,7 @@ namespace Landis.Library.PnETCohorts
         public float Senescence()
         {
             float senescence = ((Root * speciesPnET.TOroot) + Wood * speciesPnET.TOwood);
-            data.Biomass -= senescence;
+            data.TotalBiomass -= senescence;
 
             return senescence;
         }
@@ -1384,7 +1390,7 @@ namespace Landis.Library.PnETCohorts
         {
             Allocation.Allocate(sitecohorts, this, disturbanceType, fraction);
 
-            data.Biomass *= (float)(1.0 - fraction);
+            data.TotalBiomass *= (float)(1.0 - fraction);
             data.Fol *= (float)(1.0 - fraction);
 
         }

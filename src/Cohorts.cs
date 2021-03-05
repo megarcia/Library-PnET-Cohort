@@ -5,7 +5,7 @@ using System;
 namespace Landis.Library.PnETCohorts
 {
     /// <summary>
-    /// Methods for biomass cohorts.
+    /// Methods for PnET cohorts.
     /// </summary>
     public static class Cohorts
     {
@@ -65,8 +65,8 @@ namespace Landis.Library.PnETCohorts
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// Computes the total biomass for all the cohorts at a site, and the
-        /// total biomass for all the young cohorts.
+        /// Computes the total aboveground live biomass for all the cohorts at a site, and the
+        /// total aboveground live biomass for all the young cohorts.
         /// </summary>
         public static int ComputeBiomass(ISiteCohorts siteCohorts,
                                          out int      youngBiomass)
@@ -86,7 +86,7 @@ namespace Landis.Library.PnETCohorts
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// Computes the total biomass for all the cohorts, not including young cohorts.
+        /// Computes the total aboveground live biomass for all the cohorts, not including young cohorts.
         /// </summary>
         public static int ComputeNonYoungBiomass(ISiteCohorts siteCohorts)
         {

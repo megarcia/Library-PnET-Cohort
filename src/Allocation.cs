@@ -1,12 +1,12 @@
 ﻿using Landis.Core;
 using System.Collections.Generic;
 using System.Linq;
-using Landis.Library.PnETCohorts;
+
 
 namespace Landis.Library.PnETCohorts
 {
     /// <summary>
-    /// Allocates litters that result from disturbanches. 
+    /// Allocates litters that result from disturbances. 
     /// Input parameters are fractions of litter that are allocated to different pools
     /// </summary>
     public class Allocation
@@ -32,13 +32,10 @@ namespace Landis.Library.PnETCohorts
                 }
             }
             DisturbanceReductionParameters.ToList().ForEach(x => parameters.Add("disturbance:"+x.Key, x.Value));
-       
         }
 
         public static void ReduceDeadPools(object sitecohorts, ExtensionType disturbanceType)
         {
-
-
             if (sitecohorts == null)
             {
                 throw new System.Exception("sitecohorts should not be null");
@@ -58,14 +55,11 @@ namespace Landis.Library.PnETCohorts
                 {
                     plitterlost = float.Parse(parameter["LitterReduction"]);
                 }
-
             }
-
-            //((SiteCohorts)sitecohorts).RemoveWoodyDebris(pdeadwoodlost);
-            //((SiteCohorts)sitecohorts).RemoveLitter(plitterlost);
-
-
+            ((SiteCohorts)sitecohorts).RemoveWoodyDebris(pdeadwoodlost);
+            ((SiteCohorts)sitecohorts).RemoveLitter(plitterlost);
         }
+
         public static void Allocate(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double fraction)
         {
             if (sitecohorts == null)
@@ -73,7 +67,7 @@ namespace Landis.Library.PnETCohorts
                 throw new System.Exception("sitecohorts should not be null");
             }
 
-            ReduceDeadPools(sitecohorts, disturbanceType);
+            //ReduceDeadPools(sitecohorts, disturbanceType); // moved to RemoveCohort and ReduceBiomass to avoid multiple calls
 
             // By default, all material is allocated to the woody debris or the litter pool
             float pwoodlost = 0;
@@ -97,23 +91,19 @@ namespace Landis.Library.PnETCohorts
                 {
                     pfollost = float.Parse(parameter["FolReduction"]);
                 }
-
-
             }
             
             // Add new dead wood and litter
-            //float woodAdded = (float)((1 - pwoodlost) * cohort.Wood * fraction);
-            //float rootAdded = (float)((1 - prootlost) * cohort.Root * fraction);
-            //float folAdded = (float)((1 - pfollost) * cohort.Fol * fraction);
+            float woodAdded = (float)((1 - pwoodlost) * cohort.Wood * fraction);
+            float rootAdded = (float)((1 - prootlost) * cohort.Root * fraction);
+            float folAdded = (float)((1 - pfollost) * cohort.Fol * fraction);
 
-            //((SiteCohorts)sitecohorts).AddWoodyDebris(woodAdded, cohort.SpeciesDensity.KWdLit);
-            //((SiteCohorts)sitecohorts).AddWoodyDebris(rootAdded, cohort.SpeciesDensity.KWdLit);
-            //((SiteCohorts)sitecohorts).AddLitter(folAdded, cohort.SpeciesDensity);
+            ((SiteCohorts)sitecohorts).AddWoodyDebris(woodAdded, cohort.SpeciesPnET.KWdLit);
+            ((SiteCohorts)sitecohorts).AddWoodyDebris(rootAdded, cohort.SpeciesPnET.KWdLit);
+            ((SiteCohorts)sitecohorts).AddLitter(folAdded, cohort.SpeciesPnET);
 
-            //cohort.AccumulateWoodySenescence((int)(woodAdded + rootAdded));
-            //cohort.AccumulateFoliageSenescence((int)(folAdded));
-
-
+            cohort.AccumulateWoodySenescence((int)(woodAdded + rootAdded));
+            cohort.AccumulateFoliageSenescence((int)(folAdded));
         }
     }
 }

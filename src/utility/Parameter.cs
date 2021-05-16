@@ -8,7 +8,7 @@ namespace Landis.Library.PnETCohorts
     {
         private Dictionary<string, T> values = new Dictionary<string, T>();
         string p_label;
-
+        //---------------------------------------------------------------------
         public List<T> Values
         {
             get
@@ -16,16 +16,18 @@ namespace Landis.Library.PnETCohorts
                 return new List<T>(values.Values);
             }
         }
-
+        //---------------------------------------------------------------------
         public Parameter(string name, T value, string label = null)
         {
             this.p_label = label;
             Add(name, value);
         }
+        //---------------------------------------------------------------------
         public Parameter(string label =null)
         {
             this.p_label = label;
         }
+        //---------------------------------------------------------------------
         public T Value
         {
             get
@@ -34,10 +36,12 @@ namespace Landis.Library.PnETCohorts
                 return values.First().Value;
             }
         }
+        //---------------------------------------------------------------------
         public bool ContainsKey(string key)
         {
             return values.ContainsKey(key);
         }
+        //---------------------------------------------------------------------
         public T this[string label]
         {
             get
@@ -56,11 +60,12 @@ namespace Landis.Library.PnETCohorts
                 values[label] = value;
             }
         }
-        
+        //---------------------------------------------------------------------
         public void Add(string key, T value)
         {
             values.Add(key, value);
         }
+        //---------------------------------------------------------------------
         public static explicit operator Parameter<bool>(Parameter<T> m)
         {
             try
@@ -78,6 +83,7 @@ namespace Landis.Library.PnETCohorts
                 throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
+        //---------------------------------------------------------------------
         public static explicit operator Parameter<float>(Parameter<T> m)
         {
             try
@@ -95,6 +101,7 @@ namespace Landis.Library.PnETCohorts
                 throw new System.Exception("Cannot parse parameter "+ m.p_label +" "+e.Message);
             }
         }
+        //---------------------------------------------------------------------
         public static explicit operator Parameter<ushort>(Parameter<T> m)
         {
             try
@@ -112,6 +119,7 @@ namespace Landis.Library.PnETCohorts
                 throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
+        //---------------------------------------------------------------------
         public static explicit operator Parameter<byte>(Parameter<T> m)
         {
             try
@@ -129,6 +137,7 @@ namespace Landis.Library.PnETCohorts
                 throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
+        //---------------------------------------------------------------------
         public static explicit operator Parameter<int>(Parameter<T> m)
         {
             try
@@ -146,16 +155,15 @@ namespace Landis.Library.PnETCohorts
                 throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
-        
-        
+        //---------------------------------------------------------------------
         public static explicit operator Landis.Library.Parameters.Ecoregions.AuxParm<T>(Parameter<T> m)
         {
             string ecoregionname = null;
             T value;
             try
             {
-                Landis.Library.Parameters.Ecoregions.AuxParm<T> newvalues = new Landis.Library.Parameters.Ecoregions.AuxParm<T>(EcoregionData.ModelCore.Ecoregions);
-                foreach (IEcoregion eco in EcoregionData.ModelCore.Ecoregions) if (eco.Active)
+                Landis.Library.Parameters.Ecoregions.AuxParm<T> newvalues = new Landis.Library.Parameters.Ecoregions.AuxParm<T>(Globals.ModelCore.Ecoregions);
+                foreach (IEcoregion eco in Globals.ModelCore.Ecoregions) if (eco.Active)
                 {
                     ecoregionname = eco.Name;
                     if (m.values.Count == 1) value = m.values.First().Value;
@@ -174,17 +182,16 @@ namespace Landis.Library.PnETCohorts
             }
         
         }
-        
-        
+        //---------------------------------------------------------------------
         public static explicit operator Landis.Library.Parameters.Species.AuxParm<T>(Parameter<T> m)
         {
             T value;
             string speciesname = null;
             try
             {
-                Landis.Library.Parameters.Species.AuxParm<T> newvalues = new Library.Parameters.Species.AuxParm<T>(EcoregionData.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<T> newvalues = new Library.Parameters.Species.AuxParm<T>(Globals.ModelCore.Species);
 
-                foreach (ISpecies species in EcoregionData.ModelCore.Species)
+                foreach (ISpecies species in Globals.ModelCore.Species)
                 {
                     speciesname = species.Name;
                     if (m.values.Count == 1) value = m.values.First().Value;
@@ -203,25 +210,16 @@ namespace Landis.Library.PnETCohorts
                 else throw new System.Exception("Error parsing parameter " + m.p_label + " for species " + speciesname + e.Message);
             }
         }
-        
-        
-
-
-
-        
+        //---------------------------------------------------------------------
         public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
         {
             return values.GetEnumerator();
         }
-
+        //---------------------------------------------------------------------
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
-       
-        
-
-
-
+        //---------------------------------------------------------------------
     }
 }

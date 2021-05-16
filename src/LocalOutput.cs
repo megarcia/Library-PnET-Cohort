@@ -61,7 +61,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 catch (System.IO.IOException e)
                 {
-                    EcoregionData.ModelCore.UI.WriteLine("Cannot write to " + System.IO.Path.Combine(Path, FileName) + " " + e.Message);
+                    Globals.ModelCore.UI.WriteLine("Cannot write to " + System.IO.Path.Combine(Path, FileName) + " " + e.Message);
                     
                 }
             }

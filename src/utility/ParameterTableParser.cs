@@ -6,27 +6,26 @@ using System.Linq;
 namespace Landis.Library.PnETCohorts
 {
     public class ParameterTableParser
-         : TextParser<Dictionary<string, Parameter<string>>>
+         : TextParser<Dictionary<string, Parameter<string>>>  
     {
-
         public Dictionary<string, Parameter<string>> Parameters { get; private set; }
         public List<string> ExpectedRowLabels { get; private set; }
         public List<string> ExpectedColumnHeaders { get; private set; }
-
+        
         private Dictionary<string, int> speciesLineNums;
         private InputVar<string> speciesName;
         private string FileName;
         private string KeyWord;
         private bool transposed;
-
+        //---------------------------------------------------------------------
         public override string LandisDataValue
         {
             get
             {
-                return Names.ExtensionName;
+                return Names.ExtensionName ;
             }
         }
-
+        //---------------------------------------------------------------------
         public ParameterTableParser(string FileName, string KeyWord, List<string> ExpectedRowLabels, List<string> ExpectedColumnHeaders, bool transposed = false)
         {
             this.ExpectedColumnHeaders = ExpectedColumnHeaders;
@@ -36,19 +35,20 @@ namespace Landis.Library.PnETCohorts
             this.FileName = FileName;
             this.speciesLineNums = new Dictionary<string, int>();
             this.speciesName = new InputVar<string>("Species");
-
         }
+        //---------------------------------------------------------------------
         static bool ListContains(List<string> List, string value)
-        {
+        { 
             return List.Any(s => s.Equals(value, StringComparison.OrdinalIgnoreCase));
         }
+        //---------------------------------------------------------------------
         void CheckHeaderCount(StringReader s, int ReadHeaderLabelsCount)
         {
             string headerline = s.ReadLine();
             if (headerline.Contains(">>"))
             {
-                int fi = headerline.IndexOf(">>");
-                while (headerline.Length > fi)
+                int fi =headerline.IndexOf(">>");
+                while (headerline.Length>fi)
                 {
                     headerline = headerline.Remove(headerline.Length - 1);
                 }
@@ -59,6 +59,7 @@ namespace Landis.Library.PnETCohorts
                 throw new System.Exception("Headers/column numbers unequal");
             }
         }
+        //---------------------------------------------------------------------
         protected override Dictionary<string, Parameter<string>> Parse()
         {
             try
@@ -74,50 +75,42 @@ namespace Landis.Library.PnETCohorts
                 }
 
                 string line = new StringReader(CurrentLine).ReadLine().Trim();
-
+                
                 while (line.Length == 0)
                 {
                     GetNextLine();
                 }
 
-                List<string> ReadHeaderLabels = new List<string>(line.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries));
-                if (line.ToLower().Contains(KeyWord.ToLower()) == false) throw new System.Exception("Expecting keyword " + KeyWord + " in headerline");
+                List<string> ReadHeaderLabels  = new List<string>(line.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries));
+                if (line.ToLower().Contains(KeyWord.ToLower()) == false) throw new System.Exception("Expecting keyword "+ KeyWord +" in headerline");
 
                 if (ExpectedColumnHeaders != null)
                 {
                     ExpectedColumnHeaders.Add(KeyWord);
 
                     foreach (string label in ReadHeaderLabels) if (ListContains(ExpectedColumnHeaders, label) == false)
-                        {
+                    {
                             throw new PnetSpeciesParameterFileFormatException("Unrecognized column header " + label + " in " + FileName + "./nExpected headers are: " + string.Join(",", ExpectedColumnHeaders.ToArray()));
-                        }
+                    }
                 }
 
                 GetNextLine();
 
                 speciesLineNums.Clear();
 
-
                 while (!AtEndOfInput)
                 {
-                    //string line2 = new StringReader(CurrentLine).ReadLine().Trim();
-                    //List<string> Terms = new List<string>(new StringReader(CurrentLine).ReadLine().Trim().Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries));
-
-
-
                     InputVar<string> RowLabel = new InputVar<string>("RowLabel");
 
                     StringReader s = new StringReader(CurrentLine);
 
                     CheckHeaderCount(new StringReader(CurrentLine), ReadHeaderLabels.Count);
-
-
+                    
                     for (int column = 0; column < ReadHeaderLabels.Count; column++)
                     {
-
                         Parameter<string> parameter = null;
                         string parameterlabel = null;
-
+                         
                         string valuekey = null;
 
                         InputVar<string> var = new InputVar<string>(ReadHeaderLabels[column]);
@@ -128,23 +121,18 @@ namespace Landis.Library.PnETCohorts
                             RowLabel = var;
                             if (ExpectedRowLabels != null && ListContains(ExpectedRowLabels, RowLabel.Value) == false)
                             {
-                                throw new PnetSpeciesParameterFileFormatException("Unknown parameter label [" + var.Value + "] in " + FileName + ".\nExpected labels are: [" + string.Join(" ,", ExpectedRowLabels.ToArray()) + "].");
+                                throw new PnetSpeciesParameterFileFormatException("Unknown parameter label [" + var.Value + "] in "+ FileName + ".\nExpected labels are: [" + string.Join(" ,", ExpectedRowLabels.ToArray())+"].");
                             }
-
                             continue;
                         }
-
-
-
                         switch (transposed)
                         {
                             case true:
-                                parameterlabel = RowLabel.Value;
-                                valuekey = ReadHeaderLabels[column];
+                                parameterlabel =  RowLabel.Value;
+                                valuekey = ReadHeaderLabels[column]; 
                                 break;
                             case false:
                                 parameterlabel = ReadHeaderLabels[column];
-
                                 valuekey = RowLabel.Value;
                                 break;
                         }
@@ -157,14 +145,10 @@ namespace Landis.Library.PnETCohorts
                         {
                             throw new System.Exception("Duplicate parameter label [" + var.Value + "] for parameter " + parameterlabel);
                         }
-
                         parameter.Add(valuekey, var.Value);
-
                     }
                     GetNextLine();
                 }
-
-
                 return parameters;
             }
             catch (System.Exception e)
@@ -182,19 +166,23 @@ namespace Landis.Library.PnETCohorts
                 }
             }
         }
-
-
+        //---------------------------------------------------------------------
     }
+    //---------------------------------------------------------------------
     class PnetSpeciesParameterFileFormatException : Exception
     {
+        //---------------------------------------------------------------------
         public PnetSpeciesParameterFileFormatException()
         {
-
+            // empty constructor
         }
+        //---------------------------------------------------------------------
         public PnetSpeciesParameterFileFormatException(string msg)
-            : base(msg)
+            :base(msg)
         {
 
         }
+        //---------------------------------------------------------------------
     }
+    //---------------------------------------------------------------------
 }

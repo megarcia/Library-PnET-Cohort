@@ -21,18 +21,18 @@ namespace Landis.Library.PnETCohorts
 
         public static void Initialize()
         {
-            WoodyDebris = EcoregionData.ModelCore.Landscape.NewSiteVar<Pool>();
-            Litter = EcoregionData.ModelCore.Landscape.NewSiteVar<Pool>();
-            FineFuels = EcoregionData.ModelCore.Landscape.NewSiteVar<Double>();
-            SiteCohorts = EcoregionData.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
-            PressureHead = EcoregionData.ModelCore.Landscape.NewSiteVar<float>();
-            ExtremeMinTemp = EcoregionData.ModelCore.Landscape.NewSiteVar<float>();
+            WoodyDebris = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
+            Litter = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
+            FineFuels = Globals.ModelCore.Landscape.NewSiteVar<Double>();
+            SiteCohorts = Globals.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
+            PressureHead = Globals.ModelCore.Landscape.NewSiteVar<float>();
+            ExtremeMinTemp = Globals.ModelCore.Landscape.NewSiteVar<float>();
 
-            EcoregionData.ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
-            EcoregionData.ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
-            EcoregionData.ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
-            EcoregionData.ModelCore.RegisterSiteVar(PressureHead, "Succession.PressureHead");
-            EcoregionData.ModelCore.RegisterSiteVar(ExtremeMinTemp, "Succession.ExtremeMinTemp");
+            Globals.ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
+            Globals.ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
+            Globals.ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
+            Globals.ModelCore.RegisterSiteVar(PressureHead, "Succession.PressureHead");
+            Globals.ModelCore.RegisterSiteVar(ExtremeMinTemp, "Succession.ExtremeMinTemp");
         }
 
     }

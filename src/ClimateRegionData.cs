@@ -14,9 +14,9 @@ namespace Landis.Library.PnETCohorts
         //public static void Initialize(IInputParameters parameters)
         public static void Initialize()
         {
-            AnnualWeather = new Library.Parameters.Ecoregions.AuxParm<AnnualClimate_Monthly>(EcoregionData.ModelCore.Ecoregions);
+            AnnualWeather = new Library.Parameters.Ecoregions.AuxParm<AnnualClimate_Monthly>(Globals.ModelCore.Ecoregions);
 
-            foreach (IEcoregion ecoregion in EcoregionData.ModelCore.Ecoregions)
+            foreach (IEcoregion ecoregion in Globals.ModelCore.Ecoregions)
             {
                 if (ecoregion.Active)
                 {

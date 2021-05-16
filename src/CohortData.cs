@@ -255,7 +255,7 @@ namespace Landis.Library.PnETCohorts
             this.adjFracFol = cohort.adjFracFol;
             this.AdjHalfSat = cohort.AdjHalfSat;
             this.Age = cohort.Age;
-            this.Biomass = (1 - cohort.SpeciesPNET.FracBelowG) * cohort.TotalBiomass;
+            this.Biomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass;
             this.TotalBiomass = cohort.TotalBiomass;
             this.BiomassMax = cohort.BiomassMax;
             this.CiModifier = cohort.CiModifier;
@@ -293,9 +293,9 @@ namespace Landis.Library.PnETCohorts
         /// The biomamss of the cohort
         public CohortData(ushort age, float totalBiomass, ISpecies species)
         {
-            this.AdjFolN = new float[EcoregionData.IMAX];
+            this.AdjFolN = new float[Globals.IMAX];
             this.adjFolN = 0; ;
-            this.AdjFracFol = new float[EcoregionData.IMAX];
+            this.AdjFracFol = new float[Globals.IMAX];
             this.adjFracFol = 0;
             this.AdjHalfSat = 0;
             this.Age = age;
@@ -303,30 +303,30 @@ namespace Landis.Library.PnETCohorts
             this.Biomass = (1- spc.FracBelowG) * totalBiomass;
             this.TotalBiomass = totalBiomass;
             this.BiomassMax = totalBiomass;
-            this.CiModifier = new float[EcoregionData.IMAX];
+            this.CiModifier = new float[Globals.IMAX];
             this.ColdKill = 0;
             this.DeFolProp = 0;
-            this.DelAmax = new float[EcoregionData.IMAX];
+            this.DelAmax = new float[Globals.IMAX];
             this.Fol = 0;
-            this.FolResp = new float[EcoregionData.IMAX];
-            this.FOzone = new float[EcoregionData.IMAX];
-            this.FRad = new float[EcoregionData.IMAX];
-            this.FWater = new float[EcoregionData.IMAX];
-            this.GrossPsn = new float[EcoregionData.IMAX];
-            this.Interception = new float[EcoregionData.IMAX];
-            this.LAI = new float[EcoregionData.IMAX];
+            this.FolResp = new float[Globals.IMAX];
+            this.FOzone = new float[Globals.IMAX];
+            this.FRad = new float[Globals.IMAX];
+            this.FWater = new float[Globals.IMAX];
+            this.GrossPsn = new float[Globals.IMAX];
+            this.Interception = new float[Globals.IMAX];
+            this.LAI = new float[Globals.IMAX];
             this.LastFoliageSenescence = 0;
             this.LastFRad = 0;
             this.LastSeasonFRad = new List<float>();
             this.LastWoodySenescence = 0;
             this.Layer = 0;
             this.Leaf_On = false;
-            this.MaintenanceRespiration = new float[EcoregionData.IMAX];
-            this.NetPsn = new float[EcoregionData.IMAX];
+            this.MaintenanceRespiration = new float[Globals.IMAX];
+            this.NetPsn = new float[Globals.IMAX];
             this.NSC = 0;
-            this.PressHead = new float[EcoregionData.IMAX];
-            this.Transpiration = new float[EcoregionData.IMAX];
-            this.Water = new float[EcoregionData.IMAX];
+            this.PressHead = new float[Globals.IMAX];
+            this.Transpiration = new float[Globals.IMAX];
+            this.Water = new float[Globals.IMAX];
         }
     }
 }

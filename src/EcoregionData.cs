@@ -244,9 +244,6 @@ namespace Landis.Library.PnETCohorts
         }
         #endregion
 
-        public static ICore ModelCore;
-        public static ushort IMAX { get; private set; }
-
         public static List<string> ParameterNames
         {
             get
@@ -336,12 +333,6 @@ namespace Landis.Library.PnETCohorts
             return data;
         }
 
-        public static void InitializeCore(ICore mCore, ushort IMAX)
-        {
-            ModelCore = mCore;
-            EcoregionData.IMAX = IMAX;
-        }
-
         public static void Initialize()
         {
             soiltype = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)Names.GetParameter("SoilType");
@@ -362,7 +353,7 @@ namespace Landis.Library.PnETCohorts
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeakageFrac", 0, 1);
             runoffcapture = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter(Names.RunoffCapture, 0, 999999);
             AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
-            foreach (IEcoregion ecoregion in EcoregionData.ModelCore.Ecoregions)
+            foreach (IEcoregion ecoregion in Globals.ModelCore.Ecoregions)
             {
                 AllEcoregions.Add(ecoregion, new EcoregionData(ecoregion));
             }

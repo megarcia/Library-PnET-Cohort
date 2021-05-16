@@ -10,33 +10,31 @@ namespace Landis.Library.PnETCohorts
     public class SpeciesPnET : ISpeciesPnET
     {
         static List<Tuple<ISpecies, ISpeciesPnET>> SpeciesCombinations;
-
-         
-         public List<ISpeciesPnET> AllSpecies 
+        //---------------------------------------------------------------------
+        public List<ISpeciesPnET> AllSpecies 
          { 
              get
              { 
                  return SpeciesCombinations.Select(combination => combination.Item2).ToList(); 
              } 
-         } 
- 
- 
-         public ISpeciesPnET this[ISpecies species] 
+         }
+        //---------------------------------------------------------------------
+        public ISpeciesPnET this[ISpecies species] 
          { 
              get
              { 
                  return SpeciesCombinations.Where(spc => spc.Item1 == species).First().Item2; 
              } 
-         } 
-         public ISpecies this[ISpeciesPnET species] 
+         }
+        //---------------------------------------------------------------------
+        public ISpecies this[ISpeciesPnET species] 
          { 
              get
              { 
                  return SpeciesCombinations.Where(spc => spc.Item2 == species).First().Item1; 
              } 
-         } 
-
-
+         }
+        //---------------------------------------------------------------------
         #region private variables
         private float _co2HalfSatEff;
         private float _cfracbiomass;
@@ -72,6 +70,7 @@ namespace Landis.Library.PnETCohorts
         private float _dvpd2;
         private float _amaxa;
         private float _amaxb;
+        private float _amaxfrac;
         private float _co2AMaxBEff;
         private float _maintresp;
         private float _bfolresp;
@@ -79,8 +78,7 @@ namespace Landis.Library.PnETCohorts
         private float _coldTol;
         private int _initBiomass;
         private string name;
-        private int index;
-        
+        private int index;        
         private int  maxSproutAge;
         private int minSproutAge;
         private Landis.Core.PostFireRegeneration postfireregeneration;
@@ -99,10 +97,8 @@ namespace Landis.Library.PnETCohorts
         private float _leafOnMinT;
         # endregion
 
-
         #region private static species variables
         private static Landis.Library.Parameters.Species.AuxParm<float> co2HalfSatEff;
-        //private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
         private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
         private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
         private static Landis.Library.Parameters.Species.AuxParm<float> kwdlit;
@@ -116,13 +112,11 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> h4;
         private static Landis.Library.Parameters.Species.AuxParm<float> slwdel;
         private static Landis.Library.Parameters.Species.AuxParm<float> slwmax;    
-  
         private static Landis.Library.Parameters.Species.AuxParm<float> tofol;
         private static Landis.Library.Parameters.Species.AuxParm<float> halfsat;
         private static Landis.Library.Parameters.Species.AuxParm<float> toroot;
         private static Landis.Library.Parameters.Species.AuxParm<float> initialnsc;
         private static Landis.Library.Parameters.Species.AuxParm<float> k;
-        
         private static Landis.Library.Parameters.Species.AuxParm<float> towood;
         private static Landis.Library.Parameters.Species.AuxParm<float> estrad;
         private static Landis.Library.Parameters.Species.AuxParm<float> estmoist;
@@ -130,8 +124,6 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
         private static Landis.Library.Parameters.Species.AuxParm<bool> preventestablishment;
         private static Landis.Library.Parameters.Species.AuxParm<float> psntopt;
-
-
         private static Landis.Library.Parameters.Species.AuxParm<float> q10;
         private static Landis.Library.Parameters.Species.AuxParm<float> psntmin;
         private static Landis.Library.Parameters.Species.AuxParm<float> psntmax;
@@ -140,15 +132,12 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> foln;
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
+        private static Landis.Library.Parameters.Species.AuxParm<float> amaxfrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> co2AMaxBEff;
-        
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> coldTol;
-
-
         private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
-
         private static Landis.Library.Parameters.Species.AuxParm<float> folNShape;
         private static Landis.Library.Parameters.Species.AuxParm<float> maxFolN;
         private static Landis.Library.Parameters.Species.AuxParm<float> fracFolShape;
@@ -161,7 +150,6 @@ namespace Landis.Library.PnETCohorts
         {
             #region initialization of private static species variables
             co2HalfSatEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CO2HalfSatEff"));
-            //wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
             dnsc =  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("DNSC"));
             cfracbiomass=  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CFracBiomass"));
             kwdlit = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("kwdlit"));
@@ -195,16 +183,20 @@ namespace Landis.Library.PnETCohorts
             foln = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("foln"));
             amaxa = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("amaxa"));
             amaxb = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("amaxb"));
+            amaxfrac = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("AmaxFrac"));
             co2AMaxBEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CO2AMaxBEff"));
             maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("maintresp"));
             bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("bfolresp"));
             ozoneSens = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("O3StomataSens"));
             folNShape = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolNShape"));
-            maxFolN = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxFolN"));
+            
+            maxFolN = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxFolN")); //Optional
+            // If MaxFolN is not provided, then set to foln
             if (maxFolN[this] == -9999F)
                 maxFolN = foln;
-            fracFolShape = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FracFolShape"));
-            maxFracFol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxFracFol"));
+            fracFolShape = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FracFolShape"));            
+            maxFracFol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxFracFol")); //Optional
+            // If MaxFracFol is not provided, then set to fracfol
             if (maxFracFol[this] == -9999F)
                 maxFracFol = fracfol;
             o3Coeff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("O3GrowthSens"));            
@@ -217,19 +209,14 @@ namespace Landis.Library.PnETCohorts
 
             SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPnET>>();
              
-            foreach (ISpecies spc in EcoregionData.ModelCore.Species)
+            foreach (ISpecies spc in Globals.ModelCore.Species)
             {
                 SpeciesPnET species = new SpeciesPnET(spc);
-
                 SpeciesCombinations.Add(new Tuple<ISpecies, ISpeciesPnET>(spc, species));
             }
-
-
         }
-
-
-        SpeciesPnET(PostFireRegeneration postFireGeneration,
-            //float wuecnst, 
+        //---------------------------------------------------------------------
+        SpeciesPnET(PostFireRegeneration postFireGeneration, 
             float dnsc,
             float cfracbiomass,
             float kwdlit,
@@ -263,6 +250,7 @@ namespace Landis.Library.PnETCohorts
             float foln,
             float amaxa,
             float amaxb,
+            float amaxfrac,
             float co2AMaxBEff,
             float maintresp,
             float bfolresp,
@@ -288,7 +276,6 @@ namespace Landis.Library.PnETCohorts
             )
         {
             this.postfireregeneration = postFireGeneration;
-            //this._wuecnst = wuecnst;
             this._dnsc = dnsc;
             this._cfracbiomass = cfracbiomass;
             this._kwdlit = kwdlit;
@@ -322,6 +309,7 @@ namespace Landis.Library.PnETCohorts
             this._dvpd2 = dvpd2;
             this._amaxa = amaxa;
             this._amaxb = amaxb;
+            this._amaxfrac = amaxfrac;
             this._co2AMaxBEff = co2AMaxBEff;
             this._maintresp = maintresp;
             this._bfolresp = bfolresp;
@@ -345,15 +333,14 @@ namespace Landis.Library.PnETCohorts
             this._maxFracFol = maxFracFol;
             this._o3Coeff = o3Coeff;
             this._leafOnMinT = leafOnMinT;
-            //  initBiomass = initBiomass - Senescence
-            this._initBiomass = (int)((uint)(1F / dnsc * (ushort)initialnsc) - ((uint)(fracbelowg * (uint)(1F / dnsc * (ushort)initialnsc))*toroot) - ((uint)((1 - fracbelowg) * (uint)(1F / dnsc * (ushort)initialnsc)) * towood));
-            //senescence = ((Root * species.TOroot) + Wood * species.TOwood);
+            uint initBiomass = (uint)(initialnsc/(dnsc * cfracbiomass));
+            this._initBiomass = (int)((initBiomass - ((uint)(fracbelowg * initBiomass))*toroot) - ((uint)((1 - fracbelowg) * initBiomass) * towood));
         }
-       
+        //---------------------------------------------------------------------
         private SpeciesPnET(ISpecies species)
         {
-            //_wuecnst = wuecnst[species];
-            _initBiomass = (int)((uint)(1F / dnsc[species] * (ushort)initialnsc[species]) - ((uint)(fracbelowg[species] * (uint)(1F / dnsc[species] * (ushort)initialnsc[species])) * toroot[species]) - ((uint)((1 - fracbelowg[species]) * (uint)(1F / dnsc[species] * (ushort)initialnsc[species])) * towood[species]));
+            uint initBiomass = (uint)(cfracbiomass[species]/(dnsc[species] * initialnsc[species]));
+            _initBiomass = (int)((initBiomass - ((uint)(fracbelowg[species] * initBiomass)) * toroot[species]) - ((uint)((1 - fracbelowg[species]) * initBiomass) * towood[species]));
             _dnsc = dnsc[species];
             _cfracbiomass = cfracbiomass[species];
             _kwdlit = kwdlit[species];
@@ -387,6 +374,7 @@ namespace Landis.Library.PnETCohorts
             _dvpd2 = dvpd2[species];
             _amaxa = amaxa[species];
             _amaxb = amaxb[species];
+            _amaxfrac = amaxfrac[species];
             _co2AMaxBEff = co2AMaxBEff[species];
             _maintresp = maintresp[species];
             _bfolresp = bfolresp[species];
@@ -413,12 +401,10 @@ namespace Landis.Library.PnETCohorts
             _maxFracFol = maxFracFol[species];
             _o3Coeff = o3Coeff[species];
             _leafOnMinT = leafOnMinT[species];
-          
         }
-        
-
+        //---------------------------------------------------------------------
         #region Accessors
-
+        //---------------------------------------------------------------------
         public int Index
         {
             get
@@ -426,6 +412,7 @@ namespace Landis.Library.PnETCohorts
                 return index;
             }
         }
+        //---------------------------------------------------------------------
         public float BFolResp
         {
             get
@@ -433,6 +420,7 @@ namespace Landis.Library.PnETCohorts
                 return _bfolresp;
             }
         }
+        //---------------------------------------------------------------------
         public float ColdTol
         {
             get
@@ -440,6 +428,7 @@ namespace Landis.Library.PnETCohorts
                 return _coldTol;
             }
         }
+        //---------------------------------------------------------------------
         public float AmaxA
         {
             get
@@ -447,6 +436,7 @@ namespace Landis.Library.PnETCohorts
                 return _amaxa;
             }
         }
+        //---------------------------------------------------------------------
         public float AmaxB
         {
             get
@@ -454,6 +444,15 @@ namespace Landis.Library.PnETCohorts
                 return _amaxb;
             }
         }
+        //---------------------------------------------------------------------        
+        public float AmaxFrac
+        {
+            get
+            {
+                return _amaxfrac;
+            }
+        }
+        //---------------------------------------------------------------------
         public float CO2AMaxBEff
         {
             get
@@ -461,7 +460,7 @@ namespace Landis.Library.PnETCohorts
                 return _co2AMaxBEff;
             }
         }
-       
+        //---------------------------------------------------------------------
         public float MaintResp
         {
             get
@@ -469,7 +468,7 @@ namespace Landis.Library.PnETCohorts
                 return _maintresp;
             }
         }
-
+        //---------------------------------------------------------------------
         public float PsnTMin
         {
             get
@@ -477,6 +476,7 @@ namespace Landis.Library.PnETCohorts
                 return _psntmin;
             }
         }
+        //---------------------------------------------------------------------
         public float PsnTMax
         {
             get
@@ -487,13 +487,14 @@ namespace Landis.Library.PnETCohorts
                     return _psntmax;
             }
         }
+        //---------------------------------------------------------------------
         public float DVPD1
         {
             get
             {
                 return _dvpd1;
             }
-        }
+        }//---------------------------------------------------------------------
         public float FolN
         {
             get
@@ -501,6 +502,7 @@ namespace Landis.Library.PnETCohorts
                 return _foln;
             }
         }
+        //---------------------------------------------------------------------
         public float DVPD2
         {
             get
@@ -509,6 +511,7 @@ namespace Landis.Library.PnETCohorts
             }
 
         }
+        //---------------------------------------------------------------------
         public float PsnTOpt
         {
             get
@@ -516,6 +519,7 @@ namespace Landis.Library.PnETCohorts
                 return _psntopt;
             }
         }
+        //---------------------------------------------------------------------
         public float Q10
         {
             get
@@ -523,6 +527,7 @@ namespace Landis.Library.PnETCohorts
                 return _q10;
             }
         }
+        //---------------------------------------------------------------------
         public float EstRad
         {
             get
@@ -530,6 +535,7 @@ namespace Landis.Library.PnETCohorts
                 return _estrad;
             }
         }
+        //---------------------------------------------------------------------
         public bool PreventEstablishment
         {
             get 
@@ -537,6 +543,7 @@ namespace Landis.Library.PnETCohorts
                 return _preventestablishment; 
             }
         }
+        //---------------------------------------------------------------------
         public float FolLignin
         {
             get 
@@ -544,6 +551,7 @@ namespace Landis.Library.PnETCohorts
                 return _follignin; 
             }
         }
+        //---------------------------------------------------------------------
         public float EstMoist
         {
             get 
@@ -551,6 +559,7 @@ namespace Landis.Library.PnETCohorts
                 return _estmoist; 
             }
         }
+        //---------------------------------------------------------------------
         public float MaxPest
         {
             get
@@ -558,6 +567,7 @@ namespace Landis.Library.PnETCohorts
                 return _maxPest;
             }
         }
+        //---------------------------------------------------------------------
         public float TOwood
         {
             get
@@ -565,8 +575,7 @@ namespace Landis.Library.PnETCohorts
                 return _towood;
             }
         }
-
-
+        //---------------------------------------------------------------------
         public float K
         {
             get
@@ -574,6 +583,7 @@ namespace Landis.Library.PnETCohorts
                 return _k;
             }
         }
+        //---------------------------------------------------------------------
         public float InitialNSC
         {
             get
@@ -581,6 +591,7 @@ namespace Landis.Library.PnETCohorts
                 return _initialnsc;
             }
         }
+        //---------------------------------------------------------------------
         public float HalfSat
         {
             get
@@ -588,6 +599,7 @@ namespace Landis.Library.PnETCohorts
                 return _halfsat;
             }
         }
+        //---------------------------------------------------------------------
         public float TOroot
         {
             get
@@ -595,6 +607,7 @@ namespace Landis.Library.PnETCohorts
                 return _toroot;
             }
         }
+        //---------------------------------------------------------------------
         public float TOfol
         {
             get
@@ -602,6 +615,7 @@ namespace Landis.Library.PnETCohorts
                 return _tofol;
             }
         }
+        //---------------------------------------------------------------------
         public float SLWDel
         {
             get
@@ -609,6 +623,7 @@ namespace Landis.Library.PnETCohorts
                 return _slwdel;
             }
         }
+        //---------------------------------------------------------------------
         public float SLWmax
         {
             get
@@ -616,6 +631,7 @@ namespace Landis.Library.PnETCohorts
                 return _slwmax;
             }
         }
+        //---------------------------------------------------------------------
         public float H4
         {
             get
@@ -623,6 +639,7 @@ namespace Landis.Library.PnETCohorts
                 return _h4;
             }
         }
+        //---------------------------------------------------------------------
         public float H3
         {
             get
@@ -630,6 +647,7 @@ namespace Landis.Library.PnETCohorts
                 return _h3;
             }
         }
+        //---------------------------------------------------------------------
         public float H2
         {
             get
@@ -637,6 +655,7 @@ namespace Landis.Library.PnETCohorts
                 return _h2;
             }
         }
+        //---------------------------------------------------------------------
         public float H1
         {
             get
@@ -644,6 +663,7 @@ namespace Landis.Library.PnETCohorts
                 return _h1;
             }
         }
+        //---------------------------------------------------------------------
         public float PsnAgeRed
         {
             get
@@ -651,6 +671,7 @@ namespace Landis.Library.PnETCohorts
                 return _psnagered;
             }
         }
+        //---------------------------------------------------------------------
         public float KWdLit
         {
             get
@@ -658,6 +679,7 @@ namespace Landis.Library.PnETCohorts
                 return _kwdlit;
             }
         }
+        //---------------------------------------------------------------------
         public float FrActWd
         {
             get
@@ -665,6 +687,7 @@ namespace Landis.Library.PnETCohorts
                 return _fractWd;
             }
         }
+        //---------------------------------------------------------------------
         public float FracFol
         {
             get
@@ -672,6 +695,7 @@ namespace Landis.Library.PnETCohorts
                 return _fracfol;
             }
         }
+        //---------------------------------------------------------------------
         public float FracBelowG
         {
             get
@@ -679,6 +703,7 @@ namespace Landis.Library.PnETCohorts
                 return _fracbelowg;
             }
         }
+        //---------------------------------------------------------------------
         public float DNSC
         {
             get
@@ -686,6 +711,7 @@ namespace Landis.Library.PnETCohorts
                 return _dnsc;
             }
         }
+        //---------------------------------------------------------------------
         public int InitBiomass
         {
             get
@@ -693,6 +719,7 @@ namespace Landis.Library.PnETCohorts
                 return _initBiomass;
             }
         }
+        //---------------------------------------------------------------------
         public float CFracBiomass
         {
             get
@@ -700,6 +727,7 @@ namespace Landis.Library.PnETCohorts
                 return _cfracbiomass;
             }
         }
+        //---------------------------------------------------------------------
         public string Name
         {
             get
@@ -707,8 +735,7 @@ namespace Landis.Library.PnETCohorts
                 return name;
             }
         }
-
-     
+        //---------------------------------------------------------------------
         public int MaxSproutAge
         {
             get
@@ -716,6 +743,7 @@ namespace Landis.Library.PnETCohorts
                 return maxSproutAge;
             }
         }
+        //---------------------------------------------------------------------
         public int MinSproutAge
         {
             get
@@ -723,7 +751,7 @@ namespace Landis.Library.PnETCohorts
                 return  minSproutAge;
             }
         }
-
+        //---------------------------------------------------------------------
         public float CO2HalfSatEff
         {
             get
@@ -731,15 +759,15 @@ namespace Landis.Library.PnETCohorts
                 return _co2HalfSatEff;
             }
         }
+        //---------------------------------------------------------------------
         public Landis.Core.PostFireRegeneration PostFireRegeneration
         {
             get
             {
                 return postfireregeneration;
-
             }
         }
-        
+        //---------------------------------------------------------------------
         public int MaxSeedDist
         {
             get
@@ -747,6 +775,7 @@ namespace Landis.Library.PnETCohorts
                 return maxSeedDist;
             }
         }
+        //---------------------------------------------------------------------
         public int EffectiveSeedDist
         {
             get
@@ -754,7 +783,7 @@ namespace Landis.Library.PnETCohorts
                 return effectiveSeedDist;
             }
         }
-       
+        //---------------------------------------------------------------------
         public float VegReprodProb
         {
             get
@@ -762,6 +791,7 @@ namespace Landis.Library.PnETCohorts
                 return vegReprodProb;
             }
         }
+        //---------------------------------------------------------------------
         public byte FireTolerance
         {
             get
@@ -769,6 +799,7 @@ namespace Landis.Library.PnETCohorts
                 return fireTolerance;
             }
         }
+        //---------------------------------------------------------------------
         public byte ShadeTolerance
         {
             get
@@ -776,6 +807,7 @@ namespace Landis.Library.PnETCohorts
                 return shadeTolerance;
             }
         }
+        //---------------------------------------------------------------------
         public int Maturity
         {
             get
@@ -783,6 +815,7 @@ namespace Landis.Library.PnETCohorts
                 return maturity;
             }
         }
+        //---------------------------------------------------------------------
         public int Longevity
         {
             get
@@ -790,6 +823,7 @@ namespace Landis.Library.PnETCohorts
                 return longevity;
             }
         }
+        //---------------------------------------------------------------------
         public string O3StomataSens
         {
             get
@@ -797,7 +831,7 @@ namespace Landis.Library.PnETCohorts
                 return _ozoneSens;
             }
         }
-
+        //---------------------------------------------------------------------
         public float FolNShape
         {
             get
@@ -805,6 +839,7 @@ namespace Landis.Library.PnETCohorts
                 return _folNShape;
             }
         }
+        //---------------------------------------------------------------------
         public float MaxFolN
         {
             get
@@ -812,6 +847,7 @@ namespace Landis.Library.PnETCohorts
                 return _maxFolN;
             }
         }
+        //---------------------------------------------------------------------
         public float FracFolShape
         {
             get
@@ -819,6 +855,7 @@ namespace Landis.Library.PnETCohorts
                 return _fracFolShape;
             }
         }
+        //---------------------------------------------------------------------
         public float MaxFracFol
         {
             get
@@ -826,6 +863,7 @@ namespace Landis.Library.PnETCohorts
                 return _maxFracFol;
             }
         }
+        //---------------------------------------------------------------------
         public float O3GrowthSens
         {
             get
@@ -833,6 +871,7 @@ namespace Landis.Library.PnETCohorts
                 return _o3Coeff;
             }
         }
+        //---------------------------------------------------------------------
         public float LeafOnMinT
         {
             get
@@ -840,19 +879,18 @@ namespace Landis.Library.PnETCohorts
                 return _leafOnMinT;
             }
         }
+        //---------------------------------------------------------------------
         #endregion
-
+        //---------------------------------------------------------------------
         public static List<string> ParameterNames
         {
             get
             {
                 System.Type type = typeof(SpeciesPnET); // Get type pointer
                 List<string> names = type.GetProperties().Select(x => x.Name).ToList(); // Obtain all fields
-
-
                 return names;
             }
         }
-       
+        //---------------------------------------------------------------------
     }
 }

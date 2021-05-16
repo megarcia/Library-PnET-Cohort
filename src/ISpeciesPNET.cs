@@ -1,4 +1,5 @@
-namespace Landis.Library.PnETCohorts
+ 
+namespace Landis.Library.PnETCohorts 
 {
     /// <summary>
     /// The information for a tree species (its index and parameters).
@@ -101,13 +102,15 @@ namespace Landis.Library.PnETCohorts
         // Vapor pressure deficit response parameter 
         float DVPD2 { get; }
 
-
         // Reference photosynthesis (g)
         float AmaxA { get; }
 
         // Response parameter for photosynthesis to N
         float AmaxB { get; }
-        
+
+        // Modifier of AmaxA due to averaging non-linear Amax data
+        float AmaxFrac { get; }
+
         // Referece maintenance respiration 
         float MaintResp { get; }
 

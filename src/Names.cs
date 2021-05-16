@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Landis.Library.PnETCohorts
-{ 
+{
+
     public static class Names
     {
         public static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
-
         public const string ExtensionName = "PnET-Succession";
         public const string PNEToutputsites = "PNEToutputsites";
         public const string EcoregionParameters = "EcoregionParameters";
@@ -33,14 +33,15 @@ namespace Landis.Library.PnETCohorts
         public const string PressureHeadCalculationMethod = "PressureHeadCalculationMethod";
         public const string Wythers = "Wythers";
         public const string DTemp = "DTemp";
-        public const string CO2AMaxBEff = "CO2AMaxBEff";
+        public const string CO2AMaxBEff = "CO2AMaxBEff";       
         public const string Permafrost = "Permafrost";
         public const string LeakageFrostDepth = "LeakageFrostDepth";
         public const string CohortBinSize = "CohortBinSize";
         public const string InvertPest = "InvertPest";
-        //public const string PermafrostMinVegBiomass = "PermafrostMinVegBiomass";
+        public const string PARunits = "PARunits";
+        public const string SpinUpWaterStress = "SpinUpWaterStress";
         public const string PrecipEventsWithReplacement = "PrecipEventsWithReplacement";
-
+        public const string Parallel = "Parallel";
 
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";
@@ -55,8 +56,7 @@ namespace Landis.Library.PnETCohorts
         public const string climateFileName = "climateFileName";
         public const string WinterSTD = "WinterSTD";
         public const string MossDepth = "MossDepth";
-
-
+        
         //Species parameters
         public const string FolNShape = "FolNShape";
         public const string MaxFolN = "MaxFolN";
@@ -65,6 +65,8 @@ namespace Landis.Library.PnETCohorts
         public const string O3Coeff = "O3GrowthSens";
         public const string LeafOnMinT = "LeafOnMinT"; // Optional
 
+        //---------------------------------------------------------------------
+        // Does not appear this function is used anywhere
         public static void AssureIsName(string name)
         {
             if (IsName(name) == false)
@@ -73,6 +75,8 @@ namespace Landis.Library.PnETCohorts
                 throw new System.Exception(msg);
             }
         }
+        //---------------------------------------------------------------------
+        // Does not appear this function is used anywhere
         public static bool IsName(string name)
         {
             List<string> Names = AllNames;
@@ -82,6 +86,7 @@ namespace Landis.Library.PnETCohorts
             }
             return false;
         }
+        //---------------------------------------------------------------------
         public static List<string> AllNames
         {
             get
@@ -97,12 +102,12 @@ namespace Landis.Library.PnETCohorts
                 return Names;
             }
         }
-
+        //---------------------------------------------------------------------
         public static void LoadParameters(SortedDictionary<string, Parameter<string>> modelParameters)
         {
             parameters = modelParameters;
         }
-
+        //---------------------------------------------------------------------
         public static bool TryGetParameter(string label, out Parameter<string> parameter)
         {
             parameter = null;
@@ -119,7 +124,7 @@ namespace Landis.Library.PnETCohorts
                 return true;
             }
         }
-
+        //---------------------------------------------------------------------
         public static Dictionary<string, Parameter<string>> LoadTable(string label, List<string> RowLabels, List<string> Columnheaders, bool transposed = false)
         {
             string filename = GetParameter(label).Value;
@@ -128,7 +133,7 @@ namespace Landis.Library.PnETCohorts
             Dictionary<string, Parameter<string>> parameters = Landis.Data.Load<Dictionary<string, Parameter<string>>>(filename, parser);
             return parameters;
         }
-
+        //---------------------------------------------------------------------
         public static Parameter<string> GetParameter(string label)
         {
             if (parameters.ContainsKey(label) == false)
@@ -139,6 +144,7 @@ namespace Landis.Library.PnETCohorts
             return parameters[label];
 
         }
+        //---------------------------------------------------------------------
         public static Parameter<string> GetParameter(string label, float min, float max)
         {
             if (parameters.ContainsKey(label) == false)
@@ -161,8 +167,7 @@ namespace Landis.Library.PnETCohorts
                 }
             }
             return p;
-
         }
-
+        //---------------------------------------------------------------------
     }
 }

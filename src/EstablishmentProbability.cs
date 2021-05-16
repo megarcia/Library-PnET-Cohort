@@ -12,7 +12,7 @@ namespace Landis.Library.PnETCohorts
         private Dictionary<ISpeciesPnET, float> _fwater;
         private Dictionary<ISpeciesPnET, float> _frad;
 
-        private static int Timestep;
+        //private static int Timestep;
 
        
         public bool HasEstablished(ISpeciesPnET species)
@@ -24,13 +24,13 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<byte> probability = new Library.Parameters.Species.AuxParm<byte>(EcoregionData.ModelCore.Species);
-                foreach (ISpecies spc in EcoregionData.ModelCore.Species)
+                Landis.Library.Parameters.Species.AuxParm<byte> probability = new Library.Parameters.Species.AuxParm<byte>(Globals.ModelCore.Species);
+                foreach (ISpecies spc in Globals.ModelCore.Species)
                 {
                     ISpeciesPnET speciespnet = SpeciesParameters.SpeciesPnET[spc];
                     probability[spc] = (byte)(100F * _pest[speciespnet]);
                 }
-                return probability;
+                return probability; //0-100 index
             }
         }
         public float Get_FWater(ISpeciesPnET species)
@@ -55,70 +55,17 @@ namespace Landis.Library.PnETCohorts
         }
         
        
-        public static void Initialize(int timestep)
+        /*public static void Initialize(int timestep)
         {
             Timestep = timestep;
 
              
-        }
+        }*/
      
-        /*public void Calculate_Establishment(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology)
-        {
-            foreach (ISpeciesPnET spc in PlugIn.SpeciesPnET.AllSpecies)
-            {
-              
-
-                if (pnetvars.Tmin > spc.PsnTMin)
-                {
-                    // Adjust HalfSat for CO2 effect
-                    float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
-                    float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
-                    float frad = (float)Math.Pow(Cohort.ComputeFrad(PAR, adjHalfSat), spc.EstRad);
-
-
-                    float PressureHead = hydrology.GetPressureHead(ecoregion);
-                        
-                    float fwater = (float)Math.Pow(Cohort.ComputeFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
-
-                    float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);
-                    if (!spc.PreventEstablishment)
-                    {
-                        if (pest > _pest[spc])
-                        {
-                            _pest[spc] = pest;
-                            _fwater[spc] = fwater;
-                            _frad[spc] = frad;
-
-                            if (pest > (float)PlugIn.ContinuousUniformRandom())
-                            {
-                                if (HasEstablished(spc) == false)
-                                {
-                                    _hasEstablished.Add(spc);
-                                }
-
-                            }
-
-                        }
-                    }
-                    if (establishment_siteoutput != null)
-                    {
-
-                        establishment_siteoutput.Add(((int)pnetvars.Year).ToString() + "," + spc.Name + "," + pest + "," + fwater + "," + frad + "," + HasEstablished(spc));
-
-                        // TODO: win time by reducing calls to write
-                        establishment_siteoutput.Write();
-                    }
-                }
-            }
-        }
-        */
-
         public Dictionary<ISpeciesPnET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat, bool invertPest)
         {
             Dictionary<ISpeciesPnET, float> estabDict = new Dictionary<ISpeciesPnET, float>();
-            //_fwater = new Dictionary<ISpeciesPnET, float>();
-            //_pest = new Dictionary<ISpeciesPnET, float>();
-            //_frad = new Dictionary<ISpeciesPnET, float>();
+
             float halfSatRange = maxHalfSat - minHalfSat;
 
             foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
@@ -137,36 +84,15 @@ namespace Landis.Library.PnETCohorts
                         float frad_slope = (frad_adj_int * 2) - 1;
                         adjFrad = 1 - frad_adj_int + frad * frad_slope;
                     }
-
                     
                     float PressureHead = hydrology.GetPressureHead(ecoregion);
 
                     float fwater = (float)(Math.Min(1.0,(Math.Pow(Cohort.ComputeFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), 2) * (1/(Math.Pow(spc.EstMoist,2))))));
 
-                    //float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater * spc.MaxPest), Timestep);
                     float pest = (float) Math.Min(1.0,adjFrad * fwater);
                     estabDict[spc] = pest;
-                    _pest[spc] = pest;
                     _fwater[spc] = fwater;
                     _frad[spc] = adjFrad;
-                    /*if (fwater < _fwater[spc])
-                    {
-                        _fwater[spc] = fwater;
-                    }
-                    if (frad < _frad[spc])
-                    {
-                        _frad[spc] = frad;
-                    }
-                    */
-                    /*if (establishment_siteoutput != null)
-                    {
-
-                        establishment_siteoutput.Add(((int)pnetvars.Year).ToString() + "," + spc.Name + "," + pest + "," + fwater + "," + frad + "," + HasEstablished(spc));
-
-                        // TODO: win time by reducing calls to write
-                        establishment_siteoutput.Write();
-                    }
-                     * */
                 }
                 
             }
@@ -225,6 +151,8 @@ namespace Landis.Library.PnETCohorts
                 // TODO: win time by reducing calls to write
                 establishment_siteoutput.Write();
             }
+            // Record annualPest to be accessed as Probability
+            _pest[spc] = annualPest;
         }
     }
 }

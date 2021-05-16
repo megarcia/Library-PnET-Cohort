@@ -31,6 +31,7 @@ namespace Landis.Library.PnETCohorts
                 return co2;
             }
         }
+        //---------------------------------------------------------------------
         public string Year
         {
             get
@@ -38,6 +39,7 @@ namespace Landis.Library.PnETCohorts
                 return year;
             }
         }
+        //---------------------------------------------------------------------
         public string Month
         {
             get
@@ -45,6 +47,7 @@ namespace Landis.Library.PnETCohorts
                 return month;
             }
         }
+        //---------------------------------------------------------------------
         public float PAR0
         {
             get
@@ -52,6 +55,7 @@ namespace Landis.Library.PnETCohorts
                 return par0;
             }
         }
+        //---------------------------------------------------------------------
         public float Prec
         {
             get
@@ -59,6 +63,7 @@ namespace Landis.Library.PnETCohorts
                 return prec;
             }
         }
+        //---------------------------------------------------------------------
         public float Tmin
         {
             get
@@ -66,14 +71,15 @@ namespace Landis.Library.PnETCohorts
                 return tmin;
             }
         }
+        //---------------------------------------------------------------------
         public float O3 
          { 
              get 
              { 
                  return o3; 
              } 
-         } 
-
+         }
+        //---------------------------------------------------------------------
         public float Tmax
         {
             get
@@ -81,17 +87,16 @@ namespace Landis.Library.PnETCohorts
                 return tmax;
             }
         }
-
+        //---------------------------------------------------------------------
         #endregion
 
-         
         public static void Initialize()
         {
             ClimateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)Names.GetParameter("climateFileName");
 
             Dictionary<IEcoregion, IObservedClimate> dict = new Dictionary<IEcoregion, IObservedClimate>();
 
-            foreach(IEcoregion ecoregion in EcoregionData.ModelCore.Ecoregions)
+            foreach(IEcoregion ecoregion in Globals.ModelCore.Ecoregions)
             {
                 if (ecoregion.Active == false) continue;
 
@@ -105,17 +110,18 @@ namespace Landis.Library.PnETCohorts
                 }
             }
         }
+        //---------------------------------------------------------------------
+        // Get the observed climate data from the cliamte txt file
         public static IObservedClimate GetClimateData(IEcoregion ecoregion)
         {
             return ClimateData[ClimateFileName[ecoregion]];
         }
-
-
+        //---------------------------------------------------------------------
+        // Get specific climate data from climate txt file
         public static ObservedClimate GetData(IEcoregion ecoregion, DateTime date)
         {
             // get the appropriate values as read in from a climate txt file
             IObservedClimate observed_climate = GetClimateData(ecoregion);
-
             try
             {
                 return GetData(observed_climate, date);
@@ -124,14 +130,14 @@ namespace Landis.Library.PnETCohorts
             {
                 throw new System.Exception("Can't get climate data for ecoregion "+ ecoregion.Name + " and date " + date.ToString());
             }
-            
         }
-        
+        //---------------------------------------------------------------------
+        // Get actual climate data values for specific date (Year, Month)
         public static ObservedClimate GetData(IObservedClimate observed_climate, DateTime date)
         {
             foreach (ObservedClimate d in observed_climate)
             {
-                if (d.Year.Length == 4)
+                if (d.Year.Length == 4) //single year record (e.g., 1974)
                 {
                     if (int.Parse(d.Month) == date.Month && date.Year == int.Parse(d.Year))
                     {
@@ -140,7 +146,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 else
                 {
-                    string[] yearExtremes = d.Year.Split('-');
+                    string[] yearExtremes = d.Year.Split('-'); // range of years (e.g., 1800-1900)
 
                     if (int.Parse(d.Month) == date.Month && int.Parse(yearExtremes[0]) <= date.Year && date.Year <= int.Parse(yearExtremes[1]))
                     {
@@ -150,8 +156,7 @@ namespace Landis.Library.PnETCohorts
             }
             throw new System.Exception("No climate entry for ecoregion date " + date);
         }
-         
-        
+        //---------------------------------------------------------------------
         public struct ColumnNumbers
         {
             public int Year;
@@ -162,7 +167,7 @@ namespace Landis.Library.PnETCohorts
             public int PAR0;
             public int Prec;
             public int O3;
-
+            //---------------------------------------------------------------------
             private static int GetColNr(string[] Headers, string Label)
             {
                 for (int h = 0; h < Headers.Count(); h++)
@@ -171,7 +176,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 return -1;
             }
-
+            //---------------------------------------------------------------------
             public ColumnNumbers(string HeaderLine)
             {
                 string[] Headers = HeaderLine.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries);
@@ -185,8 +190,9 @@ namespace Landis.Library.PnETCohorts
                 Prec = GetColNr(Headers, "Prec");
                 O3 = GetColNr(Headers, "O3");
             }
+            //---------------------------------------------------------------------
         }
-
+        //---------------------------------------------------------------------
         static string[] ReadClimateFile(string climatefilename)
         {
             string[] ClimateFileContent = System.IO.File.ReadAllLines(climatefilename).Where(l => !String.IsNullOrEmpty(l.Trim())).ToArray();
@@ -200,7 +206,7 @@ namespace Landis.Library.PnETCohorts
             }
             return ClimateFileContent;
         }
-
+        //---------------------------------------------------------------------
         private static T CheckInRange<T>(T value, T min, T max, string label)
            where T : System.IComparable<T>
         {
@@ -214,10 +220,12 @@ namespace Landis.Library.PnETCohorts
             }
             return value;
         }
+        //---------------------------------------------------------------------
+        // empty constructor
         ObservedClimate()
         { 
-        
         }
+        //---------------------------------------------------------------------
         public ObservedClimate(string filename)
         {
             List<string> ClimateFileContent = new List<string>(ReadClimateFile(filename));
@@ -242,16 +250,17 @@ namespace Landis.Library.PnETCohorts
 
                 data_lines.Add(climate);
             }
-
         }
+        //---------------------------------------------------------------------
         public IEnumerator<ObservedClimate> GetEnumerator()
         {
             return data_lines.GetEnumerator();
         }
-
+        //---------------------------------------------------------------------
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
+        //---------------------------------------------------------------------
     }
 }

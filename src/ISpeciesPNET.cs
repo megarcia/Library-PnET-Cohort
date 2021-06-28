@@ -147,5 +147,8 @@ namespace Landis.Library.PnETCohorts
         // Initial Biomass
         int InitBiomass { get; }
 
+        // Lower canopy NSC reserve 
+        float NSCReserve { get; }
+
     }
 }

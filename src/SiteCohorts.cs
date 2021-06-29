@@ -557,14 +557,14 @@ namespace Landis.Library.PnETCohorts
                     }
                     SubCanopyCohorts.Add(CumCohortBiomass, AllCohorts[cohort]);*/
                     SubCanopyCohorts.Add(subLayerIndex, AllCohorts[cohort]);
-                    if (rawBins.Count() < (cohortLayer + 1))
+                    while (rawBins.Count() < (cohortLayer + 1))
                     {
                         List<int> subList = new List<int>();
-                        subList.Add(subLayerIndex);
+                        //subList.Add(subLayerIndex);
                         rawBins.Add(subList);
                     }
-                    else
-                        rawBins[cohortLayer].Add(subLayerIndex);
+                    //else
+                    rawBins[cohortLayer].Add(subLayerIndex);
                     subLayerIndex++;
                 }
                 if (!cohortAges.Contains(AllCohorts[cohort].Age))
@@ -2224,33 +2224,50 @@ namespace Landis.Library.PnETCohorts
                 if (!(CohortBins[layerIndex].Contains(cohortBio)))
                     CohortBins[layerIndex].Add(cohortBio);
             }
+            bool tooManyLayers = false;
+            if (CohortBins.Count() > MaxCanopyLayers)
+            {
+                tooManyLayers = true;
+            }
+            if (tooManyLayers)
+            {
+                List<float> sortedRatios = layerThreshRatio.ToList();
+                sortedRatios.Sort();
+                sortedRatios.Reverse();
+                List<float> highestRatios = new List<float>();
+                for (int r = 0; r < (MaxCanopyLayers - 1); r++)
+                {
+                    highestRatios.Add(sortedRatios[r]);
+                }
 
+                CohortBins.Clear();
+                layerIndex = 0;
+                nlayers = 1;
+                CohortBins.Add(new List<double>());
+                CohortBins[0].Add(CohortBiomassList[0]);
+                int cohortInd = 0;
+                foreach (float cohortRatio in layerThreshRatio)
+                {
+                    if (highestRatios.Contains(cohortRatio))
+                    {
+                        //if (nlayers < (MaxCanopyLayers))
+                        //{
+                        layerIndex++;
+                        nlayers++;
 
-            /* // Actual layer configuration
-             List<List<int>> Bins = new List<List<int>>();
-             if (CohortBins.Count() == 0)
-             {
-                 // One canopy layer
-                 Bins.Add(new List<int>());
-                 for (int i = 0; i < CumSublayerBiomass.Count(); i++)
-                 {
-                     Bins[0].Add(i);
-                 }
-             }
-             else for (int i = 0; i <= CohortBins.Count(); i++)
-                 {
-                     // Multiple canopy layers
-                     Bins.Add(new List<int>());
+                        if (CohortBins.Count() < (layerIndex + 1))
+                        {
+                            CohortBins.Add(new List<double>());
+                        }
+                        //}
+                    }
+                    if (!(CohortBins[layerIndex].Contains(CohortBiomassList[cohortInd])))
+                        CohortBins[layerIndex].Add(CohortBiomassList[cohortInd]);
+                    cohortInd++;
+                }
 
-                     int[] minmax = MinMaxCohortNr(CohortBins, i, CumSublayerBiomass.Count());
+            }
 
-                     // Add index numbers to the Bins array
-                     for (int a = minmax[0]; a < ((i == CohortBins.Count()) ? minmax[1] + 1 : minmax[1]); a++)
-                     {
-                         Bins[i].Add(a);
-                     }
-                 }
-                 */
             return CohortBins;
         }
         public static uint ComputeKey(uint a, ushort b)

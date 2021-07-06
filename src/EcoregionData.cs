@@ -323,7 +323,14 @@ namespace Landis.Library.PnETCohorts
 
                     IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species, ecoregion.Latitude);
 
-                    all_values[ecoregion].Add(date, ecoregion_variables);
+                    try
+                    {
+                        all_values[ecoregion].Add(date, ecoregion_variables);
+                    }
+                    catch (System.ArgumentException e)
+                    {
+                        continue;
+                    }
 
                 }
                 data.Add(all_values[ecoregion][date]);

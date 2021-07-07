@@ -442,7 +442,7 @@ namespace Landis.Library.PnETCohorts
                 //  Add those cohorts that were born at the current year
                 while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == (sortedAgeCohorts[0].Age - 1))
                 {
-                    Cohort cohort = new Cohort(SpeciesParameters.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName);
+                    Cohort cohort = new Cohort(sortedAgeCohorts[0].Species, SpeciesParameters.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName);
 
                     bool addCohort = AddNewCohort(cohort);
 
@@ -2218,14 +2218,14 @@ namespace Landis.Library.PnETCohorts
             List<int> reduction = new List<int>();
 
             List<Cohort> ToRemove = new List<Cohort>();
-            
+
             foreach (List<Cohort> species_cohort in cohorts.Values)
             {
-                Landis.Library.BiomassCohorts.SpeciesCohorts species_cohorts = GetSpeciesCohort(cohorts[species_cohort[0].Species]);
-                
-                for (int c =0;c< species_cohort.Count(); c++)
+                Landis.Library.PnETCohorts.SpeciesCohorts species_cohorts = GetSpeciesCohort(cohorts[species_cohort[0].Species]);
+
+                for (int c = 0; c < species_cohort.Count(); c++)
                 {
-                    Landis.Library.BiomassCohorts.ICohort cohort = species_cohort[c];
+                    Landis.Library.PnETCohorts.ICohort cohort = species_cohort[c];
 
                     // Disturbances return reduction in aboveground biomass
                     int _reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
@@ -2243,7 +2243,48 @@ namespace Landis.Library.PnETCohorts
                     }
                     //
                 }
-                
+
+            }
+
+            foreach (Cohort cohort in ToRemove)
+            {
+                RemoveCohort(cohort, disturbance.Type);
+            }
+
+            return reduction.Sum();
+        }
+
+        public int ReduceOrKillBiomassCohorts(IDisturbance disturbance)
+        {
+            List<int> reduction = new List<int>();
+
+            List<Cohort> ToRemove = new List<Cohort>();
+
+            foreach (List<Cohort> species_cohort in cohorts.Values)
+            {
+                Landis.Library.PnETCohorts.SpeciesCohorts species_cohorts = GetSpeciesCohort(cohorts[species_cohort[0].Species]);
+
+                for (int c = 0; c < species_cohort.Count(); c++)
+                {
+                    Landis.Library.PnETCohorts.ICohort cohort = species_cohort[c];
+
+                    // Disturbances return reduction in aboveground biomass
+                    int _reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
+
+                    reduction.Add(_reduction);
+                    if (reduction[reduction.Count() - 1] >= species_cohort[c].Biomass)  //Compare to aboveground biomass
+                    {
+                        ToRemove.Add(species_cohort[c]);
+                        // Edited by BRM - 090115
+                    }
+                    else
+                    {
+                        double reductionProp = (double)reduction[reduction.Count() - 1] / (double)species_cohort[c].Biomass;  //Proportion of aboveground biomass
+                        species_cohort[c].ReduceBiomass(this, reductionProp, disturbance.Type);  // Reduction applies to all biomass
+                    }
+                    //
+                }
+
             }
 
             foreach (Cohort cohort in ToRemove)
@@ -2296,7 +2337,6 @@ namespace Landis.Library.PnETCohorts
             }
              */
             ReduceOrKillBiomassCohorts(new Landis.Library.BiomassCohorts.WrappedDisturbance(disturbance));
-
         }
 
         void Landis.Library.AgeOnlyCohorts.ISiteCohorts.RemoveMarkedCohorts(Landis.Library.AgeOnlyCohorts.ISpeciesCohortsDisturbance disturbance)
@@ -2321,7 +2361,7 @@ namespace Landis.Library.PnETCohorts
 
             foreach (ISpecies spc in cohorts.Keys)
             {
-                Landis.Library.BiomassCohorts.SpeciesCohorts speciescohort = GetSpeciesCohort(cohorts[spc]);
+                Landis.Library.PnETCohorts.SpeciesCohorts speciescohort = GetSpeciesCohort(cohorts[spc]);
 
                 isSpeciesCohortDamaged.SetAllFalse(speciescohort.Count);
 
@@ -2489,13 +2529,13 @@ namespace Landis.Library.PnETCohorts
             return addCohort;
         }
 
-        Landis.Library.BiomassCohorts.SpeciesCohorts GetSpeciesCohort(List<Cohort> cohorts)
+        Landis.Library.PnETCohorts.SpeciesCohorts GetSpeciesCohort(List<Cohort> cohorts)
         {
-            Landis.Library.BiomassCohorts.SpeciesCohorts spc = new Library.BiomassCohorts.SpeciesCohorts(cohorts[0].Species, cohorts[0].Age, cohorts[0].Biomass);
+            Landis.Library.PnETCohorts.SpeciesCohorts spc = new Library.PnETCohorts.SpeciesCohorts(cohorts[0]);
 
             for (int c = 1; c < cohorts.Count; c++)
             {
-                spc.AddNewCohort(cohorts[c].Age, cohorts[c].Biomass);
+                spc.AddNewCohort(cohorts[c]);
             }
             
 

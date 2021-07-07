@@ -529,9 +529,9 @@ namespace Landis.Library.PnETCohorts
         }
         //---------------------------------------------------------------------
         // Constructor
-        public Cohort(ISpeciesPnET speciesPnET, ushort year_of_birth, string SiteName) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
+        public Cohort(ISpecies species, ISpeciesPnET speciesPnET, ushort year_of_birth, string SiteName) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
         {
-            this.species = (ISpecies)speciesPnET;
+            this.species = species;
             this.speciesPnET = speciesPnET;
             data.Age = 1;
             data.ColdKill = int.MaxValue;
@@ -557,14 +557,14 @@ namespace Landis.Library.PnETCohorts
         public Cohort(ISpecies species,
                       CohortData cohortData)
         {
-            this.species = (ISpecies)species;
-            this.speciesPnET = SpeciesParameters.SpeciesPnET.AllSpecies[speciesPnET.Index];
+            this.species = species;
+            this.speciesPnET = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
             this.data = cohortData;
         }
         //---------------------------------------------------------------------
         public Cohort(Cohort cohort) // : base(cohort.species, new Landis.Library.PnETCohorts.CohortData(cohort.age, cohort.Biomass))
         {
-            this.species = (ISpecies)cohort.SpeciesPnET;
+            this.species = cohort.Species;
             this.speciesPnET = cohort.speciesPnET;
             this.data.Age = cohort.Age;
             this.data.NSC = cohort.NSC;
@@ -578,6 +578,7 @@ namespace Landis.Library.PnETCohorts
         public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, string SiteName, ushort firstYear)
         {
             InitializeSubLayers();
+            this.species = (ISpecies)speciesPnET;
             this.speciesPnET = speciesPnET;
             this.data.Age = age;
             this.data.Biomass = woodBiomass;

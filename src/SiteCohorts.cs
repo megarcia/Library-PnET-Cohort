@@ -2096,7 +2096,7 @@ namespace Landis.Library.PnETCohorts
             }
             return Bins;
         }*/
-        static List<double> layerThreshRatio = new List<double>();
+        private List<double> layerThreshRatio = new List<double>();
         private List<List<double>> GetBinsByCohort(List<double> CohortBiomassList)
         {
             if (CohortBiomassList.Count() == 0)
@@ -2721,4 +2721,3 @@ namespace Landis.Library.PnETCohorts
 
 
 }
-

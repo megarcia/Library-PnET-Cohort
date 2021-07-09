@@ -12,7 +12,7 @@ namespace Landis.Library.PnETCohorts
         public static ushort IMAX { get; private set; }
         public static readonly object CWDThreadLock = new object();
         public static readonly object litterThreadLock = new object();
-        private static readonly object distributionThreadLock = new object();
+        public static readonly object distributionThreadLock = new object();
 
         public static void InitializeCore(ICore mCore, ushort IMAX)
         {

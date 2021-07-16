@@ -222,7 +222,7 @@ namespace Landis.Library.PnETCohorts
                     umolPAR = (sitecohorts.SubcanopyPAR * 2.02f); // convertsolar radiation (W/m2) to PAR (umol/m2*s) [Reis and Ribeiro 2019 (Consants and Values)]
 
                 // mm/month
-                PET = (float)Calculate_PotentialEvapotranspiration_umol(umolPAR, variables.Tday, variables.Daylength);
+                PET = (float)Calculate_PotentialEvapotranspiration_umol(umolPAR, variables.Tday, variables.DaySpan);
                 float pressurehead = pressureheadtable[sitecohorts.Ecoregion, (int)Math.Round(Water * 100)];
 
                 // Evaporation begins to decline at 75% of field capacity (Robock et al. 1995)

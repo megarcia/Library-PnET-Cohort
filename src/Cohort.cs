@@ -155,7 +155,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return NSC / (FActiveBiom * (data.TotalBiomass + Fol));
+                return NSC / ((FActiveBiom * (data.TotalBiomass + Fol))*SpeciesPnET.CFracBiomass);
             }
         }
         //---------------------------------------------------------------------
@@ -708,9 +708,11 @@ namespace Landis.Library.PnETCohorts
             //    if (success == false) throw new System.Exception("Error adding water, frozenWater = " + frozenWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             //}
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature
-            data.MaintenanceRespiration[index] = (1 / (float)Globals.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * data.TotalBiomass);//gC //IMAXinverse
+            data.MaintenanceRespiration[index] = (1 / (float)Globals.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * (data.TotalBiomass * speciesPnET.CFracBiomass));//gC //IMAXinverse
             // Subtract mainenance respiration (gC/mo)
             data.NSC -= MaintenanceRespiration[index];
+            if (data.NSC < 0)
+                data.NSC = 0f;
 
 
             // Woody decomposition: do once per year to reduce unnescessary computation time so with the last subcanopy layer 
@@ -740,24 +742,17 @@ namespace Landis.Library.PnETCohorts
 
                     // Release of nsc, will be added to biomass components next year
                     // Assumed that NSC will have a minimum concentration, excess is allocated to biomass
-                    float Allocation = Math.Max(NSC - (speciesPnET.DNSC * FActiveBiom * TotalBiomass * speciesPnET.CFracBiomass), 0);
-                    data.TotalBiomass += Allocation;
+                    float Allocation = Math.Max(NSC - (speciesPnET.DNSC * FActiveBiom * data.TotalBiomass * speciesPnET.CFracBiomass), 0);
+                    data.TotalBiomass += Allocation / speciesPnET.CFracBiomass;  // convert gC to gDW
                     data.BiomassMax = Math.Max(BiomassMax, data.TotalBiomass);
                     data.NSC -= Allocation;
+                    if (data.NSC < 0)
+                        data.NSC = 0f;
                     data.Age++;
 
                     //firstDefol = true;
                     // firstAlloc = true;
                 }
-            }
-            if (coldKillBoolean)
-            {
-                data.ColdKill = (int)Math.Floor(ecoregion.Variables.Tave - (3.0 * ecoregion.WinterSTD));
-                data.Leaf_On = false;
-                data.NSC = 0.0F;
-                float foliageSenescence = FoliageSenescence();
-                addlitter(foliageSenescence, SpeciesPnET);
-                data.LastFoliageSenescence = foliageSenescence;
             }
             // Phenology: do once per cohort per month, using the first sublayer 
             if (index == 0)
@@ -809,7 +804,7 @@ namespace Landis.Library.PnETCohorts
                     float NSClimit = data.NSC;
                     if (mainLayerPAR < ecoregion.Variables.PAR0) // indicates below the top layer
                     {
-                        NSClimit = data.NSC - (speciesPnET.NSCReserve * (FActiveBiom * (data.Biomass + data.Fol) * speciesPnET.CFracBiomass));
+                        NSClimit = data.NSC - (speciesPnET.NSCReserve * (FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass));
                     }
                     //float IdealFol = CalculateTargetFoliage(layerLastLAI, layerMaxLAI, adjFracFol, index);
 
@@ -820,13 +815,15 @@ namespace Landis.Library.PnETCohorts
                         {
                             // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                             // carbon fraction of biomass to convert C to DW
-                            float Folalloc = Math.Max(0, Math.Min(NSC, speciesPnET.CFracBiomass * (IdealFol - Fol))); // gC/mo
+                            float Folalloc = Math.Max(0, Math.Min(NSClimit, speciesPnET.CFracBiomass * (IdealFol - Fol))); // gC/mo
 
                             // Add foliage allocation to foliage
                             data.Fol += Folalloc / speciesPnET.CFracBiomass;// gDW
 
                             // Subtract from NSC
                             data.NSC -= Folalloc;
+                            if (data.NSC < 0)
+                                data.NSC = 0f;
                         }
                     }
                     //else if (ecoregion.Variables.Month == (int)Constants.Months.June) //Apply defoliation only in June
@@ -847,9 +844,9 @@ namespace Landis.Library.PnETCohorts
                             {
                                 // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                                 // carbon fraction of biomass to convert C to DW
-                                float Folalloc = Math.Max(0f, Math.Min(NSC, speciesPnET.CFracBiomass * ((0.70f * IdealFol) - Fol)));  // 70% refoliation
+                                float Folalloc = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * ((0.70f * IdealFol) - Fol)));  // 70% refoliation
 
-                                float Folalloc2 = Math.Max(0f, Math.Min(NSC, speciesPnET.CFracBiomass * (0.95f * IdealFol - Fol)));  // cost of refol is the cost of getting to IdealFol
+                                float Folalloc2 = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * (0.95f * IdealFol - Fol)));  // cost of refol is the cost of getting to IdealFol
 
                                 data.Fol += Folalloc / speciesPnET.CFracBiomass;// gDW
 
@@ -861,14 +858,15 @@ namespace Landis.Library.PnETCohorts
                             {
                                 // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                                 // carbon fraction of biomass to convert C to DW
-                                float Folalloc = Math.Max(0f, Math.Min(NSC, speciesPnET.CFracBiomass * (0.10f * IdealFol))); // gC/mo 10% of IdealFol to take out NSC 
+                                float Folalloc = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * (0.10f * IdealFol))); // gC/mo 10% of IdealFol to take out NSC 
 
                                 // Subtract from NSC do not add Fol
                                 data.NSC -= Folalloc;
                             }
                             //firstAlloc = false;  // Denotes that allocation has been applied to one sublayer
                         }
-                        else if (IdealFol > Fol)    //Non-defoliated trees refoliate 'normally', but only once per cohort
+                        // Non-defoliated trees do not add to their foliage
+                        /*else if (IdealFol > Fol)    //Non-defoliated trees refoliate 'normally', but only once per cohort
                         {
                             // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                             // carbon fraction of biomass to convert C to DW
@@ -879,8 +877,10 @@ namespace Landis.Library.PnETCohorts
 
                             // Subtract from NSC
                             data.NSC -= Folalloc;
+                            if (data.NSC < 0)
+                                data.NSC = 0f;
                             //firstAlloc = false; // Denotes that allocation has been applied to one sublayer
-                        }
+                        }*/
                     }
                 }
                 /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^ MGM's restructuring 10/25/2018 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
@@ -941,7 +941,7 @@ namespace Landis.Library.PnETCohorts
             AdjFracFol[index] = adjFracFol; //Stored for output
 
 
-            float ciModifier = fWaterOzone; // if no ozone, ciModifier defaults to fWater
+            float ciModifier = FWater[index]; // if no ozone, ciModifier defaults to fWater
             if (o3_cum > 0)
             {
                 // Regression coefs estimated from New 3 algorithm for Ozone drought.xlsx
@@ -1120,6 +1120,8 @@ namespace Landis.Library.PnETCohorts
                 }
                 // Add net psn to non soluble carbons
                 data.NSC += NetPsn[index]; //gC
+                if (data.NSC < 0)
+                    data.NSC = 0f;
 
             }
             else

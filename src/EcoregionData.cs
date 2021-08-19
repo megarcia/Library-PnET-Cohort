@@ -31,6 +31,7 @@ namespace Landis.Library.PnETCohorts
         private float _winterSTD;
         private float _mossDepth;
         IEcoregionPnETVariables _variables;
+        private float _evapDepth;
         #endregion
         #endregion
 
@@ -53,6 +54,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakageFrostDepth;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> winterSTD;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> mossDepth;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> evapDepth;
         #endregion
 
         #region accessors for private static variables
@@ -242,6 +244,14 @@ namespace Landis.Library.PnETCohorts
                 return _mossDepth;
             }
         }
+        // Maximum soil depth susceptible to surface evaporation
+        public float EvapDepth
+        {
+            get
+            {
+                return _evapDepth;
+            }
+        }
         #endregion
 
         public static List<string> ParameterNames
@@ -294,7 +304,7 @@ namespace Landis.Library.PnETCohorts
 
                     IEcoregionPnETVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
 
-                    all_values[ecoregion].Add(date, ecoregion_variables);
+                    if (!all_values[ecoregion].ContainsKey(date)) all_values[ecoregion].Add(date, ecoregion_variables);
 
                 }
                 data.Add(all_values[ecoregion][date]);
@@ -353,6 +363,7 @@ namespace Landis.Library.PnETCohorts
             precipEvents = (Landis.Library.Parameters.Ecoregions.AuxParm<int>)(Parameter<int>)Names.GetParameter("PrecipEvents", 1, 100);
             winterSTD = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("WinterSTD", 0, 100);
             mossDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("MossDepth", 0, 1000);
+            evapDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("EvapDepth", 0, 9999999);
 
             wythers = ((Parameter<bool>)Names.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)Names.GetParameter("DTemp")).Value;
@@ -388,6 +399,7 @@ namespace Landis.Library.PnETCohorts
             this._leakageFrostDepth = leakageFrostDepth[ecoregion];
             this._winterSTD = winterSTD[ecoregion];
             this._mossDepth = mossDepth[ecoregion];
+            this._evapDepth = evapDepth[ecoregion];
         }
 
         public static bool TryGetParameter(string label, out Parameter<string> parameter)

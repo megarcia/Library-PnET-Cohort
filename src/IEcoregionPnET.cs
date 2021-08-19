@@ -19,8 +19,8 @@ namespace Landis.Library.PnETCohorts
         float Latitude { get; } 
         float WinterSTD { get; }
         float MossDepth { get; }
-        
-       
+        float EvapDepth { get; } // Maximum soil depth susceptible to surface evaporation
+
         IEcoregionPnETVariables Variables { get; set; }
         
     }

@@ -96,6 +96,7 @@ namespace Landis.Library.PnETCohorts
         private float _o3Coeff;
         private float _leafOnMinT;
         private float _NSCreserve;
+        private string _lifeform;
         # endregion
 
         #region private static species variables
@@ -146,6 +147,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
         private static Landis.Library.Parameters.Species.AuxParm<float> leafOnMinT;
         private static Landis.Library.Parameters.Species.AuxParm<float> NSCreserve;
+        private static Landis.Library.Parameters.Species.AuxParm<string> lifeform;
         #endregion
 
         public SpeciesPnET()
@@ -208,6 +210,7 @@ namespace Landis.Library.PnETCohorts
             if (leafOnMinT[this] == -9999F)
                 leafOnMinT = psntmin;
             NSCreserve = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NSCReserve"));
+            lifeform = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("Lifeform"));
 
             #endregion
 
@@ -277,7 +280,8 @@ namespace Landis.Library.PnETCohorts
             float maxFracFol,
             float o3Coeff,
             float leafOnMinT,
-            float NSCreserve
+            float NSCreserve,
+            string lifeform
             )
         {
             this.postfireregeneration = postFireGeneration;
@@ -341,6 +345,7 @@ namespace Landis.Library.PnETCohorts
             uint initBiomass = (uint)(initialnsc/(dnsc * cfracbiomass));
             this._initBiomass = (int)((initBiomass - ((uint)(fracbelowg * initBiomass))*toroot) - ((uint)((1 - fracbelowg) * initBiomass) * towood));
             this._NSCreserve = NSCreserve;
+            this._lifeform = lifeform;
         }
         //---------------------------------------------------------------------
         private SpeciesPnET(ISpecies species)
@@ -388,6 +393,7 @@ namespace Landis.Library.PnETCohorts
             _co2HalfSatEff = co2HalfSatEff[species];
             _ozoneSens = ozoneSens[species];
             _NSCreserve = NSCreserve[species];
+            _lifeform = lifeform[species];
             index = species.Index;
             name = species.Name;
 
@@ -892,6 +898,15 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 return _NSCreserve;
+            }
+        }
+
+        //---------------------------------------------------------------------
+        public string Lifeform
+        {
+            get
+            {
+                return _lifeform;
             }
         }
         //---------------------------------------------------------------------

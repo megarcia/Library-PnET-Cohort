@@ -150,5 +150,7 @@ namespace Landis.Library.PnETCohorts
         // Lower canopy NSC reserve 
         float NSCReserve { get; }
 
+        // Lifeform
+        string Lifeform { get; }
     }
 }

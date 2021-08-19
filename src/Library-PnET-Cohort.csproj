@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Landis.Library.PnETCohorts</RootNamespace>
     <AssemblyName>Landis.Library.PnETCohorts-v1</AssemblyName>
-    <AssemblyTitle>Landis.Extension.Succession.BiomassPnET-v3</AssemblyTitle>
+    <AssemblyTitle>Landis.Library.PnETCohorts-v1</AssemblyTitle>
     <AssemblyCopyright>Landis-II-Foundation</AssemblyCopyright>
     <AssemblyVersion>1.0</AssemblyVersion>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -16,11 +16,11 @@
     <Authors>Brian Miranda, Eric Gustafson, Arjan de Bruijn</Authors>
     <Product>Landis.Library.PnETCohorts</Product>
     <Copyright>Landis-II-Foundation</Copyright>
-    <Version>1.1</Version>
+    <Version>1.0</Version>
     <PackageTags>LANDIS-II;Landis;Extension;Succession;PnET</PackageTags>
     <Description></Description>
     <PackageReleaseNotes>.NET Standard 2.0 update</PackageReleaseNotes>
-    <FileVersion>1.1</FileVersion>
+    <FileVersion>1.0</FileVersion>
     <Company>USDA Forest Service</Company>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
@@ -58,8 +58,8 @@
     <Reference Include="Landis.Library.BiomassCohorts-v3">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.BiomassCohorts-v3.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Climate-v4.2">
-      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Climate-v4.2.dll</HintPath>
+    <Reference Include="Landis.Library.Climate-v4.3">
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Climate-v4.3.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Cohorts-v2">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Cohorts-v2.dll</HintPath>

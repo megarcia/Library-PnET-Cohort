@@ -57,7 +57,8 @@ namespace Landis.Library.PnETCohorts
         public const string climateFileName = "climateFileName";
         public const string WinterSTD = "WinterSTD";
         public const string MossDepth = "MossDepth";
-        
+        public const string EvapDepth = "EvapDepth";
+
         //Species parameters
         public const string FolNShape = "FolNShape";
         public const string MaxFolN = "MaxFolN";

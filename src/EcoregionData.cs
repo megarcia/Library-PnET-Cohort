@@ -276,6 +276,9 @@ namespace Landis.Library.PnETCohorts
 
             var oldYear = -1;
 
+            // Ensure only one thread at a time accesses this shared object
+            lock (Globals.ecoregionDataThreadLock)
+            {
             while (end.Ticks > date.Ticks)
             {
                 if (!all_values[ecoregion].ContainsKey(date))
@@ -304,12 +307,13 @@ namespace Landis.Library.PnETCohorts
 
                     IEcoregionPnETVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
 
-                    if (!all_values[ecoregion].ContainsKey(date)) all_values[ecoregion].Add(date, ecoregion_variables);
+                        all_values[ecoregion].Add(date, ecoregion_variables);
 
                 }
                 data.Add(all_values[ecoregion][date]);
 
                 date = date.AddMonths(1);
+            }
             }
             return data;
         }
@@ -322,7 +326,9 @@ namespace Landis.Library.PnETCohorts
             // Date: the last date in the collection of running data
             DateTime date = new DateTime(start.Ticks);
 
-
+            // Ensure only one thread at a time accesses this shared object
+            lock (Globals.ecoregionDataThreadLock)
+            {
             while (end.Ticks > date.Ticks)
             {
                 if (all_values[ecoregion].ContainsKey(date) == false)
@@ -346,6 +352,7 @@ namespace Landis.Library.PnETCohorts
                 data.Add(all_values[ecoregion][date]);
 
                 date = date.AddMonths(1);
+            }
             }
             return data;
         }

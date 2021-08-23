@@ -2493,11 +2493,11 @@ namespace Landis.Library.PnETCohorts
 
         public bool IsMaturePresent(ISpecies species)
         {
-            ISpeciesPnET pnetSpecies = SpeciesParameters.SpeciesPnET[species];
+            //ISpeciesPnET pnetSpecies = SpeciesParameters.SpeciesPnET[species];
 
-            bool speciesPresent = cohorts.ContainsKey(pnetSpecies);
+            bool speciesPresent = cohorts.ContainsKey(species);
 
-            bool IsMaturePresent = (speciesPresent && (cohorts[pnetSpecies].Max(o => o.Age) >= species.Maturity)) ? true : false;
+            bool IsMaturePresent = (speciesPresent && (cohorts[species].Max(o => o.Age) >= species.Maturity)) ? true : false;
 
             return IsMaturePresent;
         }

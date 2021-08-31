@@ -279,41 +279,41 @@ namespace Landis.Library.PnETCohorts
             // Ensure only one thread at a time accesses this shared object
             lock (Globals.ecoregionDataThreadLock)
             {
-            while (end.Ticks > date.Ticks)
-            {
-                if (!all_values[ecoregion].ContainsKey(date))
+                while (end.Ticks > date.Ticks)
                 {
-                    if (date.Year != oldYear)
+                    if (!all_values[ecoregion].ContainsKey(date))
                     {
-                        //PlugIn.ModelCore.UI.WriteLine($"Retrieving Climate Library for year {date.Year}.");
-
-                        if (spinupOrfuture == Climate.Climate.Phase.Future_Climate)
+                        if (date.Year != oldYear)
                         {
-                            if (Climate.Climate.Future_MonthlyData.ContainsKey(date.Year))
-                                ClimateRegionData.AnnualWeather[ecoregion] = Climate.Climate.Future_MonthlyData[date.Year][ecoregion.Index];
+                            //PlugIn.ModelCore.UI.WriteLine($"Retrieving Climate Library for year {date.Year}.");
+
+                            if (spinupOrfuture == Climate.Climate.Phase.Future_Climate)
+                            {
+                                if (Climate.Climate.Future_MonthlyData.ContainsKey(date.Year))
+                                    ClimateRegionData.AnnualWeather[ecoregion] = Climate.Climate.Future_MonthlyData[date.Year][ecoregion.Index];
+                            }
+                            else
+                            {
+                                if (Climate.Climate.Spinup_MonthlyData.ContainsKey(date.Year))
+                                    ClimateRegionData.AnnualWeather[ecoregion] = Climate.Climate.Spinup_MonthlyData[date.Year][ecoregion.Index];
+                            }
+
+                            oldYear = date.Year;
                         }
-                        else
-                        {
-                            if (Climate.Climate.Spinup_MonthlyData.ContainsKey(date.Year))
-                                ClimateRegionData.AnnualWeather[ecoregion] = Climate.Climate.Spinup_MonthlyData[date.Year][ecoregion.Index];
-                        }
 
-                        oldYear = date.Year;
-                    }
+                        var monthlyData = new MonthlyClimateRecord(ecoregion, date);
 
-                    var monthlyData = new MonthlyClimateRecord(ecoregion, date);
+                        List<ISpeciesPnET> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
 
-                    List<ISpeciesPnET> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
-
-                    IEcoregionPnETVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
+                        IEcoregionPnETVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
 
                         all_values[ecoregion].Add(date, ecoregion_variables);
 
-                }
-                data.Add(all_values[ecoregion][date]);
+                    }
+                    data.Add(all_values[ecoregion][date]);
 
-                date = date.AddMonths(1);
-            }
+                    date = date.AddMonths(1);
+                }
             }
             return data;
         }
@@ -329,30 +329,30 @@ namespace Landis.Library.PnETCohorts
             // Ensure only one thread at a time accesses this shared object
             lock (Globals.ecoregionDataThreadLock)
             {
-            while (end.Ticks > date.Ticks)
-            {
-                if (all_values[ecoregion].ContainsKey(date) == false)
+                while (end.Ticks > date.Ticks)
                 {
-                    IObservedClimate observedClimate = ObservedClimate.GetData(ecoregion, date);
-
-                    List<ISpeciesPnET> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
-
-                    IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species, ecoregion.Latitude);
-
-                    try
+                    if (all_values[ecoregion].ContainsKey(date) == false)
                     {
-                        all_values[ecoregion].Add(date, ecoregion_variables);
-                    }
-                    catch (System.ArgumentException e)
-                    {
-                        continue;
-                    }
+                        IObservedClimate observedClimate = ObservedClimate.GetData(ecoregion, date);
 
+                        List<ISpeciesPnET> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
+
+                        IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species, ecoregion.Latitude);
+
+                        try
+                        {
+                            all_values[ecoregion].Add(date, ecoregion_variables);
+                        }
+                        catch (System.ArgumentException e)
+                        {
+                            continue;
+                        }
+
+                    }
+                    data.Add(all_values[ecoregion][date]);
+
+                    date = date.AddMonths(1);
                 }
-                data.Add(all_values[ecoregion][date]);
-
-                date = date.AddMonths(1);
-            }
             }
             return data;
         }

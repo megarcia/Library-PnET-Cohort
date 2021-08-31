@@ -720,7 +720,7 @@ namespace Landis.Library.PnETCohorts
                 interception = 0;
 
                 // Reset monthly variables that get reported as single year snapshots
-                if (Ecoregion.Variables.Month == 1)
+                if (data[m].Month == 1)
                 {
                     folresp = new float[13];
                     netpsn = new float[13];
@@ -1044,7 +1044,10 @@ namespace Landis.Library.PnETCohorts
                                 coldKillBoolean = true;
                             float O3Effect = lastOzoneEffect[subCanopyIndex - 1];
 
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip, precipCount, leakageFrac, ref hydrology, mainLayerPAR, ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, propRootAboveFrost, subCanopyMelt, coldKillBoolean);
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip, precipCount, leakageFrac, ref hydrology, mainLayerPAR,
+                                ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect,
+                                propRootAboveFrost, subCanopyMelt, coldKillBoolean, data[m], this.Ecoregion, this.Site.Location);
+
                             lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
 
                             if (success == false)
@@ -1153,10 +1156,10 @@ namespace Landis.Library.PnETCohorts
 
                 foreach (Cohort cohort in AllCohorts)
                 {
-                    folresp[Ecoregion.Variables.Month - 1] += cohort.FolResp.Sum();
-                    netpsn[Ecoregion.Variables.Month - 1] += cohort.NetPsn.Sum();
-                    grosspsn[Ecoregion.Variables.Month - 1] += cohort.GrossPsn.Sum();
-                    maintresp[Ecoregion.Variables.Month - 1] += cohort.MaintenanceRespiration.Sum();
+                    folresp[data[m].Month - 1] += cohort.FolResp.Sum();
+                    netpsn[data[m].Month - 1] += cohort.NetPsn.Sum();
+                    grosspsn[data[m].Month - 1] += cohort.GrossPsn.Sum();
+                    maintresp[data[m].Month - 1] += cohort.MaintenanceRespiration.Sum();
                     transpiration += cohort.Transpiration.Sum();
                     int layer = cohort.Layer;
                     if (layer < CanopyLAISum.Length)
@@ -1515,7 +1518,7 @@ namespace Landis.Library.PnETCohorts
             float newrain = variables.Prec - newsnow;
 
             // Reduced by interception
-            interception = newrain * (float)(1 - Math.Exp(-1 * this.Ecoregion.PrecIntConst * CanopyLAI.Sum()));
+            interception = newrain * (float)(1 - Math.Exp(-1 * Ecoregion.PrecIntConst * CanopyLAI.Sum()));
             float surfaceRain = newrain - interception;
 
             // Reduced by PrecLossFrac

@@ -17,7 +17,7 @@ namespace Landis.Library.PnETCohorts
     public class SiteCohorts : ISiteCohorts, Landis.Library.BiomassCohorts.ISiteCohorts, Landis.Library.AgeOnlyCohorts.ISiteCohorts
     {
         private float canopylaimax;
-        private float watermax;
+        private float wateravg;
         private float snowPack;
         private float[] CanopyLAI;
         private float subcanopypar;
@@ -221,11 +221,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
-        public float WaterMax
+        public float WaterAvg
         {
             get
             {
-                return watermax;
+                return wateravg;
             }
         }
         //---------------------------------------------------------------------
@@ -312,7 +312,7 @@ namespace Landis.Library.PnETCohorts
                 establishmentProbability = new EstablishmentProbability(null, null);
                 subcanopypar = initialSites[key].subcanopypar;
                 subcanopyparmax = initialSites[key].SubCanopyParMAX;
-                watermax = initialSites[key].watermax;
+                wateravg = initialSites[key].wateravg;
 
                 hydrology = new Hydrology(initialSites[key].hydrology.Water);
 
@@ -348,7 +348,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
                 hydrology = new Hydrology(Ecoregion.FieldCap);
-                watermax = hydrology.Water;
+                wateravg = hydrology.Water;
                 subcanopypar = ecoregionInitializer[0].PAR0;
                 subcanopyparmax = subcanopypar;
 
@@ -715,6 +715,7 @@ namespace Landis.Library.PnETCohorts
             //Clear pressurehead site values
             sumPressureHead = 0;
             countPressureHead = 0;
+            wateravg = 0;
             lock (Globals.ecoregionDataThreadLock)
             {
                 for (int m = 0; m < data.Count(); m++)
@@ -1209,7 +1210,6 @@ namespace Landis.Library.PnETCohorts
                         subcanopypar = 0;
 
                     canopylaimax = (float)Math.Max(canopylaimax, CanopyLAI.Sum());
-                    watermax = Math.Max(hydrology.Water, watermax);
                     subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
                     if (propRootAboveFrost > 0 && snowPack == 0)
                     {
@@ -1300,11 +1300,15 @@ namespace Landis.Library.PnETCohorts
                             //annualEstab[spc].Clear();
                             annualFwater[spc].Clear();
                             annualFrad[spc].Clear();
-                        }
-                    }
+                        } //foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
+                    } //if (data[m].Month == (int)Constants.Months.December)
+
+                    wateravg += hydrology.Water;
                 } //for (int m = 0; m < data.Count(); m++ )
-            }
+                wateravg = wateravg / data.Count(); // convert to average value
+            } //for (int m = 0; m < data.Count(); m++)
             // Above is monthly loop
+
             // Below runs once per timestep
             if (Globals.ModelCore.CurrentTime > 0)
             {
@@ -1606,7 +1610,7 @@ namespace Landis.Library.PnETCohorts
                 subcanopypar = 0;
 
             canopylaimax = (float)Math.Max(canopylaimax, CanopyLAI.Sum());
-            watermax = Math.Max(hydrology.Water, watermax);
+            wateravg = hydrology.Water;
             subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
 
             if (propRootAboveFrost > 0 && snowPack == 0)
@@ -1617,7 +1621,7 @@ namespace Landis.Library.PnETCohorts
             {
                 hydrology.Evaporation = 0;
                 hydrology.PET = 0;
-        }
+            }
             bool success = hydrology.AddWater(-1 * hydrology.Evaporation, Ecoregion.RootingDepth * propRootAboveFrost);
             if (success == false)
             {

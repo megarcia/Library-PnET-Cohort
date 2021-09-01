@@ -219,7 +219,7 @@ namespace Landis.Library.PnETCohorts
                 float frostFreeProp = Math.Min(1.0F, frostFreeSoilDepth / sitecohorts.Ecoregion.RootingDepth);
 
                 float umolPAR = sitecohorts.SubcanopyPAR;
-                if(((Parameter<string>)Names.GetParameter(Names.PARunits)).Value == "W/m2")
+                if (((Parameter<string>)Names.GetParameter(Names.PARunits)).Value == "W/m2")
                     umolPAR = (sitecohorts.SubcanopyPAR * 2.02f); // convert daytime solar radiation (W/m2) to daytime PAR (umol/m2*s) [Reis and Ribeiro 2019 (Consants and Values)]  
 
                 // mm/month

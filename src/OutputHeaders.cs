@@ -10,9 +10,9 @@ namespace Landis.Library.PnETCohorts
         public const string Ecoregion = "Ecoregion";
         public const string PAR0 = "PAR0";  
         public const string NrOfCohorts = "NrOfCohorts";
-        //public const string MaxLayerDev = "MaxLayerDev";
         public const string MaxLayerRatio = "MaxLayerRatio";
         public const string Layers = "Layers";
+        public const string LayerProp = "LayerProp";
         public const string TopLayer = "TopLayer";
         public const string Tmin = "Tmin(C)";
         public const string Tave = "Tave(C)";

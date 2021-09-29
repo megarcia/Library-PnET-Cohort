@@ -55,7 +55,7 @@ namespace Landis.Library.PnETCohorts
 
         float WaterAvg { get; }
 
-        uint BelowGroundBiomass { get; }
+        float BelowGroundBiomassSum { get; }
 
         float FoliageSum { get; }
 

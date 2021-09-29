@@ -322,13 +322,23 @@ namespace Landis.Library.PnETCohorts
                 //PlugIn.PressureHead[Site] = hydrology.GetPressureHead(this.Ecoregion);
                 this.canopylaimax = initialSites[key].CanopyLAImax;
 
+                List<float> cohortLayerProp = new List<float>();
                 foreach (ISpecies spc in initialSites[key].cohorts.Keys)
                 {
                     foreach (Cohort cohort in initialSites[key].cohorts[spc])
                     {
                         bool addCohort = AddNewCohort(new Cohort(cohort));
+                        float layerProp = cohort.BiomassLayerProp;
+                        cohortLayerProp.Add(layerProp);
                     }          
                 }
+                int index = 0;
+                foreach (Cohort cohort in AllCohorts)
+                {
+                    cohort.BiomassLayerProp = cohortLayerProp[index];
+                    index++;
+                }
+
                 this.netpsn = initialSites[key].NetPsn;
                 this.folresp = initialSites[key].FolResp;
                 this.grosspsn = initialSites[key].GrossPsn;
@@ -1013,13 +1023,47 @@ namespace Landis.Library.PnETCohorts
                 float subCanopyPrecip = 0;
                 float subCanopyMelt = 0;
                 int subCanopyIndex = 0;
+                // set empty layer summaries to 0
+                int layerCount = 0;
+                if (LayeredBins != null)
+                    layerCount = LayeredBins.Count();
+                float[] layerWtTotalBio = new float[layerCount];
+                float[] layerWtBio = new float[layerCount];
+                float[] layerWtWoodBio = new float[layerCount];
+                float[] layerWtRootBio = new float[layerCount];
+                float[] layerWtFolBio = new float[layerCount];
+                float[] layerWtNSC = new float[layerCount];
+                float[] layerWtLAI = new float[layerCount];
+                float[] layerWtNetPsn = new float[layerCount];
+                float[] layerWtGrossPsn = new float[layerCount];
+                float[] layerWtWoodSenescence = new float[layerCount];
+                float[] layerWtFolSenescence = new float[layerCount];
+                float[] layerWtMaintResp = new float[layerCount];
+                float[] layerWtFolResp = new float[layerCount];
+                float[] layerWtTranspiration = new float[layerCount];
+                float[] layerSumBio = new float[layerCount];
+
                 if (LayeredBins != null && LayeredBins.Count() > 0)
                 {
                     for (int b = LayeredBins.Count() - 1; b >= 0; b--) // main canopy layers
                     {
                         float mainLayerPARweightedSum = 0;
-                        float mainLayerBioSum = 0;
+                        float mainLayerLAIweightedSum = 0;
+                        /*float mainLayerTotalBioWeightedSum = 0;
+                        float mainLayerBioWeightedSum = 0;
+                        float mainLayerWoodBioWeightedSum = 0;
+                        float mainLayerRootBioWeightedSum = 0;
+                        float mainLayerFolBioWeightedSum = 0;
+                        float mainLayerNSCweightedSum = 0;
+                        float mainLayerNetPsnWeightedSum = 0;
+                        float mainLayerGrossPsnWeightedSum = 0;
+                        float mainLayerWoodSenescenceWeightedSum = 0;
+                        float mainLayerFolSenescenceWeightedSum = 0;
+                        float mainLayerMaintRespWeightedSum = 0;
+                        float mainLayerFolRespWeightedSum = 0;
+                        float mainLayerTranspirationWeightedSum = 0;*/
                         float mainLayerPAR = subcanopypar;
+                        float mainLayerBioSum = 0;
                         foreach (int r in random_range[b]) // sublayers within main canopy b
                         {
                             subCanopyIndex++;
@@ -1055,17 +1099,50 @@ namespace Landis.Library.PnETCohorts
                                 throw new System.Exception("Error CalculatePhotosynthesis");
                             }
                         } // end sublayer loop in canopy b
+                        int cCount = AllCohorts.Count();
                         foreach (Cohort c in AllCohorts)
                         {
                             if (c.Layer == b)
                             {
                                 float PARFracUnderCohort = (float)Math.Exp(-c.SpeciesPnET.K * c.LAI.Sum());
                                 mainLayerPARweightedSum += PARFracUnderCohort * c.Biomass;
+                                mainLayerLAIweightedSum += c.LAI.Sum() * c.Biomass;
+                                /*mainLayerWoodBioWeightedSum += c.Wood * c.Biomass;
+                                mainLayerRootBioWeightedSum += c.Root * c.Biomass;
+                                mainLayerFolBioWeightedSum += c.Fol * c.Biomass;
+                                mainLayerNSCweightedSum += c.NSC * c.Biomass;
+                                mainLayerNetPsnWeightedSum += c.NetPsn.Sum() * c.Biomass;
+                                mainLayerGrossPsnWeightedSum += c.GrossPsn.Sum() * c.Biomass;
+                                mainLayerWoodSenescenceWeightedSum += c.LastWoodySenescence * c.Biomass;
+                                mainLayerFolSenescenceWeightedSum += c.LastFoliageSenescence * c.Biomass;
+                                mainLayerFolRespWeightedSum += c.FolResp.Sum() * c.Biomass;
+                                mainLayerMaintRespWeightedSum += c.MaintenanceRespiration.Sum() * c.Biomass;
+                                mainLayerTranspirationWeightedSum += c.Transpiration.Sum() * c.Biomass;
+                                mainLayerTotalBioWeightedSum += c.TotalBiomass * c.Biomass;
+                                mainLayerBioWeightedSum += c.Biomass * c.Biomass;*/
                                 mainLayerBioSum += c.Biomass;
                             }
                         }
+                        layerSumBio[b] = mainLayerBioSum;
                         if (mainLayerBioSum > 0)
+                        {
                             subcanopypar = mainLayerPAR * mainLayerPARweightedSum / mainLayerBioSum;
+                            layerWtLAI[b] = mainLayerLAIweightedSum / mainLayerBioSum;
+                            /*layerWtTotalBio[b] = mainLayerTotalBioWeightedSum / mainLayerBioSum;
+                            layerWtBio[b] = mainLayerBioWeightedSum / mainLayerBioSum;
+                            layerWtWoodBio[b] = mainLayerWoodBioWeightedSum / mainLayerBioSum;
+                            layerWtRootBio[b] = mainLayerRootBioWeightedSum / mainLayerBioSum;
+                            layerWtFolBio[b] = mainLayerFolBioWeightedSum / mainLayerBioSum;
+                            layerWtNSC[b] = mainLayerNSCweightedSum / mainLayerBioSum;                            
+                            layerWtNetPsn[b] = mainLayerNetPsnWeightedSum / mainLayerBioSum;
+                            layerWtGrossPsn[b] = mainLayerGrossPsnWeightedSum / mainLayerBioSum;
+                            layerWtWoodSenescence[b] = mainLayerWoodSenescenceWeightedSum / mainLayerBioSum;
+                            layerWtFolSenescence[b] = mainLayerFolSenescenceWeightedSum / mainLayerBioSum;
+                            layerWtMaintResp[b] = mainLayerMaintRespWeightedSum / mainLayerBioSum;
+                            layerWtFolResp[b] = mainLayerFolRespWeightedSum / mainLayerBioSum;
+                            layerWtTranspiration[b] = mainLayerTranspirationWeightedSum / mainLayerBioSum;
+                            */
+                        }
                         else
                             subcanopypar = mainLayerPAR;
                     } // end main canopy layer loop
@@ -1154,7 +1231,7 @@ namespace Landis.Library.PnETCohorts
                 float[] CanopyLAISum = new float[MaxCanopyLayers];
                 float[] CanopyLAICount = new float[MaxCanopyLayers];
 
-                foreach (Cohort cohort in AllCohorts)
+                /*foreach (Cohort cohort in AllCohorts)
                 {
                     folresp[data[m].Month - 1] += cohort.FolResp.Sum();
                     netpsn[data[m].Month - 1] += cohort.NetPsn.Sum();
@@ -1168,10 +1245,10 @@ namespace Landis.Library.PnETCohorts
                         CanopyLAICount[layer] += cohort.Biomass;
                         //MaxLAI[layer] = Math.Max(MaxLAI[layer], cohort.SpeciesPNET.MaxLAI);
                     }
-                    else
-                    {
-                        Globals.ModelCore.UI.WriteLine("DEBUG: Cohort count = " + AllCohorts.Count() + "; CanopyLAISum count = " + CanopyLAISum.Count());
-                    }
+                    //else
+                    //{
+                    //    Globals.ModelCore.UI.WriteLine("DEBUG: Cohort count = " + AllCohorts.Count() + "; CanopyLAISum count = " + CanopyLAISum.Count());
+                    //}
                 }
                 for (int layer = 0; layer < MaxCanopyLayers; layer++)
                 {
@@ -1179,7 +1256,29 @@ namespace Landis.Library.PnETCohorts
                         CanopyLAI[layer] = CanopyLAISum[layer] / CanopyLAICount[layer];
                     else
                         CanopyLAI[layer] = 0;
+                }*/
+                //
+
+                foreach (Cohort cohort in AllCohorts)
+                {
+                    int b = cohort.Layer;
+                    cohort.BiomassLayerProp = cohort.Biomass / layerSumBio[b];
+                    int c = cohort.Layer;
                 }
+
+                folresp[data[m].Month - 1] = layerWtFolResp.Sum();
+                netpsn[data[m].Month - 1] = layerWtNetPsn.Sum();
+                grosspsn[data[m].Month - 1] = layerWtGrossPsn.Sum();
+                maintresp[data[m].Month - 1] = layerWtMaintResp.Sum();
+                transpiration = layerWtTranspiration.Sum();
+                for (int layer = 0; layer < MaxCanopyLayers; layer++)
+                {
+                    if (layer < layerWtLAI.Length)
+                        CanopyLAI[layer] = layerWtLAI[layer];
+                    else
+                        CanopyLAI[layer] = 0;
+                }
+
 
                 // Calculate establishment probability
                 if (Globals.ModelCore.CurrentTime > 0)
@@ -1690,26 +1789,7 @@ namespace Landis.Library.PnETCohorts
                 }
             }
         }
-
-        //public float[] NetPsn
-        //{
-        //    get
-        //    {
-        //        if (netpsn == null)
-        //        {
-        //            float[] netpsn_array = new float[12];
-        //            for (int i = 0; i < netpsn_array.Length; i++)
-        //            {
-        //                netpsn_array[i] = 0;
-        //            }
-        //            return netpsn_array;
-        //        }
-        //        else
-        //        {
-        //            return netpsn.Select(psn => (float)psn).ToArray();
-        //        }
-        //    }
-        //}
+              
 
         public float NetPsnSum
         {
@@ -1776,7 +1856,7 @@ namespace Landis.Library.PnETCohorts
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    BiomassPerSpecies[spc] = cohorts[spc].Sum(o => o.TotalBiomass);
+                    BiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.TotalBiomass * o.BiomassLayerProp));
                 }
                 return BiomassPerSpecies;
             }
@@ -1789,7 +1869,7 @@ namespace Landis.Library.PnETCohorts
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    AbovegroundBiomassPerSpecies[spc] = cohorts[spc].Sum(o => o.Biomass);
+                    AbovegroundBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.Biomass * o.BiomassLayerProp));
                 }
                 return AbovegroundBiomassPerSpecies;
             }
@@ -1802,7 +1882,7 @@ namespace Landis.Library.PnETCohorts
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    WoodySenescencePerSpecies[spc] = cohorts[spc].Sum(o => o.LastWoodySenescence);
+                    WoodySenescencePerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LastWoodySenescence * o.BiomassLayerProp));
                 }
                 return WoodySenescencePerSpecies;
             }
@@ -1815,7 +1895,7 @@ namespace Landis.Library.PnETCohorts
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    FoliageSenescencePerSpecies[spc] = cohorts[spc].Sum(o => o.LastFoliageSenescence);
+                    FoliageSenescencePerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LastFoliageSenescence * o.BiomassLayerProp));
                 }
                 return FoliageSenescencePerSpecies;
             }
@@ -1852,7 +1932,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return AllCohorts.Sum(o => o.TotalBiomass);
+                return AllCohorts.Sum(o => (o.TotalBiomass * o.BiomassLayerProp));
             }
 
         }
@@ -1860,7 +1940,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return AllCohorts.Sum(o => o.Biomass);
+                return AllCohorts.Sum(o => (o.Biomass * o.BiomassLayerProp));
             }
 
         }
@@ -1868,7 +1948,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return AllCohorts.Sum(o => o.LastWoodySenescence);
+                return AllCohorts.Sum(o => (o.LastWoodySenescence * o.BiomassLayerProp));
             }
 
         }
@@ -1876,15 +1956,16 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return AllCohorts.Sum(o => o.LastFoliageSenescence);
+                return AllCohorts.Sum(o => (o.LastFoliageSenescence * o.BiomassLayerProp));
             }
 
         }
-        public uint BelowGroundBiomass 
+        public float BelowGroundBiomassSum 
         {
             get
             {
-                return (uint)cohorts.Values.Sum(o => o.Sum(x => x.Root));
+                return AllCohorts.Sum(o =>(o.Root * o.BiomassLayerProp));
+                //return (uint)cohorts.Values.Sum(o => o.Sum(x => x.Root));
             }
         }
 
@@ -1892,7 +1973,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return AllCohorts.Sum(o => o.Fol);
+                return AllCohorts.Sum(o => (o.Fol * o.BiomassLayerProp));
             }
 
         }
@@ -1901,7 +1982,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return AllCohorts.Sum(o => o.NSC);
+                return AllCohorts.Sum(o => (o.NSC * o.BiomassLayerProp));
             }
 
         }
@@ -2378,10 +2459,10 @@ namespace Landis.Library.PnETCohorts
             foreach (ISpecies spc in cohorts.Keys)
             {
                 Landis.Library.PnETCohorts.SpeciesCohorts speciescohort = GetSpeciesCohort(cohorts[spc]);
-
+               
                 isSpeciesCohortDamaged.SetAllFalse(speciescohort.Count);
 
-                disturbance.MarkCohortsForDeath(speciescohort, isSpeciesCohortDamaged);
+                disturbance.MarkCohortsForDeath((Landis.Library.AgeOnlyCohorts.ISpeciesCohorts)speciescohort, isSpeciesCohortDamaged);
 
                 for (int c = 0; c < isSpeciesCohortDamaged.Count; c++)
                 {
@@ -2672,7 +2753,7 @@ namespace Landis.Library.PnETCohorts
                 hydrology.Leakage + "," +
                 hydrology.PET + "," +
                 hydrology.Evaporation + "," +
-                cohorts.Values.Sum(o => o.Sum(x => x.Transpiration.Sum())) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => (x.Transpiration.Sum() * x.BiomassLayerProp))) + "," +
                 interception + "," +
                 precLoss + "," +
                 hydrology.Water + "," +
@@ -2681,18 +2762,18 @@ namespace Landis.Library.PnETCohorts
                 snowPack + "," +
                 this.CanopyLAI.Sum() + "," +
                 monthdata.VPD + "," +
-                cohorts.Values.Sum(o => o.Sum(x => x.GrossPsn.Sum())) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => x.NetPsn.Sum())) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => x.MaintenanceRespiration.Sum())) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => x.Wood)) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => x.Root)) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => x.Fol)) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => x.NSC)) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => (x.GrossPsn.Sum() * x.BiomassLayerProp))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => (x.NetPsn.Sum() * x.BiomassLayerProp))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => (x.MaintenanceRespiration.Sum() * x.BiomassLayerProp))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => (x.Wood * x.BiomassLayerProp))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => (x.Root * x.BiomassLayerProp))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => (x.Fol * x.BiomassLayerProp))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => (x.NSC * x.BiomassLayerProp))) + "," +
                 HeterotrophicRespiration + "," +
                 SiteVars.Litter[Site].Mass + "," +
                 SiteVars.WoodyDebris[Site].Mass + "," +
-                cohorts.Values.Sum(o => o.Sum(x => x.LastWoodySenescence)) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence)) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => (x.LastWoodySenescence * x.BiomassLayerProp))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => (x.LastFoliageSenescence * x.BiomassLayerProp))) + "," +
                 subcanopypar + "," +
                 soilDiffusivity + "," +
                 (topFreezeDepth * 1000) + "," +

@@ -182,6 +182,10 @@ namespace Landis.Library.PnETCohorts
             {
                 return data.DeFolProp;
             }
+            private set
+            {
+                data.DeFolProp = value;
+            }
         }
         //---------------------------------------------------------------------
         // Annual Woody Senescence (g/m2)
@@ -417,6 +421,18 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public float BiomassLayerProp
+        {
+            get
+            {
+                return data.BiomassLayerProp;
+            }
+            set
+            {
+                data.BiomassLayerProp = value;
+            }
+        }
+        //---------------------------------------------------------------------
         // List of DisturbanceTypes that have had ReduceDeadPools applied
         public List<ExtensionType> ReducedTypes = null;
         //---------------------------------------------------------------------
@@ -501,10 +517,10 @@ namespace Landis.Library.PnETCohorts
         // Get totals for combined cohorts
         public void Accumulate(Cohort c)
         {
-            data.Biomass += c.Biomass;
             data.TotalBiomass += c.TotalBiomass;
             data.BiomassMax = Math.Max(BiomassMax, data.TotalBiomass);
             data.Fol += c.Fol;
+            data.Biomass = (1 - c.SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
         }
         //---------------------------------------------------------------------
         /// <summary>
@@ -520,10 +536,9 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public void ChangeBiomass(int delta)
         {
-            float newBiomass = data.Biomass + delta;
-            data.Biomass = System.Math.Max(0, newBiomass);
             float newTotalBiomass = data.TotalBiomass + delta;
             data.TotalBiomass = System.Math.Max(0, newTotalBiomass);
+            data.Biomass = (1 - this.SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
         }
         //---------------------------------------------------------------------
         // Constructor
@@ -538,7 +553,7 @@ namespace Landis.Library.PnETCohorts
 
             // Initialize biomass assuming fixed concentration of NSC, convert gC to gDW
             this.data.TotalBiomass = (uint)(this.NSC / (speciesPnET.DNSC * speciesPnET.CFracBiomass)); ;
-            this.data.Biomass = (1 - speciesPnET.FracBelowG) * this.data.TotalBiomass;
+            this.data.Biomass = (1 - speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
 
             data.BiomassMax = this.data.TotalBiomass;
 
@@ -567,7 +582,7 @@ namespace Landis.Library.PnETCohorts
             this.data.Age = cohort.Age;
             this.data.NSC = cohort.NSC;
             this.data.TotalBiomass = cohort.TotalBiomass;
-            this.data.Biomass = cohort.Biomass;
+            this.data.Biomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
             this.data.BiomassMax = cohort.BiomassMax;
             this.data.Fol = cohort.Fol;
             this.data.LastSeasonFRad = cohort.data.LastSeasonFRad;
@@ -579,11 +594,10 @@ namespace Landis.Library.PnETCohorts
             this.species = (ISpecies)speciesPnET;
             this.speciesPnET = speciesPnET;
             this.data.Age = age;
-            this.data.Biomass = woodBiomass;
+            //this.data.Biomass = woodBiomass;
             //incoming biomass is aboveground wood, calculate total biomass
             int biomass = (int) (woodBiomass / (1 - speciesPnET.FracBelowG));
             this.data.TotalBiomass = biomass;
-            this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * this.data.Biomass * speciesPnET.CFracBiomass;
             this.data.BiomassMax = biomass;
             this.data.LastSeasonFRad = new List<float>();
             this.data.adjFracFol = speciesPnET.FracFol;
@@ -594,6 +608,9 @@ namespace Landis.Library.PnETCohorts
                 this.data.Fol = (adjFracFol * FActiveBiom * biomass);
                 LAI[index] = CalculateLAI(this.speciesPnET, this.Fol, index);
             }
+
+            this.data.Biomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
+            this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * (this.data.Biomass + this.data.Fol) * speciesPnET.CFracBiomass;
 
             if (SiteName != null)
             {
@@ -751,18 +768,20 @@ namespace Landis.Library.PnETCohorts
                         data.Leaf_On = false;
                         data.NSC = 0.0F;
                         float foliageSenescence = FoliageSenescence();
-                        addlitter(foliageSenescence, SpeciesPnET);
                         data.LastFoliageSenescence = foliageSenescence;
+                        addlitter(foliageSenescence * data.BiomassLayerProp, SpeciesPnET);
                     }
 
                     float woodSenescence = Senescence();
-                    addwoodydebris(woodSenescence, speciesPnET.KWdLit);
                     data.LastWoodySenescence = woodSenescence;
+                    addwoodydebris(woodSenescence * data.BiomassLayerProp, speciesPnET.KWdLit);
+                    
 
                     // Release of nsc, will be added to biomass components next year
                     // Assumed that NSC will have a minimum concentration, excess is allocated to biomass
                     float Allocation = Math.Max(NSC - (speciesPnET.DNSC * FActiveBiom * data.TotalBiomass * speciesPnET.CFracBiomass), 0);
                     data.TotalBiomass += Allocation / speciesPnET.CFracBiomass;  // convert gC to gDW
+                    data.Biomass = (1 - speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
                     data.BiomassMax = Math.Max(BiomassMax, data.TotalBiomass);
                     data.NSC -= Allocation;
                     if (data.NSC < 0)
@@ -782,8 +801,8 @@ namespace Landis.Library.PnETCohorts
                     data.Leaf_On = false;
                     data.NSC = 0.0F;
                     float foliageSenescence = FoliageSenescence();
-                    addlitter(foliageSenescence, SpeciesPnET);
                     data.LastFoliageSenescence = foliageSenescence;
+                    addlitter(foliageSenescence * data.BiomassLayerProp, SpeciesPnET);
                 }
                 else
                 {
@@ -794,8 +813,8 @@ namespace Landis.Library.PnETCohorts
                         {
                             data.Leaf_On = false;
                             float foliageSenescence = FoliageSenescence();
-                            addlitter(foliageSenescence, SpeciesPnET);
                             data.LastFoliageSenescence = foliageSenescence;
+                            addlitter(foliageSenescence * data.BiomassLayerProp, SpeciesPnET);
                         }
                         growMonth = -1;
                     }
@@ -1356,6 +1375,7 @@ namespace Landis.Library.PnETCohorts
                        monthdata.Month + "," +
                        Age + "," +
                        Layer + "," +
+                       BiomassLayerProp + ","+
                        SumLAI + "," +
                        GrossPsn.Sum() + "," +
                        FolResp.Sum() + "," +
@@ -1400,6 +1420,7 @@ namespace Landis.Library.PnETCohorts
                             OutputHeaders.Month + "," +
                             OutputHeaders.Age + "," +
                             OutputHeaders.Layer + "," +
+                            OutputHeaders.LayerProp + "," +
                             OutputHeaders.LAI + "," +
                             OutputHeaders.GrossPsn + "," +
                             OutputHeaders.FolResp + "," +
@@ -1454,7 +1475,7 @@ namespace Landis.Library.PnETCohorts
         {
             float senescence = ((Root * speciesPnET.TOroot) + Wood * speciesPnET.TOwood);
             data.TotalBiomass -= senescence;
-
+            data.Biomass = (1 - speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             return senescence;
         }
         //---------------------------------------------------------------------
@@ -1474,6 +1495,7 @@ namespace Landis.Library.PnETCohorts
 
 
             data.TotalBiomass *= (float)(1.0 - fraction);
+            data.Biomass = (1 - speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             Fol *= (float)(1.0 - fraction);
 
         }

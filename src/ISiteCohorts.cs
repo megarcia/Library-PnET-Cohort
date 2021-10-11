@@ -14,7 +14,9 @@ namespace Landis.Library.PnETCohorts
         float[] GrossPsn{ get; }
 
         float[] FolResp { get; }
-        
+
+        float[] AverageAlbedo { get; }
+
         float CanopyLAImax{get;}
 
         int AverageAge { get; }

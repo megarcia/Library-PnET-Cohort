@@ -25,6 +25,7 @@ namespace Landis.Library.PnETCohorts
         public const string SurfaceRunOff = "PrecLoss(mm/mo)"; 
         public const string GrossPsn = "GrossPsn(gC_m2_mo)";
         public const string NetPsn = "NetPsn(gC_m2_mo)";
+        public const string AverageAlbedo = "AverageAlbedo(ratio_W_m2)";
         public const string FolResp = "FolResp(gC_m2_mo)";
         public const string water = "Water(mm/m)";
         public const string availableWater = "Available Water (mm)";

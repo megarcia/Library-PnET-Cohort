@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace Landis.Library.PnETCohorts
@@ -32,6 +33,7 @@ namespace Landis.Library.PnETCohorts
         private float[] grosspsn = null;
         private float[] folresp = null;
         private float[] maintresp = null;
+        private float[] averageAlbedo = null;
         private float transpiration;
         private double HeterotrophicRespiration;
         private Hydrology hydrology = null;
@@ -333,6 +335,7 @@ namespace Landis.Library.PnETCohorts
                 this.folresp = initialSites[key].FolResp;
                 this.grosspsn = initialSites[key].GrossPsn;
                 this.maintresp = initialSites[key].MaintResp;
+                this.averageAlbedo = initialSites[key].AverageAlbedo;
                 this.CanopyLAI = initialSites[key].CanopyLAI;
                 this.transpiration = initialSites[key].Transpiration;
 
@@ -564,7 +567,8 @@ namespace Landis.Library.PnETCohorts
                     if (cohortBins[j].Contains(AllCohorts[cohort].TotalBiomass))
                         cohortLayer = j;
                 }
-                if ((AllCohorts[cohort].Layer > cohortLayer) && (System.String.Compare(AllCohorts[cohort].SpeciesPnET.Lifeform, "tree", System.StringComparison.OrdinalIgnoreCase) == 0))
+                if ((AllCohorts[cohort].Layer > cohortLayer) && (!string.IsNullOrEmpty(AllCohorts[cohort].SpeciesPnET.Lifeform))
+                    && AllCohorts[cohort].SpeciesPnET.Lifeform.ToLower().Contains("tree"))
                 {
                     reducedLayer = true;
                 }
@@ -651,6 +655,7 @@ namespace Landis.Library.PnETCohorts
             netpsn = new float[13];
             grosspsn = new float[13];
             maintresp = new float[13];
+            averageAlbedo = new float[13];
 
             //Dictionary<ISpeciesPnET, List<float>> annualEstab = new Dictionary<ISpeciesPnET, List<float>>();
             Dictionary<ISpeciesPnET, float> cumulativeEstab = new Dictionary<ISpeciesPnET, float>();
@@ -726,6 +731,7 @@ namespace Landis.Library.PnETCohorts
                     netpsn = new float[13];
                     grosspsn = new float[13];
                     maintresp = new float[13];
+                    averageAlbedo = new float[13];
                 }
 
                 float ozoneD40 = 0;
@@ -739,41 +745,36 @@ namespace Landis.Library.PnETCohorts
                 leakageFrac = Ecoregion.LeakageFrac;
                 float propThawed = 0;
 
+                // snow calculations - from "Soil thawing worksheet with snow.xlsx"
+                if (data[m].Tave <= 0)
+                {
+                    daysOfWinter += (int)data[m].DaySpan;
+                }
+                else if (snowPack > 0)
+                {
+                    daysOfWinter += (int)data[m].DaySpan;
+                }
+                else
+                {
+                    daysOfWinter = 0;
+                }
+
+                float Psno_kg_m3 = Globals.bulkIntercept + (Globals.bulkSlope * daysOfWinter); //kg/m3
+                float Psno_g_cm3 = Psno_kg_m3 / 1000; //g/cm3
+
+                float sno_dep = Globals.Pwater * (snowPack / 1000) / Psno_kg_m3; //m
+                //if (data[m].Tave >= 0)  -- snowmelt has already been accounted for
+                //{
+                //    float fracAbove0 = data[m].Tmax / (data[m].Tmax - data[m].Tmin);
+                //    sno_dep = sno_dep * fracAbove0;
+                //}
+                // from CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
+                // Eq. 85 - Jordan (1991)
+
                 if (permafrost)
                 {
-                    // snow calculations - from "Soil thawing worksheet with snow.xlsx"
-                    if (data[m].Tave <= 0)
-                    {
-                        daysOfWinter += (int)data[m].DaySpan;
-                    }
-                    else if (snowPack > 0)
-                    {
-                        daysOfWinter += (int)data[m].DaySpan;
-                    }
-                    else
-                    { 
-                        daysOfWinter = 0;
-                    }
-                    float bulkIntercept = 165.0f; //kg/m3
-                    float bulkSlope = 1.3f; //kg/m3
-                    float Pwater = 1000.0f;  // Density of water (kg/m3)
-                    float lambAir = 0.023f; // W/m K (CLM5 documentation, Table 2.7)
-                    float lambIce = 2.29f; // W/m K (CLM5 documentation, Table 2.7)
-                    float snowHeatCapacity = 2090f; // J/kg K (https://www.engineeringtoolbox.com/specific-heat-capacity-d_391.html)
-
-                    float Psno_kg_m3 = bulkIntercept + (bulkSlope * daysOfWinter); //kg/m3
-                    float Psno_g_cm3 = Psno_kg_m3 / 1000; //g/cm3
-
-                    float sno_dep = Pwater * (snowPack / 1000) / Psno_kg_m3 ; //m
-                    //if (data[m].Tave >= 0)  -- snowmelt has already been accounted for
-                    //{
-                    //    float fracAbove0 = data[m].Tmax / (data[m].Tmax - data[m].Tmin);
-                    //    sno_dep = sno_dep * fracAbove0;
-                    //}
-                    // from CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
-                    // Eq. 85 - Jordan (1991)
-                    float lambda_Snow = (float) (lambAir+((0.0000775*Psno_kg_m3)+(0.000001105*Math.Pow(Psno_kg_m3,2)))*(lambIce-lambAir))*3.6F*24F; //(kJ/m/d/K) includes unit conversion from W to kJ
-                    float vol_heat_capacity_snow = snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
+                    float lambda_Snow = (float) (Globals.lambAir+((0.0000775*Psno_kg_m3)+(0.000001105*Math.Pow(Psno_kg_m3,2)))*(Globals.lambIce-Globals.lambAir))*3.6F*24F; //(kJ/m/d/K) includes unit conversion from W to kJ
+                    float vol_heat_capacity_snow = Globals.snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
                     //float Ks_snow = data[m].DaySpan * lambda_Snow / vol_heat_capacity_snow; //thermal diffusivity (m2/month)
                     float Ks_snow = 1000000F / 86400F * (lambda_Snow / vol_heat_capacity_snow); //thermal diffusivity (mm2/s)
                     float damping = (float) Math.Sqrt((2.0F* Ks_snow)/ Constants.omega);
@@ -1153,6 +1154,7 @@ namespace Landis.Library.PnETCohorts
                 CanopyLAI = new float[MaxCanopyLayers];
                 float[] CanopyLAISum = new float[MaxCanopyLayers];
                 float[] CanopyLAICount = new float[MaxCanopyLayers];
+                CumulativeLeafAreas leafAreas = new CumulativeLeafAreas();
 
                 foreach (Cohort cohort in AllCohorts)
                 {
@@ -1161,6 +1163,8 @@ namespace Landis.Library.PnETCohorts
                     grosspsn[data[m].Month - 1] += cohort.GrossPsn.Sum();
                     maintresp[data[m].Month - 1] += cohort.MaintenanceRespiration.Sum();
                     transpiration += cohort.Transpiration.Sum();
+                    CalculateCumulativeLeafArea(leafAreas, cohort);
+                    
                     int layer = cohort.Layer;
                     if (layer < CanopyLAISum.Length)
                     {
@@ -1173,6 +1177,8 @@ namespace Landis.Library.PnETCohorts
                         Globals.ModelCore.UI.WriteLine("DEBUG: Cohort count = " + AllCohorts.Count() + "; CanopyLAISum count = " + CanopyLAISum.Count());
                     }
                 }
+                averageAlbedo[data[m].Month - 1] = CalculateAverageAlbedo(leafAreas, sno_dep);
+
                 for (int layer = 0; layer < MaxCanopyLayers; layer++)
                 {
                     if (CanopyLAICount[layer] > 0)
@@ -1355,6 +1361,60 @@ namespace Landis.Library.PnETCohorts
             return success;
         }
 
+        private float CalculateAverageAlbedo(CumulativeLeafAreas leafAreas, float snowDepth)
+        {
+            float snowMultiplier = snowDepth >= Globals.snowReflectanceThreshold ? 1 : snowDepth / Globals.snowReflectanceThreshold;
+
+            float darkConiferAlbedo = (float)((0.0064 * Math.Pow(leafAreas.Total,  2)) - (0.081 * leafAreas.Total) + 0.3418);
+            darkConiferAlbedo = (float)(darkConiferAlbedo + (darkConiferAlbedo * (0.8 * snowMultiplier)));
+
+            float lightConiferAlbedo = (float)((-0.05 * Math.Log(leafAreas.Total)) + 0.2024);
+            lightConiferAlbedo = (float)(lightConiferAlbedo + (lightConiferAlbedo * (0.75 * snowMultiplier)));
+
+            float deciduousAlbedo = (float)((-0.007 * leafAreas.Total) + 0.2315);
+            deciduousAlbedo = (float)(deciduousAlbedo + (deciduousAlbedo * (0.35 * snowMultiplier)));
+
+            float grassMossOpenAlbedo = 0.2F;
+            grassMossOpenAlbedo = (float)(grassMossOpenAlbedo + (grassMossOpenAlbedo * (3.75 * snowMultiplier)));
+
+            if (leafAreas.DarkConiferProportion + leafAreas.LightConiferProportion + leafAreas.DeciduousProportion + leafAreas.GrassMossOpenProportion == 0)
+            {
+                return 0;
+            }
+
+            return ((darkConiferAlbedo * leafAreas.DarkConiferProportion) + (lightConiferAlbedo * leafAreas.LightConiferProportion)
+                + (deciduousAlbedo * leafAreas.DeciduousProportion) + (grassMossOpenAlbedo * leafAreas.GrassMossOpenProportion))
+                / (leafAreas.DarkConiferProportion + leafAreas.LightConiferProportion + leafAreas.DeciduousProportion + leafAreas.GrassMossOpenProportion);
+        }
+
+        private void CalculateCumulativeLeafArea(CumulativeLeafAreas leafAreas, Cohort cohort)
+        {
+            if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
+                    && cohort.SpeciesPnET.Lifeform.ToLower().Contains("dark"))
+            {
+                leafAreas.DarkConifer += cohort.SumLAI;
+            }
+            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
+                    && cohort.SpeciesPnET.Lifeform.ToLower().Contains("light"))
+            {
+                leafAreas.LightConifer += cohort.SumLAI;
+            }
+            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
+                    && cohort.SpeciesPnET.Lifeform.ToLower().Contains("decid"))
+            {
+                leafAreas.Deciduous += cohort.SumLAI;
+            }
+            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
+                    && cohort.SpeciesPnET.Lifeform.ToLower().Contains("other"))
+            {
+                leafAreas.GrassMossOpen += cohort.SumLAI;
+            }
+            else
+            {
+                leafAreas.Other += cohort.SumLAI;
+            }
+        }
+
         private void CalculateInitialWater(DateTime StartDate)
         {
             IEcoregionPnETVariables variables = null;
@@ -1405,7 +1465,8 @@ namespace Landis.Library.PnETCohorts
                     if (cohortBins[j].Contains(AllCohorts[cohort].TotalBiomass))
                         cohortLayer = j;
                 }
-                if ((AllCohorts[cohort].Layer > cohortLayer) && (System.String.Compare(AllCohorts[cohort].SpeciesPnET.Lifeform, "tree", System.StringComparison.OrdinalIgnoreCase) == 0))
+                if ((AllCohorts[cohort].Layer > cohortLayer) && (!string.IsNullOrEmpty(AllCohorts[cohort].SpeciesPnET.Lifeform))
+                    && AllCohorts[cohort].SpeciesPnET.Lifeform.ToLower().Contains("tree"))
                 {
                     reducedLayer = true;
                 }
@@ -1685,6 +1746,25 @@ namespace Landis.Library.PnETCohorts
                 else
                 {
                     return grosspsn.Select(psn => (float)psn).ToArray();
+                }
+            }
+        }
+        public float[] AverageAlbedo
+        {
+            get
+            {
+                if (averageAlbedo == null)
+                {
+                    float[] averageAlbedo_array = new float[12];
+                    for (int i = 0; i < averageAlbedo_array.Length; i++)
+                    {
+                        averageAlbedo_array[i] = 0;
+                    }
+                    return averageAlbedo_array;
+                }
+                else
+                {
+                    return averageAlbedo.Select(r => (float)r).ToArray();
                 }
             }
         }
@@ -2622,6 +2702,7 @@ namespace Landis.Library.PnETCohorts
                         OutputHeaders.GrossPsn + "," + 
                         OutputHeaders.NetPsn + "," +
                         OutputHeaders.MaintResp + "," +
+                        OutputHeaders.AverageAlbedo + "," +
                         OutputHeaders.Wood + "," + 
                         OutputHeaders.Root + "," + 
                         OutputHeaders.Fol + "," + 
@@ -2630,11 +2711,12 @@ namespace Landis.Library.PnETCohorts
                         OutputHeaders.Litter + "," + 
                         OutputHeaders.CWD + "," +
                         OutputHeaders.WoodySenescence + "," + 
-                        OutputHeaders.FoliageSenescence + ","+
-                        OutputHeaders.SubCanopyPAR+","+
-                        OutputHeaders.SoilDiffusivity+","+
+                        OutputHeaders.FoliageSenescence + "," +
+                        OutputHeaders.SubCanopyPAR + ","+
+                        OutputHeaders.SoilDiffusivity + "," +
                         OutputHeaders.FrostDepth+","+
-                        OutputHeaders.LeakageFrac;
+                        OutputHeaders.LeakageFrac + "," +
+                        OutputHeaders.AverageAlbedo;
 
             return s;
         }
@@ -2694,7 +2776,8 @@ namespace Landis.Library.PnETCohorts
                 subcanopypar + "," +
                 soilDiffusivity + "," +
                 (topFreezeDepth * 1000) + "," +
-                leakageFrac;
+                leakageFrac + "," +
+                averageAlbedo[monthdata.Month - 1];
 
             this.siteoutput.Add(s);
         }
@@ -2728,10 +2811,65 @@ namespace Landis.Library.PnETCohorts
             {
                 yield return (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts)this[species];
             }
-
-             
         }
-       
+
+        public struct CumulativeLeafAreas
+        {
+            public float DarkConifer;
+            public float LightConifer;
+            public float Deciduous;
+            public float GrassMossOpen;
+            public float Other;
+
+            public float Total
+            {
+                get
+                {
+                    return DarkConifer + LightConifer + Deciduous + GrassMossOpen + Other;
+                }
+            }
+
+            public float DarkConiferProportion
+            {
+                get
+                {
+                    return Total == 0 ? 0 : DarkConifer / Total;
+                }
+            }
+
+            public float LightConiferProportion
+            {
+                get
+                {
+                    return Total == 0 ? 0 : LightConifer / Total;
+                }
+            }
+
+            public float DeciduousProportion
+            {
+                get
+                {
+                    return Total == 0 ? 0 : Deciduous / Total;
+                }
+            }
+
+            public float GrassMossOpenProportion
+            {
+                get
+                {
+                    return Total == 0 ? 0 : GrassMossOpen / Total;
+                }
+            }
+
+            public void Reset()
+            {
+                DarkConifer = 0;
+                LightConifer = 0;
+                Deciduous = 0;
+                GrassMossOpen = 0;
+                Other = 0;
+            }
+        }
 
     }
 

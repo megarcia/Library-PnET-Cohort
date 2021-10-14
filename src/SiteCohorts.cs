@@ -393,29 +393,65 @@ namespace Landis.Library.PnETCohorts
 
                 if (biomassProvided)
                 {
+                    List<double> CohortBiomassList = new List<double>();
                     foreach (Landis.Library.BiomassCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                     {
                         foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
                         {
                             // TODO: Add warning if biomass is 0
                             bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
+                            CohortBiomassList.Add(cohort.Biomass);
                         }
                     }
+                    // Sort cohorts into layers                    
+                    List<List<double>> cohortBins = GetBinsByCohort(CohortBiomassList);
+
+
                     float[] CanopyLAISum = new float[MaxCanopyLayers];
-                    float[] CanopyLAICount = new float[MaxCanopyLayers];
+                    float[] LayerBiomass = new float[MaxCanopyLayers];
+                    List<float>[] LayerBiomassValues = new List<float>[MaxCanopyLayers];
                     CanopyLAI = new float[MaxCanopyLayers];
                     foreach (Cohort cohort in AllCohorts)
                     {
+                        int layerIndex = 0;
+                        foreach(List<double> layerBiomassList in cohortBins)
+                        {
+                            if(layerBiomassList.Contains(cohort.Biomass))
+                            {
+                                cohort.Layer = (byte)layerIndex;
+                                break;
+                            }
+                            layerIndex++;
+                        }
                         int layer = cohort.Layer;
+                        if (LayerBiomassValues[layer] == null)
+                        {
+                            LayerBiomassValues[layer] = new List<float>();
+                        }
+                        LayerBiomassValues[layer].Add(cohort.Biomass);
                         CanopyLAISum[layer] += (cohort.LAI.Sum() * cohort.Biomass);
-                        CanopyLAICount[layer] += cohort.Biomass;
+                        LayerBiomass[layer] += cohort.Biomass;
                         //MaxLAI[layer] = Math.Max(MaxLAI[layer], cohort.SpeciesPNET.MaxLAI);
-
+                    
+                    }
+                    foreach (Cohort cohort in AllCohorts)
+                    {
+                        int layer = cohort.Layer;
+                        float denomSum = 0f;
+                        foreach(float cohortBio in LayerBiomassValues[layer])
+                        {
+                            denomSum += (float)Math.Sqrt(cohortBio / cohort.Biomass);
+                        }
+                        cohort.BiomassLayerProp = 1.0f / denomSum;
+                        float newAGBiomass = cohort.Biomass / cohort.BiomassLayerProp;
+                        float newTotalBiomass = (newAGBiomass - cohort.Fol) / (1 - cohort.SpeciesPnET.FracBelowG);
+                        //cohort.BiomassLayerProp = cohort.Biomass / LayerBiomass[layer];
+                        cohort.ChangeBiomass( (int)Math.Round(newTotalBiomass  - cohort.TotalBiomass));
                     }
                     for (int layer = 0; layer < MaxCanopyLayers; layer++)
                     {
-                        if (CanopyLAICount[layer] > 0)
-                            CanopyLAI[layer] = CanopyLAISum[layer] / CanopyLAICount[layer];
+                        if (LayerBiomass[layer] > 0)
+                            CanopyLAI[layer] = CanopyLAISum[layer] / LayerBiomass[layer];
                         else
                             CanopyLAI[layer] = 0;
                     }

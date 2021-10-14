@@ -171,7 +171,9 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return species;
+                //return species;
+                int sppIndex = species.Index;
+                return (Landis.Core.ISpecies)Globals.ModelCore.Species[sppIndex];
             }
         }
         //---------------------------------------------------------------------

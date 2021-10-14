@@ -631,7 +631,10 @@ namespace Landis.Library.PnETCohorts
         {
             int abovegroundBiomass = (int)((1 - speciesPnET.FracBelowG) * Biomass) + (int)Fol;
             //defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, speciesPnET, abovegroundBiomass, SiteAboveGroundBiomass);
-            data.DeFolProp = (float)Landis.Library.BiomassCohorts.CohortDefoliation.Compute(this, site, SiteAboveGroundBiomass);
+            lock (Globals.distributionThreadLock)
+            {
+                data.DeFolProp = (float)Landis.Library.BiomassCohorts.CohortDefoliation.Compute(this, site, SiteAboveGroundBiomass);
+            }
         }
         //---------------------------------------------------------------------
         // Photosynthesis by canopy layer

@@ -2820,7 +2820,6 @@ namespace Landis.Library.PnETCohorts
                         OutputHeaders.GrossPsn + "," + 
                         OutputHeaders.NetPsn + "," +
                         OutputHeaders.MaintResp + "," +
-                        OutputHeaders.AverageAlbedo + "," +
                         OutputHeaders.Wood + "," + 
                         OutputHeaders.Root + "," + 
                         OutputHeaders.Fol + "," + 

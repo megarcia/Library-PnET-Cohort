@@ -224,6 +224,7 @@ namespace Landis.Library.PnETCohorts
 
                 // mm/month
                 PET = (float)Calculate_PotentialEvapotranspiration_umol(umolPAR, variables.Tday, variables.DaySpan, variables.Daylength);
+                SiteVars.AnnualPET[sitecohorts.Site] += PET;
                 float pressurehead = pressureheadtable[sitecohorts.Ecoregion, (int)Math.Round(Water * 100)];
 
                 // Evaporation begins to decline at 75% of field capacity (Robock et al. 1995)
@@ -244,6 +245,7 @@ namespace Landis.Library.PnETCohorts
                 // Transpiration is assumed to replace evaporation
                 Evaporation = (float)Math.Max(0, AET - (double)sitecohorts.Transpiration);
 
+                SiteVars.ClimaticWaterDeficit[sitecohorts.Site] += (PET - AET);
                 return Evaporation; //mm/month
             }
         }

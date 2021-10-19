@@ -778,6 +778,9 @@ namespace Landis.Library.PnETCohorts
                     grosspsn = new float[13];
                     maintresp = new float[13];
                     averageAlbedo = new float[13];
+                    // Reset annual SiteVars
+                    SiteVars.AnnualPET[Site] = 0;
+                    SiteVars.ClimaticWaterDeficit[Site] = 0;
                 }
 
                 float ozoneD40 = 0;
@@ -1502,13 +1505,13 @@ namespace Landis.Library.PnETCohorts
         {
             float snowMultiplier = snowDepth >= Globals.snowReflectanceThreshold ? 1 : snowDepth / Globals.snowReflectanceThreshold;
 
-            float darkConiferAlbedo = (float)((0.0064 * Math.Pow(leafAreas.Total,  2)) - (0.081 * leafAreas.Total) + 0.3418);
+            float darkConiferAlbedo = (float)((0.0064 * Math.Pow(leafAreas.DarkConifer,  2)) - (0.081 * leafAreas.Total) + 0.3418);
             darkConiferAlbedo = (float)(darkConiferAlbedo + (darkConiferAlbedo * (0.8 * snowMultiplier)));
 
-            float lightConiferAlbedo = (float)((-0.05 * Math.Log(leafAreas.Total)) + 0.2024);
+            float lightConiferAlbedo = (float)((-0.05 * Math.Log(leafAreas.LightConifer)) + 0.2024);
             lightConiferAlbedo = (float)(lightConiferAlbedo + (lightConiferAlbedo * (0.75 * snowMultiplier)));
 
-            float deciduousAlbedo = (float)((-0.007 * leafAreas.Total) + 0.2315);
+            float deciduousAlbedo = (float)((-0.007 * leafAreas.Deciduous) + 0.2315);
             deciduousAlbedo = (float)(deciduousAlbedo + (deciduousAlbedo * (0.35 * snowMultiplier)));
 
             float grassMossOpenAlbedo = 0.2F;

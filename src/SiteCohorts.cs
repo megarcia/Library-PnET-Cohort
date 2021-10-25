@@ -1163,7 +1163,7 @@ namespace Landis.Library.PnETCohorts
                     grosspsn[data[m].Month - 1] += cohort.GrossPsn.Sum();
                     maintresp[data[m].Month - 1] += cohort.MaintenanceRespiration.Sum();
                     transpiration += cohort.Transpiration.Sum();
-                    CalculateCumulativeLeafArea(leafAreas, cohort);
+                    CalculateCumulativeLeafArea(ref leafAreas, cohort);
                     
                     int layer = cohort.Layer;
                     if (layer < CanopyLAISum.Length)
@@ -1365,17 +1365,23 @@ namespace Landis.Library.PnETCohorts
         {
             float snowMultiplier = snowDepth >= Globals.snowReflectanceThreshold ? 1 : snowDepth / Globals.snowReflectanceThreshold;
 
-            float darkConiferAlbedo = (float)((0.0064 * Math.Pow(leafAreas.Total,  2)) - (0.081 * leafAreas.Total) + 0.3418);
+            float darkConiferAlbedo = (float)((-0.067 * Math.Log(leafAreas.DarkConifer < 0.7 ? 0.7 : leafAreas.DarkConifer)) + 0.2095);
             darkConiferAlbedo = (float)(darkConiferAlbedo + (darkConiferAlbedo * (0.8 * snowMultiplier)));
 
-            float lightConiferAlbedo = (float)((-0.05 * Math.Log(leafAreas.Total)) + 0.2024);
+            float lightConiferAlbedo = (float)((-0.054 * Math.Log(leafAreas.LightConifer < 0.7 ? 0.7 : leafAreas.LightConifer)) + 0.2082);
             lightConiferAlbedo = (float)(lightConiferAlbedo + (lightConiferAlbedo * (0.75 * snowMultiplier)));
 
-            float deciduousAlbedo = (float)((-0.007 * leafAreas.Total) + 0.2315);
+            float deciduousAlbedo = (float)((-0.0073 * leafAreas.Deciduous) + 0.231);
             deciduousAlbedo = (float)(deciduousAlbedo + (deciduousAlbedo * (0.35 * snowMultiplier)));
 
             float grassMossOpenAlbedo = 0.2F;
             grassMossOpenAlbedo = (float)(grassMossOpenAlbedo + (grassMossOpenAlbedo * (3.75 * snowMultiplier)));
+
+            // Set Albedo values to 0 if they are negative
+            darkConiferAlbedo = darkConiferAlbedo >= 0 ? darkConiferAlbedo : 0;
+            lightConiferAlbedo = lightConiferAlbedo >= 0 ? lightConiferAlbedo : 0;
+            deciduousAlbedo = deciduousAlbedo >= 0 ? deciduousAlbedo : 0;
+            grassMossOpenAlbedo = grassMossOpenAlbedo >= 0 ? grassMossOpenAlbedo : 0;
 
             if (leafAreas.DarkConiferProportion + leafAreas.LightConiferProportion + leafAreas.DeciduousProportion + leafAreas.GrassMossOpenProportion == 0)
             {
@@ -1387,7 +1393,7 @@ namespace Landis.Library.PnETCohorts
                 / (leafAreas.DarkConiferProportion + leafAreas.LightConiferProportion + leafAreas.DeciduousProportion + leafAreas.GrassMossOpenProportion);
         }
 
-        private void CalculateCumulativeLeafArea(CumulativeLeafAreas leafAreas, Cohort cohort)
+        private void CalculateCumulativeLeafArea(ref CumulativeLeafAreas leafAreas, Cohort cohort)
         {
             if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
                     && cohort.SpeciesPnET.Lifeform.ToLower().Contains("dark"))
@@ -1405,13 +1411,17 @@ namespace Landis.Library.PnETCohorts
                 leafAreas.Deciduous += cohort.SumLAI;
             }
             else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
-                    && cohort.SpeciesPnET.Lifeform.ToLower().Contains("other"))
+                    && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("grass")
+                        || cohort.SpeciesPnET.Lifeform.ToLower().Contains("moss")
+                        || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open")))
             {
                 leafAreas.GrassMossOpen += cohort.SumLAI;
             }
-            else
+            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
+                    && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("tree")
+                        || cohort.SpeciesPnET.Lifeform.ToLower().Contains("shrub")))
             {
-                leafAreas.Other += cohort.SumLAI;
+                leafAreas.Deciduous += cohort.SumLAI;
             }
         }
 
@@ -2702,7 +2712,6 @@ namespace Landis.Library.PnETCohorts
                         OutputHeaders.GrossPsn + "," + 
                         OutputHeaders.NetPsn + "," +
                         OutputHeaders.MaintResp + "," +
-                        OutputHeaders.AverageAlbedo + "," +
                         OutputHeaders.Wood + "," + 
                         OutputHeaders.Root + "," + 
                         OutputHeaders.Fol + "," + 
@@ -2819,13 +2828,12 @@ namespace Landis.Library.PnETCohorts
             public float LightConifer;
             public float Deciduous;
             public float GrassMossOpen;
-            public float Other;
 
             public float Total
             {
                 get
                 {
-                    return DarkConifer + LightConifer + Deciduous + GrassMossOpen + Other;
+                    return DarkConifer + LightConifer + Deciduous + GrassMossOpen;
                 }
             }
 
@@ -2867,7 +2875,6 @@ namespace Landis.Library.PnETCohorts
                 LightConifer = 0;
                 Deciduous = 0;
                 GrassMossOpen = 0;
-                Other = 0;
             }
         }
 

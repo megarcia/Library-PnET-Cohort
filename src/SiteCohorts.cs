@@ -397,6 +397,7 @@ namespace Landis.Library.PnETCohorts
                 if (biomassProvided)
                 {
                     List<double> CohortBiomassList = new List<double>();
+                    List<double> CohortMaxBiomassList = new List<double>();
                     foreach (Landis.Library.BiomassCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                     {
                         foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
@@ -404,10 +405,11 @@ namespace Landis.Library.PnETCohorts
                             // TODO: Add warning if biomass is 0
                             bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
                             CohortBiomassList.Add(cohort.Biomass);
+                            CohortMaxBiomassList.Add(cohort.Biomass);
                         }
                     }
                     // Sort cohorts into layers                    
-                    List<List<double>> cohortBins = GetBinsByCohort(CohortBiomassList);
+                    List<List<double>> cohortBins = GetBinsByCohort(CohortMaxBiomassList);
 
 
                     float[] CanopyLAISum = new float[MaxCanopyLayers];
@@ -419,9 +421,14 @@ namespace Landis.Library.PnETCohorts
                         int layerIndex = 0;
                         foreach(List<double> layerBiomassList in cohortBins)
                         {
-                            if(layerBiomassList.Contains(cohort.Biomass))
+                            if(layerBiomassList.Contains(cohort.BiomassMax))
                             {
                                 cohort.Layer = (byte)layerIndex;
+                                // if "ground" then ensure cohort.Layer = 0
+                                if(cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground"))
+                                {
+                                    cohort.Layer = 0;
+                                }
                                 break;
                             }
                             layerIndex++;
@@ -571,6 +578,7 @@ namespace Landis.Library.PnETCohorts
 
             SortedDictionary<double, Cohort> SubCanopyCohorts = new SortedDictionary<double, Cohort>();
             List<double> CohortBiomassList = new List<double>();
+            List<double> CohortMaxBiomassList = new List<double>();
             int SiteAboveGroundBiomass = AllCohorts.Sum(a => a.Biomass);
             MaxLayer = 0;
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
@@ -580,6 +588,7 @@ namespace Landis.Library.PnETCohorts
                     AllCohorts[cohort].CalculateDefoliation(Site, SiteAboveGroundBiomass);
                 }
                 CohortBiomassList.Add(AllCohorts[cohort].TotalBiomass);
+                CohortMaxBiomassList.Add(AllCohorts[cohort].BiomassMax);
             }
 
             //List<List<int>> rawBins = GetBins(new List<double>(SubCanopyCohorts.Keys));
@@ -599,7 +608,7 @@ namespace Landis.Library.PnETCohorts
                 }
             }*/
             ratioAbove10.Clear();
-            List<List<double>> cohortBins = GetBinsByCohort(CohortBiomassList);
+            List<List<double>> cohortBins = GetBinsByCohort(CohortMaxBiomassList);
 
             List<int> cohortAges = new List<int>();
             List<List<int>> rawBins = new List<List<int>>();
@@ -607,30 +616,27 @@ namespace Landis.Library.PnETCohorts
             bool reducedLayer = false;
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
             {
+                string lifeForm = AllCohorts[cohort].SpeciesPnET.Lifeform.ToLower();
                 int cohortLayer = 0;
-                for (int j = 0; j < cohortBins.Count(); j++)
+                // Lifeform "ground" always restricted to layer 0
+                if (!lifeForm.Contains("ground"))
                 {
-                    if (cohortBins[j].Contains(AllCohorts[cohort].TotalBiomass))
-                        cohortLayer = j;
+                    for (int j = 0; j < cohortBins.Count(); j++)
+                    {
+                        if (cohortBins[j].Contains(AllCohorts[cohort].BiomassMax))
+                            cohortLayer = j;
+                    }
+                    //if ((AllCohorts[cohort].Layer > cohortLayer) && (!string.IsNullOrEmpty(lifeForm))
+                    //    && (lifeForm.Contains("tree") || lifeForm.Contains("shrub"))) 
+                   // {
+                   //     reducedLayer = true;
+                   // }
+
+                    if (AllCohorts[cohort].Layer > MaxLayer)
+                        MaxLayer = AllCohorts[cohort].Layer;
                 }
-                if ((AllCohorts[cohort].Layer > cohortLayer) && (!string.IsNullOrEmpty(AllCohorts[cohort].SpeciesPnET.Lifeform))
-                    && AllCohorts[cohort].SpeciesPnET.Lifeform.ToLower().Contains("tree"))
-                {
-                    reducedLayer = true;
-                }
-                if (AllCohorts[cohort].Layer > MaxLayer)
-                    MaxLayer = AllCohorts[cohort].Layer;
                 for (int i = 1; i <= Globals.IMAX; i++)
                 {
-                    //double CumCohortBiomass = ((float)i / (float)PlugIn.IMAX) * AllCohorts[cohort].TotalBiomass;
-                    /*double CumCohortBiomass = (1f / (float)PlugIn.IMAX) * AllCohorts[cohort].TotalBiomass;
-                    while (SubCanopyCohorts.ContainsKey(CumCohortBiomass))
-                    {
-                        // Add a negligable value [-1e-10; + 1e-10] to CumCohortBiomass in order to prevent duplicate keys
-                        double k = 1e-10 * 2.0 * (PlugIn.ContinuousUniformRandom() - 0.5);
-                        CumCohortBiomass += k;
-                    }
-                    SubCanopyCohorts.Add(CumCohortBiomass, AllCohorts[cohort]);*/
                     SubCanopyCohorts.Add(subLayerIndex, AllCohorts[cohort]);
                     while (rawBins.Count() < (cohortLayer + 1))
                     {
@@ -650,7 +656,7 @@ namespace Landis.Library.PnETCohorts
 
             List<List<int>> LayeredBins = new List<List<int>>();
 
-            if ((rawBins.Count > 0) && (reducedLayer)) // cohort(s) were previously in a higher layer
+           /*if ((rawBins.Count > 0) && (reducedLayer)) // cohort(s) were previously in a higher layer
             {
                 double maxCohortBiomass = CohortBiomassList.Max();
                 for (int i = 0; i < rawBins.Count(); i++)
@@ -681,9 +687,9 @@ namespace Landis.Library.PnETCohorts
                 }
             }
             else
-            {
+            {*/
                 LayeredBins = rawBins;
-            }
+            //}
             nlayers = 0;
             foreach (List<int> layerList in LayeredBins)
             {
@@ -1562,6 +1568,7 @@ namespace Landis.Library.PnETCohorts
 
             SortedDictionary<double, Cohort> SubCanopyCohorts = new SortedDictionary<double, Cohort>();
             List<double> CohortBiomassList = new List<double>();
+            List<double> CohortMaxBiomassList = new List<double>();
             int SiteAboveGroundBiomass = AllCohorts.Sum(a => a.Biomass);
             int MaxLayer = 0;
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
@@ -1572,6 +1579,7 @@ namespace Landis.Library.PnETCohorts
                 }
 
                 CohortBiomassList.Add(AllCohorts[cohort].TotalBiomass);
+                CohortMaxBiomassList.Add(AllCohorts[cohort].BiomassMax);
             }
 
             //List<List<int>> rawBins = GetBins(new List<double>(SubCanopyCohorts.Keys));
@@ -1591,7 +1599,7 @@ namespace Landis.Library.PnETCohorts
                 }
             }*/
             ratioAbove10.Clear();
-            List<List<double>> cohortBins = GetBinsByCohort(CohortBiomassList);
+            List<List<double>> cohortBins = GetBinsByCohort(CohortMaxBiomassList);
 
             List<int> cohortAges = new List<int>();
             List<List<int>> rawBins = new List<List<int>>();
@@ -1599,19 +1607,25 @@ namespace Landis.Library.PnETCohorts
             bool reducedLayer = false;
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
             {
+                string lifeForm = AllCohorts[cohort].SpeciesPnET.Lifeform.ToLower();
                 int cohortLayer = 0;
-                for (int j = 0; j < cohortBins.Count(); j++)
+                // Lifeform "ground" always restricted to layer 0
+                if (!lifeForm.Contains("ground"))
                 {
-                    if (cohortBins[j].Contains(AllCohorts[cohort].TotalBiomass))
-                        cohortLayer = j;
+                    for (int j = 0; j < cohortBins.Count(); j++)
+                    {
+                        if (cohortBins[j].Contains(AllCohorts[cohort].BiomassMax))
+                            cohortLayer = j;
+                    }
+                    //if ((AllCohorts[cohort].Layer > cohortLayer) && (!string.IsNullOrEmpty(lifeForm))
+                    //    && (lifeForm.Contains("tree") || lifeForm.Contains("shrub"))) 
+                    // {
+                    //     reducedLayer = true;
+                    // }
+
+                    if (AllCohorts[cohort].Layer > MaxLayer)
+                        MaxLayer = AllCohorts[cohort].Layer;
                 }
-                if ((AllCohorts[cohort].Layer > cohortLayer) && (!string.IsNullOrEmpty(AllCohorts[cohort].SpeciesPnET.Lifeform))
-                    && AllCohorts[cohort].SpeciesPnET.Lifeform.ToLower().Contains("tree"))
-                {
-                    reducedLayer = true;
-                }
-                if (AllCohorts[cohort].Layer > MaxLayer)
-                    MaxLayer = AllCohorts[cohort].Layer;
                 for (int i = 1; i <= Globals.IMAX; i++)
                 {
                     //double CumCohortBiomass = ((float)i / (float)PlugIn.IMAX) * AllCohorts[cohort].TotalBiomass;
@@ -1641,7 +1655,7 @@ namespace Landis.Library.PnETCohorts
             }
 
             List<List<int>> LayeredBins = new List<List<int>>();
-            if ((rawBins.Count > 0) && (reducedLayer)) // cohort(s) were previously in a higher layer
+            /*if ((rawBins.Count > 0) && (reducedLayer)) // cohort(s) were previously in a higher layer
             {
                 double maxCohortBiomass = CohortBiomassList.Max();
                 for (int i = 0; i < rawBins.Count(); i++)
@@ -1671,9 +1685,9 @@ namespace Landis.Library.PnETCohorts
                 }
             }
             else
-            {
+            {*/
                 LayeredBins = rawBins;
-            }
+            //}
             nlayers = 0;
             foreach (List<int> layerList in LayeredBins)
             {
@@ -2145,8 +2159,8 @@ namespace Landis.Library.PnETCohorts
             {
                 for (int i = 0; i < Globals.IMAX; i++)
                 {
-                    int[] subcanopplayer = new int[] { (ushort)((i + 1) / (float)Globals.IMAX * cohort.BiomassMax) };
-                    subcanopylayers.Add(subcanopplayer, cohort);
+                    int[] subcanopylayer = new int[] { (ushort)((i + 1) / (float)Globals.IMAX * cohort.BiomassMax) };
+                    subcanopylayers.Add(subcanopylayer, cohort);
                 }
             }
             return subcanopylayers;
@@ -2324,44 +2338,47 @@ namespace Landis.Library.PnETCohorts
             float diffProp = LayerThreshRatio;
             // sort by ascending biomass
             CohortBiomassList.Sort();
+            // reverse to sort by descending biomass
+            CohortBiomassList.Reverse();
 
             List<List<double>> CohortBins = new List<List<double>>();
-            int layerIndex = 0;
+            int topLayerIndex = 0;
             CohortBins.Add(new List<double>());
             CohortBins[0].Add(CohortBiomassList[0]);
             foreach (double cohortBio in CohortBiomassList)
             {
                 double smallestThisLayer = CohortBins[0][0];
-                if (layerIndex > 0)
-                {
-                    smallestThisLayer = CohortBins[layerIndex][0];
-                }
+                //if (layerIndex > 0)
+                //{
+                //    smallestThisLayer = CohortBins[layerIndex][0];
+                //}
                 double ratio = (cohortBio / smallestThisLayer);
 
-                if (ratio > (diffProp + 1))
+                if (ratio < (diffProp))
                 {
-                    //if (nlayers < (MaxCanopyLayers))
-                    //{
-                    layerIndex++;
-                    nlayers++;
-
-                    if (CohortBins.Count() < (layerIndex + 1))
+                    if (topLayerIndex < (MaxCanopyLayers - 1))
                     {
+                        topLayerIndex++;
+                        nlayers++;
                         CohortBins.Add(new List<double>());
+                        foreach (int i in Enumerable.Range(1, topLayerIndex).Reverse())
+                        {
+                            CohortBins[i] = new List<double>(CohortBins[i - 1]);
+                        }
+                        CohortBins[0].Clear();
                     }
-                    //}
                 }
 
                 // Add a negligable value [-1e-10; + 1e-10] to ratio in order to prevent duplicate keys
                 double k = 1e-10 * 2.0 * (Statistics.ContinuousUniformRandom() - 0.5);
                 layerThreshRatio.Add(ratio + k);
-                if (!(CohortBins[layerIndex].Contains(cohortBio)))
-                    CohortBins[layerIndex].Add(cohortBio);
-                bool largeRatio = (ratio > 10.0);
-                if (!(ratioAbove10.ContainsKey(cohortBio)))
-                {
-                    ratioAbove10.Add(cohortBio, largeRatio);
-                }
+                if (!(CohortBins[0].Contains(cohortBio)))
+                    CohortBins[0].Add(cohortBio);
+                //bool largeRatio = (ratio > 10.0);
+                //if (!(ratioAbove10.ContainsKey(cohortBio)))
+                //{
+                //    ratioAbove10.Add(cohortBio, largeRatio);
+                //}
             }
             bool tooManyLayers = false;
             if (CohortBins.Count() > MaxCanopyLayers)
@@ -2372,36 +2389,34 @@ namespace Landis.Library.PnETCohorts
             {
                 List<double> sortedRatios = layerThreshRatio.ToList();
                 sortedRatios.Sort();
-                sortedRatios.Reverse();
-                List<double> highestRatios = new List<double>();
+                //sortedRatios.Reverse();
+                List<double> smallestRatios = new List<double>();
                 for (int r = 0; r < (MaxCanopyLayers - 1); r++)
                 {
-                    highestRatios.Add(sortedRatios[r]);
+                    smallestRatios.Add(sortedRatios[r]);
                 }
 
                 CohortBins.Clear();
-                layerIndex = 0;
+                topLayerIndex = MaxCanopyLayers - 1;
                 nlayers = 1;
-                CohortBins.Add(new List<double>());
-                CohortBins[0].Add(CohortBiomassList[0]);
+                for (int r = 0; r < MaxCanopyLayers; r++)
+                {
+                    CohortBins.Add(new List<double>());
+                }
+                CohortBins[topLayerIndex].Add(CohortBiomassList[0]);
                 int cohortInd = 0;
                 foreach (double cohortRatio in layerThreshRatio)
                 {
-                    if (highestRatios.Contains(cohortRatio))
+                    if (smallestRatios.Contains(cohortRatio))
                     {
                         //if (nlayers < (MaxCanopyLayers))
                         //{
-                        layerIndex++;
+                        topLayerIndex--;
                         nlayers++;
 
-                        if (CohortBins.Count() < (layerIndex + 1))
-                        {
-                            CohortBins.Add(new List<double>());
-                        }
-                        //}
                     }
-                    if (!(CohortBins[layerIndex].Contains(CohortBiomassList[cohortInd])))
-                        CohortBins[layerIndex].Add(CohortBiomassList[cohortInd]);
+                    if (!(CohortBins[topLayerIndex].Contains(CohortBiomassList[cohortInd])))
+                        CohortBins[topLayerIndex].Add(CohortBiomassList[cohortInd]);
                     cohortInd++;
                 }
 

@@ -243,6 +243,11 @@ namespace Landis.Library.PnETCohorts
         //---------------------------------------------------------------------
 
         /// <summary>
+        /// Proportion of layer biomass attributed to cohort
+        /// </summary>
+        public float BiomassLayerProp;
+
+        /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="cohort">
@@ -255,7 +260,7 @@ namespace Landis.Library.PnETCohorts
             this.adjFracFol = cohort.adjFracFol;
             this.AdjHalfSat = cohort.AdjHalfSat;
             this.Age = cohort.Age;
-            this.Biomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass;
+            this.Biomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
             this.TotalBiomass = cohort.TotalBiomass;
             this.BiomassMax = cohort.BiomassMax;
             this.CiModifier = cohort.CiModifier;
@@ -282,6 +287,7 @@ namespace Landis.Library.PnETCohorts
             this.PressHead = cohort.PressHead;
             this.Transpiration = cohort.Transpiration;
             this.Water = cohort.Water;
+            this.BiomassLayerProp = cohort.BiomassLayerProp;
         }
 
         /// <summary>
@@ -327,6 +333,7 @@ namespace Landis.Library.PnETCohorts
             this.PressHead = new float[Globals.IMAX];
             this.Transpiration = new float[Globals.IMAX];
             this.Water = new float[Globals.IMAX];
+            this.BiomassLayerProp = 1.0f;
         }
     }
 }

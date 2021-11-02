@@ -43,10 +43,12 @@ namespace Landis.Library.PnETCohorts
 
         //---------------------------------------------------------------------
 
-        public ISpecies Species
+        public Landis.Core.ISpecies Species
         {
             get {
-                return species;
+                //return (Landis.Core.ISpecies)species;
+                int sppIndex = species.Index;
+                return (Landis.Core.ISpecies)Globals.ModelCore.Species[sppIndex];
             }
         }
 

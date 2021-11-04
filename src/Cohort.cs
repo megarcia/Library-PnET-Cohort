@@ -54,6 +54,39 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        // Measure of cohort's diffuse reflection of solar radiation out of total solar radiation without snow reflectance
+        public float Albedo
+        {
+            get
+            {
+                float albedo = 0;
+                if ((!string.IsNullOrEmpty(this.SpeciesPnET.Lifeform))
+                    && this.SpeciesPnET.Lifeform.ToLower().Contains("dark"))
+                {
+                    albedo = (float)((-0.067 * Math.Log(this.SumLAI < 0.7 ? 0.7 : this.SumLAI)) + 0.2095);
+                }
+                else if ((!string.IsNullOrEmpty(this.SpeciesPnET.Lifeform))
+                        && this.SpeciesPnET.Lifeform.ToLower().Contains("light"))
+                {
+                    albedo = (float)((-0.054 * Math.Log(this.SumLAI < 0.7 ? 0.7 : this.SumLAI)) + 0.2082);
+                }
+                else if ((!string.IsNullOrEmpty(this.SpeciesPnET.Lifeform))
+                        && this.SpeciesPnET.Lifeform.ToLower().Contains("decid"))
+                {
+                    albedo = (float)((-0.0073 * this.SumLAI) + 0.231);
+                }
+                else if ((!string.IsNullOrEmpty(this.SpeciesPnET.Lifeform))
+                        && (this.SpeciesPnET.Lifeform.ToLower().Contains("ground")
+                            || this.SpeciesPnET.Lifeform.ToLower().Contains("open")))
+                {
+                    albedo = 0.2F;
+                }
+
+                // Do not allow albedo to be negative
+                return albedo > 0 ? albedo : 0;
+            }
+        }
+        //---------------------------------------------------------------------
         // Foliage (g/m2)
         public float Fol
         {

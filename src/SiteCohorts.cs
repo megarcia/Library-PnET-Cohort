@@ -1267,6 +1267,8 @@ namespace Landis.Library.PnETCohorts
                 CanopyLAI = new float[MaxCanopyLayers];
                 float[] CanopyLAISum = new float[MaxCanopyLayers];
                 float[] CanopyLAICount = new float[MaxCanopyLayers];
+                float[] CanopyAlbedo = new float[MaxCanopyLayers];
+                float[] LayerLAI = new float[MaxCanopyLayers];
                 CumulativeLeafAreas leafAreas = new CumulativeLeafAreas();
 
                 foreach (Cohort cohort in AllCohorts)
@@ -1289,8 +1291,14 @@ namespace Landis.Library.PnETCohorts
                     //{
                     //    Globals.ModelCore.UI.WriteLine("DEBUG: Cohort count = " + AllCohorts.Count() + "; CanopyLAISum count = " + CanopyLAISum.Count());
                     //}
+                    else
+                    {
+                        Globals.ModelCore.UI.WriteLine("DEBUG: Cohort count = " + AllCohorts.Count() + "; CanopyLAISum count = " + CanopyLAISum.Count());
+                    }
+
+                    CanopyAlbedo[layer] += CalculateAlbedoWithSnow(cohort, cohort.Albedo, sno_dep) * cohort.BiomassLayerProp;
+                    LayerLAI[layer] += cohort.SumLAI * cohort.BiomassLayerProp;
                 }
-                averageAlbedo[data[m].Month - 1] = CalculateAverageAlbedo(leafAreas, sno_dep);
 
                 for (int layer = 0; layer < MaxCanopyLayers; layer++)
                 {
@@ -1298,8 +1306,11 @@ namespace Landis.Library.PnETCohorts
                         CanopyLAI[layer] = CanopyLAISum[layer] / CanopyLAICount[layer];
                     else
                         CanopyLAI[layer] = 0;
+
+                    averageAlbedo[data[m].Month - 1] += CanopyAlbedo[layer] > 0 ? CanopyAlbedo[layer] * LayerLAI[layer] : 0;
                 }
-                //
+
+                averageAlbedo[data[m].Month - 1] /= LayerLAI.Sum() > 0 ? LayerLAI.Sum() : 1;
 
                 foreach (Cohort cohort in AllCohorts)
                 {
@@ -1500,6 +1511,12 @@ namespace Landis.Library.PnETCohorts
 
         private float CalculateAverageAlbedo(CumulativeLeafAreas leafAreas, float snowDepth)
         {
+
+            if (!Globals.ModelCore.Ecoregion[this.Site].Active)
+            {
+                return -1;
+            }
+
             float snowMultiplier = snowDepth >= Globals.snowReflectanceThreshold ? 1 : snowDepth / Globals.snowReflectanceThreshold;
 
             float darkConiferAlbedo = (float)((-0.067 * Math.Log(leafAreas.DarkConifer < 0.7 ? 0.7 : leafAreas.DarkConifer)) + 0.2095);
@@ -1530,6 +1547,42 @@ namespace Landis.Library.PnETCohorts
                 / (leafAreas.DarkConiferProportion + leafAreas.LightConiferProportion + leafAreas.DeciduousProportion + leafAreas.GrassMossOpenProportion);
         }
 
+        // Does the final bits of Albedo calculation by adding snow consideration in
+        private float CalculateAlbedoWithSnow(Cohort cohort, float albedo, float snowDepth)
+        {
+            // Inactive sites become large negative values on the map and are not considered in the averages
+            if (!EcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[this.Site]).Active)
+            {
+                return -1;
+            }
+
+            float snowMultiplier = snowDepth >= Globals.snowReflectanceThreshold ? 1 : snowDepth / Globals.snowReflectanceThreshold;
+
+            if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
+                    && cohort.SpeciesPnET.Lifeform.ToLower().Contains("dark"))
+            {
+                return (float)(albedo + (albedo * (0.8 * snowMultiplier)));
+            }
+            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
+                    && cohort.SpeciesPnET.Lifeform.ToLower().Contains("light"))
+            {
+                return (float)(albedo + (albedo * (0.75 * snowMultiplier)));
+            }
+            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
+                    && cohort.SpeciesPnET.Lifeform.ToLower().Contains("decid"))
+            {
+                return (float)(albedo + (albedo * (0.35 * snowMultiplier)));
+            }
+            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
+                    && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground")
+                        || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open")))
+            {
+                return (float)(albedo + (albedo * (3.75 * snowMultiplier)));
+            }
+
+            return 0;
+        }
+
         private void CalculateCumulativeLeafArea(ref CumulativeLeafAreas leafAreas, Cohort cohort)
         {
             if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
@@ -1548,8 +1601,7 @@ namespace Landis.Library.PnETCohorts
                 leafAreas.Deciduous += cohort.SumLAI;
             }
             else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
-                    && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("grass")
-                        || cohort.SpeciesPnET.Lifeform.ToLower().Contains("moss")
+                    && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground")
                         || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open")))
             {
                 leafAreas.GrassMossOpen += cohort.SumLAI;

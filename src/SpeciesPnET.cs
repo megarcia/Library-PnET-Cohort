@@ -212,6 +212,18 @@ namespace Landis.Library.PnETCohorts
             NSCreserve = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NSCReserve"));
             lifeform = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("Lifeform"));
 
+            string lifeForm = string.Empty;
+            if (lifeform != null && lifeform[this] != null && !string.IsNullOrEmpty(lifeform[this]))
+            {
+                lifeForm = lifeform[this];
+            }
+
+            string[] matches = new string[2];
+            if (Names.HasMultipleMatches(lifeForm, ref matches))
+            {
+                throw new System.Exception("LifeForm parameter " + lifeForm + " contains mutually exclusive terms: " + matches[0] + " and " + matches[1] + ".");
+            }
+
             #endregion
 
             SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPnET>>();

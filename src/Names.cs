@@ -34,7 +34,7 @@ namespace Landis.Library.PnETCohorts
         public const string PressureHeadCalculationMethod = "PressureHeadCalculationMethod";
         public const string Wythers = "Wythers";
         public const string DTemp = "DTemp";
-        public const string CO2AMaxBEff = "CO2AMaxBEff";       
+        public const string CO2AMaxBEff = "CO2AMaxBEff";
         public const string Permafrost = "Permafrost";
         public const string LeakageFrostDepth = "LeakageFrostDepth";
         public const string CohortBinSize = "CohortBinSize";
@@ -65,6 +65,7 @@ namespace Landis.Library.PnETCohorts
         public const string FracFolShape = "FracFolShape";
         public const string MaxFracFol = "MaxFracFol";
         public const string O3Coeff = "O3GrowthSens";
+        public static readonly string[] MutuallyExclusiveCanopyTypes = new string[] { "dark", "light", "decid", "ground", "open" };
         public const string LeafOnMinT = "LeafOnMinT"; // Optional
 
         //---------------------------------------------------------------------
@@ -169,6 +170,27 @@ namespace Landis.Library.PnETCohorts
                 }
             }
             return p;
+        }
+        //---------------------------------------------------------------------
+        public static bool HasMultipleMatches(string lifeForm, ref string[] matches)
+        {
+            int matchCount = 0;
+
+            foreach (string type in Names.MutuallyExclusiveCanopyTypes)
+            {
+                if (!string.IsNullOrEmpty(lifeForm) && lifeForm.ToLower().Contains(type.ToLower()))
+                {
+                    matches[matchCount] = type;
+                    matchCount += 1;
+                }
+
+                if (matchCount > 1)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
         //---------------------------------------------------------------------
     }

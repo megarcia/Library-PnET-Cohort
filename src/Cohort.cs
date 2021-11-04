@@ -574,6 +574,7 @@ namespace Landis.Library.PnETCohorts
             float newTotalBiomass = data.TotalBiomass + delta;
             data.TotalBiomass = System.Math.Max(0, newTotalBiomass);
             data.Biomass = (1 - this.SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
+            data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
         }
         //---------------------------------------------------------------------
         // Constructor
@@ -1514,6 +1515,7 @@ namespace Landis.Library.PnETCohorts
             float senescence = ((Root * speciesPnET.TOroot) + Wood * speciesPnET.TOwood);
             data.TotalBiomass -= senescence;
             data.Biomass = (1 - speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
+            data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
             return senescence;
         }
         //---------------------------------------------------------------------
@@ -1534,6 +1536,7 @@ namespace Landis.Library.PnETCohorts
 
             data.TotalBiomass *= (float)(1.0 - fraction);
             data.Biomass = (1 - speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
+            data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
             Fol *= (float)(1.0 - fraction);
 
         }

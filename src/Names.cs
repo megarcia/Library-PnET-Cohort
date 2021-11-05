@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Landis.Library.PnETCohorts
 {
-
     public static class Names
     {
         public static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
@@ -25,7 +24,8 @@ namespace Landis.Library.PnETCohorts
         public const string IMAX = "IMAX";
         public const string InitialCommunities = "InitialCommunities";
         public const string InitialCommunitiesMap = "InitialCommunitiesMap";
-        public const string LitterMap = "LitterMap";
+        public const string InitialCommunitiesSpinup = "InitialCommunitiesSpinup";
+       public const string LitterMap = "LitterMap";
         public const string WoodyDebrisMap = "WoodyDebrisMap";
         public const string ClimateConfigFile = "ClimateConfigFile";
         public const string MapCoordinates = "MapCoordinates";
@@ -43,6 +43,7 @@ namespace Landis.Library.PnETCohorts
         public const string SpinUpWaterStress = "SpinUpWaterStress";
         public const string PrecipEventsWithReplacement = "PrecipEventsWithReplacement";
         public const string Parallel = "Parallel";
+       
 
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";

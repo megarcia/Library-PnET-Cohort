@@ -621,6 +621,36 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, string SiteName, ushort firstYear)
+        {
+            InitializeSubLayers();
+            this.species = (ISpecies)speciesPnET;
+            this.speciesPnET = speciesPnET;
+            this.data.Age = age;
+            //this.data.Biomass = woodBiomass;
+            //incoming biomass is aboveground wood, calculate total biomass
+            int biomass = (int)(woodBiomass / (1 - speciesPnET.FracBelowG));
+            this.data.TotalBiomass = biomass;
+            this.data.BiomassMax = Math.Max(maxBiomass,biomass);
+            this.data.LastSeasonFRad = new List<float>();
+            this.data.adjFracFol = speciesPnET.FracFol;
+            this.data.ColdKill = int.MaxValue;
+
+            if (this.Leaf_On)
+            {
+                this.data.Fol = (adjFracFol * FActiveBiom * biomass);
+                LAI[index] = CalculateLAI(this.speciesPnET, this.Fol, index);
+            }
+
+            this.data.Biomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
+            this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * (this.data.Biomass + this.data.Fol) * speciesPnET.CFracBiomass;
+
+            if (SiteName != null)
+            {
+                InitializeOutput(SiteName, firstYear);
+            }
+        }
+        //---------------------------------------------------------------------
         // Makes sure that litters are allocated to the appropriate site
         public static void SetSiteAccessFunctions(SiteCohorts sitecohorts)
         {

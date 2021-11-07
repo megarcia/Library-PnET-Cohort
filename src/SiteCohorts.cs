@@ -290,7 +290,7 @@ namespace Landis.Library.PnETCohorts
         }
         }
 
-        public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string SiteOutputName = null)
+        public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string initialCommunitiesSpinup, string SiteOutputName = null)
         {
             Cohort.SetSiteAccessFunctions(this);
             this.Ecoregion = EcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[site]);
@@ -394,18 +394,68 @@ namespace Landis.Library.PnETCohorts
                     }
                 }
 
-                if (biomassProvided)
+                if (biomassProvided && !(initialCommunitiesSpinup.ToLower() == "spinup"))
                 {
                     List<double> CohortBiomassList = new List<double>();
                     List<double> CohortMaxBiomassList = new List<double>();
-                    foreach (Landis.Library.BiomassCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                    if (initialCommunitiesSpinup.ToLower() == "nospinup")
                     {
-                        foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
+                        foreach (Landis.Library.BiomassCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                         {
-                            // TODO: Add warning if biomass is 0
-                            bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
-                            CohortBiomassList.Add(cohort.Biomass);
-                            CohortMaxBiomassList.Add(cohort.Biomass);
+                            foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
+                            {
+                                // TODO: Add warning if biomass is 0
+                                bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
+                                CohortBiomassList.Add(AllCohorts.Last().Biomass);
+                                CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (initialCommunitiesSpinup.ToLower() != "spinuplayers")
+                            Globals.ModelCore.UI.WriteLine("Warning:  InitialCommunitiesSpinup parameter is not 'Spinup', 'SpinupLayers' or 'NoSpinup'.  Biomass is provided so using 'SpinUpLayers' by default.");
+                        SpinUp(StartDate, site, initialCommunity, usingClimateLibrary, SiteOutputName, false);
+                        // species-age key to store maxbiomass values
+                        Dictionary<ISpecies, Dictionary<int, int>> cohortDictionary = new Dictionary<ISpecies, Dictionary<int, int>>();
+                        foreach (Cohort cohort in AllCohorts)
+                        {
+                            ISpecies spp = cohort.Species;
+                            int age = cohort.Age;
+                            if(cohortDictionary.ContainsKey(spp))
+                            {
+                                if(cohortDictionary[spp].ContainsKey(age))
+                                {
+                                    // message duplicate species and age
+                                }
+                                else
+                                {
+                                    cohortDictionary[spp].Add(age, (int)cohort.BiomassMax);
+                                }
+                            }
+                            else
+                            {
+                                Dictionary<int, int> ageDictionary = new Dictionary<int, int>();
+                                ageDictionary.Add(age, (int)cohort.BiomassMax);
+                                cohortDictionary.Add(spp, ageDictionary);
+                            }
+                            
+                        }
+                        ClearAllCohorts();
+                        foreach (Landis.Library.BiomassCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                        {
+                            foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
+                            {
+                                // TODO: Add warning if biomass is 0
+                                int age = cohort.Age;
+                                ISpecies spp = cohort.Species;
+                                int cohortMaxBiomass = cohortDictionary[spp][age];
+                                
+
+                                bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, cohortMaxBiomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
+                                CohortBiomassList.Add(AllCohorts.Last().Biomass);
+                                CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
+                            }
                         }
                     }
                     // Sort cohorts into layers                    
@@ -477,7 +527,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         // Spins up sites if no biomass is provided
-        private void SpinUp(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string SiteOutputName = null)
+        private void SpinUp(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string SiteOutputName = null, bool AllowMortality = true)
         {
             List<Landis.Library.AgeOnlyCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.AgeOnlyCohorts.ICohort>();
             foreach (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
@@ -490,6 +540,9 @@ namespace Landis.Library.PnETCohorts
             sortedAgeCohorts = new List<Library.AgeOnlyCohorts.ICohort>(sortedAgeCohorts.OrderByDescending(o => o.Age));
 
             if (sortedAgeCohorts.Count == 0) return;
+
+            List<double> CohortMaxBiomassList = new List<double>();
+
 
             DateTime date = StartDate.AddYears(-(sortedAgeCohorts[0].Age - 1));
 
@@ -514,7 +567,7 @@ namespace Landis.Library.PnETCohorts
 
                 var climate_vars = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, date, EndDate, Climate.Climate.Phase.SpinUp_Climate) : EcoregionData.GetData(Ecoregion, date, EndDate);
 
-                Grow(climate_vars);
+                Grow(climate_vars, AllowMortality);
 
                 date = EndDate;
 
@@ -565,7 +618,7 @@ namespace Landis.Library.PnETCohorts
             return (float)Math.Max(0.0, Math.Min(1.0, (Tave - 2) / -7));
         }
 
-        public bool Grow(List<IEcoregionPnETVariables> data)
+        public bool Grow(List<IEcoregionPnETVariables> data, bool AllowMortality = true)
         {
             bool success = true;
             float sumPressureHead = 0;
@@ -1511,7 +1564,8 @@ namespace Landis.Library.PnETCohorts
             float avgPH = sumPressureHead / countPressureHead;
             SiteVars.PressureHead[Site] = avgPH;
             
-            RemoveMarkedCohorts();
+            if((Globals.ModelCore.CurrentTime > 0) || AllowMortality)
+                RemoveMarkedCohorts();
 
             //HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());//Moved within m loop to trigger once per year
 
@@ -2505,6 +2559,10 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        public void ClearAllCohorts()
+        {
+            cohorts.Clear();
+        }
         public int ReduceOrKillBiomassCohorts(Landis.Library.BiomassCohorts.IDisturbance disturbance)
         {
             List<int> reduction = new List<int>();

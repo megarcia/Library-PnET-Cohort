@@ -1622,6 +1622,13 @@ namespace Landis.Library.PnETCohorts
             float snowMultiplier = snowDepth >= Globals.snowReflectanceThreshold ? 1 : snowDepth / Globals.snowReflectanceThreshold;
 
             if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
+                    && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground")
+                        || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open")
+                        || cohort.SumLAI == 0))
+            {
+                return (float)(albedo + (albedo * (3.125 * snowMultiplier)));
+            }
+            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
                     && cohort.SpeciesPnET.Lifeform.ToLower().Contains("dark"))
             {
                 return (float)(albedo + (albedo * (0.8 * snowMultiplier)));
@@ -1635,12 +1642,6 @@ namespace Landis.Library.PnETCohorts
                     && cohort.SpeciesPnET.Lifeform.ToLower().Contains("decid"))
             {
                 return (float)(albedo + (albedo * (0.35 * snowMultiplier)));
-            }
-            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
-                    && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground")
-                        || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open")))
-            {
-                return (float)(albedo + (albedo * (3.75 * snowMultiplier)));
             }
 
             return 0;

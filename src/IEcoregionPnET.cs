@@ -20,6 +20,7 @@ namespace Landis.Library.PnETCohorts
         float WinterSTD { get; }
         float MossDepth { get; }
         float EvapDepth { get; } // Maximum soil depth susceptible to surface evaporation
+        float FrostFactor { get; }  // Tuning parameter to adjust frost depth
 
         IEcoregionPnETVariables Variables { get; set; }
         

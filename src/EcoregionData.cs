@@ -32,6 +32,7 @@ namespace Landis.Library.PnETCohorts
         private float _mossDepth;
         IEcoregionPnETVariables _variables;
         private float _evapDepth;
+        private float _frostFactor;
         #endregion
         #endregion
 
@@ -55,6 +56,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> winterSTD;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> mossDepth;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> evapDepth;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> frostFactor;
         #endregion
 
         #region accessors for private static variables
@@ -252,6 +254,13 @@ namespace Landis.Library.PnETCohorts
                 return _evapDepth;
             }
         }
+        public float FrostFactor
+        {
+            get
+            {
+                return _frostFactor; ;
+            }
+        }
         #endregion
 
         public static List<string> ParameterNames
@@ -377,6 +386,7 @@ namespace Landis.Library.PnETCohorts
 
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeakageFrac", 0, 1);
             runoffcapture = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter(Names.RunoffCapture, 0, 999999);
+            frostFactor = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("FrostFactor", 0, 999999);
             AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
             foreach (IEcoregion ecoregion in Globals.ModelCore.Ecoregions)
             {
@@ -407,6 +417,7 @@ namespace Landis.Library.PnETCohorts
             this._winterSTD = winterSTD[ecoregion];
             this._mossDepth = mossDepth[ecoregion];
             this._evapDepth = evapDepth[ecoregion];
+            this._frostFactor = frostFactor[ecoregion];
         }
 
         public static bool TryGetParameter(string label, out Parameter<string> parameter)

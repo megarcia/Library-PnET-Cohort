@@ -20,7 +20,7 @@ namespace Landis.Library.PnETCohorts
         public const float lambAir = 0.023f; // W/m K (CLM5 documentation, Table 2.7)
         public const float lambIce = 2.29f; // W/m K (CLM5 documentation, Table 2.7)
         public const float snowHeatCapacity = 2090f; // J/kg K (https://www.engineeringtoolbox.com/specific-heat-capacity-d_391.html)
-        public const float snowReflectanceThreshold = 75;
+        public const float snowReflectanceThreshold = 0.100f;  // minimum depth of snow (m) that counts as full snow for albedo calculations
 
         public static void InitializeCore(ICore mCore, ushort IMAX)
         {

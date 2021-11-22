@@ -747,10 +747,11 @@ namespace Landis.Library.PnETCohorts
             foreach (List<int> layerList in LayeredBins)
             {
                 if (layerList.Count > 0)
+                {
                     nlayers++;
+                }
             }
             MaxLayer = LayeredBins.Count - 1;
-
             //List<List<int>> bins = new List<List<int>>();
             //bins = LayeredBins;
 
@@ -977,7 +978,7 @@ namespace Landis.Library.PnETCohorts
 
                     while (testDepth <= (maxDepth / 1000.0))
                     {
-                        float DRz = (float)Math.Exp(-1.0F * testDepth * d); // adapted from Kang et al. (2000) and Liang et al. (2014)
+                        float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
                                                                             //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
                         float zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * (data[m].Month + (maxMonth + 1)) - testDepth / d));
                         depthTempDict[testDepth] = zTemp;
@@ -1223,6 +1224,14 @@ namespace Landis.Library.PnETCohorts
                             }
                         }
                         layerSumBio[b] = mainLayerBioSum;
+                        foreach (Cohort c in AllCohorts)
+                        {
+                            if (c.Layer == b)
+                            {
+                                c.BiomassLayerProp = c.Biomass / layerSumBio[b];
+                            }
+                        }
+
                         if (mainLayerBioSum > 0)
                         {
                             subcanopypar = mainLayerPAR * mainLayerPARweightedSum / mainLayerBioSum;
@@ -1361,24 +1370,34 @@ namespace Landis.Library.PnETCohorts
                     CanopyAlbedo[layer] += CalculateAlbedoWithSnow(cohort, cohort.Albedo, sno_dep) * cohort.BiomassLayerProp;
                     LayerLAI[layer] += cohort.SumLAI * cohort.BiomassLayerProp;
                 }
-
-                for (int layer = 0; layer < MaxCanopyLayers; layer++)
+                if (LayerLAI.Max() < 1)
                 {
-                    if (CanopyLAICount[layer] > 0)
-                        CanopyLAI[layer] = CanopyLAISum[layer] / CanopyLAICount[layer];
+                    if (AllCohorts.Count == 0)
+                    {
+                        float albedo = 0.2F;
+                        if (sno_dep > 0)
+                        { 
+                            float snowMultiplier = sno_dep >= Globals.snowReflectanceThreshold ? 1 : sno_dep / Globals.snowReflectanceThreshold;
+                            albedo = (float)(albedo + (albedo * (3.125 * snowMultiplier)));
+                        }
+                        averageAlbedo[data[m].Month - 1] = albedo;
+                    }
                     else
-                        CanopyLAI[layer] = 0;
-
-                    averageAlbedo[data[m].Month - 1] += CanopyAlbedo[layer] > 0 ? CanopyAlbedo[layer] * LayerLAI[layer] : 0;
+                    {
+                        var index = Array.FindLastIndex(CanopyAlbedo, value => value != 0);
+                        averageAlbedo[data[m].Month - 1] = CanopyAlbedo[index];
+                    }
                 }
-
-                averageAlbedo[data[m].Month - 1] /= LayerLAI.Sum() > 0 ? LayerLAI.Sum() : 1;
-
-                foreach (Cohort cohort in AllCohorts)
+                else
                 {
-                    int b = cohort.Layer;
-                    cohort.BiomassLayerProp = cohort.Biomass / layerSumBio[b];
-                    int c = cohort.Layer;
+                    for (int layer = (MaxCanopyLayers - 1); layer >= 0; layer--)
+                    {
+                        if (LayerLAI[layer] > 1)
+                        {
+                            averageAlbedo[data[m].Month - 1] = CanopyAlbedo[layer];
+                            break;
+                        }
+                    }
                 }
 
                 folresp[data[m].Month - 1] = layerWtFolResp.Sum();
@@ -1640,7 +1659,7 @@ namespace Landis.Library.PnETCohorts
                     && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground")
                         || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open")))
             {
-                return (float)(albedo + (albedo * (3.75 * snowMultiplier)));
+                return (float)(albedo + (albedo * (3.125 * snowMultiplier)));
             }
 
             return 0;
@@ -2028,7 +2047,7 @@ namespace Landis.Library.PnETCohorts
                     float[] averageAlbedo_array = new float[12];
                     for (int i = 0; i < averageAlbedo_array.Length; i++)
                     {
-                        averageAlbedo_array[i] = 0;
+                        averageAlbedo_array[i] = 0.2f;
                     }
                     return averageAlbedo_array;
                 }

@@ -61,6 +61,13 @@ namespace Landis.Library.PnETCohorts
             {
                 float albedo = 0;
                 if ((!string.IsNullOrEmpty(this.SpeciesPnET.Lifeform))
+                        && (this.SpeciesPnET.Lifeform.ToLower().Contains("ground")
+                            || this.SpeciesPnET.Lifeform.ToLower().Contains("open")
+                            || this.SumLAI == 0))
+                {
+                    albedo = 0.24F;
+                }
+                else if ((!string.IsNullOrEmpty(this.SpeciesPnET.Lifeform))
                     && this.SpeciesPnET.Lifeform.ToLower().Contains("dark"))
                 {
                     albedo = (float)((-0.067 * Math.Log(this.SumLAI < 0.7 ? 0.7 : this.SumLAI)) + 0.2095);
@@ -74,12 +81,6 @@ namespace Landis.Library.PnETCohorts
                         && this.SpeciesPnET.Lifeform.ToLower().Contains("decid"))
                 {
                     albedo = (float)((-0.0073 * this.SumLAI) + 0.231);
-                }
-                else if ((!string.IsNullOrEmpty(this.SpeciesPnET.Lifeform))
-                        && (this.SpeciesPnET.Lifeform.ToLower().Contains("ground")
-                            || this.SpeciesPnET.Lifeform.ToLower().Contains("open")))
-                {
-                    albedo = 0.2F;
                 }
 
                 // Do not allow albedo to be negative

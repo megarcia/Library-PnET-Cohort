@@ -2049,7 +2049,7 @@ namespace Landis.Library.PnETCohorts
                     float[] averageAlbedo_array = new float[12];
                     for (int i = 0; i < averageAlbedo_array.Length; i++)
                     {
-                        averageAlbedo_array[i] = 0.2f;
+                        averageAlbedo_array[i] = 0.24f;
                     }
                     return averageAlbedo_array;
                 }

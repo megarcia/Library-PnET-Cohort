@@ -1385,7 +1385,12 @@ namespace Landis.Library.PnETCohorts
                     else
                     {
                         var index = Array.FindLastIndex(CanopyAlbedo, value => value != 0);
-                        averageAlbedo[data[m].Month - 1] = CanopyAlbedo[index];
+
+                        // If a value not equal to zero was found
+                        if (index != 1)
+                        {
+                            averageAlbedo[data[m].Month - 1] = CanopyAlbedo[index];
+                        }
                     }
                 }
                 else

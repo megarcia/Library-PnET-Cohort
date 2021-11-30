@@ -1596,7 +1596,7 @@ namespace Landis.Library.PnETCohorts
             return success;
         }
 
-        private float CalculateAverageAlbedo(CumulativeLeafAreas leafAreas, float snowDepth)
+        /*private float CalculateAverageAlbedo(CumulativeLeafAreas leafAreas, float snowDepth)
         {
 
             if (!Globals.ModelCore.Ecoregion[this.Site].Active)
@@ -1632,7 +1632,7 @@ namespace Landis.Library.PnETCohorts
             return ((darkConiferAlbedo * leafAreas.DarkConiferProportion) + (lightConiferAlbedo * leafAreas.LightConiferProportion)
                 + (deciduousAlbedo * leafAreas.DeciduousProportion) + (grassMossOpenAlbedo * leafAreas.GrassMossOpenProportion))
                 / (leafAreas.DarkConiferProportion + leafAreas.LightConiferProportion + leafAreas.DeciduousProportion + leafAreas.GrassMossOpenProportion);
-        }
+        }*/
 
         // Does the final bits of Albedo calculation by adding snow consideration in
         private float CalculateAlbedoWithSnow(Cohort cohort, float albedo, float snowDepth)
@@ -1650,7 +1650,7 @@ namespace Landis.Library.PnETCohorts
                         || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open")
                         || cohort.SumLAI == 0))
             {
-                return (float)(albedo + (albedo * (3.125 * snowMultiplier)));
+                return (float)(albedo + (albedo * (2.125 * snowMultiplier)));
             }
             else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
                     && cohort.SpeciesPnET.Lifeform.ToLower().Contains("dark"))

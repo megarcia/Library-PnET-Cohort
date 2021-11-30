@@ -73,6 +73,7 @@ namespace Landis.Library.PnETCohorts
         List<ISpecies> SpeciesBySeed { get; set; }
 
         List<int> CohortsBySuccession { get; set; }
+        List<int> CohortsByCold { get; set; }
         List<int> CohortsByHarvest { get; set; }
         List<int> CohortsByFire { get; set; }
         List<int> CohortsByWind { get; set; }

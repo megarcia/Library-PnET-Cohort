@@ -46,6 +46,7 @@ namespace Landis.Library.PnETCohorts
         public List<ISpecies> SpeciesEstablishedByResprout = null;
         public List<ISpecies> SpeciesEstablishedBySeed = null;
         public List<int> CohortsKilledBySuccession = null;
+        public List<int> CohortsKilledByCold = null;
         public List<int> CohortsKilledByHarvest = null;
         public List<int> CohortsKilledByFire = null;
         public List<int> CohortsKilledByWind = null;
@@ -139,6 +140,18 @@ namespace Landis.Library.PnETCohorts
             set
             {
                 CohortsKilledBySuccession = value;
+            }
+        }
+        //---------------------------------------------------------------------
+        public List<int> CohortsByCold
+        {
+            get
+            {
+                return CohortsKilledByCold;
+            }
+            set
+            {
+                CohortsKilledByCold = value;
             }
         }
         //---------------------------------------------------------------------
@@ -301,6 +314,7 @@ namespace Landis.Library.PnETCohorts
             SpeciesEstablishedByResprout = new List<ISpecies>();
             SpeciesEstablishedBySeed = new List<ISpecies>();
             CohortsKilledBySuccession = new List<int>(new int[Globals.ModelCore.Species.Count()]);
+            CohortsKilledByCold = new List<int>(new int[Globals.ModelCore.Species.Count()]);
             CohortsKilledByHarvest = new List<int>(new int[Globals.ModelCore.Species.Count()]);
             CohortsKilledByFire = new List<int>(new int[Globals.ModelCore.Species.Count()]);
             CohortsKilledByWind = new List<int>(new int[Globals.ModelCore.Species.Count()]);
@@ -2771,7 +2785,11 @@ namespace Landis.Library.PnETCohorts
         {
                     if (species_cohort[cc].IsAlive == false)
                     {
-                        RemoveCohort(species_cohort[cc], new ExtensionType(Names.ExtensionName));
+                        bool coldKill = species_cohort[cc].ColdKill < int.MaxValue;
+                        if(coldKill)
+                            RemoveCohort(species_cohort[cc], new ExtensionType(Names.ExtensionName+":Cold"));
+                        else
+                            RemoveCohort(species_cohort[cc], new ExtensionType(Names.ExtensionName));
                     }
                 }
             }
@@ -2816,6 +2834,10 @@ namespace Landis.Library.PnETCohorts
             if(disturbanceType.Name == Names.ExtensionName)
             {
                 CohortsKilledBySuccession[cohort.Species.Index] += 1;
+            }
+            else if(disturbanceType.Name == (Names.ExtensionName+":Cold"))
+            { 
+                CohortsKilledByCold[cohort.Species.Index] += 1;
             }
             else if(disturbanceType.Name == "disturbance:harvest")
             {

@@ -69,7 +69,10 @@ namespace Landis.Library.PnETCohorts
         public const string O3Coeff = "O3GrowthSens";
         public static readonly string[] MutuallyExclusiveCanopyTypes = new string[] { "dark", "light", "decid", "ground", "open" };
         public const string LeafOnMinT = "LeafOnMinT"; // Optional
-
+        public const string RefoliationMinimumTrigger = "RefolMinimumTrigger";
+        public const string RefoliationMaximum = "RefolMaximum";
+        public const string RefoliationCost = "RefolCost";
+        public const string NonRefoliationCost = "NonRefolCost";
         //---------------------------------------------------------------------
         // Does not appear this function is used anywhere
         public static void AssureIsName(string name)

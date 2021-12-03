@@ -97,6 +97,10 @@ namespace Landis.Library.PnETCohorts
         private float _leafOnMinT;
         private float _NSCreserve;
         private string _lifeform;
+        private float _refoliationMinimumTrigger;
+        private float _refoliationMaximum;
+        private float _refoliationCost;
+        private float _nonRefoliationCost;
         # endregion
 
         #region private static species variables
@@ -148,6 +152,10 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> leafOnMinT;
         private static Landis.Library.Parameters.Species.AuxParm<float> NSCreserve;
         private static Landis.Library.Parameters.Species.AuxParm<string> lifeform;
+        private static Landis.Library.Parameters.Species.AuxParm<float> refoliationMinimumTrigger;
+        private static Landis.Library.Parameters.Species.AuxParm<float> refoliationMaximum;
+        private static Landis.Library.Parameters.Species.AuxParm<float> refoliationCost;
+        private static Landis.Library.Parameters.Species.AuxParm<float> nonRefoliationCost;
         #endregion
 
         public SpeciesPnET()
@@ -211,6 +219,10 @@ namespace Landis.Library.PnETCohorts
                 leafOnMinT = psntmin;
             NSCreserve = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NSCReserve"));
             lifeform = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("Lifeform"));
+            refoliationMinimumTrigger = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolMinimumTrigger"));
+            refoliationMaximum = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolMaximum"));
+            refoliationCost = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolCost"));
+            nonRefoliationCost = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NonRefolCost"));
 
             string lifeForm = string.Empty;
             if (lifeform != null && lifeform[this] != null && !string.IsNullOrEmpty(lifeform[this]))
@@ -293,7 +305,11 @@ namespace Landis.Library.PnETCohorts
             float o3Coeff,
             float leafOnMinT,
             float NSCreserve,
-            string lifeform
+            string lifeform,
+            float refoliationMinimumTrigger,
+            float refoliationMaximum,
+            float refoliationCost,
+            float nonRefoliationCost
             )
         {
             this.postfireregeneration = postFireGeneration;
@@ -358,6 +374,10 @@ namespace Landis.Library.PnETCohorts
             this._initBiomass = (int)((initBiomass - ((uint)(fracbelowg * initBiomass))*toroot) - ((uint)((1 - fracbelowg) * initBiomass) * towood));
             this._NSCreserve = NSCreserve;
             this._lifeform = lifeform;
+            this._refoliationMinimumTrigger = refoliationMinimumTrigger;
+            this._refoliationMaximum = refoliationMaximum;
+            this._refoliationCost = refoliationCost;
+            this._nonRefoliationCost = nonRefoliationCost;
         }
         //---------------------------------------------------------------------
         private SpeciesPnET(ISpecies species)
@@ -406,6 +426,10 @@ namespace Landis.Library.PnETCohorts
             _ozoneSens = ozoneSens[species];
             _NSCreserve = NSCreserve[species];
             _lifeform = lifeform[species];
+            _refoliationMinimumTrigger = refoliationMinimumTrigger[species];
+            _refoliationMaximum = refoliationMaximum[species];
+            _refoliationCost = refoliationCost[species];
+            _nonRefoliationCost = nonRefoliationCost[species];
             index = species.Index;
             name = species.Name;
 
@@ -919,6 +943,38 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 return _lifeform;
+            }
+        }
+        //---------------------------------------------------------------------
+        public float RefoliationMinimumTrigger
+        {
+            get
+            {
+                return _refoliationMinimumTrigger;
+            }
+        }
+        //---------------------------------------------------------------------
+        public float RefoliationMaximum
+        {
+            get
+            {
+                return _refoliationMaximum;
+            }
+        }
+        //---------------------------------------------------------------------
+        public float RefoliationCost
+        {
+            get
+            {
+                return _refoliationCost;
+            }
+        }
+        //---------------------------------------------------------------------
+        public float NonRefoliationCost
+        {
+            get
+            {
+                return _nonRefoliationCost;
             }
         }
         //---------------------------------------------------------------------

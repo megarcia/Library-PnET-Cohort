@@ -134,7 +134,7 @@ namespace Landis.Library.PnETCohorts
 
         //Intercept for linear FracFol relationship
         float MaxFracFol { get; }
-        
+
         // Slope coefficient for O3Effect
         float O3GrowthSens { get; }
         // Cold tolerance
@@ -152,5 +152,18 @@ namespace Landis.Library.PnETCohorts
 
         // Lifeform
         string Lifeform { get; }
+
+        // Minimum defoliation amount that triggers refoliation
+        float RefoliationMinimumTrigger { get; }
+        
+        // Maximum amount of refoliation
+        float RefoliationMaximum { get; }
+
+        // Cost of refoliation
+        float RefoliationCost { get; }
+
+        // Cost to NSC without refoliation
+        float NonRefoliationCost { get; }
+
     }
 }

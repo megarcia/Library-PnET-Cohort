@@ -904,19 +904,17 @@ namespace Landis.Library.PnETCohorts
                 /****************************** MGM's restructuring 10/25/2018 ***************************************/
                 if (data.Leaf_On)
                 {
-                    // Foliage linearly increases with active biomass
-                    //float IdealFol = (species.FracFol * FActiveBiom * biomass);
                     if (firstYear)
                         data.adjFracFol = speciesPnET.FracFol;
+                    // Foliage linearly increases with active biomass
                     float IdealFol = (adjFracFol * FActiveBiom * data.TotalBiomass); // Using adjusted FracFol
                     float NSClimit = data.NSC;
                     if (mainLayerPAR < variables.PAR0) // indicates below the top layer
                     {
+                        // lower canopy layers can retain a reserve of NSC (NSCReserve) which limits NSC available for refoliation - default is no reserve (NSCReserve = 0)
                         NSClimit = data.NSC - (speciesPnET.NSCReserve * (FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass));
                     }
-                    //float IdealFol = CalculateTargetFoliage(layerLastLAI, layerMaxLAI, adjFracFol, index);
 
-                    //if (variables.Month < (int)Constants.Months.June) //Growing season before defoliation outbreaks
                     if (growMonth < 2)  // Growing season months before defoliation outbreaks - can add foliage in first growing season month
                     {
                         if (IdealFol > Fol)
@@ -934,27 +932,24 @@ namespace Landis.Library.PnETCohorts
                                 data.NSC = 0f;
                         }
                     }
-                    //else if (variables.Month == (int)Constants.Months.June) //Apply defoliation only in June
                     if (growMonth == 2)  // Apply defoliation only in the second growing season month
                     { 
-                        //if (firstDefol) // prevents multiple rounds of defoliation within a cohort (which shares canopy variables, like foliage)
-                        //{
                         ReduceFoliage(data.DeFolProp);
-                            //firstDefol = false;
-                        //}
                     }
-                    //else if (variables.Month == (int)Constants.Months.July) // After defoliation events
                     else if (growMonth == 3) // Refoliation can occur in the 3rd growing season month
                     {
                         if (data.DeFolProp > 0)  // Only defoliated cohorts can add refoliate
                         {
-                            if (data.DeFolProp > 0.60 && speciesPnET.TOfol == 1)  // Refoliation at >60% reduction in foliage for deciduous trees - MGM
-                            {
+                            //if (data.DeFolProp > 0.60 && speciesPnET.TOfol == 1)  // Refoliation at >60% reduction in foliage for deciduous trees - MGM
+                            if (data.DeFolProp > speciesPnET.RefoliationMinimumTrigger)  // Refoliation threshold is variable
+                                {
                                 // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                                 // carbon fraction of biomass to convert C to DW
-                                float Folalloc = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * ((0.70f * IdealFol) - Fol)));  // 70% refoliation
+                                //float Folalloc = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * ((0.70f * IdealFol) - Fol)));  // 70% refoliation
+                                float Folalloc = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * ((speciesPnET.RefoliationMaximum * IdealFol) - Fol)));  // variable refoliation
 
-                                float Folalloc2 = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * (0.95f * IdealFol - Fol)));  // cost of refol is the cost of getting to IdealFol
+                                //float Folalloc2 = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * (0.95f * IdealFol - Fol)));  // cost of refol is the cost of getting to 95% IdealFol
+                                float Folalloc2 = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * (speciesPnET.RefoliationCost * IdealFol - Fol)));  // cost of refol is the cost of getting to variable propotion of IdealFol
 
                                 data.Fol += Folalloc / speciesPnET.CFracBiomass;// gDW
 
@@ -966,29 +961,14 @@ namespace Landis.Library.PnETCohorts
                             {
                                 // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                                 // carbon fraction of biomass to convert C to DW
-                                float Folalloc = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * (0.10f * IdealFol))); // gC/mo 10% of IdealFol to take out NSC 
+                                //float Folalloc = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * (0.10f * IdealFol))); // gC/mo 10% of IdealFol to take out NSC 
+                                float Folalloc = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * (speciesPnET.NonRefoliationCost * IdealFol))); // gC/mo variable proportion of IdealFol to take out NSC 
 
                                 // Subtract from NSC do not add Fol
                                 data.NSC -= Folalloc;
                             }
-                            //firstAlloc = false;  // Denotes that allocation has been applied to one sublayer
                         }
                         // Non-defoliated trees do not add to their foliage
-                        /*else if (IdealFol > Fol)    //Non-defoliated trees refoliate 'normally', but only once per cohort
-                        {
-                            // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
-                            // carbon fraction of biomass to convert C to DW
-                            float Folalloc = Math.Max(0, Math.Min(NSC, speciesPnET.CFracBiomass * (IdealFol - Fol))); // gC/mo
-
-                            // Add foliage allocation to foliage
-                            Fol += Folalloc / speciesPnET.CFracBiomass;// gDW
-
-                            // Subtract from NSC
-                            data.NSC -= Folalloc;
-                            if (data.NSC < 0)
-                                data.NSC = 0f;
-                            //firstAlloc = false; // Denotes that allocation has been applied to one sublayer
-                        }*/
                     }
                 }
                 /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^ MGM's restructuring 10/25/2018 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/

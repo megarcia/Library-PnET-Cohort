@@ -98,9 +98,15 @@ namespace Landis.Library.PnETCohorts
             float rootAdded = (float)((1 - prootlost) * cohort.Root * fraction);
             float folAdded = (float)((1 - pfollost) * cohort.Fol * fraction);
 
-            ((SiteCohorts)sitecohorts).AddWoodyDebris(woodAdded * cohort.BiomassLayerProp, cohort.SpeciesPnET.KWdLit);
-            ((SiteCohorts)sitecohorts).AddWoodyDebris(rootAdded * cohort.BiomassLayerProp, cohort.SpeciesPnET.KWdLit);
-            ((SiteCohorts)sitecohorts).AddLitter(folAdded * cohort.BiomassLayerProp, cohort.SpeciesPnET);
+            // Using biomass proportioning
+            //((SiteCohorts)sitecohorts).AddWoodyDebris(woodAdded * cohort.BiomassLayerProp, cohort.SpeciesPnET.KWdLit);
+            //((SiteCohorts)sitecohorts).AddWoodyDebris(rootAdded * cohort.BiomassLayerProp, cohort.SpeciesPnET.KWdLit);
+            //((SiteCohorts)sitecohorts).AddLitter(folAdded * cohort.BiomassLayerProp, cohort.SpeciesPnET);
+
+            // Using Canopy proportioning
+            ((SiteCohorts)sitecohorts).AddWoodyDebris(woodAdded * cohort.CanopyLayerProp, cohort.SpeciesPnET.KWdLit);
+            ((SiteCohorts)sitecohorts).AddWoodyDebris(rootAdded * cohort.CanopyLayerProp, cohort.SpeciesPnET.KWdLit);
+            ((SiteCohorts)sitecohorts).AddLitter(folAdded * cohort.CanopyLayerProp, cohort.SpeciesPnET);
 
             cohort.AccumulateWoodySenescence((int)(woodAdded + rootAdded));
             cohort.AccumulateFoliageSenescence((int)(folAdded));

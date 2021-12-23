@@ -222,7 +222,7 @@ namespace Landis.Library.PnETCohorts
 
             if (isDebugEnabled)
                 log.DebugFormat("  grow cohort: {0}, {1} yrs, {2} Mg/ha",
-                                cohort.Species.Name, cohort.Age, cohort.Biomass);
+                                cohort.Species.Name, cohort.Age, cohort.TotalBiomass);
 
             //  Check for senescence
             if (cohort.Age >= species.Longevity)
@@ -244,7 +244,7 @@ namespace Landis.Library.PnETCohorts
             //                    biomassChange, cohort.Biomass, siteBiomass);
 
             //cohortMortality = Cohorts.BiomassCalculator.MortalityWithoutLeafLitter;
-            if (cohort.Biomass > 0)
+            if (cohort.TotalBiomass > 0)
             {
                 cohortData[index] = cohort.Data;
                 return index + 1;

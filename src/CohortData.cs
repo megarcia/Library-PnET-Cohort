@@ -1,6 +1,7 @@
 using Landis.Core;
 using Landis.SpatialModeling;
 using System.Collections.Generic;
+using System;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -10,16 +11,27 @@ namespace Landis.Library.PnETCohorts
     public struct CohortData
     {
         /// <summary>
+        /// The cohort
+        /// </summary>
+        public Cohort Cohort;
+
+        //---------------------------------------------------------------------
+        /// <summary>
         /// The cohort's age (years).
         /// </summary>
         public ushort Age;
 
         //---------------------------------------------------------------------
+        /// <summary>
+        /// The cohort's live aboveground biomass (g/m2) - scaled to the site.
+        /// </summary>
+        public float Biomass;
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// The cohort's live aboveground biomass (g/m2).
         /// </summary>
-        public float Biomass;
+        public float AGBiomass;
         //---------------------------------------------------------------------
 
         /// <summary>
@@ -136,6 +148,12 @@ namespace Landis.Library.PnETCohorts
         public float[] LAI;
 
         //---------------------------------------------------------------------
+        /// <summary>
+        /// Leaf area index (m/m) maximum last year
+        /// </summary>
+        public float LastLAI;
+
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// Gross photosynthesis (gC/mo)
@@ -248,6 +266,11 @@ namespace Landis.Library.PnETCohorts
         public float BiomassLayerProp;
 
         /// <summary>
+        /// Proportion of layer canopy (foliage) attributed to cohort
+        /// </summary>
+        public float CanopyLayerProp;
+
+        /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="cohort">
@@ -260,7 +283,8 @@ namespace Landis.Library.PnETCohorts
             this.adjFracFol = cohort.adjFracFol;
             this.AdjHalfSat = cohort.AdjHalfSat;
             this.Age = cohort.Age;
-            this.Biomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
+            this.AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
+            this.Biomass = this.AGBiomass * cohort.CanopyLayerProp;
             this.TotalBiomass = cohort.TotalBiomass;
             this.BiomassMax = cohort.BiomassMax;
             this.CiModifier = cohort.CiModifier;
@@ -275,6 +299,7 @@ namespace Landis.Library.PnETCohorts
             this.GrossPsn = cohort.GrossPsn;
             this.Interception = cohort.Interception;
             this.LAI = cohort.LAI;
+            this.LastLAI = cohort.LastLAI;
             this.LastFoliageSenescence = cohort.LastFoliageSenescence;
             this.LastFRad = cohort.LastFRad;
             this.LastSeasonFRad = cohort.LastSeasonFRad;
@@ -288,6 +313,8 @@ namespace Landis.Library.PnETCohorts
             this.Transpiration = cohort.Transpiration;
             this.Water = cohort.Water;
             this.BiomassLayerProp = cohort.BiomassLayerProp;
+            this.CanopyLayerProp = cohort.CanopyLayerProp;
+            this.Cohort = cohort;
         }
 
         /// <summary>
@@ -298,7 +325,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="totalBioamss">
         /// The biomamss of the cohort
         public CohortData(ushort age, float totalBiomass, ISpecies species)
-        {
+        {            
             this.AdjFolN = new float[Globals.IMAX];
             this.adjFolN = 0; ;
             this.AdjFracFol = new float[Globals.IMAX];
@@ -306,7 +333,9 @@ namespace Landis.Library.PnETCohorts
             this.AdjHalfSat = 0;
             this.Age = age;
             ISpeciesPnET spc = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
-            this.Biomass = (1- spc.FracBelowG) * totalBiomass;
+            this.Cohort = new Cohort(species,spc,0,"");
+            this.AGBiomass = (1- spc.FracBelowG) * totalBiomass;
+            this.Biomass = this.AGBiomass * 1.0f;
             this.TotalBiomass = totalBiomass;
             this.BiomassMax = totalBiomass;
             this.CiModifier = new float[Globals.IMAX];
@@ -321,6 +350,7 @@ namespace Landis.Library.PnETCohorts
             this.GrossPsn = new float[Globals.IMAX];
             this.Interception = new float[Globals.IMAX];
             this.LAI = new float[Globals.IMAX];
+            //this.LastLAI = 0;
             this.LastFoliageSenescence = 0;
             this.LastFRad = 0;
             this.LastSeasonFRad = new List<float>();
@@ -334,6 +364,12 @@ namespace Landis.Library.PnETCohorts
             this.Transpiration = new float[Globals.IMAX];
             this.Water = new float[Globals.IMAX];
             this.BiomassLayerProp = 1.0f;
+            float cohortLAI = 0;
+            float cohortIdealFol = (spc.FracFol * (float)Math.Exp(-spc.FrActWd * this.TotalBiomass) * this.TotalBiomass);
+            for (int i = 0; i < Globals.IMAX; i++)
+                cohortLAI += Cohort.CalculateLAI(spc, cohortIdealFol, i);
+            this.LastLAI = cohortLAI;
+            this.CanopyLayerProp = this.LastLAI / spc.MaxLAI;
         }
     }
 }

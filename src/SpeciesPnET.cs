@@ -1,6 +1,7 @@
 using Landis.Core;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -101,6 +102,7 @@ namespace Landis.Library.PnETCohorts
         private float _refoliationMaximum;
         private float _refoliationCost;
         private float _nonRefoliationCost;
+        private float _maxLAI;
         # endregion
 
         #region private static species variables
@@ -156,6 +158,9 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> refoliationMaximum;
         private static Landis.Library.Parameters.Species.AuxParm<float> refoliationCost;
         private static Landis.Library.Parameters.Species.AuxParm<float> nonRefoliationCost;
+        private static Landis.Library.Parameters.Species.AuxParm<float> maxlai;
+        private static Dictionary<ISpecies,float> maxLAI;
+        private static Dictionary<ISpecies, string> lifeForm;
         #endregion
 
         public SpeciesPnET()
@@ -218,23 +223,45 @@ namespace Landis.Library.PnETCohorts
             if (leafOnMinT[this] == -9999F)
                 leafOnMinT = psntmin;
             NSCreserve = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NSCReserve"));
-            lifeform = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("Lifeform"));
             refoliationMinimumTrigger = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolMinimumTrigger"));
             refoliationMaximum = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolMaximum"));
             refoliationCost = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolCost"));
             nonRefoliationCost = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NonRefolCost"));
-
-            string lifeForm = string.Empty;
-            if (lifeform != null && lifeform[this] != null && !string.IsNullOrEmpty(lifeform[this]))
-            {
-                lifeForm = lifeform[this];
+            maxlai = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxLAI")); //Optional
+            maxLAI = new Dictionary<ISpecies, float>();
+            foreach (ISpecies species in Globals.ModelCore.Species)
+            {                
+                if (maxlai[species] == -9999F)
+                {
+                    // Calculate MaxLAI
+                    float peakBiomass = 1f / fractWd[species];
+                    maxLAI.Add(species, (peakBiomass * maxFracFol[species] * (float)Math.Exp(-1f * fractWd[species] * peakBiomass)) / slwmax[species]);
+                }
+                else
+                {
+                    maxLAI.Add(species, maxlai[species]);
+                }
             }
 
-            string[] matches = new string[2];
-            if (Names.HasMultipleMatches(lifeForm, ref matches))
+            lifeform = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("Lifeform"));
+            lifeForm = new Dictionary<ISpecies, string>();
+            foreach (ISpecies species in Globals.ModelCore.Species)
             {
-                throw new System.Exception("LifeForm parameter " + lifeForm + " contains mutually exclusive terms: " + matches[0] + " and " + matches[1] + ".");
+                if (lifeform != null && lifeform[species] != null && !string.IsNullOrEmpty(lifeform[species]))
+                {
+                    string[] matches = new string[2];
+                    if (Names.HasMultipleMatches(lifeform[species], ref matches))
+                    {
+                        throw new System.Exception("LifeForm parameter " + lifeForm + " contains mutually exclusive terms: " + matches[0] + " and " + matches[1] + ".");
+                    }
+                    lifeForm.Add(species,lifeform[species]);
+                }
+                else
+                {
+                    lifeForm.Add(species, "tree");
+                }
             }
+            
 
             #endregion
 
@@ -247,7 +274,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
-        SpeciesPnET(PostFireRegeneration postFireGeneration, 
+        SpeciesPnET(PostFireRegeneration postFireGeneration,
             float dnsc,
             float cfracbiomass,
             float kwdlit,
@@ -305,11 +332,12 @@ namespace Landis.Library.PnETCohorts
             float o3Coeff,
             float leafOnMinT,
             float NSCreserve,
-            string lifeform,
+            string lifeForm,
             float refoliationMinimumTrigger,
             float refoliationMaximum,
             float refoliationCost,
-            float nonRefoliationCost
+            float nonRefoliationCost,
+            float maxLAI
             )
         {
             this.postfireregeneration = postFireGeneration;
@@ -373,16 +401,17 @@ namespace Landis.Library.PnETCohorts
             uint initBiomass = (uint)(initialnsc/(dnsc * cfracbiomass));
             this._initBiomass = (int)((initBiomass - ((uint)(fracbelowg * initBiomass))*toroot) - ((uint)((1 - fracbelowg) * initBiomass) * towood));
             this._NSCreserve = NSCreserve;
-            this._lifeform = lifeform;
+            this._lifeform = lifeForm;
             this._refoliationMinimumTrigger = refoliationMinimumTrigger;
             this._refoliationMaximum = refoliationMaximum;
             this._refoliationCost = refoliationCost;
             this._nonRefoliationCost = nonRefoliationCost;
+            this._maxLAI = maxLAI;
         }
         //---------------------------------------------------------------------
         private SpeciesPnET(ISpecies species)
         {
-            uint initBiomass = (uint)(cfracbiomass[species]/(dnsc[species] * initialnsc[species]));
+            uint initBiomass = (uint)(initialnsc[species]/(dnsc[species] * cfracbiomass[species]));
             _initBiomass = (int)((initBiomass - ((uint)(fracbelowg[species] * initBiomass)) * toroot[species]) - ((uint)((1 - fracbelowg[species]) * initBiomass) * towood[species]));
             _dnsc = dnsc[species];
             _cfracbiomass = cfracbiomass[species];
@@ -425,11 +454,12 @@ namespace Landis.Library.PnETCohorts
             _co2HalfSatEff = co2HalfSatEff[species];
             _ozoneSens = ozoneSens[species];
             _NSCreserve = NSCreserve[species];
-            _lifeform = lifeform[species];
+            _lifeform = lifeForm[species];
             _refoliationMinimumTrigger = refoliationMinimumTrigger[species];
             _refoliationMaximum = refoliationMaximum[species];
             _refoliationCost = refoliationCost[species];
             _nonRefoliationCost = nonRefoliationCost[species];
+            _maxLAI = maxLAI[species];
             index = species.Index;
             name = species.Name;
 
@@ -975,6 +1005,14 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 return _nonRefoliationCost;
+            }
+        }
+        //---------------------------------------------------------------------
+        public float MaxLAI
+        {
+            get
+            {
+                return _maxLAI;
             }
         }
         //---------------------------------------------------------------------

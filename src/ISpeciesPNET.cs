@@ -165,5 +165,8 @@ namespace Landis.Library.PnETCohorts
         // Cost to NSC without refoliation
         float NonRefoliationCost { get; }
 
+        // Maximum LAI
+        float MaxLAI { get; }
+
     }
 }

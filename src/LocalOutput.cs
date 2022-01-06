@@ -17,8 +17,6 @@ namespace Landis.Library.PnETCohorts
         
         public LocalOutput(string SiteName, string FileName, string Header)
         {
-            
-
             this.SiteName = SiteName;
             this.Path = "Output/" + PNEToutputsites + "/" + SiteName + "/";
             this.FileName = FileName;
@@ -34,6 +32,13 @@ namespace Landis.Library.PnETCohorts
             }
             FileContent = new List<string>(new string[] { Header });
             Write();
+        }
+
+        public LocalOutput(LocalOutput localOutput)
+        {
+            this.SiteName = localOutput.SiteName;
+            this.Path = localOutput.Path;
+            this.FileName = localOutput.FileName;
         }
         public void Add(string s)
         {

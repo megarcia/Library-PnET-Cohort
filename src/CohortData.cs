@@ -271,6 +271,11 @@ namespace Landis.Library.PnETCohorts
         public float CanopyLayerProp;
 
         /// <summary>
+        /// Proportion of layer canopy growing space available to cohort
+        /// </summary>
+        public float CanopyGrowingSpace;
+
+        /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="cohort">
@@ -315,6 +320,7 @@ namespace Landis.Library.PnETCohorts
             this.BiomassLayerProp = cohort.BiomassLayerProp;
             this.CanopyLayerProp = cohort.CanopyLayerProp;
             this.Cohort = cohort;
+            this.CanopyGrowingSpace = cohort.CanopyGrowingSpace;
         }
 
         /// <summary>
@@ -370,6 +376,7 @@ namespace Landis.Library.PnETCohorts
                 cohortLAI += Cohort.CalculateLAI(spc, cohortIdealFol, i);
             this.LastLAI = cohortLAI;
             this.CanopyLayerProp = this.LastLAI / spc.MaxLAI;
+            this.CanopyGrowingSpace = 1.0f;
         }
     }
 }

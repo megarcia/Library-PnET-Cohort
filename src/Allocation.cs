@@ -108,8 +108,8 @@ namespace Landis.Library.PnETCohorts
             ((SiteCohorts)sitecohorts).AddWoodyDebris(rootAdded * cohort.CanopyLayerProp, cohort.SpeciesPnET.KWdLit);
             ((SiteCohorts)sitecohorts).AddLitter(folAdded * cohort.CanopyLayerProp, cohort.SpeciesPnET);
 
-            cohort.AccumulateWoodySenescence((int)(woodAdded + rootAdded));
-            cohort.AccumulateFoliageSenescence((int)(folAdded));
+            cohort.AccumulateWoodySenescence((int)((woodAdded + rootAdded) * cohort.CanopyLayerProp));
+            cohort.AccumulateFoliageSenescence((int)((folAdded) * cohort.CanopyLayerProp));
         }
     }
 }

@@ -506,6 +506,18 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public float CanopyGrowingSpace
+        {
+            get
+            {
+                return data.CanopyGrowingSpace;
+            }
+            set
+            {
+                data.CanopyGrowingSpace = value;
+            }
+        }
+        //---------------------------------------------------------------------
         // List of DisturbanceTypes that have had ReduceDeadPools applied
         public List<ExtensionType> ReducedTypes = null;
         //---------------------------------------------------------------------
@@ -637,6 +649,7 @@ namespace Landis.Library.PnETCohorts
                 cohortLAI += CalculateLAI(this.SpeciesPnET, cohortIdealFol, i);
             this.data.LastLAI = cohortLAI;
             this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
+            this.data.CanopyGrowingSpace = 1.0f;
             this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
             data.BiomassMax = this.data.TotalBiomass;
 
@@ -703,6 +716,7 @@ namespace Landis.Library.PnETCohorts
             }
             this.data.LastLAI = cohortLAI;
             this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
+            this.data.CanopyGrowingSpace = 1.0f;
             this.data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
             this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
             this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * (this.data.AGBiomass) * speciesPnET.CFracBiomass;
@@ -713,7 +727,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
-        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, string SiteName, ushort firstYear)
+        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass,float canopyGrowingSpace, string SiteName, ushort firstYear)
         {
             InitializeSubLayers();
             this.species = (ISpecies)speciesPnET;
@@ -745,6 +759,7 @@ namespace Landis.Library.PnETCohorts
             }
             this.data.LastLAI = cohortLAI;
             this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
+            this.data.CanopyGrowingSpace = canopyGrowingSpace;
             this.data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
             this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
             this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * (this.data.AGBiomass) * speciesPnET.CFracBiomass;
@@ -1057,12 +1072,12 @@ namespace Landis.Library.PnETCohorts
                             float tentativeCanopyProp = (tentativeLAI / this.speciesPnET.MaxLAI);
                             if (sumCanopyProp > 1)
                                 tentativeCanopyProp = tentativeCanopyProp / sumCanopyProp;
-                            float relativeCanopyProp = this.CanopyLayerProp / tentativeCanopyProp;
+                            //float relativeCanopyProp = this.CanopyLayerProp / tentativeCanopyProp;
                             // Downgrade foliage added if canopy is expanding 
                             //float actualFol = Math.Min(FolTentative, FolTentative * relativeCanopyProp);
                             float actualFol = FolTentative;
-                            if (FolTentative * relativeCanopyProp < FolTentative)
-                                actualFol = FolTentative * relativeCanopyProp;
+                            //if (FolTentative * relativeCanopyProp < FolTentative)
+                            //    actualFol = FolTentative * relativeCanopyProp;
                             // Add Foliage
                             data.Fol += actualFol;
                         }
@@ -1527,10 +1542,11 @@ namespace Landis.Library.PnETCohorts
                        monthdata.Month + "," +
                        Age + "," +
                        Layer + "," +
-                       BiomassLayerProp + ","+
-                       CanopyLayerProp + ","+
+                       BiomassLayerProp + "," +
+                       CanopyLayerProp + "," +
+                       CanopyGrowingSpace + "," +
                        SumLAI + "," +
-                       SumLAI*CanopyLayerProp+","+
+                       SumLAI* CanopyLayerProp + ","+
                        GrossPsn.Sum() + "," +
                        FolResp.Sum() + "," +
                        MaintenanceRespiration.Sum() + "," +
@@ -1579,6 +1595,7 @@ namespace Landis.Library.PnETCohorts
                             OutputHeaders.Layer + "," +
                             OutputHeaders.BiomassLayerProp + "," +
                             OutputHeaders.CanopyLayerProp + "," +
+                            OutputHeaders.CanopyGrowingSpace + "," +
                             OutputHeaders.LAI + "," +
                             OutputHeaders.LAISite + "," +
                             OutputHeaders.GrossPsn + "," +

@@ -735,9 +735,10 @@ namespace Landis.Library.PnETCohorts
             this.data.Age = age;
             //this.data.Biomass = woodBiomass;
             //incoming biomass is aboveground wood, calculate total biomass
-            float biomass = (woodBiomass / (1 - speciesPnET.FracBelowG));
-            this.data.TotalBiomass = biomass;
-            this.data.BiomassMax = Math.Max(maxBiomass,biomass);
+            float siteTotalBiomass = (woodBiomass / (1 - speciesPnET.FracBelowG));
+            this.data.Biomass = woodBiomass;
+            this.data.TotalBiomass = siteTotalBiomass / canopyGrowingSpace;
+            this.data.BiomassMax = Math.Max(maxBiomass, this.data.TotalBiomass);
             this.data.LastSeasonFRad = new List<float>();
             this.data.adjFracFol = speciesPnET.FracFol;
             this.data.ColdKill = int.MaxValue;
@@ -757,8 +758,8 @@ namespace Landis.Library.PnETCohorts
             {
                 this.data.Fol = cohortIdealFol;
             }
-            this.data.LastLAI = cohortLAI;
-            this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
+            this.data.LastLAI = Math.Min(cohortLAI, speciesPnET.MaxLAI);
+            this.data.CanopyLayerProp = Math.Min(this.data.LastLAI / speciesPnET.MaxLAI, canopyGrowingSpace);
             this.data.CanopyGrowingSpace = canopyGrowingSpace;
             this.data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
             this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;

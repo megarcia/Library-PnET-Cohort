@@ -526,11 +526,13 @@ namespace Landis.Library.PnETCohorts
                         float cohortLAI = 0;
                         for (int i = 0; i < Globals.IMAX; i++)
                             cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortFol, i);
-                        LayerFoliagePotentialValues[layer].Add(cohortLAI / cohort.SpeciesPnET.MaxLAI);
+                        cohortLAI = Math.Min(cohortLAI, cohort.SpeciesPnET.MaxLAI);
+                        float cohortLAIRatio = Math.Min(cohortLAI / cohort.SpeciesPnET.MaxLAI, cohort.CanopyGrowingSpace);
+                        LayerFoliagePotentialValues[layer].Add(cohortLAIRatio);
 
                        
-                        LayerFoliagePotential[layer] += (cohortLAI / cohort.SpeciesPnET.MaxLAI);
-                        canopyProportions.Add(cohort, cohortLAI / cohort.SpeciesPnET.MaxLAI);
+                        LayerFoliagePotential[layer] += (cohortLAIRatio);
+                        canopyProportions.Add(cohort, cohortLAIRatio);
                         //MaxLAI[layer] = Math.Max(MaxLAI[layer], cohort.SpeciesPNET.MaxLAI);
 
                     }
@@ -549,6 +551,7 @@ namespace Landis.Library.PnETCohorts
                         //float newAGBiomass = cohort.Biomass / cohort.BiomassLayerProp;
 
                         float canopyLayerProp = Math.Min(canopyProportions[cohort], cohort.CanopyGrowingSpace);
+
                         if (LayerFoliagePotential[layer] > 1)
                         {
                             canopyLayerProp = Math.Min((canopyProportions[cohort] / LayerFoliagePotential[layer]), cohort.CanopyGrowingSpace);
@@ -556,29 +559,36 @@ namespace Landis.Library.PnETCohorts
                         }
                         cohort.CanopyLayerProp = canopyLayerProp;
 
+                        if (cohort.CanopyGrowingSpace == 1)
+                        {
+                            //float newAGBiomass = ((1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol) / cohort.CanopyLayerProp;
+                            //float newTotalBiomass = (newAGBiomass - cohort.Fol) / (1 - cohort.SpeciesPnET.FracBelowG);
+                            //cohort.BiomassLayerProp = cohort.Biomass / LayerBiomass[layer];
+                            // Estimate new wood biomass from FracBelowG and FrActWs (see Estimate_WoodBio.xlsx)
+                            float estSlope = -10.5211f + 37.17538f * cohort.SpeciesPnET.FracBelowG + 260587.6066f * cohort.SpeciesPnET.FrActWd + 389.3418f * cohort.SpeciesPnET.FracFol + -860591.719f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd + -1254.44f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FracFol + -8818197.8f * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol + 28741687.9f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol;
+                            float estInt = 3477.926f + -4180.743f * cohort.SpeciesPnET.FracBelowG + -42869944.7f * cohort.SpeciesPnET.FrActWd + -4773.59f * cohort.SpeciesPnET.FracFol + 110938819.2f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd + 70594.07f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FracFol + 671495174.1f * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol + -3252233433f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol;
+                            float newWoodBiomass = estInt + estSlope * cohort.AGBiomass;
+                            float newTotalBiomass = newWoodBiomass / (1 - cohort.SpeciesPnET.FracBelowG);
 
-                        //float newAGBiomass = ((1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol) / cohort.CanopyLayerProp;
-                        //float newTotalBiomass = (newAGBiomass - cohort.Fol) / (1 - cohort.SpeciesPnET.FracBelowG);
-                        //cohort.BiomassLayerProp = cohort.Biomass / LayerBiomass[layer];
-                        // Estimate new wood biomass from FracBelowG and FrActWs (see Estimate_WoodBio.xlsx)
-                        float estSlope = -10.5211f + 37.17538f * cohort.SpeciesPnET.FracBelowG + 260587.6066f * cohort.SpeciesPnET.FrActWd + 389.3418f * cohort.SpeciesPnET.FracFol + -860591.719f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd + -1254.44f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FracFol + -8818197.8f * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol + 28741687.9f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol;
-                        float estInt = 3477.926f + -4180.743f * cohort.SpeciesPnET.FracBelowG + -42869944.7f * cohort.SpeciesPnET.FrActWd + -4773.59f * cohort.SpeciesPnET.FracFol + 110938819.2f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd + 70594.07f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FracFol + 671495174.1f * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol + -3252233433f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol;
-                        float newWoodBiomass = estInt + estSlope * cohort.AGBiomass;
-                        float newTotalBiomass = newWoodBiomass / (1 - cohort.SpeciesPnET.FracBelowG);
-
-                        cohort.ChangeBiomass( (int)Math.Round(newTotalBiomass  - cohort.TotalBiomass));
-                        float cohortFol = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
-                        float cohortLAI = 0;
-                        for (int i = 0; i < Globals.IMAX; i++)
-                            cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortFol, i);
-                        cohort.LastLAI = cohortLAI;
-                        cohort.CanopyGrowingSpace = Math.Min(cohort.CanopyGrowingSpace, 1.0f);
-                        cohort.CanopyLayerProp = Math.Min(cohort.LastLAI / cohort.SpeciesPnET.MaxLAI, cohort.CanopyGrowingSpace);                      
-                        cohort.NSC = cohort.SpeciesPnET.DNSC * cohort.FActiveBiom * (cohort.AGBiomass) * cohort.SpeciesPnET.CFracBiomass;
-                        cohort.Fol = cohortFol * (1 - cohort.SpeciesPnET.TOfol);
-
+                            cohort.ChangeBiomass((int)Math.Round(newTotalBiomass - cohort.TotalBiomass));
+                            float cohortFol = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
+                            float cohortLAI = 0;
+                            for (int i = 0; i < Globals.IMAX; i++)
+                                cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortFol, i);
+                            cohortLAI = Math.Min(cohortLAI, cohort.SpeciesPnET.MaxLAI);
+                            cohort.LastLAI = cohortLAI;
+                            cohort.CanopyGrowingSpace = Math.Min(cohort.CanopyGrowingSpace, 1.0f);
+                            cohort.CanopyLayerProp = Math.Min(cohort.LastLAI / cohort.SpeciesPnET.MaxLAI, cohort.CanopyGrowingSpace);
+                            cohort.NSC = cohort.SpeciesPnET.DNSC * cohort.FActiveBiom * (cohort.AGBiomass) * cohort.SpeciesPnET.CFracBiomass;
+                            cohort.Fol = cohortFol * (1 - cohort.SpeciesPnET.TOfol);
+                        }
+                        else
+                        {
+                            float cohortFol = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
+                            cohort.Fol = cohortFol * (1 - cohort.SpeciesPnET.TOfol);
+                        }
                         // Check cohort.Biomass
-                        LayerFoliagePotentialAdj[layer] += (cohortLAI / cohort.SpeciesPnET.MaxLAI);
+                        LayerFoliagePotentialAdj[layer] += (cohort.CanopyLayerProp);
                         CanopyLAISum[layer] += (cohort.LAI.Sum() * ((1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass));
                         LayerBiomass[layer] += ((1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass);
                     }

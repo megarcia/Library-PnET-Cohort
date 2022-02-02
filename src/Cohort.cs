@@ -460,7 +460,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return (float)Math.Exp(-speciesPnET.FrActWd * data.TotalBiomass);
+                return (float)Math.Exp(-speciesPnET.FrActWd * data.BiomassMax);
             }
         }
         //---------------------------------------------------------------------
@@ -642,7 +642,8 @@ namespace Landis.Library.PnETCohorts
             // Initialize biomass assuming fixed concentration of NSC, convert gC to gDW
             this.data.TotalBiomass = (uint)(this.NSC / (speciesPnET.DNSC * speciesPnET.CFracBiomass)); ;
             this.data.AGBiomass = (1 - speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
-            
+            data.BiomassMax = this.data.TotalBiomass;
+
             float cohortLAI = 0;
             float cohortIdealFol = (speciesPnET.FracFol * this.FActiveBiom * this.data.TotalBiomass);
             for (int i = 0; i < Globals.IMAX; i++)
@@ -651,7 +652,7 @@ namespace Landis.Library.PnETCohorts
             this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
             this.data.CanopyGrowingSpace = 1.0f;
             this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
-            data.BiomassMax = this.data.TotalBiomass;
+            
 
             // Then overwrite them if you need stuff for outputs
             if (SiteName != null)
@@ -727,7 +728,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
-        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass,float canopyGrowingSpace, string SiteName, ushort firstYear)
+        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear)
         {
             InitializeSubLayers();
             this.species = (ISpecies)speciesPnET;
@@ -735,10 +736,61 @@ namespace Landis.Library.PnETCohorts
             this.data.Age = age;
             //this.data.Biomass = woodBiomass;
             //incoming biomass is aboveground wood, calculate total biomass
-            float siteTotalBiomass = (woodBiomass / (1 - speciesPnET.FracBelowG));
+            float biomass = (woodBiomass / (1 - speciesPnET.FracBelowG));
+            this.data.TotalBiomass = biomass;
+            this.data.BiomassMax = Math.Max(biomass,maxBiomass);
+            this.data.LastSeasonFRad = new List<float>();
+            this.data.adjFracFol = speciesPnET.FracFol;
+            this.data.ColdKill = int.MaxValue;
+            float cohortLAI = 0;
+            float cohortIdealFol = (speciesPnET.FracFol * this.FActiveBiom * this.data.TotalBiomass);
+            for (int i = 0; i < Globals.IMAX; i++)
+            {
+                float subLayerLAI = CalculateLAI(this.SpeciesPnET, cohortIdealFol, i);
+                cohortLAI += subLayerLAI;
+                if (this.Leaf_On)
+                {
+                    LAI[index] = subLayerLAI;
+                }
+            }
+            if (this.Leaf_On)
+            {
+                this.data.Fol = cohortIdealFol;
+            }
+            this.data.LastLAI = cohortLAI;
+            this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
+            this.data.CanopyGrowingSpace = 1.0f;
+            this.data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
+            this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
+            this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * (this.data.AGBiomass) * speciesPnET.CFracBiomass;
+
+            if (SiteName != null)
+            {
+                InitializeOutput(SiteName, firstYear);
+            }
+        }
+       /*     public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass,float canopyGrowingSpace, string SiteName, ushort firstYear)
+        {
+            InitializeSubLayers();
+            this.species = (ISpecies)speciesPnET;
+            this.speciesPnET = speciesPnET;
+            this.data.Age = age;
+            //incoming biomass is aboveground wood, calculate total biomass
+            float inputSiteTotalBiomass = (woodBiomass / (1 - speciesPnET.FracBelowG));
+            //initially assume full canopyGrowingSpace
+            canopyGrowingSpace = 1.0f;
+            float inputTotal = inputSiteTotalBiomass / canopyGrowingSpace;
+            float maxSiteTotal = maxBiomass * canopyGrowingSpace;
+            float maxSiteWood = maxSiteTotal * (1 - speciesPnET.FracBelowG);
+            float inputMaxRatio = woodBiomass / maxSiteWood;
+            float rescaleMaxBiomass = maxBiomass;
+            if (inputMaxRatio > 1)
+                rescaleMaxBiomass = maxBiomass * inputMaxRatio;
+            float rescaleProp = Math.Min(1.0f, inputMaxRatio);
+            float rescaleTotalBiomass = inputTotal / rescaleProp;
             this.data.Biomass = woodBiomass;
-            this.data.TotalBiomass = siteTotalBiomass / canopyGrowingSpace;
-            this.data.BiomassMax = Math.Max(maxBiomass, this.data.TotalBiomass);
+            this.data.TotalBiomass = rescaleTotalBiomass;
+            this.data.BiomassMax = rescaleMaxBiomass;
             this.data.LastSeasonFRad = new List<float>();
             this.data.adjFracFol = speciesPnET.FracFol;
             this.data.ColdKill = int.MaxValue;
@@ -761,15 +813,30 @@ namespace Landis.Library.PnETCohorts
             this.data.LastLAI = Math.Min(cohortLAI, speciesPnET.MaxLAI);
             this.data.CanopyLayerProp = Math.Min(this.data.LastLAI / speciesPnET.MaxLAI, canopyGrowingSpace);
             this.data.CanopyGrowingSpace = canopyGrowingSpace;
+            if (this.data.CanopyLayerProp != this.data.CanopyGrowingSpace)
+            {
+                float newTotalBiomass = inputSiteTotalBiomass / this.data.CanopyLayerProp;
+                if (newTotalBiomass > maxBiomass)
+                {
+                    this.data.TotalBiomass = maxBiomass;
+                    this.data.CanopyLayerProp = inputSiteTotalBiomass / maxBiomass;
+                    if (this.data.CanopyLayerProp > 1)
+                        this.data.BiomassMax = maxBiomass * this.data.CanopyLayerProp;
+                }
+                else {
+                    this.data.TotalBiomass = newTotalBiomass;
+                        }
+                
+            }
             this.data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
-            this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
+            this.data.Biomass = woodBiomass + this.data.Fol;
             this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * (this.data.AGBiomass) * speciesPnET.CFracBiomass;
 
             if (SiteName != null)
             {
                 InitializeOutput(SiteName, firstYear);
             }
-        }
+        }*/
         //---------------------------------------------------------------------
         // Makes sure that litters are allocated to the appropriate site
         public static void SetSiteAccessFunctions(SiteCohorts sitecohorts)

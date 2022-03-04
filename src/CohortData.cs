@@ -345,7 +345,7 @@ namespace Landis.Library.PnETCohorts
             this.TotalBiomass = totalBiomass;
             this.BiomassMax = totalBiomass;
             this.CiModifier = new float[Globals.IMAX];
-            this.ColdKill = 0;
+            this.ColdKill = int.MaxValue;
             this.DeFolProp = 0;
             this.DelAmax = new float[Globals.IMAX];
             this.Fol = 0;

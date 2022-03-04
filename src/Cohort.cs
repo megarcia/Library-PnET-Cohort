@@ -684,6 +684,7 @@ namespace Landis.Library.PnETCohorts
             this.data.BiomassMax = cohort.BiomassMax;
             this.data.Fol = cohort.Fol;
             this.data.LastSeasonFRad = cohort.data.LastSeasonFRad;
+            this.data.ColdKill = int.MaxValue;
         }
         //---------------------------------------------------------------------
         public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, string SiteName, ushort firstYear)

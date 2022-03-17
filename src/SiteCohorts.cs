@@ -604,8 +604,8 @@ namespace Landis.Library.PnETCohorts
                             cohort.CanopyLayerProp = Math.Min(canopyProportions[cohort], canopyLayerProp);
 
                             float targetBiomass = (float)CohortBiomassList[index];
-                            float newAGBiomass = targetBiomass / cohort.CanopyLayerProp;
-                            float newTotalBiomass = (newAGBiomass - cohort.Fol) / (1 - cohort.SpeciesPnET.FracBelowG);
+                            float newWoodBiomass = targetBiomass / cohort.CanopyLayerProp;
+                            float newTotalBiomass = (newWoodBiomass) / (1 - cohort.SpeciesPnET.FracBelowG);
                             cohort.ChangeBiomass((int)Math.Round((newTotalBiomass - cohort.TotalBiomass) / 2f));
                             float cohortFoliage = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
                             float cohortLAI = 0;
@@ -680,8 +680,8 @@ namespace Landis.Library.PnETCohorts
                             {
                                 cohort.CanopyGrowingSpace = 1f;
                             }
-                            float newAGBiomass = targetBiomass / canopyLayerProp;
-                            float newTotalBiomass = (newAGBiomass - cohort.Fol) / (1 - cohort.SpeciesPnET.FracBelowG);
+                            float newWoodBiomass = targetBiomass / canopyLayerProp;
+                            float newTotalBiomass = (newWoodBiomass) / (1 - cohort.SpeciesPnET.FracBelowG);
                             float changeAmount = newTotalBiomass - cohort.TotalBiomass;
                             float tempFActiveBiom = (float)Math.Exp(-cohort.SpeciesPnET.FrActWd * newTotalBiomass);
                             float cohortTempFoliage = cohort.adjFracFol * tempFActiveBiom * newTotalBiomass;
@@ -812,8 +812,8 @@ namespace Landis.Library.PnETCohorts
                             {
                                 cohort.CanopyGrowingSpace = 1f;
                             }
-                            float newAGBiomass = targetBiomass / canopyLayerProp;
-                            float newTotalBiomass = (newAGBiomass - cohort.Fol) / (1 - cohort.SpeciesPnET.FracBelowG);
+                            float newWoodBiomass = targetBiomass / canopyLayerProp;
+                            float newTotalBiomass = (newWoodBiomass) / (1 - cohort.SpeciesPnET.FracBelowG);
                             float changeAmount = newTotalBiomass - cohort.TotalBiomass;
                             float tempMaxBio = Math.Max(cohort.BiomassMax, newTotalBiomass);
                             float tempFActiveBiom = (float)Math.Exp(-cohort.SpeciesPnET.FrActWd * tempMaxBio);

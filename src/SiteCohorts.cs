@@ -24,7 +24,6 @@ namespace Landis.Library.PnETCohorts
         private float subcanopypar;
         private float subcanopyparmax;
         private float propRootAboveFrost;
-        private float topFreezeDepth;
         private float soilDiffusivity;
         private float leakageFrac;
         //private float runoffCapture;
@@ -34,6 +33,8 @@ namespace Landis.Library.PnETCohorts
         private float[] folresp = null;
         private float[] maintresp = null;
         private float[] averageAlbedo = null;
+        private float[] activeLayerDepth = null;
+        private float[] frostDepth = null;
         private float transpiration;
         private double HeterotrophicRespiration;
         private Hydrology hydrology = null;
@@ -67,6 +68,7 @@ namespace Landis.Library.PnETCohorts
         private static bool PrecipEventsWithReplacement;
         private int nlayers;
         private static int MaxLayer;
+        private static bool soilIceDepth;
         private static bool permafrost;
         private static bool invertPest;
         //private static string parUnits;
@@ -281,8 +283,9 @@ namespace Landis.Library.PnETCohorts
             //MaxDevLyrAv = ((Parameter<ushort>)PlugIn.GetParameter(Names.MaxDevLyrAv, 0, ushort.MaxValue)).Value;
             LayerThreshRatio = ((Parameter<float>)Names.GetParameter(Names.LayerThreshRatio, 0, float.MaxValue)).Value;
             MaxCanopyLayers = ((Parameter<byte>)Names.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
-            permafrost = ((Parameter<bool>)Names.GetParameter(Names.Permafrost)).Value;
+            soilIceDepth = ((Parameter<bool>)Names.GetParameter(Names.SoilIceDepth)).Value;
             invertPest = ((Parameter<bool>)Names.GetParameter(Names.InvertPest)).Value;
+            permafrost = false;
             //parUnits = ((Parameter<string>)Names.GetParameter(Names.PARunits)).Value;
             
             Parameter<string> CohortBinSizeParm = null;
@@ -823,6 +826,8 @@ namespace Landis.Library.PnETCohorts
             grosspsn = new float[13];
             maintresp = new float[13];
             averageAlbedo = new float[13];
+            activeLayerDepth = new float[13];
+            frostDepth = new float[13];
 
             //Dictionary<ISpeciesPnET, List<float>> annualEstab = new Dictionary<ISpeciesPnET, List<float>>();
             Dictionary<ISpeciesPnET, float> cumulativeEstab = new Dictionary<ISpeciesPnET, float>();
@@ -899,6 +904,8 @@ namespace Landis.Library.PnETCohorts
                     grosspsn = new float[13];
                     maintresp = new float[13];
                     averageAlbedo = new float[13];
+                    activeLayerDepth = new float[13];
+                    frostDepth = new float[13];
                     // Reset annual SiteVars
                     SiteVars.AnnualPET[Site] = 0;
                     SiteVars.ClimaticWaterDeficit[Site] = 0;
@@ -941,7 +948,7 @@ namespace Landis.Library.PnETCohorts
                 // from CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
                 // Eq. 85 - Jordan (1991)
 
-                if (permafrost)
+                if (soilIceDepth)
                 {
                     float lambda_Snow = (float) (Globals.lambAir+((0.0000775*Psno_kg_m3)+(0.000001105*Math.Pow(Psno_kg_m3,2)))*(Globals.lambIce-Globals.lambAir))*3.6F*24F; //(kJ/m/d/K) includes unit conversion from W to kJ
                     float vol_heat_capacity_snow = Globals.snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
@@ -958,7 +965,6 @@ namespace Landis.Library.PnETCohorts
                     float moss_diffusivity = lambda_moss / cv;
                     float damping_moss = (float)Math.Sqrt((2.0F * moss_diffusivity) / Constants.omega);
                     float DRz_moss = (float)Math.Exp(-1.0F * mossDepth * damping_moss); // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
-
 
                     //float waterContent = (float)Math.Min(1.0, hydrology.Water / Ecoregion.RootingDepth);  //m3/m3
                     //float waterContent = hydrology.Water/1000;
@@ -985,9 +991,11 @@ namespace Landis.Library.PnETCohorts
                     float d = (float)Math.Sqrt(2 * Dmms / Constants.omega);
 
                     float maxDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
-                    topFreezeDepth = maxDepth / 1000;
+                    float lastBelowZeroDepth = 0;
                     float bottomFreezeDepth = maxDepth / 1000;
+                    activeLayerDepth[data[m].Month - 1] = bottomFreezeDepth;
                     float testDepth = 0;
+                    float zTemp = 0;
 
                     float tSum = 0;
                     float pSum = 0;
@@ -1031,23 +1039,96 @@ namespace Landis.Library.PnETCohorts
                     float annualPcpAvg = pSum / mCount;
                     float tAmplitude = (tMax - tMin) / 2;
 
+                    if (isWinter(data[m].Month))
+                    {
+                        if (permafrost)
+                        {
+                            // Check only the temperature of the bottom layer
+                            float DRz = (float)Math.Exp(-1.0F * bottomFreezeDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
+                            zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * (data[m].Month + (maxMonth + 1)) - bottomFreezeDepth / d));
+
+                            if (zTemp <= 0)
+                            {
+                                frostDepth[data[m].Month - 1] = bottomFreezeDepth;
+                            }
+                            else
+                            {
+                                permafrost = false;
+                            }
+                        }
+                        if (!permafrost)
+                        {
+                            bool foundBottomIce = false;
+
+                            // Calculate depth to bottom of ice lens with FrostDepth
+                            while (testDepth <= bottomFreezeDepth)
+                            {
+                                float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
+                                                                                                            //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
+                                zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * (data[m].Month + (maxMonth + 1)) - testDepth / d));
+                                depthTempDict[testDepth] = zTemp;
+
+                                if (zTemp <= 0)
+                                {
+                                    lastBelowZeroDepth = testDepth;
+                                }
+
+                                if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce)
+                                {
+                                    frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
+                                    foundBottomIce = true;
+                                }
+                                testDepth += 0.25F;
+                            }
+
+                            // The ice lens is deeper than the max depth
+                            if (zTemp <= 0 && !foundBottomIce)
+                            {
+                                frostDepth[data[m].Month - 1] = bottomFreezeDepth;
+                            }
+                        }
+                    }
+                    else if (isSummer(data[m].Month))
+                    {
+                        // Calculate depth to top of ice lens with activeLayerDepth
+                        while (testDepth <= bottomFreezeDepth)
+                        {
+                            float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
+                                                                                                        //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
+                            zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * (data[m].Month + (maxMonth + 1)) - testDepth / d));
+                            depthTempDict[testDepth] = zTemp;
+
+                            if (zTemp <= 0)
+                            {
+                                if (testDepth < activeLayerDepth[data[m].Month - 1])
+                                {
+                                    activeLayerDepth[data[m].Month - 1] = testDepth;
+                                }
+                            }
+
+                            testDepth += 0.25F;
+                        }
+                    }
+                    // Check status of permafrost after summer
+                    else if (data[m].Month == 9)
+                    {
+                        if (Max(activeLayerDepth) < bottomFreezeDepth)
+                        {
+                            permafrost = true;
+                        }
+                        else
+                        {
+                            permafrost = false;
+                        }
+                    }
+
                     // Calculation of diffusivity from climate data (Soil thawing_Campbell_121719.xlsx, Fit_Diffusivity_Climate.R)
                     //if(this.AbovegroundBiomassSum >= permafrostMinVegBiomass) // Vegetated
                     //    soilDiffusivity = (float)Math.Max(0.006, (-0.09674 - 0.005967 * annualTavg + 0.00001552 * annualTavg * annualTavg + 0.002395 * annualPcpAvg)); // Diffusivity (m2/day)
                     //else // Bare
                     //    soilDiffusivity = (float)Math.Max(0.006,(-0.050839 - 0.0055182 * annualTavg - 0.0002212 * annualTavg * annualTavg + 0.0011535 * annualPcpAvg)); // Diffusivity (m2/day)
 
-                    while (testDepth <= (maxDepth / 1000.0))
-                    {
-                        float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
-                                                                            //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
-                        float zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * (data[m].Month + (maxMonth + 1)) - testDepth / d));
-                        depthTempDict[testDepth] = zTemp;
-                        if ((zTemp <= 0) && (testDepth < topFreezeDepth))
-                            topFreezeDepth = testDepth;
-                        testDepth += 0.25F;
-                    }
-                    propRootAboveFrost = Math.Min(1, (topFreezeDepth * 1000) / Ecoregion.RootingDepth);
+                    propRootAboveFrost = Math.Min(1, (activeLayerDepth[data[m].Month - 1] * 1000) / Ecoregion.RootingDepth);
                     float propRootBelowFrost = 1 - propRootAboveFrost;
                     propThawed = Math.Max(0, propRootAboveFrost - (1 - lastPropBelowFrost));
                     float propNewFrozen = Math.Max(0, propRootBelowFrost - lastPropBelowFrost);
@@ -1071,15 +1152,15 @@ namespace Landis.Library.PnETCohorts
                         bool successdepth = hydrology.SetFrozenDepth(Ecoregion.RootingDepth * propRootBelowFrost);  // Volume of rooting soil that is frozen
                     }
                     float leakageFrostReduction = 1.0F;
-                    if ((topFreezeDepth * 1000) < (Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth))
+                    if ((activeLayerDepth[data[m].Month - 1] * 1000) < (Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth))
                     {
-                        if ((topFreezeDepth * 1000) < Ecoregion.RootingDepth)
+                        if ((activeLayerDepth[data[m].Month - 1] * 1000) < Ecoregion.RootingDepth)
                         {
                             leakageFrostReduction = 0.0F;
                         }
                         else
                         {
-                            leakageFrostReduction = (Math.Min((topFreezeDepth * 1000), Ecoregion.LeakageFrostDepth) - Ecoregion.RootingDepth) / (Ecoregion.LeakageFrostDepth - Ecoregion.RootingDepth);
+                            leakageFrostReduction = (Math.Min((activeLayerDepth[data[m].Month - 1] * 1000), Ecoregion.LeakageFrostDepth) - Ecoregion.RootingDepth) / (Ecoregion.LeakageFrostDepth - Ecoregion.RootingDepth);
                         }
                     }
                     leakageFrac = Ecoregion.LeakageFrac * leakageFrostReduction;
@@ -1657,6 +1738,56 @@ namespace Landis.Library.PnETCohorts
             return success;
         }
 
+        // Finds the maximum value from an array of floats
+        private float Max(float[] values)
+        {
+            float maximum = float.MinValue;
+
+            for(int i = 0; i < values.Length; i++)
+            {
+                if (values[i] > maximum)
+                {
+                    maximum = values[i];
+                }
+            }
+
+            return maximum;
+        }
+
+        private bool isSummer(byte month)
+        {
+            switch (month)
+            {
+                case 5:
+                    return true;
+                case 6:
+                    return true;
+                case 7:
+                    return true;
+                case 8:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private bool isWinter(byte month)
+        {
+            switch (month)
+            {
+                case 1:
+                    return true;
+                case 2:
+                    return true;
+                case 3:
+                    return true;
+                case 12:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         /*private float CalculateAverageAlbedo(CumulativeLeafAreas leafAreas, float snowDepth)
         {
 
@@ -2122,6 +2253,46 @@ namespace Landis.Library.PnETCohorts
                 else
                 {
                     return averageAlbedo.Select(r => (float)r).ToArray();
+                }
+            }
+        }
+
+        public float[] ActiveLayerDepth
+        {
+            get
+            {
+                if (activeLayerDepth == null)
+                {
+                    float[] activeLayerDepth_array = new float[12];
+                    for (int i = 0; i < activeLayerDepth_array.Length; i++)
+                    {
+                        activeLayerDepth_array[i] = 0;
+                    }
+                    return activeLayerDepth_array;
+                }
+                else
+                {
+                    return activeLayerDepth.Select(r => (float)r).ToArray();
+                }
+            }
+        }
+
+        public float[] FrostDepth
+        {
+            get
+            {
+                if (frostDepth == null)
+                {
+                    float[] frostDepth_array = new float[12];
+                    for (int i = 0; i < frostDepth_array.Length; i++)
+                    {
+                        frostDepth_array[i] = 0;
+                    }
+                    return frostDepth_array;
+                }
+                else
+                {
+                    return frostDepth.Select(r => (float)r).ToArray();
                 }
             }
         }
@@ -3065,9 +3236,10 @@ namespace Landis.Library.PnETCohorts
                         OutputHeaders.FoliageSenescence + "," +
                         OutputHeaders.SubCanopyPAR + ","+
                         OutputHeaders.SoilDiffusivity + "," +
-                        OutputHeaders.FrostDepth+","+
+                        OutputHeaders.ActiveLayerDepth+","+
                         OutputHeaders.LeakageFrac + "," +
-                        OutputHeaders.AverageAlbedo;
+                        OutputHeaders.AverageAlbedo + "," +
+                        OutputHeaders.FrostDepth;
 
             return s;
         }
@@ -3126,9 +3298,10 @@ namespace Landis.Library.PnETCohorts
                 cohorts.Values.Sum(o => o.Sum(x => (x.LastFoliageSenescence * x.BiomassLayerProp))) + "," +
                 subcanopypar + "," +
                 soilDiffusivity + "," +
-                (topFreezeDepth * 1000) + "," +
+                activeLayerDepth[monthdata.Month - 1] * 1000 + "," +
                 leakageFrac + "," +
-                averageAlbedo[monthdata.Month - 1];
+                averageAlbedo[monthdata.Month - 1] + "," +
+                frostDepth[monthdata.Month - 1] * 1000;
 
             this.siteoutput.Add(s);
         }

@@ -26,6 +26,8 @@ namespace Landis.Library.PnETCohorts
         public const string GrossPsn = "GrossPsn(gC_m2_mo)";
         public const string NetPsn = "NetPsn(gC_m2_mo)";
         public const string AverageAlbedo = "AverageAlbedo(ratio_W_m2)";
+        public const string ActiveLayerDepth = "ActiveLayerDepth(mm/mo)";
+        public const string FrostDepth = "FrostDepth(mm/mo)";
         public const string FolResp = "FolResp(gC_m2_mo)";
         public const string water = "Water(mm/m)";
         public const string availableWater = "Available Water (mm)";
@@ -65,7 +67,6 @@ namespace Landis.Library.PnETCohorts
         //public const string MaxWater = "MaxWater";
         public const string SoilType = "SoilType";
         public const string FOzone = "fOzone(-)";
-        public const string FrostDepth = "FrostDepth(mm)";
         public const string LeakageFrac = "LeakageFrac(-)";
         public const string WoodySenescence = "WoodSenescence(gDW_m2)";
         public const string FoliageSenescence = "FoliageSenescence(gDW_m2)";

@@ -17,6 +17,10 @@ namespace Landis.Library.PnETCohorts
 
         float[] AverageAlbedo { get; }
 
+        float[] ActiveLayerDepth { get; }
+
+        float[] FrostDepth { get; }
+
         float CanopyLAImax{get;}
 
         int AverageAge { get; }

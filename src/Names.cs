@@ -36,7 +36,7 @@ namespace Landis.Library.PnETCohorts
         public const string Wythers = "Wythers";
         public const string DTemp = "DTemp";
         public const string CO2AMaxBEff = "CO2AMaxBEff";
-        public const string Permafrost = "Permafrost";
+        public const string SoilIceDepth = "SoilIceDepth";
         public const string LeakageFrostDepth = "LeakageFrostDepth";
         public const string CohortBinSize = "CohortBinSize";
         public const string InvertPest = "InvertPest";

@@ -993,7 +993,18 @@ namespace Landis.Library.PnETCohorts
                     float maxDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
                     float lastBelowZeroDepth = 0;
                     float bottomFreezeDepth = maxDepth / 1000;
-                    activeLayerDepth[data[m].Month - 1] = bottomFreezeDepth;
+
+                    if (isSummer(data[m].Month))
+                    {
+                        activeLayerDepth[data[m].Month - 1] = bottomFreezeDepth;
+                    }
+
+                    // When there was permafrost at the end of summer, assume that the bottom of the ice lens is as deep as possible
+                    if (permafrost)
+                    {
+                        frostDepth[data[m].Month - 1] = bottomFreezeDepth;
+                    }
+
                     float testDepth = 0;
                     float zTemp = 0;
 
@@ -1041,22 +1052,6 @@ namespace Landis.Library.PnETCohorts
 
                     if (isWinter(data[m].Month))
                     {
-                        if (permafrost)
-                        {
-                            // Check only the temperature of the bottom layer
-                            float DRz = (float)Math.Exp(-1.0F * bottomFreezeDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
-                            zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * (data[m].Month + (maxMonth + 1)) - bottomFreezeDepth / d));
-
-                            if (zTemp <= 0)
-                            {
-                                frostDepth[data[m].Month - 1] = bottomFreezeDepth;
-                            }
-                            else
-                            {
-                                permafrost = false;
-                            }
-                        }
-
                         // Regardless of permafrost, need to fill the tempDict with values
                         bool foundBottomIce = false;
 
@@ -1116,10 +1111,12 @@ namespace Landis.Library.PnETCohorts
                             if (Max(activeLayerDepth) < bottomFreezeDepth)
                             {
                                 permafrost = true;
+                                frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                             }
                             else
                             {
                                 permafrost = false;
+                                frostDepth[data[m].Month - 1] = 0;
                             }
                         }
                         // Still need to fill temperature dictionary
@@ -1178,6 +1175,10 @@ namespace Landis.Library.PnETCohorts
                     leakageFrac = Ecoregion.LeakageFrac * leakageFrostReduction;
                     lastPropBelowFrost = propRootBelowFrost;
 
+                }
+                else
+                {
+                    activeLayerDepth[data[m].Month - 1] = 999;
                 }
 
                 // permafrost

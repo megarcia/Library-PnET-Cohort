@@ -1525,7 +1525,18 @@ namespace Landis.Library.PnETCohorts
                     float maxDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
                     float lastBelowZeroDepth = 0;
                     float bottomFreezeDepth = maxDepth / 1000;
-                    activeLayerDepth[data[m].Month - 1] = bottomFreezeDepth;
+
+                    if (isSummer(data[m].Month))
+                    {
+                        activeLayerDepth[data[m].Month - 1] = bottomFreezeDepth;
+                    }
+
+                    // When there was permafrost at the end of summer, assume that the bottom of the ice lens is as deep as possible
+                    if (permafrost)
+                    {
+                        frostDepth[data[m].Month - 1] = bottomFreezeDepth;
+                    }
+
                     float testDepth = 0;
                     float zTemp = 0;
 
@@ -1573,51 +1584,34 @@ namespace Landis.Library.PnETCohorts
 
                     if (isWinter(data[m].Month))
                     {
-                        if (permafrost)
-                        {
-                            // Check only the temperature of the bottom layer
-                            float DRz = (float)Math.Exp(-1.0F * bottomFreezeDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
-                            zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * (data[m].Month + (maxMonth + 1)) - bottomFreezeDepth / d));
+                        // Regardless of permafrost, need to fill the tempDict with values
+                        bool foundBottomIce = false;
 
-                            if (zTemp <= 0)
+                        // Calculate depth to bottom of ice lens with FrostDepth
+                        while (testDepth <= bottomFreezeDepth)
+                        {
+                            float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
+                                                                                                        //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
+                            zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * (data[m].Month + (maxMonth + 1)) - testDepth / d));
+                            depthTempDict[testDepth] = zTemp;
+
+                            if (zTemp <= 0 && !permafrost)
                             {
-                                frostDepth[data[m].Month - 1] = bottomFreezeDepth;
+                                lastBelowZeroDepth = testDepth;
                             }
-                            else
+
+                            if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !permafrost)
                             {
-                                permafrost = false;
+                                frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
+                                foundBottomIce = true;
                             }
+                            testDepth += 0.25F;
                         }
-                        if (!permafrost)
+
+                        // The ice lens is deeper than the max depth
+                        if (zTemp <= 0 && !foundBottomIce && !permafrost)
                         {
-                            bool foundBottomIce = false;
-
-                            // Calculate depth to bottom of ice lens with FrostDepth
-                            while (testDepth <= bottomFreezeDepth)
-                            {
-                                float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
-                                                                                                            //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
-                                zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * (data[m].Month + (maxMonth + 1)) - testDepth / d));
-                                depthTempDict[testDepth] = zTemp;
-
-                                if (zTemp <= 0)
-                                {
-                                    lastBelowZeroDepth = testDepth;
-                                }
-
-                                if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce)
-                                {
-                                    frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
-                                    foundBottomIce = true;
-                                }
-                                testDepth += 0.25F;
-                            }
-
-                            // The ice lens is deeper than the max depth
-                            if (zTemp <= 0 && !foundBottomIce)
-                            {
-                                frostDepth[data[m].Month - 1] = bottomFreezeDepth;
-                            }
+                            frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                         }
                     }
                     else if (isSummer(data[m].Month))
@@ -1641,16 +1635,31 @@ namespace Landis.Library.PnETCohorts
                             testDepth += 0.25F;
                         }
                     }
-                    // Check status of permafrost after summer
-                    else if (data[m].Month == 9)
+                    else
                     {
-                        if (Max(activeLayerDepth) < bottomFreezeDepth)
+                        // Check status of permafrost after summer
+                        if (data[m].Month == 9)
                         {
-                            permafrost = true;
+                            if (Max(activeLayerDepth) < bottomFreezeDepth)
+                            {
+                                permafrost = true;
+                                frostDepth[data[m].Month - 1] = bottomFreezeDepth;
+                            }
+                            else
+                            {
+                                permafrost = false;
+                                frostDepth[data[m].Month - 1] = 0;
+                            }
                         }
-                        else
+                        // Still need to fill temperature dictionary
+                        while (testDepth <= bottomFreezeDepth)
                         {
-                            permafrost = false;
+                            float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
+                                                                                                        //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
+                            zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * (data[m].Month + (maxMonth + 1)) - testDepth / d));
+                            depthTempDict[testDepth] = zTemp;
+
+                            testDepth += 0.25F;
                         }
                     }
 
@@ -1698,6 +1707,10 @@ namespace Landis.Library.PnETCohorts
                     leakageFrac = Ecoregion.LeakageFrac * leakageFrostReduction;
                     lastPropBelowFrost = propRootBelowFrost;
 
+                }
+                else
+                {
+                    activeLayerDepth[data[m].Month - 1] = 999;
                 }
 
                 // permafrost

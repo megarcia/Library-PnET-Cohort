@@ -569,7 +569,8 @@ namespace Landis.Library.PnETCohorts
                 firstYear = false;
             }
             else
-                data.adjFracFol = speciesPnET.FracFol;
+                data.adjFracFol = speciesPnET.MaxFracFol;
+                //data.adjFracFol = speciesPnET.FracFol;
             data.LastSeasonFRad = new List<float>();
 
         }
@@ -643,7 +644,7 @@ namespace Landis.Library.PnETCohorts
             float cohortLAI = 0;
             float cohortIdealFol = (speciesPnET.FracFol * this.FActiveBiom * this.data.TotalBiomass);
             for (int i = 0; i < Globals.IMAX; i++)
-                cohortLAI += CalculateLAI(this.SpeciesPnET, cohortIdealFol, i);
+                cohortLAI += CalculateLAI(this.SpeciesPnET, cohortIdealFol, i, cohortLAI);
             this.data.LastLAI = cohortLAI;
             this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
             this.data.CanopyGrowingSpace = 1.0f;
@@ -694,6 +695,7 @@ namespace Landis.Library.PnETCohorts
             this.data.BiomassMax = cohort.BiomassMax;
             this.data.Fol = cohort.Fol;
             this.data.LastSeasonFRad = cohort.data.LastSeasonFRad;
+            this.data.ColdKill = int.MaxValue;
 
             if (SiteName != null)
             {
@@ -713,10 +715,12 @@ namespace Landis.Library.PnETCohorts
             this.data.TotalBiomass = biomass;
             this.data.BiomassMax = biomass;
             this.data.LastSeasonFRad = new List<float>();
-            this.data.adjFracFol = speciesPnET.FracFol;
+            //this.data.adjFracFol = speciesPnET.FracFol;
+            this.data.adjFracFol = speciesPnET.MaxFracFol;
             this.data.ColdKill = int.MaxValue;
             float cohortLAI = 0;
-            float cohortIdealFol = (speciesPnET.FracFol * this.FActiveBiom * this.data.TotalBiomass);
+            //float cohortIdealFol = (speciesPnET.FracFol * this.FActiveBiom * this.data.TotalBiomass);
+            float cohortIdealFol = (speciesPnET.MaxFracFol * this.FActiveBiom * this.data.TotalBiomass);
             for (int i = 0; i < Globals.IMAX; i++)
             {
                 float subLayerLAI = CalculateLAI(this.SpeciesPnET, cohortIdealFol, i);
@@ -755,10 +759,12 @@ namespace Landis.Library.PnETCohorts
             this.data.TotalBiomass = biomass;
             this.data.BiomassMax = Math.Max(biomass,maxBiomass);
             this.data.LastSeasonFRad = new List<float>();
-            this.data.adjFracFol = speciesPnET.FracFol;
+            //this.data.adjFracFol = speciesPnET.FracFol;
+            this.data.adjFracFol = speciesPnET.MaxFracFol;
             this.data.ColdKill = int.MaxValue;
             float cohortLAI = 0;
-            float cohortIdealFol = (speciesPnET.FracFol * this.FActiveBiom * this.data.TotalBiomass);
+            //float cohortIdealFol = (speciesPnET.FracFol * this.FActiveBiom * this.data.TotalBiomass);
+            float cohortIdealFol = (speciesPnET.MaxFracFol * this.FActiveBiom * this.data.TotalBiomass);
             for (int i = 0; i < Globals.IMAX; i++)
             {
                 float subLayerLAI = CalculateLAI(this.SpeciesPnET, cohortIdealFol, i);
@@ -1075,10 +1081,12 @@ namespace Landis.Library.PnETCohorts
                     else
                     {
                         if (firstYear)
-                            data.adjFracFol = speciesPnET.FracFol;
+                            data.adjFracFol = speciesPnET.MaxFracFol;
+                            //data.adjFracFol = speciesPnET.FracFol;
                         // Foliage linearly increases with active biomass
                         float IdealFol = (adjFracFol * FActiveBiom * data.TotalBiomass); // Using adjusted FracFol
                         float NSClimit = data.NSC;
+
                         if (mainLayerPAR < variables.PAR0) // indicates below the top layer
                         {
                             // lower canopy layers can retain a reserve of NSC (NSCReserve) which limits NSC available for refoliation - default is no reserve (NSCReserve = 0)
@@ -1142,7 +1150,7 @@ namespace Landis.Library.PnETCohorts
                             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
                             float tentativeLAI = 0;
                             for (int i = 0; i < Globals.IMAX; i++)
-                                tentativeLAI += CalculateLAI(this.SpeciesPnET, Fol + FolTentative, i);
+                                tentativeLAI += CalculateLAI(this.SpeciesPnET, Fol + FolTentative, i, tentativeLAI);
                             float tentativeCanopyProp = (tentativeLAI / this.speciesPnET.MaxLAI);
                             if (sumCanopyProp > 1)
                                 tentativeCanopyProp = tentativeCanopyProp / sumCanopyProp;
@@ -1779,6 +1787,25 @@ namespace Landis.Library.PnETCohorts
             {
                 Globals.ModelCore.UI.WriteLine("\n Warning: LAI was calculated to be negative for " + species.Name + ". This could be caused by a low value for SLWmax.  LAI applied in this case is a max of 25 for each cohort.");
                 LAIlayer = LAIlayerMax/(Globals.IMAX - index);
+            }
+            else
+                LAIlayer = (float)Math.Min(LAIlayerMax, LAIlayer);
+
+            return LAIlayer;
+        }
+        //---------------------------------------------------------------------
+        public float CalculateLAI(ISpeciesPnET species, float fol, int index, float cumulativeLAI)
+        {
+            // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
+            // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
+            float LAISum = cumulativeLAI;
+            
+            float LAIlayerMax = (float)Math.Max(0.01, 25.0F - LAISum); // Cohort LAI is capped at 25; once LAI reaches 25 subsequent sublayers get LAI of 0.01
+            float LAIlayer = (1 / (float)Globals.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)Globals.IMAX) * fol);
+            if (fol > 0 && LAIlayer <= 0)
+            {
+                Globals.ModelCore.UI.WriteLine("\n Warning: LAI was calculated to be negative for " + species.Name + ". This could be caused by a low value for SLWmax.  LAI applied in this case is a max of 25 for each cohort.");
+                LAIlayer = LAIlayerMax / (Globals.IMAX - index);
             }
             else
                 LAIlayer = (float)Math.Min(LAIlayerMax, LAIlayer);

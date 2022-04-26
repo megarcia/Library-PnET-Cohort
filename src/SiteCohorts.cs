@@ -505,12 +505,14 @@ namespace Landis.Library.PnETCohorts
                         float newWoodBiomass = estInt + estSlope * cohort.AGBiomass * layerCount; // Inflate AGBiomass by # of cohorts in layer, assuming equal space among them
                         float newTotalBiomass = newWoodBiomass / (1 - cohort.SpeciesPnET.FracBelowG);
 
-                        cohort.ChangeBiomass((int)Math.Round(newTotalBiomass - cohort.TotalBiomass));
+                        //if(newTotalBiomass > 0)
+                        //    cohort.ChangeBiomass((int)Math.Round(newTotalBiomass - cohort.TotalBiomass));
                         cohort.CanopyLayerProp = 1f / layerCount;
                         float cohortFol = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
                         float cohortLAI = 0;
+
                         for (int i = 0; i < Globals.IMAX; i++)
-                            cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortFol, i);
+                            cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortFol, i, cohortLAI);
                         cohortLAI = Math.Min(cohortLAI, cohort.SpeciesPnET.MaxLAI);
                         cohort.LastLAI = cohortLAI;
 
@@ -559,7 +561,7 @@ namespace Landis.Library.PnETCohorts
                         float cohortFoliage = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
                         float cohortLAI = 0;
                         for (int i = 0; i < Globals.IMAX; i++)
-                            cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortFoliage, i);
+                            cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortFoliage, i, cohortLAI);
                         cohortLAI = Math.Min(cohortLAI, cohort.SpeciesPnET.MaxLAI);
                         cohort.LastLAI = cohortLAI;
                         cohort.CanopyGrowingSpace = Math.Min(cohort.CanopyGrowingSpace, 1.0f);
@@ -636,7 +638,7 @@ namespace Landis.Library.PnETCohorts
                         float cohortTempFoliage = cohort.adjFracFol * tempFActiveBiom * newTotalBiomass;
                         float cohortTempLAI = 0;
                         for (int i = 0; i < Globals.IMAX; i++)
-                            cohortTempLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortTempFoliage, i);
+                            cohortTempLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortTempFoliage, i, cohortTempLAI);
                         cohortTempLAI = Math.Min(cohortTempLAI, cohort.SpeciesPnET.MaxLAI);
 
                         float tempBiomass = newTotalBiomass * (1 - cohort.SpeciesPnET.FracBelowG) * Math.Min(cohortTempLAI / cohort.SpeciesPnET.MaxLAI, canopyLayerProp);
@@ -672,7 +674,7 @@ namespace Landis.Library.PnETCohorts
                             cohortTempFoliage = cohort.adjFracFol * tempFActiveBiom * newTotalBiomass;
                             cohortTempLAI = 0;
                             for (int i = 0; i < Globals.IMAX; i++)
-                                cohortTempLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortTempFoliage, i);
+                                cohortTempLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortTempFoliage, i, cohortTempLAI);
                             cohortTempLAI = Math.Min(cohortTempLAI, cohort.SpeciesPnET.MaxLAI);
                             tempBiomass = newTotalBiomass * (1 - cohort.SpeciesPnET.FracBelowG) * Math.Min(cohortTempLAI / cohort.SpeciesPnET.MaxLAI, canopyLayerProp);
                             diff = tempBiomass - targetBiomass;
@@ -694,7 +696,7 @@ namespace Landis.Library.PnETCohorts
                         float cohortFoliage = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
                         float cohortLAI = 0;
                         for (int i = 0; i < Globals.IMAX; i++)
-                            cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortFoliage, i);
+                            cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortFoliage, i, cohortLAI);
                         cohortLAI = Math.Min(cohortLAI, cohort.SpeciesPnET.MaxLAI);
                         cohort.LastLAI = cohortLAI;
                         cohort.CanopyLayerProp = Math.Min(cohort.LastLAI / cohort.SpeciesPnET.MaxLAI, cohort.CanopyGrowingSpace);
@@ -769,7 +771,7 @@ namespace Landis.Library.PnETCohorts
                         float cohortTempFoliage = cohort.adjFracFol * tempFActiveBiom * newTotalBiomass;
                         float cohortTempLAI = 0;
                         for (int i = 0; i < Globals.IMAX; i++)
-                            cohortTempLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortTempFoliage, i);
+                            cohortTempLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortTempFoliage, i, cohortTempLAI);
                         cohortTempLAI = Math.Min(cohortTempLAI, cohort.SpeciesPnET.MaxLAI);
 
                         float tempBiomass = (newTotalBiomass * (1 - cohort.SpeciesPnET.FracBelowG) + cohortTempFoliage) * Math.Min(cohortTempLAI / cohort.SpeciesPnET.MaxLAI, cohort.CanopyGrowingSpace);
@@ -811,7 +813,7 @@ namespace Landis.Library.PnETCohorts
                             cohortTempFoliage = cohort.adjFracFol * tempFActiveBiom * newTotalBiomass;
                             cohortTempLAI = 0;
                             for (int i = 0; i < Globals.IMAX; i++)
-                                cohortTempLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortTempFoliage, i);
+                                cohortTempLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortTempFoliage, i, cohortTempLAI);
                             cohortTempLAI = Math.Min(cohortTempLAI, cohort.SpeciesPnET.MaxLAI);
                             tempBiomass = (newTotalBiomass * (1 - cohort.SpeciesPnET.FracBelowG) + cohortTempFoliage) * Math.Min(cohortTempLAI / cohort.SpeciesPnET.MaxLAI, cohort.CanopyGrowingSpace);
                             diff = tempBiomass - targetBiomass;
@@ -842,7 +844,7 @@ namespace Landis.Library.PnETCohorts
 
                         float cohortLAI = 0;
                         for (int i = 0; i < Globals.IMAX; i++)
-                            cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortFoliage, i);
+                            cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortFoliage, i, cohortLAI);
                         cohortLAI = Math.Min(cohortLAI, cohort.SpeciesPnET.MaxLAI);
                         cohort.LastLAI = cohortLAI;
                         cohort.CanopyLayerProp = Math.Min(cohort.LastLAI / cohort.SpeciesPnET.MaxLAI, cohort.CanopyGrowingSpace);
@@ -983,8 +985,14 @@ namespace Landis.Library.PnETCohorts
                         else // NoSpinup or secondAttempt
                         {
                             Globals.ModelCore.UI.WriteLine("");
-                            Globals.ModelCore.UI.WriteLine("Warning: initial community " + initialCommunity.MapCode + " could not initialize properly using SpinupLayers or SpinupLayersRescale.  Processing with NoSpinup option instead.");
-
+                            if (initialCommunitiesSpinup.ToLower() == "nospinup")
+                            {
+                                Globals.ModelCore.UI.WriteLine("Warning: initial community " + initialCommunity.MapCode + " could not initialize properly on first attempt using NoSpinup. Reprocessing.");
+                            }
+                            else
+                            {
+                                Globals.ModelCore.UI.WriteLine("Warning: initial community " + initialCommunity.MapCode + " could not initialize properly using SpinupLayers or SpinupLayersRescale.  Processing with NoSpinup option instead.");
+                            }
                             ClearAllCohorts();
                             CohortBiomassList = new List<double>();
                             CohortMaxBiomassList = new List<double>();

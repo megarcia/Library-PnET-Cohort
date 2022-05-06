@@ -1063,7 +1063,7 @@ namespace Landis.Library.PnETCohorts
                     }
                     else
                     {
-                        if (frostFreeProp < 1)
+                        if (frostFreeProp > 0)
                         {
                             if (data.Leaf_On == false) // LeafOn becomes true for the first time in a year
                             {

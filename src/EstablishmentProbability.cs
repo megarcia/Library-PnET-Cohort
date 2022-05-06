@@ -62,7 +62,7 @@ namespace Landis.Library.PnETCohorts
              
         }*/
      
-        public Dictionary<ISpeciesPnET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat, bool invertPest)
+        public Dictionary<ISpeciesPnET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat, bool invertPest, float propFloatAboveProp)
         {
             Dictionary<ISpeciesPnET, float> estabDict = new Dictionary<ISpeciesPnET, float>();
 
@@ -70,7 +70,7 @@ namespace Landis.Library.PnETCohorts
 
             foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
-                if (pnetvars.Tmin > spc.PsnTMin && pnetvars.Tmax < spc.PsnTMax)
+                if (pnetvars.Tmin > spc.PsnTMin && pnetvars.Tmax < spc.PsnTMax && propFloatAboveProp > 0)
                 {
                     // Adjust HalfSat for CO2 effect
                     float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;

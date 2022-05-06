@@ -339,7 +339,7 @@ namespace Landis.Library.PnETCohorts
             this.AdjHalfSat = 0;
             this.Age = age;
             ISpeciesPnET spc = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
-            this.Cohort = new Cohort(species,spc,0,"");
+            this.Cohort = new Cohort(species,spc,0,"",1);
             this.AGBiomass = (1- spc.FracBelowG) * totalBiomass;
             this.Biomass = this.AGBiomass * 1.0f;
             this.TotalBiomass = totalBiomass;

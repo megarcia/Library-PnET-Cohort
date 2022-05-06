@@ -524,7 +524,7 @@ namespace Landis.Library.PnETCohorts
                         float cohortLAIRatio = Math.Min(cohortLAI / cohort.SpeciesPnET.MaxLAI, cohort.CanopyGrowingSpace);
                         canopyProportions.Add(cohort, cohortLAIRatio);
                         //cohort.CanopyLayerProp = cohortLAIRatio;
-                        cohort.NSC = cohort.SpeciesPnET.DNSC * cohort.FActiveBiom * (cohort.AGBiomass) * cohort.SpeciesPnET.CFracBiomass;
+                        cohort.NSC = cohort.SpeciesPnET.DNSC * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.SpeciesPnET.CFracBiomass;
                         cohort.Fol = cohortFol * (1 - cohort.SpeciesPnET.TOfol);
                         if (LayerFoliagePotentialValues[layer] == null)
                         {
@@ -569,6 +569,7 @@ namespace Landis.Library.PnETCohorts
 
                         float cohortFol = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
                         cohort.Fol = cohortFol * (1 - cohort.SpeciesPnET.TOfol);
+                        cohort.NSC = cohort.SpeciesPnET.DNSC * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.SpeciesPnET.CFracBiomass;
 
                         // Check cohort.Biomass
                         LayerFoliagePotentialAdj[layer] += (cohort.CanopyLayerProp);
@@ -703,6 +704,7 @@ namespace Landis.Library.PnETCohorts
                         CanopyLayerSum[layer] += (cohort.CanopyLayerProp);
                         //float cohortFol = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
                         cohort.Fol = cohortFoliage * (1 - cohort.SpeciesPnET.TOfol);
+                        cohort.NSC = cohort.SpeciesPnET.DNSC * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.SpeciesPnET.CFracBiomass;
 
                         cohortIndex++;
                         FinalCohortMaxBiomassList.Add(cohort.BiomassMax);
@@ -851,6 +853,7 @@ namespace Landis.Library.PnETCohorts
                         CanopyLayerSum[layer] += (cohort.CanopyLayerProp);
                         //float cohortFol = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
                         cohort.Fol = cohortFoliage * (1 - cohort.SpeciesPnET.TOfol);
+                        cohort.NSC = cohort.SpeciesPnET.DNSC * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.SpeciesPnET.CFracBiomass;
 
                         float fol_total_ratio = cohortFoliage / (cohortFoliage + cohort.Wood);
                         // Calculate minimum foliage/total biomass ratios from Jenkins (reduced by MinFolRatioFactor to be not so strict)
@@ -1150,7 +1153,7 @@ namespace Landis.Library.PnETCohorts
                 //  Add those cohorts that were born at the current year
                 while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == (sortedAgeCohorts[0].Age - 1))
                 {
-                    Cohort cohort = new Cohort(sortedAgeCohorts[0].Species, SpeciesParameters.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName);
+                    Cohort cohort = new Cohort(sortedAgeCohorts[0].Species, SpeciesParameters.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName,1);
 
                     bool addCohort = AddNewCohort(cohort);
 
@@ -1482,6 +1485,10 @@ namespace Landis.Library.PnETCohorts
 
                 if (soilIceDepth)
                 {
+                    if(this.Site.Location.Row == 101 && this.Site.Location.Column == 106)
+                    {
+                        int breakForTesting = 1;
+                    }
                     float lambda_Snow = (float) (Globals.lambAir+((0.0000775*Psno_kg_m3)+(0.000001105*Math.Pow(Psno_kg_m3,2)))*(Globals.lambIce-Globals.lambAir))*3.6F*24F; //(kJ/m/d/K) includes unit conversion from W to kJ
                     float vol_heat_capacity_snow = Globals.snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
                                                                                           //float Ks_snow = data[m].DaySpan * lambda_Snow / vol_heat_capacity_snow; //thermal diffusivity (m2/month)
@@ -1526,16 +1533,16 @@ namespace Landis.Library.PnETCohorts
                     float lastBelowZeroDepth = 0;
                     float bottomFreezeDepth = maxDepth / 1000;
 
-                    if (isSummer(data[m].Month))
-                    {
+                    //if (isSummer(data[m].Month))
+                    //{
                         activeLayerDepth[data[m].Month - 1] = bottomFreezeDepth;
-                    }
+                    //}
 
                     // When there was permafrost at the end of summer, assume that the bottom of the ice lens is as deep as possible
-                    if (permafrost)
-                    {
+                    //if (permafrost)
+                    //{
                         frostDepth[data[m].Month - 1] = bottomFreezeDepth;
-                    }
+                    //}
 
                     float testDepth = 0;
                     float zTemp = 0;
@@ -1582,7 +1589,49 @@ namespace Landis.Library.PnETCohorts
                     float annualPcpAvg = pSum / mCount;
                     float tAmplitude = (tMax - tMin) / 2;
 
-                    if (isWinter(data[m].Month))
+
+                    // Regardless of permafrost, need to fill the tempDict with values
+                    bool foundBottomIce = false;
+
+                    // Calculate depth to bottom of ice lens with FrostDepth
+                    while (testDepth <= bottomFreezeDepth)
+                    {
+                        float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
+                                                                                                    //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
+                        zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * (data[m].Month + (3 - maxMonth)) - testDepth / d));
+                        depthTempDict[testDepth] = zTemp;
+
+                        if (zTemp <= 0 && !permafrost)
+                        {
+                            lastBelowZeroDepth = testDepth;
+                        }
+
+                        if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !permafrost)
+                        {
+                            frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
+                            foundBottomIce = true;
+                        }
+
+                        if (zTemp <= 0)
+                        {
+                            if (testDepth < activeLayerDepth[data[m].Month - 1])
+                            {
+                                activeLayerDepth[data[m].Month - 1] = testDepth;
+                            }
+                        }
+                        testDepth += 0.25F;
+                    }
+
+                    // The ice lens is deeper than the max depth
+                    if (zTemp <= 0 && !foundBottomIce && !permafrost)
+                    {
+                        frostDepth[data[m].Month - 1] = bottomFreezeDepth;
+                    }
+
+
+
+
+                    /*if (isWinter(data[m].Month))
                     {
                         // Regardless of permafrost, need to fill the tempDict with values
                         bool foundBottomIce = false;
@@ -1604,6 +1653,13 @@ namespace Landis.Library.PnETCohorts
                             {
                                 frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
                                 foundBottomIce = true;
+                            }
+                            if (zTemp <= 0)
+                            {
+                                if (testDepth < activeLayerDepth[data[m].Month - 1])
+                                {
+                                    activeLayerDepth[data[m].Month - 1] = testDepth;
+                                }
                             }
                             testDepth += 0.25F;
                         }
@@ -1661,7 +1717,7 @@ namespace Landis.Library.PnETCohorts
 
                             testDepth += 0.25F;
                         }
-                    }
+                    }*/
 
                     // Calculation of diffusivity from climate data (Soil thawing_Campbell_121719.xlsx, Fit_Diffusivity_Climate.R)
                     //if(this.AbovegroundBiomassSum >= permafrostMinVegBiomass) // Vegetated
@@ -1884,7 +1940,7 @@ namespace Landis.Library.PnETCohorts
 
                             success = c.CalculatePhotosynthesis(subCanopyPrecip, precipCount, leakageFrac, ref hydrology, mainLayerPAR,
                                 ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect,
-                                propRootAboveFrost, subCanopyMelt, coldKillBoolean, data[m], this, sumCanopyProp);
+                                propRootAboveFrost, subCanopyMelt, coldKillBoolean, data[m], this, sumCanopyProp, AllowMortality);
 
                             lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
 
@@ -2108,13 +2164,13 @@ namespace Landis.Library.PnETCohorts
                 // Calculate establishment probability
                 if (Globals.ModelCore.CurrentTime > 0)
                 {
-                    establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat, invertPest);
+                    establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat, invertPest, propRootAboveFrost);
 
                     foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
                     {
                         if (annualFwater.ContainsKey(spc))
                         {
-                            if (data[m].Tmin > spc.PsnTMin && data[m].Tmax < spc.PsnTMax) // Active growing season
+                            if (data[m].Tmin > spc.PsnTMin && data[m].Tmax < spc.PsnTMax && propRootAboveFrost > 0) // Active growing season
                             {
                                 // Store monthly values for later averaging
                                 //annualEstab[spc].Add(monthlyEstab[spc]);

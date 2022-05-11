@@ -1453,6 +1453,23 @@ namespace Landis.Library.PnETCohorts
                     ozoneD40 = data[m].O3;
                 float O3_D40_ppmh = ozoneD40 / 1000; // convert D40 units to ppm h
 
+
+                // Melt snow
+                float snowmelt = Math.Min(snowPack, ComputeMaxSnowMelt(data[m].Tave, data[m].DaySpan)); // mm
+                if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+
+                float newsnow = CumputeSnowFraction(data[m].Tave) * data[m].Prec;
+                float newsnowpack = newsnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
+                if (newsnowpack < 0 || newsnowpack > data[m].Prec)
+                {
+                    throw new System.Exception("Error, newsnowpack = " + newsnowpack + " availablePrecipitation = " + data[m].Prec);
+                }
+
+                snowPack += newsnowpack - snowmelt;
+                if (snowPack < 0) throw new System.Exception("Error, snowPack = " + snowPack + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+
+
+
                 propRootAboveFrost = 1;
                 leakageFrac = Ecoregion.LeakageFrac;
                 float propThawed = 0;
@@ -1485,7 +1502,7 @@ namespace Landis.Library.PnETCohorts
 
                 if (soilIceDepth)
                 {
-                    if(this.Site.Location.Row == 101 && this.Site.Location.Column == 106)
+                    if(this.Site.Location.Row == 541 && this.Site.Location.Column == 540)
                     {
                         int breakForTesting = 1;
                     }
@@ -1775,19 +1792,6 @@ namespace Landis.Library.PnETCohorts
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
 
                 if (data[m].Prec < 0) throw new System.Exception("Error, this.data[m].Prec = " + data[m].Prec + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-
-                float snowmelt = Math.Min(snowPack, ComputeMaxSnowMelt(data[m].Tave, data[m].DaySpan)); // mm
-                if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-
-                float newsnow = CumputeSnowFraction(data[m].Tave) * data[m].Prec;
-                float newsnowpack = newsnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
-                if (newsnowpack < 0 || newsnowpack > data[m].Prec)
-                {
-                    throw new System.Exception("Error, newsnowpack = " + newsnowpack + " availablePrecipitation = " + data[m].Prec);
-                }
-
-                snowPack += newsnowpack - snowmelt;
-                if (snowPack < 0) throw new System.Exception("Error, snowPack = " + snowPack + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
 
                 float newrain = data[m].Prec - newsnow;
 

@@ -1874,20 +1874,20 @@ namespace Landis.Library.PnETCohorts
                 int layerCount = 0;
                 if (LayeredBins != null)
                     layerCount = LayeredBins.Count();
-                float[] layerWtTotalBio = new float[layerCount];
+                /*float[] layerWtTotalBio = new float[layerCount];
                 float[] layerWtBio = new float[layerCount];
                 float[] layerWtWoodBio = new float[layerCount];
                 float[] layerWtRootBio = new float[layerCount];
                 float[] layerWtFolBio = new float[layerCount];
-                float[] layerWtNSC = new float[layerCount];
-                float[] layerWtLAI = new float[layerCount];
+                float[] layerWtNSC = new float[layerCount];                
                 float[] layerWtNetPsn = new float[layerCount];
                 float[] layerWtGrossPsn = new float[layerCount];
                 float[] layerWtWoodSenescence = new float[layerCount];
                 float[] layerWtFolSenescence = new float[layerCount];
                 float[] layerWtMaintResp = new float[layerCount];
                 float[] layerWtFolResp = new float[layerCount];
-                float[] layerWtTranspiration = new float[layerCount];
+                float[] layerWtTranspiration = new float[layerCount];*/
+                float[] layerWtLAI = new float[layerCount];
                 float[] layerSumBio = new float[layerCount];
                 float[] layerSumCanopyProp = new float[layerCount];
 
@@ -2090,11 +2090,11 @@ namespace Landis.Library.PnETCohorts
 
                 foreach (Cohort cohort in AllCohorts)
                 {
-                    folresp[data[m].Month - 1] += cohort.FolResp.Sum();
-                    netpsn[data[m].Month - 1] += cohort.NetPsn.Sum();
-                    grosspsn[data[m].Month - 1] += cohort.GrossPsn.Sum();
-                    maintresp[data[m].Month - 1] += cohort.MaintenanceRespiration.Sum();
-                    transpiration += cohort.Transpiration.Sum();
+                    folresp[data[m].Month - 1] += (cohort.FolResp.Sum() * cohort.CanopyLayerProp);
+                    netpsn[data[m].Month - 1] += (cohort.NetPsn.Sum() * cohort.CanopyLayerProp);
+                    grosspsn[data[m].Month - 1] += (cohort.GrossPsn.Sum() * cohort.CanopyLayerProp);
+                    maintresp[data[m].Month - 1] += (cohort.MaintenanceRespiration.Sum() * cohort.CanopyLayerProp);
+                    transpiration += (cohort.Transpiration.Sum() * cohort.CanopyLayerProp);
                     CalculateCumulativeLeafArea(ref leafAreas, cohort);
                     
                     int layer = cohort.Layer;
@@ -2151,11 +2151,11 @@ namespace Landis.Library.PnETCohorts
                     }
                 }
 
-                folresp[data[m].Month - 1] = layerWtFolResp.Sum();
-                netpsn[data[m].Month - 1] = layerWtNetPsn.Sum();
-                grosspsn[data[m].Month - 1] = layerWtGrossPsn.Sum();
-                maintresp[data[m].Month - 1] = layerWtMaintResp.Sum();
-                transpiration = layerWtTranspiration.Sum();
+                //folresp[data[m].Month - 1] = layerWtFolResp.Sum();
+                //netpsn[data[m].Month - 1] = layerWtNetPsn.Sum();
+                //grosspsn[data[m].Month - 1] = layerWtGrossPsn.Sum();
+                //maintresp[data[m].Month - 1] = layerWtMaintResp.Sum();
+                //transpiration = layerWtTranspiration.Sum();
                 for (int layer = 0; layer < MaxCanopyLayers; layer++)
                 {
                     if (layer < layerWtLAI.Length)

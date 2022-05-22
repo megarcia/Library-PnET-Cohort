@@ -240,6 +240,7 @@ namespace Landis.Library.PnETCohorts
 
                 // Evaporation cannot remove water below wilting point           
                 float AET = Math.Min(DeliveryPotential * PET, (Water - sitecohorts.Ecoregion.WiltPnt) * evapSoilDepth);  // mm/month
+                sitecohorts.SetAet(AET, variables.Month);
 
                 // Evaporation  cannot be negative
                 // Transpiration is assumed to replace evaporation

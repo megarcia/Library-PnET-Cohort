@@ -344,6 +344,7 @@ namespace Landis.Library.PnETCohorts
                 {
 
                     initialSites.Add(key, this);
+
                 }
             }
 
@@ -2181,6 +2182,7 @@ namespace Landis.Library.PnETCohorts
                 //grosspsn[data[m].Month - 1] = layerWtGrossPsn.Sum();
                 //maintresp[data[m].Month - 1] = layerWtMaintResp.Sum();
                 //transpiration = layerWtTranspiration.Sum();
+
                 for (int layer = 0; layer < MaxCanopyLayers; layer++)
                 {
                     if (layer < layerWtLAI.Length)
@@ -3081,7 +3083,7 @@ namespace Landis.Library.PnETCohorts
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    AbovegroundBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.AGBiomass * o.CanopyLayerProp)); 
+                    AbovegroundBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.AGBiomass * o.CanopyLayerProp));
                 }
                 return AbovegroundBiomassPerSpecies;
             }
@@ -3097,6 +3099,32 @@ namespace Landis.Library.PnETCohorts
                     WoodBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.Wood * o.CanopyLayerProp));
                 }
                 return WoodBiomassPerSpecies;
+            }
+        }
+        public Landis.Library.Parameters.Species.AuxParm<int> BelowGroundBiomassPerSpecies
+        {
+            get
+            {
+                Landis.Library.Parameters.Species.AuxParm<int> BelowGroundBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+
+                foreach (ISpecies spc in cohorts.Keys)
+                {
+                    BelowGroundBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.Root * o.CanopyLayerProp));
+                }
+                return BelowGroundBiomassPerSpecies;
+            }
+        }
+        public Landis.Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies
+        {
+            get
+            {
+                Landis.Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+
+                foreach (ISpecies spc in cohorts.Keys)
+                {
+                    FoliageBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.Fol * o.CanopyLayerProp));
+                }
+                return FoliageBiomassPerSpecies;
             }
         }
         public Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies
@@ -3216,6 +3244,14 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 return AllCohorts.Sum(o => (o.NSC * o.CanopyLayerProp));
+            }
+
+        }
+        public float PET
+        {
+            get
+            {
+                return hydrology != null ? hydrology.PET : 0;
             }
 
         }

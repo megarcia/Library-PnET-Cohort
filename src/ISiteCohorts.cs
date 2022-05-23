@@ -39,6 +39,10 @@ namespace Landis.Library.PnETCohorts
 
         Landis.Library.Parameters.Species.AuxParm<int> WoodBiomassPerSpecies { get; }
 
+        Landis.Library.Parameters.Species.AuxParm<int> BelowGroundBiomassPerSpecies { get; }
+
+        Landis.Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies { get; }
+
         Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies { get; }
 
         Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies { get; }
@@ -75,6 +79,8 @@ namespace Landis.Library.PnETCohorts
         float AETSum { get; } //mm
 
         float NetPsnSum { get; }
+
+        float PET { get; }
 
         List<ISpecies> SpeciesByPlant { get; set; }
         List<ISpecies> SpeciesBySerotiny { get; set; }

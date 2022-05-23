@@ -348,7 +348,9 @@ namespace Landis.Library.PnETCohorts
                 }
             }
 
-            List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
+            List<IEcoregionPnETVariables> ecoregionInitializer = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, StartDate, StartDate.AddMonths(1), Climate.Climate.Phase.SpinUp_Climate) : EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
+
+            //List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
             hydrology = new Hydrology(Ecoregion.FieldCap);
             wateravg = hydrology.Water;
             subcanopypar = ecoregionInitializer[0].PAR0;

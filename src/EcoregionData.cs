@@ -342,6 +342,7 @@ namespace Landis.Library.PnETCohorts
                 {
                     if (all_values[ecoregion].ContainsKey(date) == false)
                     {
+                        
                         IObservedClimate observedClimate = ObservedClimate.GetData(ecoregion, date);
 
                         List<ISpeciesPnET> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
@@ -369,7 +370,7 @@ namespace Landis.Library.PnETCohorts
         public static void Initialize()
         {
             soiltype = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)Names.GetParameter("SoilType");
-            climateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)Names.GetParameter("ClimateFileName");
+            //climateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)Names.GetParameter("ClimateFileName");
             rootingdepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("RootingDepth", 0, 1000);
             precintconst = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("PrecIntConst", 0, 1);
             preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("PrecLossFrac", 0, 1);

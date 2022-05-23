@@ -20,7 +20,9 @@ namespace Landis.Library.PnETCohorts
         float[] ActiveLayerDepth { get; }
 
         float[] FrostDepth { get; }
-
+        float[] MonthlyAvgSnowPack { get; }
+        float[] MonthlyAvgWater { get; }
+        float[] MonthlyAvgLAI { get; }
         float CanopyLAImax{get;}
 
         int AverageAge { get; }

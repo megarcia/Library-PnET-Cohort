@@ -35,6 +35,10 @@ namespace Landis.Library.PnETCohorts
         private float[] averageAlbedo = null;
         private float[] activeLayerDepth = null;
         private float[] frostDepth = null;
+        private float[] monthCount = null;
+        private float[] monthlySnowPack = null;
+        private float[] monthlyWater = null;
+        private float[] monthlyLAI = null;
         private float transpiration;
         private double HeterotrophicRespiration;
         private Hydrology hydrology = null;
@@ -334,10 +338,11 @@ namespace Landis.Library.PnETCohorts
             DisturbanceTypesReduced = new List<ExtensionType>();
             uint key = ComputeKey((ushort)initialCommunity.MapCode, Globals.ModelCore.Ecoregion[site].MapCode);
 
-            if (initialSites.ContainsKey(key) == false)
+            lock (Globals.initialSitesThreadLock)
             {
-                lock (Globals.initialSitesThreadLock)
+                if (initialSites.ContainsKey(key) == false)
                 {
+
                     initialSites.Add(key, this);
                 }
             }
@@ -788,6 +793,7 @@ namespace Landis.Library.PnETCohorts
                         float diff = tempBiomass - targetBiomass;
                         float lastDiff = diff;
                         bool match = (Math.Abs(tempBiomass - targetBiomass) < 2);
+                        int loopCount = 0;
                         while (!match)
                         {
                             float multiplier = 1f;
@@ -832,30 +838,38 @@ namespace Landis.Library.PnETCohorts
                             }
                             //match = ((int)tempBiomass == (int)targetBiomass);
                             match = (Math.Abs(tempBiomass - targetBiomass) < 2);
+                            loopCount++;
+                            if (loopCount > 1000)
+                                break;
                         }
                         if (badSpinup)
                             break;
-                        float cohortFoliage = cohort.adjFracFol * tempFActiveBiom * newTotalBiomass;
-                        cohort.Fol = cohortFoliage;
-                        cohort.ChangeBiomass((int)Math.Round((newTotalBiomass - cohort.TotalBiomass) * 1f / (1f)));
+                        if (loopCount <= 1000)
+                        {
+                            float cohortFoliage = cohort.adjFracFol * tempFActiveBiom * newTotalBiomass;
+                            cohort.Fol = cohortFoliage;
+                            cohort.ChangeBiomass((int)Math.Round((newTotalBiomass - cohort.TotalBiomass) * 1f / (1f)));
+                        }else
+                        {
+                            cohort.Fol = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
+                        }
+
+                            // Calculate limit of maximum biomass based on minimum foliage/total biomass ratios from Jenkins (reduced by half to be not so strict)
+                            //float maxBiomassLimit = (float)(Math.Log((ratioLimit * (1 - SpeciesParameters.SpeciesPnET[cohort.Species].FracBelowG)) / SpeciesParameters.SpeciesPnET[cohort.Species].FracFol) / (-1f * SpeciesParameters.SpeciesPnET[cohort.Species].FrActWd));
 
 
-                        // Calculate limit of maximum biomass based on minimum foliage/total biomass ratios from Jenkins (reduced by half to be not so strict)
-                        //float maxBiomassLimit = (float)(Math.Log((ratioLimit * (1 - SpeciesParameters.SpeciesPnET[cohort.Species].FracBelowG)) / SpeciesParameters.SpeciesPnET[cohort.Species].FracFol) / (-1f * SpeciesParameters.SpeciesPnET[cohort.Species].FrActWd));
-
-
-                        float cohortLAI = 0;
-                        for (int i = 0; i < Globals.IMAX; i++)
-                            cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohortFoliage, i, cohortLAI);
-                        cohortLAI = Math.Min(cohortLAI, cohort.SpeciesPnET.MaxLAI);
-                        cohort.LastLAI = cohortLAI;
-                        cohort.CanopyLayerProp = Math.Min(cohort.LastLAI / cohort.SpeciesPnET.MaxLAI, cohort.CanopyGrowingSpace);
-                        CanopyLayerSum[layer] += (cohort.CanopyLayerProp);
-                        //float cohortFol = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
-                        cohort.Fol = cohortFoliage * (1 - cohort.SpeciesPnET.TOfol);
-                        cohort.NSC = cohort.SpeciesPnET.DNSC * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.SpeciesPnET.CFracBiomass;
-
-                        float fol_total_ratio = cohortFoliage / (cohortFoliage + cohort.Wood);
+                            float cohortLAI = 0;
+                            for (int i = 0; i < Globals.IMAX; i++)
+                                cohortLAI += cohort.CalculateLAI(cohort.SpeciesPnET, cohort.Fol, i, cohortLAI);
+                            cohortLAI = Math.Min(cohortLAI, cohort.SpeciesPnET.MaxLAI);
+                            cohort.LastLAI = cohortLAI;
+                            cohort.CanopyLayerProp = Math.Min(cohort.LastLAI / cohort.SpeciesPnET.MaxLAI, cohort.CanopyGrowingSpace);
+                            CanopyLayerSum[layer] += (cohort.CanopyLayerProp);
+                            //float cohortFol = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
+                            cohort.Fol = cohort.Fol * (1 - cohort.SpeciesPnET.TOfol);
+                            cohort.NSC = cohort.SpeciesPnET.DNSC * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.SpeciesPnET.CFracBiomass;
+                        
+                        float fol_total_ratio = cohort.Fol / (cohort.Fol + cohort.Wood);
                         // Calculate minimum foliage/total biomass ratios from Jenkins (reduced by MinFolRatioFactor to be not so strict)
                         float ratioLimit = 0;
                         if (SpeciesParameters.SpeciesPnET[cohort.Species].SLWDel == 0) //Conifer
@@ -1363,6 +1377,10 @@ namespace Landis.Library.PnETCohorts
             averageAlbedo = new float[13];
             activeLayerDepth = new float[13];
             frostDepth = new float[13];
+            monthCount = new float[13];
+            monthlySnowPack = new float[13];
+            monthlyWater = new float[13];
+            monthlyLAI = new float[13];
 
             //Dictionary<ISpeciesPnET, List<float>> annualEstab = new Dictionary<ISpeciesPnET, List<float>>();
             Dictionary<ISpeciesPnET, float> cumulativeEstab = new Dictionary<ISpeciesPnET, float>();
@@ -2088,6 +2106,12 @@ namespace Landis.Library.PnETCohorts
                 float[] LayerLAI = new float[MaxCanopyLayers];
                 CumulativeLeafAreas leafAreas = new CumulativeLeafAreas();
 
+                monthCount[data[m].Month - 1]++;
+                monthlySnowPack[data[m].Month - 1] += snowPack;
+                monthlyWater[data[m].Month - 1] += hydrology.Water;
+                
+
+
                 foreach (Cohort cohort in AllCohorts)
                 {
                     folresp[data[m].Month - 1] += (cohort.FolResp.Sum() * cohort.CanopyLayerProp);
@@ -2113,8 +2137,9 @@ namespace Landis.Library.PnETCohorts
                         Globals.ModelCore.UI.WriteLine("DEBUG: Cohort count = " + AllCohorts.Count() + "; CanopyLAISum count = " + CanopyLAISum.Count());
                     }
 
-                    CanopyAlbedo[layer] += CalculateAlbedoWithSnow(cohort, cohort.Albedo, sno_dep) * cohort.BiomassLayerProp;
-                    LayerLAI[layer] += cohort.SumLAI * cohort.BiomassLayerProp;
+                    CanopyAlbedo[layer] += CalculateAlbedoWithSnow(cohort, cohort.Albedo, sno_dep) * cohort.CanopyLayerProp;
+                    LayerLAI[layer] += cohort.SumLAI * cohort.CanopyLayerProp;
+                    monthlyLAI[data[m].Month - 1] += (cohort.LAI.Sum() * cohort.CanopyLayerProp);
                 }
                 if (LayerLAI.Max() < 1)
                 {
@@ -2837,6 +2862,84 @@ namespace Landis.Library.PnETCohorts
                 else
                 {
                     return grosspsn.Select(psn => (float)psn).ToArray();
+                }
+            }
+        }
+        public float[] MonthlyAvgSnowPack
+        {
+            get
+            {
+                if (monthlySnowPack == null)
+                {
+                    float[] snowPack_array = new float[12];
+                    for (int i = 0; i < snowPack_array.Length; i++)
+                    {
+                        snowPack_array[i] = 0;
+                    }
+                    return snowPack_array;
+                }
+                else
+                {
+                     float[] snowSum = monthlySnowPack.Select(snowPack => (float)snowPack).ToArray();
+                    float[] monthSum = monthCount.Select(months => (float)months).ToArray();
+                    float[] snowPack_array = new float[12];
+                    for (int i = 0; i < snowPack_array.Length; i++)
+                    {
+                        snowPack_array[i] = snowSum[i] / monthSum[i];
+                    }
+                    return snowPack_array;
+                }
+            }
+        }
+        public float[] MonthlyAvgWater
+        {
+            get
+            {
+                if (monthlyWater == null)
+                {
+                    float[] water_array = new float[12];
+                    for (int i = 0; i < water_array.Length; i++)
+                    {
+                        water_array[i] = 0;
+                    }
+                    return water_array;
+                }
+                else
+                {
+                    float[] waterSum = monthlyWater.Select(water => (float)water).ToArray();
+                    float[] monthSum = monthCount.Select(months => (float)months).ToArray();
+                    float[] water_array = new float[12];
+                    for (int i = 0; i < water_array.Length; i++)
+                    {
+                        water_array[i] = waterSum[i] / monthSum[i];
+                    }
+                    return water_array;
+                }
+            }
+        }
+        public float[] MonthlyAvgLAI
+        {
+            get
+            {
+                if (monthlyLAI == null)
+                {
+                    float[] lai_array = new float[12];
+                    for (int i = 0; i < lai_array.Length; i++)
+                    {
+                        lai_array[i] = 0;
+                    }
+                    return lai_array;
+                }
+                else
+                {
+                    float[] laiSum = monthlyLAI.Select(lai => (float)lai).ToArray();
+                    float[] monthSum = monthCount.Select(months => (float)months).ToArray();
+                    float[] lai_array = new float[12];
+                    for (int i = 0; i < lai_array.Length; i++)
+                    {
+                        lai_array[i] = laiSum[i] / monthSum[i];
+                    }
+                    return lai_array;
                 }
             }
         }

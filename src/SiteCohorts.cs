@@ -1217,6 +1217,11 @@ namespace Landis.Library.PnETCohorts
             AET[Month-1] = value;
         }
 
+        public void SetPET(float value)
+        {
+            PET = value;
+        }
+
         class DescendingComparer<T> : IComparer<T> where T : IComparable<T>
         {
             public int Compare(T x, T y)
@@ -1465,6 +1470,15 @@ namespace Landis.Library.PnETCohorts
                     // Reset annual SiteVars
                     SiteVars.AnnualPET[Site] = 0;
                     SiteVars.ClimaticWaterDeficit[Site] = 0;
+
+                    // Reset max foliage in each cohort
+                    foreach (ISpecies spc in cohorts.Keys)
+                    {
+                        foreach (Cohort cohort in cohorts[spc])
+                        {
+                            cohort.ResetFoliageMax();
+                        }
+                    }
                 }
 
                 float ozoneD40 = 0;
@@ -3129,6 +3143,45 @@ namespace Landis.Library.PnETCohorts
                 return FoliageBiomassPerSpecies;
             }
         }
+        public Landis.Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies
+        {
+            get
+            {
+                Landis.Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+
+                foreach (ISpecies spc in cohorts.Keys)
+                {
+                    MaxFoliageYearPerSpecies[spc] = cohorts[spc].Max(o => (int)o.MaxFolYear);
+                }
+                return MaxFoliageYearPerSpecies;
+            }
+        }
+        public Landis.Library.Parameters.Species.AuxParm<int> NSCPerSpecies
+        {
+            get
+            {
+                Landis.Library.Parameters.Species.AuxParm<int> NSCPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+
+                foreach (ISpecies spc in cohorts.Keys)
+                {
+                    NSCPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.NSC * o.CanopyLayerProp));
+                }
+                return NSCPerSpecies;
+            }
+        }
+        public Landis.Library.Parameters.Species.AuxParm<int> LAIPerSpecies
+        {
+            get
+            {
+                Landis.Library.Parameters.Species.AuxParm<int> LAIPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+
+                foreach (ISpecies spc in cohorts.Keys)
+                {
+                    LAIPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LAI.Sum() * o.CanopyLayerProp));
+                }
+                return LAIPerSpecies;
+            }
+        }
         public Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies
         {
             get
@@ -3247,15 +3300,11 @@ namespace Landis.Library.PnETCohorts
             {
                 return AllCohorts.Sum(o => (o.NSC * o.CanopyLayerProp));
             }
-
         }
         public float PET
         {
-            get
-            {
-                return hydrology != null ? hydrology.PET : 0;
-            }
-
+            get;
+            set;
         }
         public int CohortCount
         {

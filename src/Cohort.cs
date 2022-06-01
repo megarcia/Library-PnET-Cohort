@@ -54,6 +54,19 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        // Maximum Foliage Value For Current Year
+        public float MaxFolYear
+        {
+            get
+            {
+                return data.MaxFolYear;
+            }
+            set
+            {
+                data.MaxFolYear = value;
+            }
+        }
+        //---------------------------------------------------------------------
         // Measure of cohort's diffuse reflection of solar radiation out of total solar radiation without snow reflectance
         public float Albedo
         {
@@ -474,6 +487,10 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
+                if (data.LAI == null)
+                {
+                    return 0;
+                }
                 return data.LAI.Sum();
             }
         }
@@ -602,6 +619,7 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass += c.TotalBiomass;
             data.BiomassMax = Math.Max(BiomassMax, data.TotalBiomass);
             data.Fol += c.Fol;
+            data.MaxFolYear = Math.Max(MaxFolYear, data.Fol);
             data.AGBiomass = (1 - c.SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             data.Biomass = data.AGBiomass * data.CanopyLayerProp;
         }
@@ -680,6 +698,7 @@ namespace Landis.Library.PnETCohorts
             this.data.Biomass = this.data.AGBiomass * cohort.CanopyLayerProp;
             this.data.BiomassMax = cohort.BiomassMax;
             this.data.Fol = cohort.Fol;
+            this.data.MaxFolYear = cohort.MaxFolYear;
             this.data.LastSeasonFRad = cohort.data.LastSeasonFRad;
             this.data.ColdKill = int.MaxValue;
         }
@@ -695,6 +714,7 @@ namespace Landis.Library.PnETCohorts
             this.data.Biomass = this.data.AGBiomass * cohort.CanopyLayerProp;
             this.data.BiomassMax = cohort.BiomassMax;
             this.data.Fol = cohort.Fol;
+            this.data.MaxFolYear = cohort.MaxFolYear;
             this.data.LastSeasonFRad = cohort.data.LastSeasonFRad;
             this.data.ColdKill = int.MaxValue;
 
@@ -734,6 +754,7 @@ namespace Landis.Library.PnETCohorts
             if (this.Leaf_On)
             {
                 this.data.Fol = cohortIdealFol;
+                this.data.MaxFolYear = cohortIdealFol;
             }
             this.data.LastLAI = cohortLAI;
             this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
@@ -778,6 +799,7 @@ namespace Landis.Library.PnETCohorts
             if (this.Leaf_On)
             {
                 this.data.Fol = cohortIdealFol;
+                this.data.MaxFolYear = cohortIdealFol;
             }
             this.data.LastLAI = cohortLAI;
             this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
@@ -1168,6 +1190,7 @@ namespace Landis.Library.PnETCohorts
                             //    actualFol = FolTentative * relativeCanopyProp;
                             // Add Foliage
                             data.Fol += actualFol;
+                            data.MaxFolYear = Math.Max(data.MaxFolYear, data.Fol);
                         }
                         // Subtract from NSC
                         data.NSC -= FolCost;
@@ -1770,6 +1793,12 @@ namespace Landis.Library.PnETCohorts
         public void ReduceFoliage(double fraction)
         {
             Fol *= (float)(1.0 - fraction);
+            data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
+        }
+        //---------------------------------------------------------------------
+        public void ResetFoliageMax()
+        {
+            data.MaxFolYear = 0;
         }
         //---------------------------------------------------------------------
         public void ReduceBiomass(object sitecohorts, double fraction, ExtensionType disturbanceType)
@@ -1787,7 +1816,7 @@ namespace Landis.Library.PnETCohorts
             data.Biomass = data.AGBiomass * data.CanopyLayerProp;
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
             Fol *= (float)(1.0 - fraction);
-
+            data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
         }
         //---------------------------------------------------------------------
         public float CalculateLAI(ISpeciesPnET species, float fol, int index)

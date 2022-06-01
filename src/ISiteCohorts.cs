@@ -32,7 +32,9 @@ namespace Landis.Library.PnETCohorts
         Landis.Library.Parameters.Species.AuxParm<bool> SpeciesPresent { get; }
 
         IEstablishmentProbability EstablishmentProbability { get; }
-        
+
+        Landis.Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies { get; }
+
         Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
 
         Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies { get; }
@@ -42,6 +44,10 @@ namespace Landis.Library.PnETCohorts
         Landis.Library.Parameters.Species.AuxParm<int> BelowGroundBiomassPerSpecies { get; }
 
         Landis.Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies { get; }
+
+        Landis.Library.Parameters.Species.AuxParm<int> NSCPerSpecies { get; }
+
+        Landis.Library.Parameters.Species.AuxParm<int> LAIPerSpecies { get; }
 
         Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies { get; }
 

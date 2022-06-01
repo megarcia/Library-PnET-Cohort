@@ -63,6 +63,11 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public float Fol;
 
+        /// <summary>
+        /// Maximum Foliage For The Year (g/m2)
+        /// </summary>
+        public float MaxFolYear;
+
         //---------------------------------------------------------------------
 
         /// <summary>
@@ -297,6 +302,7 @@ namespace Landis.Library.PnETCohorts
             this.DeFolProp = cohort.DefolProp;
             this.DelAmax = cohort.DelAmax;
             this.Fol = cohort.Fol;
+            this.MaxFolYear = cohort.MaxFolYear;
             this.FolResp = cohort.FolResp;
             this.FOzone = cohort.FOzone;
             this.FRad = cohort.FRad;
@@ -349,6 +355,7 @@ namespace Landis.Library.PnETCohorts
             this.DeFolProp = 0;
             this.DelAmax = new float[Globals.IMAX];
             this.Fol = 0;
+            this.MaxFolYear = 0;
             this.FolResp = new float[Globals.IMAX];
             this.FOzone = new float[Globals.IMAX];
             this.FRad = new float[Globals.IMAX];

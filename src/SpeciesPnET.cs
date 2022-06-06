@@ -235,7 +235,13 @@ namespace Landis.Library.PnETCohorts
                 {
                     // Calculate MaxLAI
                     float peakBiomass = 1f / fractWd[species];
-                    maxLAI.Add(species, (peakBiomass * maxFracFol[species] * (float)Math.Exp(-1f * fractWd[species] * peakBiomass)) / slwmax[species]);
+                    float peakFoliage = (peakBiomass * fracfol[species] * (float)Math.Exp(-1f * fractWd[species] * peakBiomass));
+                    float tempLAI = 0;
+                    for (int i = 0; i < Globals.IMAX; i++)
+                    {
+                        tempLAI += (float)Math.Max(0.01, (peakFoliage / Globals.IMAX) / (slwmax[species] - (slwdel[species] * i * (peakFoliage / Globals.IMAX))));
+                    }
+                        maxLAI.Add(species,  tempLAI);
                 }
                 else
                 {

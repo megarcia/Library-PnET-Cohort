@@ -3177,7 +3177,7 @@ namespace Landis.Library.PnETCohorts
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    LAIPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LAI.Sum() * o.CanopyLayerProp));
+                    LAIPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LAI != null ? o.LAI.Sum() * o.CanopyLayerProp:0));
                 }
                 return LAIPerSpecies;
             }

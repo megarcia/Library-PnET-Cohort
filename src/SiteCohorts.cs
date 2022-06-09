@@ -1098,6 +1098,7 @@ namespace Landis.Library.PnETCohorts
                 List<float> cohortBiomassLayerProp = new List<float>();
                 List<float> cohortCanopyLayerProp = new List<float>();
                 List<float> cohortCanopyGrowingSpace = new List<float>();
+                List<float> cohortLastLAI = new List<float>();
 
                 foreach (ISpecies spc in initialSites[key].cohorts.Keys)
                 {
@@ -1119,6 +1120,8 @@ namespace Landis.Library.PnETCohorts
                         cohortCanopyLayerProp.Add(canopyLayerProp);
                         float canopyGrowingSpace = cohort.CanopyGrowingSpace;
                         cohortCanopyGrowingSpace.Add(canopyGrowingSpace);
+                        float lastLAI = cohort.LastLAI;
+                        cohortLastLAI.Add(lastLAI);
                     }          
                 }
                 int index = 0;
@@ -1127,6 +1130,7 @@ namespace Landis.Library.PnETCohorts
                     cohort.BiomassLayerProp = cohortBiomassLayerProp[index];
                     cohort.CanopyLayerProp = cohortCanopyLayerProp[index];
                     cohort.CanopyGrowingSpace = cohortCanopyGrowingSpace[index];
+                    cohort.LastLAI = cohortLastLAI[index];
                     index++;
                 }
 
@@ -3169,15 +3173,16 @@ namespace Landis.Library.PnETCohorts
                 return NSCPerSpecies;
             }
         }
-        public Landis.Library.Parameters.Species.AuxParm<int> LAIPerSpecies
+        public Landis.Library.Parameters.Species.AuxParm<float> LAIPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> LAIPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<float> LAIPerSpecies = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    LAIPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LAI != null ? o.LAI.Sum() * o.CanopyLayerProp:0));
+                    //LAIPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LAI != null ? o.LAI.Sum() * o.CanopyLayerProp : 0));
+                    LAIPerSpecies[spc] = cohorts[spc].Sum(o => (o.LastLAI * o.CanopyLayerProp));
                 }
                 return LAIPerSpecies;
             }

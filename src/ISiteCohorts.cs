@@ -47,7 +47,7 @@ namespace Landis.Library.PnETCohorts
 
         Landis.Library.Parameters.Species.AuxParm<int> NSCPerSpecies { get; }
 
-        Landis.Library.Parameters.Species.AuxParm<int> LAIPerSpecies { get; }
+        Landis.Library.Parameters.Species.AuxParm<float> LAIPerSpecies { get; }
 
         Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies { get; }
 

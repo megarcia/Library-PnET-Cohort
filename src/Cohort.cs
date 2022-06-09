@@ -1173,7 +1173,7 @@ namespace Landis.Library.PnETCohorts
                             // Non-defoliated trees do not add to their foliage
                         }
 
-                        if (FolTentative > 0)
+                        if (FolTentative > 0.01)
                         {
                             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
                             float tentativeLAI = 0;
@@ -1854,6 +1854,7 @@ namespace Landis.Library.PnETCohorts
             float LAIlayer = (1 / (float)Globals.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)Globals.IMAX) * fol);
             if (fol > 0 && LAIlayer <= 0)
             {
+                
                 Globals.ModelCore.UI.WriteLine("\n Warning: LAI was calculated to be negative for " + species.Name + ". This could be caused by a low value for SLWmax.  LAI applied in this case is a max of 25 for each cohort.");
                 LAIlayer = LAIlayerMax / (Globals.IMAX - index);
             }

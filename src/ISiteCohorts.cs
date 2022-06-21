@@ -66,6 +66,8 @@ namespace Landis.Library.PnETCohorts
 
         int CohortCount { get; }
 
+        float SubCanopyPar { get; }
+
         float SubCanopyParMAX { get; }
 
         double Litter{ get; }

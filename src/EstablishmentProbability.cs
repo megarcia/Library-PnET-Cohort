@@ -20,17 +20,17 @@ namespace Landis.Library.PnETCohorts
             return _hasEstablished.Contains(species);
         }
        
-        public Landis.Library.Parameters.Species.AuxParm<byte> Probability
+        public Landis.Library.Parameters.Species.AuxParm<float> Probability
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<byte> probability = new Library.Parameters.Species.AuxParm<byte>(Globals.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<float> probability = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in Globals.ModelCore.Species)
                 {
                     ISpeciesPnET speciespnet = SpeciesParameters.SpeciesPnET[spc];
-                    probability[spc] = (byte)(100F * _pest[speciespnet]);
+                    probability[spc] = _pest[speciespnet];
                 }
-                return probability; //0-100 index
+                return probability; //0.0-1.0 index
             }
         }
         public float Get_FWater(ISpeciesPnET species)

@@ -1099,6 +1099,8 @@ namespace Landis.Library.PnETCohorts
                 List<float> cohortCanopyLayerProp = new List<float>();
                 List<float> cohortCanopyGrowingSpace = new List<float>();
                 List<float> cohortLastLAI = new List<float>();
+                List<int> cohortLastWoodySenescence = new List<int>();
+                List<int> cohortLastFolSenescence = new List<int>();
 
                 foreach (ISpecies spc in initialSites[key].cohorts.Keys)
                 {
@@ -1122,7 +1124,12 @@ namespace Landis.Library.PnETCohorts
                         cohortCanopyGrowingSpace.Add(canopyGrowingSpace);
                         float lastLAI = cohort.LastLAI;
                         cohortLastLAI.Add(lastLAI);
-                    }          
+                        int lastWoodySenes = cohort.LastWoodySenescence;
+                        cohortLastWoodySenescence.Add(lastWoodySenes);
+                        int lastFolSenes = cohort.LastFoliageSenescence;
+                        cohortLastFolSenescence.Add(lastFolSenes);
+
+                    }
                 }
                 int index = 0;
                 foreach (Cohort cohort in AllCohorts)
@@ -1131,6 +1138,8 @@ namespace Landis.Library.PnETCohorts
                     cohort.CanopyLayerProp = cohortCanopyLayerProp[index];
                     cohort.CanopyGrowingSpace = cohortCanopyGrowingSpace[index];
                     cohort.LastLAI = cohortLastLAI[index];
+                    cohort.LastWoodySenescence = cohortLastWoodySenescence[index];
+                    cohort.LastFoliageSenescence = cohortLastFolSenescence[index];
                     index++;
                 }
 

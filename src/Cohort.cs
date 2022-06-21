@@ -253,6 +253,10 @@ namespace Landis.Library.PnETCohorts
             {
                 return (int)data.LastWoodySenescence;
             }
+            set
+            {
+                data.LastWoodySenescence = value;
+            }
         }
         //---------------------------------------------------------------------
         // Annual Foliage Senescence (g/m2)
@@ -261,6 +265,10 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 return (int)data.LastFoliageSenescence;
+            }
+            set
+            {
+                data.LastFoliageSenescence = value;
             }
         }
         //---------------------------------------------------------------------

@@ -234,6 +234,14 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public float SubCanopyPar
+        {
+            get
+            {
+                return subcanopypar;
+            }
+        }
+        //---------------------------------------------------------------------
         public float SubCanopyParMAX
         {
             get

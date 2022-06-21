@@ -4,7 +4,7 @@ namespace Landis.Library.PnETCohorts
 {
     public interface IEstablishmentProbability
     {
-        Landis.Library.Parameters.Species.AuxParm<byte> Probability { get; }
+        Landis.Library.Parameters.Species.AuxParm<float> Probability { get; }
 
         //void Calculate_Establishment(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology);
 

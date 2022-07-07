@@ -22,6 +22,7 @@ namespace Landis.Library.PnETCohorts
         private float snowPack;
         private float[] CanopyLAI;
         private float subcanopypar;
+        private float julysubcanopypar;
         private float subcanopyparmax;
         private float propRootAboveFrost;
         private float soilDiffusivity;
@@ -218,6 +219,14 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public float JulySubCanopyPar
+        {
+            get
+            {
+                return julysubcanopypar;
+            }
+        }
+        //---------------------------------------------------------------------
         public float SubcanopyPAR
         {
             get
@@ -231,14 +240,6 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 return establishmentProbability;
-            }
-        }
-        //---------------------------------------------------------------------
-        public float SubCanopyPar
-        {
-            get
-            {
-                return subcanopypar;
             }
         }
         //---------------------------------------------------------------------
@@ -1614,7 +1615,7 @@ namespace Landis.Library.PnETCohorts
                     // When there was permafrost at the end of summer, assume that the bottom of the ice lens is as deep as possible
                     //if (permafrost)
                     //{
-                        frostDepth[data[m].Month - 1] = bottomFreezeDepth;
+                        frostDepth[data[m].Month - 1] = 0;
                     //}
 
                     float testDepth = 0;
@@ -2288,6 +2289,11 @@ namespace Landis.Library.PnETCohorts
                 {
                     sumPressureHead += hydrology.GetPressureHead(Ecoregion);
                     countPressureHead += 1;
+                }
+
+                if (data[m].Month == 7)
+                {
+                    julysubcanopypar = subcanopypar;
                 }
 
                 // Store growing season FRad values                
@@ -4036,7 +4042,6 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.NrOfCohorts + "," +
                        OutputHeaders.MaxLayerRatio + "," +
                        OutputHeaders.Layers + "," +
-                       OutputHeaders.TopLayer + "," +
                        OutputHeaders.SumCanopyProp + "," +
                        OutputHeaders.PAR0 + "," +
                        OutputHeaders.Tmin + "," +
@@ -4099,7 +4104,6 @@ namespace Landis.Library.PnETCohorts
                 //maxLayerDev + "," +
                 maxLayerRatio + "," +
                 nlayers + "," +
-                MaxLayer + "," +
                 cohorts.Values.Sum(o => o.Sum(x => (x.CanopyLayerProp))) + "," +
                 monthdata.PAR0 + "," +
                 monthdata.Tmin + "," +

@@ -66,7 +66,7 @@ namespace Landis.Library.PnETCohorts
 
         int CohortCount { get; }
 
-        float SubCanopyPar { get; }
+        float JulySubCanopyPar { get; }
 
         float SubCanopyParMAX { get; }
 

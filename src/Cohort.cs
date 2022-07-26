@@ -1694,7 +1694,6 @@ namespace Landis.Library.PnETCohorts
                        monthdata.Month + "," +
                        Age + "," +
                        Layer + "," +
-                       BiomassLayerProp + "," +
                        CanopyLayerProp + "," +
                        CanopyGrowingSpace + "," +
                        SumLAI + "," +
@@ -1745,7 +1744,6 @@ namespace Landis.Library.PnETCohorts
                             OutputHeaders.Month + "," +
                             OutputHeaders.Age + "," +
                             OutputHeaders.Layer + "," +
-                            OutputHeaders.BiomassLayerProp + "," +
                             OutputHeaders.CanopyLayerProp + "," +
                             OutputHeaders.CanopyGrowingSpace + "," +
                             OutputHeaders.LAI + "," +

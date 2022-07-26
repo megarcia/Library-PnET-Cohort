@@ -194,7 +194,12 @@ namespace Landis.Library.PnETCohorts
         public float[] Transpiration;
 
         //---------------------------------------------------------------------
+        /// <summary>
+        /// PotentialTranspiration (mm/mo)
+        /// </summary>
+        public float[] PotentialTranspiration;
 
+        //---------------------------------------------------------------------
         /// <summary>
         /// Reduction factor for suboptimal radiation on growth
         /// </summary>
@@ -322,6 +327,7 @@ namespace Landis.Library.PnETCohorts
             this.NSC = cohort.NSC;
             this.PressHead = cohort.PressHead;
             this.Transpiration = cohort.Transpiration;
+            this.PotentialTranspiration = cohort.PotentialTranspiration;
             this.Water = cohort.Water;
             this.BiomassLayerProp = cohort.BiomassLayerProp;
             this.CanopyLayerProp = cohort.CanopyLayerProp;
@@ -375,6 +381,7 @@ namespace Landis.Library.PnETCohorts
             this.NSC = 0;
             this.PressHead = new float[Globals.IMAX];
             this.Transpiration = new float[Globals.IMAX];
+            this.PotentialTranspiration = new float[Globals.IMAX];
             this.Water = new float[Globals.IMAX];
             this.BiomassLayerProp = 1.0f;
             float cohortLAI = 0;

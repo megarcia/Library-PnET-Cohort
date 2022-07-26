@@ -40,6 +40,7 @@ namespace Landis.Library.PnETCohorts
         private float[] monthlyWater = null;
         private float[] monthlyLAI = null;
         private float transpiration;
+        private float potentialTranspiration;
         private double HeterotrophicRespiration;
         private Hydrology hydrology = null;
         IEstablishmentProbability establishmentProbability = null;
@@ -215,6 +216,15 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 return transpiration;
+            }
+        }        
+        //---------------------------------------------------------------------
+
+        public float PotentialTranspiration
+        {
+            get
+            {
+                return potentialTranspiration;
             }
         }
         //---------------------------------------------------------------------
@@ -1158,6 +1168,7 @@ namespace Landis.Library.PnETCohorts
                 this.averageAlbedo = initialSites[key].AverageAlbedo;
                 this.CanopyLAI = initialSites[key].CanopyLAI;
                 this.transpiration = initialSites[key].Transpiration;
+                this.potentialTranspiration = initialSites[key].PotentialTranspiration;
 
                 // Calculate AdjFolFrac
                 AllCohorts.ForEach(x => x.CalcAdjFracFol());
@@ -1475,6 +1486,7 @@ namespace Landis.Library.PnETCohorts
             {
                 Ecoregion.Variables = data[m];
                 transpiration = 0;
+                potentialTranspiration = 0;
                 subcanopypar = data[m].PAR0;
                 interception = 0;
 
@@ -1489,7 +1501,7 @@ namespace Landis.Library.PnETCohorts
                     activeLayerDepth = new float[13];
                     frostDepth = new float[13];
                     // Reset annual SiteVars
-                    SiteVars.AnnualPET[Site] = 0;
+                    SiteVars.AnnualPE[Site] = 0;
                     SiteVars.ClimaticWaterDeficit[Site] = 0;
 
                     // Reset max foliage in each cohort
@@ -1625,6 +1637,7 @@ namespace Landis.Library.PnETCohorts
                     float tMax = float.MinValue;
                     float tMin = float.MaxValue;
                     int maxMonth = 0;
+                    int minMonth = 0;
                     int mCount = 0;
                     if (m < 12)
                     {
@@ -1639,7 +1652,10 @@ namespace Landis.Library.PnETCohorts
                                 maxMonth = data[z].Month;
                             }
                             if (data[z].Tave < tMin)
+                            {
                                 tMin = data[z].Tave;
+                                minMonth = data[z].Month;
+                            }
                         }
                     }
                     else
@@ -1655,7 +1671,10 @@ namespace Landis.Library.PnETCohorts
                                 maxMonth = data[z].Month;
                             }
                             if (data[z].Tave < tMin)
+                            {
                                 tMin = data[z].Tave;
+                                minMonth = data[z].Month;
+                            }
                         }
                     }
                     float annualTavg = tSum / mCount;
@@ -1671,7 +1690,14 @@ namespace Landis.Library.PnETCohorts
                     {
                         float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
                                                                                                     //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
-                        zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * (data[m].Month + (3 - maxMonth)) - testDepth / d));
+                        // Calculate lag months from both max and min temperature months
+                        int lagMax = (data[m].Month + (3 - maxMonth));
+                        int lagMin = (data[m].Month + (minMonth - 5));
+                        if(minMonth >= 12)
+                            lagMin = (data[m].Month + (minMonth - 12 - 5));
+                        float lagAvg = ((float)lagMax + (float)lagMin) / 2f;
+
+                        zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * lagAvg - testDepth / d));
                         depthTempDict[testDepth] = zTemp;
 
                         if (zTemp <= 0 && !permafrost)
@@ -2156,7 +2182,8 @@ namespace Landis.Library.PnETCohorts
                     netpsn[data[m].Month - 1] += (cohort.NetPsn.Sum() * cohort.CanopyLayerProp);
                     grosspsn[data[m].Month - 1] += (cohort.GrossPsn.Sum() * cohort.CanopyLayerProp);
                     maintresp[data[m].Month - 1] += (cohort.MaintenanceRespiration.Sum() * cohort.CanopyLayerProp);
-                    transpiration += (cohort.Transpiration.Sum() * cohort.CanopyLayerProp);
+                    transpiration += cohort.Transpiration.Sum(); // Transpiration already scaled to CanopyLayerProp
+                    potentialTranspiration += cohort.PotentialTranspiration.Sum(); // Transpiration already scaled to CanopyLayerProp
                     CalculateCumulativeLeafArea(ref leafAreas, cohort);
                     
                     int layer = cohort.Layer;
@@ -2263,7 +2290,7 @@ namespace Landis.Library.PnETCohorts
                 else
                 {
                     hydrology.Evaporation = 0;
-                    hydrology.PET = 0;
+                    hydrology.PE = 0;
                 }
                 success = hydrology.AddWater(-1 * hydrology.Evaporation, Ecoregion.RootingDepth * propRootAboveFrost);
                 if (success == false)
@@ -2711,6 +2738,7 @@ namespace Landis.Library.PnETCohorts
                 return;
             }
             transpiration = 0;
+            potentialTranspiration = 0;
             subcanopypar = variables.PAR0;
             interception = 0;
 
@@ -2829,7 +2857,7 @@ namespace Landis.Library.PnETCohorts
             else
             {
                 hydrology.Evaporation = 0;
-                hydrology.PET = 0;
+                hydrology.PE = 0;
             }
             bool success = hydrology.AddWater(-1 * hydrology.Evaporation, Ecoregion.RootingDepth * propRootAboveFrost);
             if (success == false)
@@ -4048,8 +4076,9 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.O3 + "," +
                        OutputHeaders.RunOff + "," + 
                        OutputHeaders.Leakage + "," + 
-                       OutputHeaders.PET + "," +
+                       OutputHeaders.PE + "," +
                        OutputHeaders.Evaporation + "," +
+                       OutputHeaders.PotentialTranspiration + "," +
                        OutputHeaders.Transpiration + "," + 
                        OutputHeaders.Interception + "," +
                        OutputHeaders.SurfaceRunOff + "," +
@@ -4111,9 +4140,10 @@ namespace Landis.Library.PnETCohorts
                 monthdata.O3 + "," +
                 hydrology.RunOff + "," +
                 hydrology.Leakage + "," +
-                hydrology.PET + "," +
+                hydrology.PE + "," +
                 hydrology.Evaporation + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.Transpiration.Sum() * x.CanopyLayerProp))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => (x.PotentialTranspiration.Sum()))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => (x.Transpiration.Sum()))) + "," +
                 interception + "," +
                 precLoss + "," +
                 hydrology.Water + "," +

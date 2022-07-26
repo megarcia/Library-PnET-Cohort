@@ -3,7 +3,7 @@ namespace Landis.Library.PnETCohorts
 {
     public class OutputHeaders
     {
-        public const string PET = "PET(mm)";
+        public const string PE = "Potential Evaporation(mm)";
         public const string Time = "Time";
         public const string Year = "Year";
         public const string Month = "Month";
@@ -69,6 +69,7 @@ namespace Landis.Library.PnETCohorts
         public const string FActiveBiom = "FActiveBiom(gDW_gDW)";
         public const string Interception = "Interception(mm)";
         public const string Evaporation = "Evaporation(mm)";
+        public const string PotentialTranspiration = "PotentialTranspiration(mm)";
         public const string Transpiration = "Transpiration(mm)";
         public const string DeliveryPotential = "DeliveryPotential(-)";
         //public const string MaxWater = "MaxWater";

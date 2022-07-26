@@ -465,6 +465,14 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public float[] PotentialTranspiration
+        {
+            get
+            {
+                return data.PotentialTranspiration;
+            }
+        }
+        //---------------------------------------------------------------------
         public float[] Water
         {
             get
@@ -554,6 +562,7 @@ namespace Landis.Library.PnETCohorts
             data.FolResp = new float[Globals.IMAX];
             data.NetPsn = new float[Globals.IMAX];
             data.Transpiration = new float[Globals.IMAX];
+            data.PotentialTranspiration = new float[Globals.IMAX];
             data.FRad = new float[Globals.IMAX];
             data.FWater = new float[Globals.IMAX];
             data.Water = new float[Globals.IMAX];
@@ -608,6 +617,7 @@ namespace Landis.Library.PnETCohorts
             data.FolResp = null;
             data.NetPsn = null;
             data.Transpiration = null;
+            data.PotentialTranspiration = null;
             data.FRad = null;
             data.FWater = null;
             data.PressHead = null;
@@ -1365,9 +1375,9 @@ namespace Landis.Library.PnETCohorts
                 }
 
                 // Choose between delamax methods here:
-                DelAmax[index] = delamax;  // Franks
+                //DelAmax[index] = delamax;  // Franks
                 //DelAmax[index] = delamax_adj;  // Franks with adjusted Ca0
-                //DelAmax[index] = delamaxCi;  // Modified Franks
+                DelAmax[index] = delamaxCi;  // Modified Franks
                 //DelAmax[index] = delamaxCi_adj;  // Modified Franks with adjusted Ca0
 
                 // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
@@ -1386,6 +1396,7 @@ namespace Landis.Library.PnETCohorts
                 // Compute gross psn from stress factors and reference gross psn (gC/g Fol/month)
                 // Reduction factors include temperature (FTempPSN), water (FWater), light (FRad), age (Fage)
                 GrossPsn[index] = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FWater[index] * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
+                float GrossPsnPotential = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
 
                 // Net foliage respiration depends on reference psn (BaseFolResp)
                 // Substitute 24 hours in place of DayLength because foliar respiration does occur at night.  BaseFolResp and Q10Factor use Tave temps reflecting both day and night temperatures.
@@ -1436,11 +1447,13 @@ namespace Landis.Library.PnETCohorts
 
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 // JH2O has been modified by CiModifier to reduce water use efficiency
-                Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O))); //mm
+                // Scale transpiration to proportion of site occupied (CanopyLayerProp)
+                Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O))) * CanopyLayerProp; //mm
+                PotentialTranspiration[index] = (float)(0.01227 * (GrossPsnPotential / (JCO2 / JH2O))) * CanopyLayerProp; //mm
 
                 // It is possible for transpiration to calculate to exceed available water
                 // In this case, we cap transpiration at available water, and back-calculate GrossPsn and NetPsn to downgrade those as well
-                if(Transpiration[index] > (hydrology.Water * siteCohort.Ecoregion.RootingDepth * frostFreeProp))
+                if (Transpiration[index] > (hydrology.Water * siteCohort.Ecoregion.RootingDepth * frostFreeProp))
                 {
                     Transpiration[index] = hydrology.Water * siteCohort.Ecoregion.RootingDepth * frostFreeProp; //mm
                     GrossPsn[index] = (Transpiration[index] / 0.01227F) * (JCO2 / JH2O);
@@ -1470,6 +1483,7 @@ namespace Landis.Library.PnETCohorts
                 FolResp[index] = 0;
                 GrossPsn[index] = 0;
                 Transpiration[index] = 0;
+                PotentialTranspiration[index] = 0;
                 FOzone[index] = 1;
 
             }
@@ -1633,7 +1647,7 @@ namespace Landis.Library.PnETCohorts
             float transpirationSum = Transpiration.Sum();
             float JCO2_JH2O = 0;
             if(transpirationSum > 0)
-                JCO2_JH2O = (float) (0.01227 * (netPsnSum / transpirationSum));
+                JCO2_JH2O = (float) (0.01227 * (netPsnSum / (transpirationSum/CanopyLayerProp)));
             float WUE = JCO2_JH2O * ((float)44 / (float)18); //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
 
             // determine the limiting factor 

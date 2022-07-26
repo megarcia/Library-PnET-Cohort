@@ -49,7 +49,7 @@ namespace Landis.Library.PnETCohorts
         public float Evaporation;
         public float Leakage;
         public float RunOff;
-        public float PET;
+        public float PE;  // Potential Evaporation
         public static float DeliveryPotential;
         public static readonly object threadLock = new object();
         public float SurfaceWater = 0; // Volume of water captured above saturatino on the surface
@@ -188,7 +188,7 @@ namespace Landis.Library.PnETCohorts
             return PET * _daySpan;  //mm/month
         }
         //---------------------------------------------------------------------
-        static float Calculate_PotentialEvapotranspiration_umol(double _Rads, double _Tair, float _daySpan, float _daylength)
+        static float Calculate_PotentialEvaporation_umol(double _Rads, double _Tair, float _daySpan, float _daylength)
         {
             //double _Rads                  // Daytime Solar Radiation (PAR) (micromol/m2/s)
             //double _Tair                  // Daytime air temperature (°C) [Tday]
@@ -196,7 +196,7 @@ namespace Landis.Library.PnETCohorts
             //float _daylength              // Number of seconds in the month
 
             // Caculations based on Stewart & Rouse 1976 and Cabrera et al. 2016
-            float PET = 0; //mm/month
+            float PE = 0; //mm/month
 
             float Rs_W = (float)(_Rads / (2.02 * 24 * Constants.SecondsPerHour / _daylength)); // convert daytime PAR (umol/m2*s) to total daily solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
             float Rs = Rs_W * 0.0864F; // convert Rs_W (W/m2) to Rs (MJ/m2*d) [Reis and Ribeiro 2019 (eq. 13)]
@@ -204,10 +204,10 @@ namespace Landis.Library.PnETCohorts
             float es = 0.6108F * (float)Math.Pow(10, (7.5 * _Tair) / (237.3 + _Tair)); // water vapor saturation pressure (kPa); [Cabrera et al. 2016 (Table 1)]
             float S = (4098F * es) / (float)(Math.Pow((_Tair + 237.3), 2)); // slope of curve of water pressure and air temp; [Cabrera et al. 2016 (Table 1)]
             //float PETmm = (S / (S + Gamma)) * (0.4755F + 0.3773F * Rs); // Stewart & Rouse 1976 (mm/d); [Cabrera et al. 2016 (Table 1)]
-            float PETMJ = (S / (S + Gamma)) * (1.624F + 0.9265F * Rs); // MJ/m2 day; Stewart & Rouse 1976 (eq. 11)
-            PET = PETMJ * 0.408F; // convert MJ/m2 day to mm/day http://www.fao.org/3/x0490e/x0490e0i.htm
+            float PEMJ = (S / (S + Gamma)) * (1.624F + 0.9265F * Rs); // MJ/m2 day; Stewart & Rouse 1976 (eq. 11)
+            PE = PEMJ * 0.408F; // convert MJ/m2 day to mm/day http://www.fao.org/3/x0490e/x0490e0i.htm
 
-            return PET * _daySpan;  //mm/month 
+            return PE * _daySpan;  //mm/month 
         }
 
         public float CalculateEvaporation(SiteCohorts sitecohorts, IEcoregionPnETVariables variables)
@@ -217,14 +217,17 @@ namespace Landis.Library.PnETCohorts
                 // permafrost
                 float frostFreeSoilDepth = sitecohorts.Ecoregion.RootingDepth - FrozenDepth;
                 float frostFreeProp = Math.Min(1.0F, frostFreeSoilDepth / sitecohorts.Ecoregion.RootingDepth);
+                // Evaporation is limited to frost free soil above EvapDepth
+                float evapSoilDepth = Math.Min(sitecohorts.Ecoregion.RootingDepth * frostFreeProp, sitecohorts.Ecoregion.EvapDepth);
+
 
                 float umolPAR = sitecohorts.SubcanopyPAR;
                 if (((Parameter<string>)Names.GetParameter(Names.PARunits)).Value == "W/m2")
                     umolPAR = (sitecohorts.SubcanopyPAR * 2.02f); // convert daytime solar radiation (W/m2) to daytime PAR (umol/m2*s) [Reis and Ribeiro 2019 (Consants and Values)]  
 
                 // mm/month
-                PET = (float)Calculate_PotentialEvapotranspiration_umol(umolPAR, variables.Tday, variables.DaySpan, variables.Daylength);
-                SiteVars.AnnualPET[sitecohorts.Site] += PET;
+                PE = (float)Calculate_PotentialEvaporation_umol(umolPAR, variables.Tday, variables.DaySpan, variables.Daylength) * evapSoilDepth/sitecohorts.Ecoregion.RootingDepth;
+                SiteVars.AnnualPE[sitecohorts.Site] += PE;
                 float pressurehead = pressureheadtable[sitecohorts.Ecoregion, (int)Math.Round(Water * 100)];
 
                 // Evaporation begins to decline at 75% of field capacity (Robock et al. 1995)
@@ -234,19 +237,21 @@ namespace Landis.Library.PnETCohorts
 
                 // Delivery potential is 1 if pressurehead < evapCritWater, and declines to 0 at wilting point (153 mH2O)
                 DeliveryPotential = Cohort.ComputeFWater(-1, -1, evapCritWaterPH, 153, pressurehead);
-
-                // Evaporation is limited to frost free soil above EvapDepth
-                float evapSoilDepth = Math.Min(sitecohorts.Ecoregion.RootingDepth * frostFreeProp, sitecohorts.Ecoregion.EvapDepth);
-
-                // Evaporation cannot remove water below wilting point           
-                float AET = Math.Min(DeliveryPotential * PET, (Water - sitecohorts.Ecoregion.WiltPnt) * evapSoilDepth);  // mm/month
-                sitecohorts.SetAet(AET, variables.Month);
-                sitecohorts.SetPET(PET);
-
+          
+                float AEmax = DeliveryPotential * PE;  // Actual Evaporation max mm/month
+               
                 // Evaporation  cannot be negative
                 // Transpiration is assumed to replace evaporation
-                Evaporation = (float)Math.Max(0, AET - (double)sitecohorts.Transpiration);
+                //Evaporation = (float)Math.Max(0, AET - (double)sitecohorts.Transpiration);
 
+                // Change in assumption: evaporation and transpiration are additive because evap already accounts for shading
+                // Evaporation cannot remove water below wilting point           
+                Evaporation = Math.Min(AEmax, (Water - sitecohorts.Ecoregion.WiltPnt) * evapSoilDepth);// mm/month
+
+                float AET = Evaporation + sitecohorts.Transpiration;
+                sitecohorts.SetAet(AET, variables.Month);                
+                float PET = PE + sitecohorts.PotentialTranspiration;
+                sitecohorts.SetPET(PET);
                 SiteVars.ClimaticWaterDeficit[sitecohorts.Site] += (PET - AET);
                 return Evaporation; //mm/month
             }

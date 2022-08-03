@@ -1627,7 +1627,7 @@ namespace Landis.Library.PnETCohorts
                     // When there was permafrost at the end of summer, assume that the bottom of the ice lens is as deep as possible
                     //if (permafrost)
                     //{
-                        frostDepth[data[m].Month - 1] = 0;
+                        frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                     //}
 
                     float testDepth = 0;
@@ -1694,7 +1694,7 @@ namespace Landis.Library.PnETCohorts
                         // Calculate lag months from both max and min temperature months
                         int lagMax = (data[m].Month + (3 - maxMonth));
                         int lagMin = (data[m].Month + (minMonth - 5));
-                        if(minMonth >= 12)
+                        if(minMonth >= 9)
                             lagMin = (data[m].Month + (minMonth - 12 - 5));
                         float lagAvg = ((float)lagMax + (float)lagMin) / 2f;
 

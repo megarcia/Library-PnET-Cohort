@@ -103,6 +103,7 @@ namespace Landis.Library.PnETCohorts
         private float _refoliationCost;
         private float _nonRefoliationCost;
         private float _maxLAI;
+        private float _mossScalar;
         # endregion
 
         #region private static species variables
@@ -159,6 +160,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> refoliationCost;
         private static Landis.Library.Parameters.Species.AuxParm<float> nonRefoliationCost;
         private static Landis.Library.Parameters.Species.AuxParm<float> maxlai;
+        private static Landis.Library.Parameters.Species.AuxParm<float> mossScalar;
         private static Dictionary<ISpecies,float> maxLAI;
         private static Dictionary<ISpecies, string> lifeForm;
         #endregion
@@ -228,6 +230,7 @@ namespace Landis.Library.PnETCohorts
             refoliationCost = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolCost"));
             nonRefoliationCost = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NonRefolCost"));
             maxlai = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxLAI")); //Optional
+            mossScalar = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MossScalar")); //Optional
             maxLAI = new Dictionary<ISpecies, float>();
             foreach (ISpecies species in Globals.ModelCore.Species)
             {                
@@ -468,6 +471,7 @@ namespace Landis.Library.PnETCohorts
             _maxLAI = maxLAI[species];
             index = species.Index;
             name = species.Name;
+            _mossScalar = mossScalar[species];
 
             maxSproutAge = species.MaxSproutAge;
             minSproutAge = species.MinSproutAge;
@@ -1019,6 +1023,17 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 return _maxLAI;
+            }
+        }
+        //---------------------------------------------------------------------
+        public float MossScalar
+        {
+            get
+            {
+                // If mossScalar not provided, set to zero
+                if (mossScalar[this] == -9999)
+                    return 0;
+                return _mossScalar;
             }
         }
         //---------------------------------------------------------------------

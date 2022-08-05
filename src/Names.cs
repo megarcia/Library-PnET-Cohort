@@ -26,7 +26,7 @@ namespace Landis.Library.PnETCohorts
         public const string InitialCommunitiesMap = "InitialCommunitiesMap";
         public const string InitialCommunitiesSpinup = "InitialCommunitiesSpinup";
         public const string MinFolRatioFactor = "MinFolRatioFactor";
-       public const string LitterMap = "LitterMap";
+        public const string LitterMap = "LitterMap";
         public const string WoodyDebrisMap = "WoodyDebrisMap";
         public const string ClimateConfigFile = "ClimateConfigFile";
         public const string MapCoordinates = "MapCoordinates";

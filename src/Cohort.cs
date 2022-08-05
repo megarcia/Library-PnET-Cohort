@@ -123,6 +123,15 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        // Species Moss Depth (m)
+        public float MossDepth
+        {
+            get
+            {
+                return data.Biomass * speciesPnET.MossScalar;
+            }
+        }
+        //---------------------------------------------------------------------
         // Aboveground Biomass (g/m2)
         public int AGBiomass
         {

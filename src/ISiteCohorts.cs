@@ -25,6 +25,8 @@ namespace Landis.Library.PnETCohorts
         float[] MonthlyAvgLAI { get; }
         float CanopyLAImax{get;}
 
+        float SiteMossDepth { get; }
+
         int AverageAge { get; }
 
         Landis.Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies { get; }

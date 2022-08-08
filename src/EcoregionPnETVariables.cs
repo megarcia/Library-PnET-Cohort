@@ -354,18 +354,6 @@ namespace Landis.Library.PnETCohorts
                 speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax); // Modified 051216(BRM)
             }
 
-            // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
-            float fTempRespDay = CalcQ10Factor(spc.Q10, Tday, spc.PsnTOpt);
-
-            // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
-            float fTempRespNight = CalcQ10Factor(spc.Q10, Tmin, spc.PsnTOpt);
-
-            // Unitless respiration adjustment: public for output file only
-            float FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength));
-            speciespnetvars.FTempRespWeightedDayAndNight = FTempRespWeightedDayAndNight;
-            // Scaling factor of respiration given day and night temperature and day and night length
-            speciespnetvars.MaintRespFTempResp = spc.MaintResp * FTempRespWeightedDayAndNight;
-
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
             // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
             // Acclimation of respiration to temperature and C02 in seedlings of boreal tree species
@@ -402,6 +390,20 @@ namespace Landis.Library.PnETCohorts
 
             // Respiration Q10 factor
             speciespnetvars.Q10Factor = CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
+
+            // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
+            float fTempRespDay = CalcQ10Factor(Q10base, Tday, spc.PsnTOpt);
+
+            // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
+            float fTempRespNight = CalcQ10Factor(Q10base, Tmin, spc.PsnTOpt);
+
+            // Unitless respiration adjustment: public for output file only
+            float FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength));
+            speciespnetvars.FTempRespWeightedDayAndNight = FTempRespWeightedDayAndNight;
+            // Scaling factor of respiration given day and night temperature and day and night length
+            speciespnetvars.MaintRespFTempResp = spc.MaintResp * FTempRespWeightedDayAndNight;
+
+           
 
             return speciespnetvars;
         }

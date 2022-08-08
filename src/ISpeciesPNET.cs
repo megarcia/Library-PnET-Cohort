@@ -168,5 +168,7 @@ namespace Landis.Library.PnETCohorts
         // Maximum LAI
         float MaxLAI { get; }
 
+        // Scalar value for calculating species moss depth
+        float MossScalar { get; }
     }
 }

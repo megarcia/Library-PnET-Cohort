@@ -1571,10 +1571,6 @@ namespace Landis.Library.PnETCohorts
 
                 if (soilIceDepth)
                 {
-                    if(this.Site.Location.Row == 541 && this.Site.Location.Column == 540)
-                    {
-                        int breakForTesting = 1;
-                    }
                     float lambda_Snow = (float) (Globals.lambAir+((0.0000775*Psno_kg_m3)+(0.000001105*Math.Pow(Psno_kg_m3,2)))*(Globals.lambIce-Globals.lambAir))*3.6F*24F; //(kJ/m/d/K) includes unit conversion from W to kJ
                     float vol_heat_capacity_snow = Globals.snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
                                                                                           //float Ks_snow = data[m].DaySpan * lambda_Snow / vol_heat_capacity_snow; //thermal diffusivity (m2/month)
@@ -1584,7 +1580,8 @@ namespace Landis.Library.PnETCohorts
                     if (sno_dep > 0)
                         DRz_snow = (float)Math.Exp(-1.0F * sno_dep * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
 
-                    float mossDepth = Ecoregion.MossDepth; //m
+                    float mossDepth = this.SiteMossDepth;
+
                     float cv = 2500; // heat capacity moss - kJ/m3/K (Sazonova and Romanovsky 2003)
                     float lambda_moss = 432; // kJ/m/d/K - converted from 0.2 W/mK (Sazonova and Romanovsky 2003)
                     float moss_diffusivity = lambda_moss / cv;
@@ -3100,6 +3097,24 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 return canopylaimax;
+            }
+        }
+
+        public float SiteMossDepth
+        {
+            get
+            {
+                float mossDepth = Ecoregion.MossDepth; //m
+
+                foreach (ISpecies spc in cohorts.Keys)
+                {
+                    // Add each species' mossDepth to the total
+                    foreach (Cohort cohort in cohorts[spc])
+                    {
+                        mossDepth += (cohort.MossDepth * cohort.CanopyLayerProp);
+                    }
+                }
+                return mossDepth;
             }
         }
 

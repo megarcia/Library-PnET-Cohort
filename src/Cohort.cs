@@ -692,6 +692,7 @@ namespace Landis.Library.PnETCohorts
                 cohortLAI += CalculateLAI(this.SpeciesPnET, cohortIdealFol, i, cohortLAI);
             this.data.LastLAI = cohortLAI;
             this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
+            this.data.CanopyLayerProp = 1.0f;
             this.data.CanopyGrowingSpace = 1.0f;
             this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
             

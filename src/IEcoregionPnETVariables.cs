@@ -18,6 +18,7 @@ namespace Landis.Library.PnETCohorts
         float Tmax { get; } // Monthly max air temp
         float CO2 { get; } // Atmospheric CO2 concentration (ppm)
         float O3 { get; } // Atmospheric O3 concentration, acumulated during growing season (AOT40) (ppb h)
+        float SPEI { get; }  // SPEI
 
         SpeciesPnETVariables this[string species] { get; }
     }

@@ -63,6 +63,13 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public float SPEI
+        {
+            get
+            {
+                return obs_clim.SPEI;
+            }
+        }
         public float PAR0
         {
             get

@@ -71,6 +71,7 @@ namespace Landis.Library.PnETCohorts
         public float Tmin => (float)_monthlyClimateRecord.Tmin;
         public float Tmax => (float)_monthlyClimateRecord.Tmax;
         public float Daylength => _daylength;
+        public float SPEI => (float)_monthlyClimateRecord.SPEI;
 
         public SpeciesPnETVariables this[string species] => speciesVariables[species];
 

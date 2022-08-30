@@ -18,6 +18,7 @@ namespace Landis.Library.PnETCohorts
             Prec = ClimateRegionData.AnnualWeather[ecoregion].MonthlyPrecip[month] * 10.0; // The climate library gives precipitation in cm, but PnET expects precipitation in mm, so multiply by 10.
             Tmax = ClimateRegionData.AnnualWeather[ecoregion].MonthlyMaxTemp[month];
             Tmin = ClimateRegionData.AnnualWeather[ecoregion].MonthlyMinTemp[month];
+            SPEI = ClimateRegionData.AnnualWeather[ecoregion].MonthlySpei[month];
         }
 
         public double O3 { get; }
@@ -26,5 +27,6 @@ namespace Landis.Library.PnETCohorts
         public double Prec { get; }
         public double Tmax { get; }
         public double Tmin { get; }
+        public double SPEI { get; }
     }
 }

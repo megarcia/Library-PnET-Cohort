@@ -10,5 +10,6 @@ namespace Landis.Library.PnETCohorts
         float Prec { get; }// Precipitation (mm/mo)
         float Tmax { get; }// Maximum daily temperature 
         float Tmin { get; }// Minimum daily temperature
+        float SPEI { get; } // SPEI
     }
 }

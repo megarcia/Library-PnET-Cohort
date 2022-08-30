@@ -193,12 +193,13 @@ namespace Landis.Library.PnETCohorts
             //double _Rads                  // Daytime Solar Radiation (PAR) (micromol/m2/s)
             //double _Tair                  // Daytime air temperature (°C) [Tday]
             //float _daySpan                // Number of days in the month
-            //float _daylength              // Number of seconds in the month
+            //float _daylength              // Length of daylight in seconds
 
             // Caculations based on Stewart & Rouse 1976 and Cabrera et al. 2016
             float PE = 0; //mm/month
 
-            float Rs_W = (float)(_Rads / (2.02 * 24 * Constants.SecondsPerHour / _daylength)); // convert daytime PAR (umol/m2*s) to total daily solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
+            //float Rs_W = (float)(_Rads / (2.02 * 24 * Constants.SecondsPerHour / _daylength)); // convert daytime PAR (umol/m2*s) to total daily solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
+            float Rs_W = (float)(_Rads / (2.02f)); // convert PAR (umol/m2*s) to total solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
             float Rs = Rs_W * 0.0864F; // convert Rs_W (W/m2) to Rs (MJ/m2*d) [Reis and Ribeiro 2019 (eq. 13)]
             float Gamma = 0.062F; // kPa/C; [Cabrera et al. 2016 (Table 1)]
             float es = 0.6108F * (float)Math.Pow(10, (7.5 * _Tair) / (237.3 + _Tair)); // water vapor saturation pressure (kPa); [Cabrera et al. 2016 (Table 1)]
@@ -209,7 +210,7 @@ namespace Landis.Library.PnETCohorts
 
             return PE * _daySpan;  //mm/month 
         }
-
+        //---------------------------------------------------------------------
         public float CalculateEvaporation(SiteCohorts sitecohorts, IEcoregionPnETVariables variables)
         {
             lock (threadLock)
@@ -226,8 +227,23 @@ namespace Landis.Library.PnETCohorts
                     umolPAR = (sitecohorts.SubcanopyPAR * 2.02f); // convert daytime solar radiation (W/m2) to daytime PAR (umol/m2*s) [Reis and Ribeiro 2019 (Consants and Values)]  
 
                 // mm/month
-                PE = (float)Calculate_PotentialEvaporation_umol(umolPAR, variables.Tday, variables.DaySpan, variables.Daylength) * evapSoilDepth/sitecohorts.Ecoregion.RootingDepth;
-                SiteVars.AnnualPE[sitecohorts.Site] += PE;
+                if (((Parameter<string>)Names.GetParameter(Names.ETMethod)).Value == "Original")
+                {
+                    PE = (float)Calculate_PotentialEvaporation_umol(umolPAR, variables.Tday, variables.DaySpan, variables.Daylength) * evapSoilDepth / sitecohorts.Ecoregion.RootingDepth;
+                }
+                else if (((Parameter<string>)Names.GetParameter(Names.ETMethod)).Value == "Radiation")
+                {
+                    PE = Calculate_PotentialGroundET_Radiation_umol(umolPAR, variables.Daylength, variables.Tday, variables.DaySpan) * evapSoilDepth / sitecohorts.Ecoregion.RootingDepth;
+                }
+                else if (((Parameter<string>)Names.GetParameter(Names.ETMethod)).Value == "WATER")
+                {
+                    PE = Calculate_PotentialGroundET_LAI_WATER(sitecohorts.CanopyLAImax, variables.Tave, variables.Daylength, variables.DaySpan) * evapSoilDepth / sitecohorts.Ecoregion.RootingDepth;
+                }
+                else if (((Parameter<string>)Names.GetParameter(Names.ETMethod)).Value == "WEPP")
+                {
+                    PE = Calculate_PotentialGroundET_LAI_WEPP(sitecohorts.CanopyLAImax, variables.Tave,  variables.Daylength, variables.DaySpan) * evapSoilDepth / sitecohorts.Ecoregion.RootingDepth;
+                }
+                    SiteVars.AnnualPE[sitecohorts.Site] += PE;
                 float pressurehead = pressureheadtable[sitecohorts.Ecoregion, (int)Math.Round(Water * 100)];
 
                 // Evaporation begins to decline at 75% of field capacity (Robock et al. 1995)
@@ -257,5 +273,62 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public float Calculate_PotentialGroundET_Radiation_umol(float subCanopyPAR, float daylength, float T, float daySpan)            
+        {
+            // Priestley-Taylor
+            // subCanopyPAR     daytime PAR (umol/m2/s) at ground level
+            // daylength        daytime length in seconds (s)
+            // T                average monthly temperature (C)
+            // daySpan          number of days in the month
+
+//            float Rs_W = (float)(subCanopyPAR / (2.02 * 24 * Constants.SecondsPerHour / daylength)); // convert daytime PAR (umol/m2*s) to total daily solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
+            float Rs_W = (float)(subCanopyPAR / (2.02f )); // convert PAR (umol/m2*s) to total solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
+            float Rs = Rs_W * 0.0864F; // convert Rs_W (W/m2) to Rs (MJ/m2*d) [Reis and Ribeiro 2019 (eq. 13)]
+            float alpha = 1.26f;
+            float gamma = 0.066f;    // kPA/C
+            float L = 2453f;    // MJ/m3 - latent heat of vaporization
+            float Ta = T + 273.15f;
+            float es = (float)(Math.Pow(Ta / 273.16, -4.811) * Math.Exp(24.134 - (6726.73 / Ta)));  // UNITS = kPa, (note: Ta here is in Kelvin, so Ta = TdegC + 273.15)
+            float S = (es / (T + 273.15f)) * ((6726.73f / (T + 273.15f)) - 4.811f);     // UNITS Pressure = kPa, T -> degC
+
+            float PET_ground = alpha * (S/(S+gamma))*Rs / L; //m/day
+            return PET_ground * 1000 * daySpan; //mm/month
+        }
+        //---------------------------------------------------------------------
+        public float Calculate_RET_Hamon(float T, float dayLength)
+        {
+            // T            average monthly temperature (C)
+            // daylength    daytime length in seconds (s)
+
+            float k = 1f;   // proportionality coefficient
+            float es = 6.108f * (float)Math.Exp((17.27f * T) / (T + 237.3f));
+            float N = (dayLength / (float)Constants.SecondsPerHour) / 12f;
+            float PET = k * 0.165f * 216.7f * N * (es / (T + 273.3f));
+            return PET; // mm/day
+        }
+        //---------------------------------------------------------------------
+        public float Calculate_PotentialGroundET_LAI_WATER(float LAI, float T, float dayLength, float daySpan)
+        {
+            // LAI          Total Canopy LAI
+            // T            average monthly temperature (C)
+            // daylength    daytime length in seconds (s)
+            // daySpan          number of days in the month
+
+            float RET = Calculate_RET_Hamon(T, dayLength);
+            float Egp = 0.8f * RET * (float)Math.Exp(-0.695f * LAI); //m/day
+            return Egp * 1000 * daySpan; //mm/month
+        }
+        //---------------------------------------------------------------------
+        public float Calculate_PotentialGroundET_LAI_WEPP(float LAI, float T, float dayLength, float daySpan)
+        {
+            // LAI          Total Canopy LAI
+            // T            average monthly temperature (C)
+            // daylength    daytime length in seconds (s)
+            // daySpan          number of days in the month
+
+            float RET = Calculate_RET_Hamon(T, dayLength);
+            float Egp = RET * (float)Math.Exp(-0.4f * LAI); //m/day
+            return Egp * 1000 * daySpan; //mm/month
+        }
     }
 }

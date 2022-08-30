@@ -86,5 +86,6 @@ namespace Landis.Library.PnETCohorts
         public const string SubCanopyPAR = "SubCanopyPAR";
         public const string LimitingFactor = "Limiting Factor";
         public const string SoilDiffusivity = "SoilDiffusivity(mm2_s)";
+        public const string SPEI = "SPEI";
     }
 }

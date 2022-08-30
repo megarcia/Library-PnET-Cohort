@@ -20,6 +20,7 @@ namespace Landis.Library.PnETCohorts
         private float tmax;
         private float co2;
         private float o3;
+        private float spei;
         private List<ObservedClimate> data_lines = new List<ObservedClimate>();
         #endregion
 
@@ -88,6 +89,13 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public float SPEI
+        {
+            get
+            {
+                return spei;
+            }
+        }
         #endregion
 
         public static void Initialize()

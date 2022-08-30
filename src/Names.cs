@@ -44,6 +44,8 @@ namespace Landis.Library.PnETCohorts
         public const string SpinUpWaterStress = "SpinUpWaterStress";
         public const string PrecipEventsWithReplacement = "PrecipEventsWithReplacement";
         public const string Parallel = "Parallel";
+        public const string CohortStacking = "CohortStacking";
+        public const string ETMethod = "ETMethod";
        
 
         //Ecoregion parameters

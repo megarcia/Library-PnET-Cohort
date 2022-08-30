@@ -39,6 +39,7 @@ namespace Landis.Library.PnETCohorts
         #region private static variables
         private static bool wythers;
         private static bool dtemp;
+        private static string etMethod;
 
         private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
         private static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
@@ -384,6 +385,7 @@ namespace Landis.Library.PnETCohorts
 
             wythers = ((Parameter<bool>)Names.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)Names.GetParameter("DTemp")).Value;
+            etMethod = ((Parameter<string>)Names.GetParameter("ETMethod")).Value;
 
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeakageFrac", 0, 1);
             runoffcapture = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter(Names.RunoffCapture, 0, 999999);

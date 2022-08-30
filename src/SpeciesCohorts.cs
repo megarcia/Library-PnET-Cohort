@@ -180,7 +180,9 @@ namespace Landis.Library.PnETCohorts
             if (youngCount > 0)
             {
                 cohortData.RemoveRange(cohortData.Count - youngCount, youngCount);
-                cohortData.Add(new CohortData((ushort)(Cohorts.SuccessionTimeStep - 1), totalBiomass, this.Species));
+                bool cohortStacking = (((Parameter<bool>)Names.GetParameter(Names.CohortStacking)).Value);
+                cohortData.Add(new CohortData((ushort)(Cohorts.SuccessionTimeStep - 1), totalBiomass, this.Species, cohortStacking));
+                
             }
         }
 

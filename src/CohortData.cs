@@ -342,7 +342,7 @@ namespace Landis.Library.PnETCohorts
         /// The age of the cohort.
         /// <param name="totalBioamss">
         /// The biomamss of the cohort
-        public CohortData(ushort age, float totalBiomass, ISpecies species)
+        public CohortData(ushort age, float totalBiomass, ISpecies species, bool cohortStacking)
         {            
             this.AdjFolN = new float[Globals.IMAX];
             this.adjFolN = 0; ;
@@ -351,7 +351,7 @@ namespace Landis.Library.PnETCohorts
             this.AdjHalfSat = 0;
             this.Age = age;
             ISpeciesPnET spc = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
-            this.Cohort = new Cohort(species,spc,0,"",1);
+            this.Cohort = new Cohort(species,spc,0,"",1, cohortStacking);
             this.AGBiomass = (1- spc.FracBelowG) * totalBiomass;
             this.Biomass = this.AGBiomass * 1.0f;
             this.TotalBiomass = totalBiomass;
@@ -390,6 +390,8 @@ namespace Landis.Library.PnETCohorts
                 cohortLAI += Cohort.CalculateLAI(spc, cohortIdealFol, i, cohortLAI);
             this.LastLAI = cohortLAI;
             this.CanopyLayerProp = this.LastLAI / spc.MaxLAI;
+            if (cohortStacking)
+                this.CanopyLayerProp = 1.0f;
             this.CanopyGrowingSpace = 1.0f;
         }
     }

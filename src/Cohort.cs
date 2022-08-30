@@ -672,7 +672,7 @@ namespace Landis.Library.PnETCohorts
         }
         //---------------------------------------------------------------------
         // Constructor
-        public Cohort(ISpecies species, ISpeciesPnET speciesPnET, ushort year_of_birth, string SiteName, double propBiomass) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
+        public Cohort(ISpecies species, ISpeciesPnET speciesPnET, ushort year_of_birth, string SiteName, double propBiomass, bool cohortStacking) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
         {
             this.species = species;
             this.speciesPnET = speciesPnET;
@@ -692,7 +692,8 @@ namespace Landis.Library.PnETCohorts
                 cohortLAI += CalculateLAI(this.SpeciesPnET, cohortIdealFol, i, cohortLAI);
             this.data.LastLAI = cohortLAI;
             this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
-            this.data.CanopyLayerProp = 1.0f;
+            if(cohortStacking)
+                this.data.CanopyLayerProp = 1.0f;
             this.data.CanopyGrowingSpace = 1.0f;
             this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
             
@@ -752,7 +753,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
-        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, string SiteName, ushort firstYear)
+        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, string SiteName, ushort firstYear, bool cohortStacking)
         {
             InitializeSubLayers();
             this.species = (ISpecies)speciesPnET;
@@ -786,6 +787,8 @@ namespace Landis.Library.PnETCohorts
             }
             this.data.LastLAI = cohortLAI;
             this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
+            if (cohortStacking)
+                this.data.CanopyLayerProp = 1.0f;
             this.data.CanopyGrowingSpace = 1.0f;
             this.data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
             this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
@@ -797,7 +800,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
-        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear)
+        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear, bool cohortStacking)
         {
             InitializeSubLayers();
             this.species = (ISpecies)speciesPnET;
@@ -831,6 +834,8 @@ namespace Landis.Library.PnETCohorts
             }
             this.data.LastLAI = cohortLAI;
             this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
+            if (cohortStacking)
+                this.data.CanopyLayerProp = 1.0f;
             this.data.CanopyGrowingSpace = 1.0f;
             this.data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
             this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;

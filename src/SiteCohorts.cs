@@ -423,7 +423,7 @@ namespace Landis.Library.PnETCohorts
                         foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
                         {
                             // TODO: Add warning if biomass is 0
-                            bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
+                            bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age), CohortStacking));
                             CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
                             CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
                         }
@@ -480,7 +480,7 @@ namespace Landis.Library.PnETCohorts
                             float cohortCanopyGrowingSpace = 1f;
 
 
-                            bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
+                            bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Age), CohortStacking));
                             CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
                             CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
                         }
@@ -988,7 +988,7 @@ namespace Landis.Library.PnETCohorts
                                     float inputMaxBiomass = Math.Max(cohortMaxBiomass, cohort.Biomass);
                                     inputMaxBiomass = cohortMaxBiomass * (cohort.Biomass / cohortSpinupBiomass);
                                     float cohortCanopyGrowingSpace = 1f;
-                                    bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
+                                    bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Age),CohortStacking));
                                     CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
                                     CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
                                 }
@@ -1042,7 +1042,7 @@ namespace Landis.Library.PnETCohorts
                                     float cohortSpinupBiomass = values[1];
                                     float inputMaxBiomass = Math.Max(cohortMaxBiomass, cohort.Biomass);
                                     float cohortCanopyGrowingSpace = 1f;
-                                    bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
+                                    bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Age), CohortStacking));
                                     CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
                                     CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
                                 }
@@ -1068,7 +1068,7 @@ namespace Landis.Library.PnETCohorts
                                 foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
                                 {
                                     // TODO: Add warning if biomass is 0
-                                    bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
+                                    bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age), CohortStacking));
                                     CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
                                     CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
                                 }
@@ -1233,7 +1233,7 @@ namespace Landis.Library.PnETCohorts
                 //  Add those cohorts that were born at the current year
                 while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == (sortedAgeCohorts[0].Age - 1))
                 {
-                    Cohort cohort = new Cohort(sortedAgeCohorts[0].Species, SpeciesParameters.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName,1);
+                    Cohort cohort = new Cohort(sortedAgeCohorts[0].Species, SpeciesParameters.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName,1, CohortStacking);
                     if (CohortStacking)
                     {
                         cohort.CanopyLayerProp = 1.0f;

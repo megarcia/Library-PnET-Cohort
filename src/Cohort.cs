@@ -927,7 +927,7 @@ namespace Landis.Library.PnETCohorts
         }
         //---------------------------------------------------------------------
         // Photosynthesis by canopy layer
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, ref Hydrology hydrology, float mainLayerPAR, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables, SiteCohorts siteCohort, float sumCanopyProp, bool allowMortality = true)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, ref Hydrology hydrology, float mainLayerPAR, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables, SiteCohorts siteCohort, float sumCanopyProp,float PETmax, bool allowMortality = true)
         {      
             bool success = true;
             float lastO3Effect = O3Effect;
@@ -995,7 +995,7 @@ namespace Landis.Library.PnETCohorts
                     // Add surface water to soil
                     if (hydrology.SurfaceWater > 0)
                     {
-                        float surfaceInput = Math.Min(hydrology.SurfaceWater, (siteCohort.Ecoregion.Porosity - hydrology.Water));
+                        float surfaceInput = Math.Min(hydrology.SurfaceWater, ((siteCohort.Ecoregion.Porosity - hydrology.Water) * siteCohort.Ecoregion.RootingDepth * frostFreeProp));
                         hydrology.SurfaceWater -= surfaceInput;
                         success = hydrology.AddWater(surfaceInput, siteCohort.Ecoregion.RootingDepth * frostFreeProp);
                         if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
@@ -1018,7 +1018,7 @@ namespace Landis.Library.PnETCohorts
                     // Add surface water to soil
                     if (hydrology.SurfaceWater > 0)
                     {
-                        float surfaceInput = Math.Min(hydrology.SurfaceWater, (siteCohort.Ecoregion.Porosity - hydrology.Water));
+                        float surfaceInput = Math.Min(hydrology.SurfaceWater, ((siteCohort.Ecoregion.Porosity - hydrology.Water) * siteCohort.Ecoregion.RootingDepth * frostFreeProp));
                         hydrology.SurfaceWater -= surfaceInput;
                         success = hydrology.AddWater(surfaceInput, siteCohort.Ecoregion.RootingDepth * frostFreeProp);
                         if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
@@ -1413,12 +1413,65 @@ namespace Landis.Library.PnETCohorts
                 GrossPsn[index] = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FWater[index] * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
                 float GrossPsnPotential = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
 
+                // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
+                // JH2O has been modified by CiModifier to reduce water use efficiency
+                // Scale transpiration to proportion of site occupied (CanopyLayerProp)
+                Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O))) * CanopyLayerProp; //mm
+                PotentialTranspiration[index] = (float)(0.01227 * (GrossPsnPotential / (JCO2 / JH2O))) * CanopyLayerProp; //mm
+
+                // Get pressure head given ecoregion and soil water content (latter in hydrology)
+                float water_PostTrans = hydrology.AddWater(hydrology.Water, -1* Transpiration[index], siteCohort.Ecoregion.RootingDepth * frostFreeProp);
+                float PressureHead_postTrans = hydrology.GetPressureHead(siteCohort.Ecoregion, water_PostTrans);
+                float FWater_postTrans = ComputeFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead_postTrans);
+                if (Globals.ModelCore.CurrentTime <= 0 && !(((Parameter<string>)Names.GetParameter(Names.SpinUpWaterStress)).Value == "true"
+                    || ((Parameter<string>)Names.GetParameter(Names.SpinUpWaterStress)).Value == "yes"))
+                    FWater_postTrans = ComputeFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead_postTrans);
+
+                // Average fWater before and after transpiration - approximation of average FWater for continuous drawdown
+                float modifiedFWater = (FWater[index] + FWater_postTrans) / 2.0f;
+
+                if (modifiedFWater < FWater[index])
+                {
+                    //Adjust GrossPsn for modified FWater
+                    GrossPsn[index] = GrossPsn[index] * (modifiedFWater / FWater[index]);
+                    FWater[index] = modifiedFWater;
+                    Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O))) * CanopyLayerProp; //mm
+                }
+
+                // It is possible for transpiration to calculate to exceed available water
+                // In this case, we cap transpiration at available water, and back-calculate GrossPsn and NetPsn to downgrade those as well
+                if (Transpiration[index] > (hydrology.Water * siteCohort.Ecoregion.RootingDepth * frostFreeProp))
+                {
+                    Transpiration[index] = hydrology.Water * siteCohort.Ecoregion.RootingDepth * frostFreeProp; //mm
+                    GrossPsn[index] = (Transpiration[index] / 0.01227F) * (JCO2 / JH2O);
+                    NetPsn[index] = GrossPsn[index] - FolResp[index];
+                }
+                /*if(Transpiration[index] > PETmax)
+                {
+                    Transpiration[index] = PETmax;
+                    GrossPsn[index] = (Transpiration[index] / 0.01227F) * (JCO2 / JH2O);
+                    NetPsn[index] = GrossPsn[index] - FolResp[index];
+                }*/
+
+                // Subtract transpiration from hydrology
+                success = hydrology.AddWater(-1 * Transpiration[index], siteCohort.Ecoregion.RootingDepth * frostFreeProp);
+                if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
+                if (hydrology.SurfaceWater > 0)
+                {
+                    float surfaceInput = Math.Min(hydrology.SurfaceWater, ((siteCohort.Ecoregion.Porosity - hydrology.Water) * siteCohort.Ecoregion.RootingDepth * frostFreeProp));
+                    hydrology.SurfaceWater -= surfaceInput;
+                    success = hydrology.AddWater(surfaceInput, siteCohort.Ecoregion.RootingDepth * frostFreeProp);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
+                }
+
+
                 // Net foliage respiration depends on reference psn (BaseFolResp)
                 // Substitute 24 hours in place of DayLength because foliar respiration does occur at night.  BaseFolResp and Q10Factor use Tave temps reflecting both day and night temperatures.
                 float RefFolResp = BaseFolResp * variables[species.Name].Q10Factor * variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion; // gC/g Fol/month
 
                 // Actual foliage respiration (growth respiration) 
-                FolResp[index] = FWater[index] * RefFolResp * Fol / (float)Globals.IMAX; // gC/m2 ground/mo
+                //FolResp[index] = FWater[index] * RefFolResp * Fol / (float)Globals.IMAX; // gC/m2 ground/mo  - uncertain why FWater limiter was included here, inconsistent with PnET, revised below
+                FolResp[index] = RefFolResp * Fol / (float)Globals.IMAX; // gC/m2 ground/mo
 
                 // NetPsn psn depends on gross psn and foliage respiration
                 float nonOzoneNetPsn = GrossPsn[index] - FolResp[index];
@@ -1460,31 +1513,7 @@ namespace Landis.Library.PnETCohorts
                 //Apply reduction factor for Ozone
                 NetPsn[index] = nonOzoneNetPsn * FOzone[index];
 
-                // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
-                // JH2O has been modified by CiModifier to reduce water use efficiency
-                // Scale transpiration to proportion of site occupied (CanopyLayerProp)
-                Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O))) * CanopyLayerProp; //mm
-                PotentialTranspiration[index] = (float)(0.01227 * (GrossPsnPotential / (JCO2 / JH2O))) * CanopyLayerProp; //mm
-
-                // It is possible for transpiration to calculate to exceed available water
-                // In this case, we cap transpiration at available water, and back-calculate GrossPsn and NetPsn to downgrade those as well
-                if (Transpiration[index] > (hydrology.Water * siteCohort.Ecoregion.RootingDepth * frostFreeProp))
-                {
-                    Transpiration[index] = hydrology.Water * siteCohort.Ecoregion.RootingDepth * frostFreeProp; //mm
-                    GrossPsn[index] = (Transpiration[index] / 0.01227F) * (JCO2 / JH2O);
-                    NetPsn[index] = GrossPsn[index] - FolResp[index];
-                }
-
-                // Subtract transpiration from hydrology
-                success = hydrology.AddWater(-1 * Transpiration[index], siteCohort.Ecoregion.RootingDepth * frostFreeProp);
-                if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
-                if (hydrology.SurfaceWater > 0)
-                {
-                    float surfaceInput = Math.Min(hydrology.SurfaceWater, (siteCohort.Ecoregion.Porosity - hydrology.Water));
-                    hydrology.SurfaceWater -= surfaceInput;
-                    success = hydrology.AddWater(surfaceInput, siteCohort.Ecoregion.RootingDepth * frostFreeProp);
-                    if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
-                }
+                
                 // Add net psn to non soluble carbons
                 data.NSC += NetPsn[index]; //gC
                 if (data.NSC < 0)
@@ -1503,7 +1532,8 @@ namespace Landis.Library.PnETCohorts
 
             }
 
-            if (index < Globals.IMAX - 1) index++;
+            //if (index < Globals.IMAX - 1) index++;
+            index++;
             return success;
         }
         //---------------------------------------------------------------------

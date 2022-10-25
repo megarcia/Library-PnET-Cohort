@@ -13,5 +13,6 @@ namespace Landis.Library.PnETCohorts
         float FrozenDepth { get; } // Depth at which soil is frozen (mm); Rooting zone soil below this depth is frozen
         bool SetFrozenWaterContent(float water);  // Change FrozenWaterContent
         bool SetFrozenDepth(float depth); // Change FrozenDepth
+        float Calculate_RET_Hamon(float T, float dayLength); // Calculate reference ET
     }
 }

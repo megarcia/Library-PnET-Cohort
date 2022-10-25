@@ -4,6 +4,7 @@ namespace Landis.Library.PnETCohorts
     public class OutputHeaders
     {
         public const string PE = "Potential Evaporation(mm)";
+        public const string PET = "Potential Evapotranspiration(mm)";
         public const string Time = "Time";
         public const string Year = "Year";
         public const string Month = "Month";
@@ -32,8 +33,9 @@ namespace Landis.Library.PnETCohorts
         public const string ActiveLayerDepth = "ActiveLayerDepth(mm/mo)";
         public const string FrostDepth = "FrostDepth(mm/mo)";
         public const string FolResp = "FolResp(gC_m2_mo)";
-        public const string water = "Water(mm/m)";
+        public const string water = "Water(m/m)";
         public const string availableWater = "Available Water (mm)";
+        public const string SurfaceWater = "Surface Water (mm)";
         public const string Leakage = "Leakage(mm)";
         public const string PressureHead = "PressureHead(mm)";
         public const string SnowPack = "SnowPack(mm)";

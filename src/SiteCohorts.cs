@@ -4179,7 +4179,7 @@ namespace Landis.Library.PnETCohorts
                 hydrology.Water + "," +
                 hydrology.GetPressureHead(Ecoregion) + "," +
                 hydrology.SurfaceWater + "," +
-                (hydrology.Water * Ecoregion.RootingDepth * propRootAboveFrost + hydrology.SurfaceWater) + "," +  // mm of avialable water
+                ((hydrology.Water - Ecoregion.WiltPnt) * Ecoregion.RootingDepth * propRootAboveFrost + hydrology.SurfaceWater) + "," +  // mm of avialable water
                 snowPack + "," +
                 cohorts.Values.Sum(o => o.Sum(x => (x.LAI.Sum() * x.CanopyLayerProp))) + "," +
                 //this.CanopyLAI.Sum() + "," +

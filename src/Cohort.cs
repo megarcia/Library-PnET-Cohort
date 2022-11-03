@@ -490,6 +490,14 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public int[] NumEvents
+        {
+            get
+            {
+                return data.NumEvents;
+            }
+        }
+        //---------------------------------------------------------------------
         public float FActiveBiom
         {
             get
@@ -576,6 +584,7 @@ namespace Landis.Library.PnETCohorts
             data.FWater = new float[Globals.IMAX];
             data.Water = new float[Globals.IMAX];
             data.PressHead = new float[Globals.IMAX];
+            data.NumEvents = new int[Globals.IMAX];
             data.FOzone = new float[Globals.IMAX];
             data.MaintenanceRespiration = new float[Globals.IMAX];
             data.Interception = new float[Globals.IMAX];
@@ -630,6 +639,7 @@ namespace Landis.Library.PnETCohorts
             data.FRad = null;
             data.FWater = null;
             data.PressHead = null;
+            data.NumEvents = null;
             data.Water = null;
             data.FOzone = null;
             data.MaintenanceRespiration = null;
@@ -1259,6 +1269,7 @@ namespace Landis.Library.PnETCohorts
                 FWater[index] = ComputeFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
                 Water[index] = hydrology.Water;
                 PressHead[index] = PressureHead;
+                NumEvents[index] = precipCount;
                 fWaterOzone = ComputeFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
                 if (frostFreeProp <= 0)
                 {
@@ -1290,7 +1301,8 @@ namespace Landis.Library.PnETCohorts
                     }
                 }
                 Water[index] = hydrology.Water;
-                PressHead[index] = PressureHead;                
+                PressHead[index] = PressureHead;
+                NumEvents[index] = precipCount;
             }
             
             // FoliarN adjusted based on canopy position (FRad)
@@ -1773,7 +1785,18 @@ namespace Landis.Library.PnETCohorts
                        CiModifier.Average() + ","+
                        AdjHalfSat + ","+
                        limitingFactor+",";
-             
+            for (int i = 0; i < Globals.IMAX; i++)
+            {
+                s = s + PressHead[i] + ",";
+            }
+            for (int i=0; i<Globals.IMAX; i++)
+            {
+                s = s + FWater[i] + ",";
+            }
+            for (int i = 0; i < Globals.IMAX; i++)
+            {
+                s = s + NumEvents[i] + ",";
+            }
             cohortoutput.Add(s);
 
        
@@ -1823,7 +1846,18 @@ namespace Landis.Library.PnETCohorts
                             OutputHeaders.CiModifier + ","+
                             OutputHeaders.AdjHalfSat + ","+
                             OutputHeaders.LimitingFactor + ",";
-
+                for (int i = 0; i < Globals.IMAX; i++)
+                {
+                    hdr = hdr + "PressHead[" + i + "]" + ",";
+                }
+                for (int i = 0; i < Globals.IMAX; i++)
+                {
+                    hdr = hdr + "FWater[" + i + "]" + ",";
+                }
+                for (int i = 0; i < Globals.IMAX; i++)
+                {
+                    hdr = hdr + "NumEvents[" + i + "]" + ",";
+                }
                 return hdr;
             }
         }

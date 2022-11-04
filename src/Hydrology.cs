@@ -251,7 +251,8 @@ namespace Landis.Library.PnETCohorts
                 // Delivery potential is 1 if pressurehead < evapCritWater, and declines to 0 at wilting point (153 mH2O)
                 DeliveryPotential = Cohort.ComputeFWater(-1, -1, evapCritWaterPH, 153, pressurehead);
 
-                float AEmax = DeliveryPotential * PET;  // Actual Evaporation max mm/month
+                //float AEmax = DeliveryPotential * PET;  // Actual Evaporation max mm/month
+                float AEmax = PET; // Modified 11/4/22 in v 5.0-rc19; remove access limitation and only use physical limit at wilting point below
 
                 // Evaporation cannot remove water below wilting point           
                 float evaporationEvent = Math.Min(AEmax, (Water - sitecohorts.Ecoregion.WiltPnt) * evapSoilDepth);// mm/month

@@ -1424,6 +1424,9 @@ namespace Landis.Library.PnETCohorts
                 // Reduction factors include temperature (FTempPSN), water (FWater), light (FRad), age (Fage)
                 GrossPsn[index] = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FWater[index] * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
                 float GrossPsnPotential = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
+                // Modified 11/4/22 to remove downgrading of water use - v5.0-rc19
+                GrossPsn[index] = GrossPsnPotential;
+
 
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 // JH2O has been modified by CiModifier to reduce water use efficiency
@@ -1431,7 +1434,8 @@ namespace Landis.Library.PnETCohorts
                 Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O))) * CanopyLayerProp; //mm
                 PotentialTranspiration[index] = (float)(0.01227 * (GrossPsnPotential / (JCO2 / JH2O))) * CanopyLayerProp; //mm
 
-                // Get pressure head given ecoregion and soil water content (latter in hydrology)
+                // Modified 11.4.22 (commented out)
+                /*// Get pressure head given ecoregion and soil water content (latter in hydrology)
                 float water_PostTrans = hydrology.AddWater(hydrology.Water, -1* Transpiration[index], siteCohort.Ecoregion.RootingDepth * frostFreeProp);
                 float PressureHead_postTrans = hydrology.GetPressureHead(siteCohort.Ecoregion, water_PostTrans);
                 float FWater_postTrans = ComputeFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead_postTrans);
@@ -1448,7 +1452,7 @@ namespace Landis.Library.PnETCohorts
                     GrossPsn[index] = GrossPsn[index] * (modifiedFWater / FWater[index]);
                     FWater[index] = modifiedFWater;
                     Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O))) * CanopyLayerProp; //mm
-                }
+                }*/
 
                 // It is possible for transpiration to calculate to exceed available water
                 // In this case, we cap transpiration at available water, and back-calculate GrossPsn and NetPsn to downgrade those as well

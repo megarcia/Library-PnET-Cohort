@@ -231,7 +231,7 @@ namespace Landis.Library.PnETCohorts
             return PE * _daySpan;  //mm/month 
         }
         //---------------------------------------------------------------------
-        public float CalculateEvaporation(SiteCohorts sitecohorts, IEcoregionPnETVariables variables, float PET)
+        public float CalculateEvaporation(SiteCohorts sitecohorts, float PET)
         {
             lock (threadLock)
             {
@@ -256,13 +256,14 @@ namespace Landis.Library.PnETCohorts
 
                 // Evaporation cannot remove water below wilting point           
                 float evaporationEvent = Math.Min(AEmax, (Water - sitecohorts.Ecoregion.WiltPnt) * evapSoilDepth);// mm/month
+                evaporationEvent = Math.Max(0f, evaporationEvent);  // evap cannot be negative
 
                 return evaporationEvent; //mm/month
             }
         }
 
         //---------------------------------------------------------------------
-       public float CalculateEvaporation(SiteCohorts sitecohorts, IEcoregionPnETVariables variables)
+       /*public float CalculateEvaporation(SiteCohorts sitecohorts, IEcoregionPnETVariables variables)
         {
             lock (threadLock)
             {
@@ -326,6 +327,7 @@ namespace Landis.Library.PnETCohorts
                 return Evaporation; //mm/month
             }
         }
+       */
         //---------------------------------------------------------------------
         public float Calculate_PotentialGroundET_Radiation_umol(float aboveCanopyPAR,float subCanopyPAR, float daylength, float T, float daySpan)            
         {

@@ -1354,6 +1354,9 @@ namespace Landis.Library.PnETCohorts
                     throw new System.Exception("Ozone data provided, but species O3StomataSens is not set to Sensitive, Tolerant or Intermediate");
                 }
             }
+            // FIXME temporary fix
+            if (ciModifier <= 0)
+                ciModifier = 0.00001f;
 
             CiModifier[index] = ciModifier;  // Stored for output
 
@@ -1424,7 +1427,8 @@ namespace Landis.Library.PnETCohorts
                 // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
                 float V = (float)(8314.47 * (variables.Tmin + 273) / 101.3);
                 float JCO2 = (float)(0.139 * ((variables.CO2 - ciElev) / V) * 0.00001);
-                float JH2O = variables[species.Name].JH2O * ciModifier;
+                //float JH2O = variables[species.Name].JH2O / ciModifier;  // Modified from * to / 11.18.2022
+                float JH2O = variables[species.Name].JH2O;  // Modified 11.22.2022
                 float wue = (JCO2 / JH2O) * (44 / 18);  //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
                 float Amax = (float)(delamaxCi * (speciesPnET.AmaxA + variables[species.Name].AmaxB_CO2 * adjFolN)); //nmole CO2/g Fol/s
                 float BaseFolResp = variables[species.Name].BaseFolRespFrac * Amax; //nmole CO2/g Fol/s
@@ -1443,8 +1447,9 @@ namespace Landis.Library.PnETCohorts
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 // JH2O has been modified by CiModifier to reduce water use efficiency
                 // Scale transpiration to proportion of site occupied (CanopyLayerProp)
-                Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O))) * CanopyLayerProp; //mm
-                PotentialTranspiration[index] = (float)(0.01227 * (GrossPsnPotential / (JCO2 / JH2O))) * CanopyLayerProp; //mm
+                // Corrected conversion factor
+                Transpiration[index] = (float)(0.045f * (GrossPsn[index] / (JCO2 / JH2O))) * CanopyLayerProp; //mm
+                PotentialTranspiration[index] = (float)(0.045f * (GrossPsnPotential / (JCO2 / JH2O))) * CanopyLayerProp; //mm
 
                 // Modified 11/4/22 to minimize transpiration reduction in approaching H4
                 /*// Get pressure head given ecoregion and soil water content (latter in hydrology)
@@ -1471,8 +1476,8 @@ namespace Landis.Library.PnETCohorts
                 if (Transpiration[index] > (hydrology.Water * siteCohort.Ecoregion.RootingDepth * frostFreeProp))
                 {
                     Transpiration[index] = hydrology.Water * siteCohort.Ecoregion.RootingDepth * frostFreeProp; //mm
-                    GrossPsn[index] = (Transpiration[index] / 0.01227F) * (JCO2 / JH2O);
-                    NetPsn[index] = GrossPsn[index] - FolResp[index];
+                    GrossPsn[index] = (Transpiration[index] / 0.045f) * (JCO2 / JH2O) / CanopyLayerProp;
+                    //NetPsn[index] = GrossPsn[index] - FolResp[index];
                 }
                 /*if(Transpiration[index] > PETmax)
                 {
@@ -1717,10 +1722,11 @@ namespace Landis.Library.PnETCohorts
         public void UpdateCohortData(IEcoregionPnETVariables monthdata )
         {
             float netPsnSum = NetPsn.Sum();
+            float grossPsnSum = GrossPsn.Sum();
             float transpirationSum = Transpiration.Sum();
             float JCO2_JH2O = 0;
             if(transpirationSum > 0)
-                JCO2_JH2O = (float) (0.01227 * (netPsnSum / (transpirationSum/CanopyLayerProp)));
+                JCO2_JH2O = (float)((0.045 * grossPsnSum * CanopyLayerProp) / transpirationSum);
             float WUE = JCO2_JH2O * ((float)44 / (float)18); //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
 
             // determine the limiting factor 

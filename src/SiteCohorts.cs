@@ -2246,7 +2246,7 @@ namespace Landis.Library.PnETCohorts
                     else
                         CanopyLAI[layer] = 0;
                 }
-
+                canopylaimax = (float)Math.Max(canopylaimax, LayerLAI.Sum());
 
                 // Calculate establishment probability
                 if (Globals.ModelCore.CurrentTime > 0)

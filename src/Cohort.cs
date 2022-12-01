@@ -1427,8 +1427,8 @@ namespace Landis.Library.PnETCohorts
                 // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
                 float V = (float)(8314.47 * (variables.Tmin + 273) / 101.3);
                 float JCO2 = (float)(0.139 * ((variables.CO2 - ciElev) / V) * 0.000001);  // Corrected conversion units 11/29/22
-                //float JH2O = variables[species.Name].JH2O / ciModifier;  // Modified from * to / 11.18.2022
-                float JH2O = variables[species.Name].JH2O;  // Modified 11.22.2022
+                float JH2O = variables[species.Name].JH2O / ciModifier;  // Modified from * to / 11.18.2022 [mod1]
+                //float JH2O = variables[species.Name].JH2O;  // Modified 11.22.2022 [mod2]
                 float wue = (JCO2 / JH2O) * (44 / 18);  //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
                 float Amax = (float)(delamaxCi * (speciesPnET.AmaxA + variables[species.Name].AmaxB_CO2 * adjFolN)); //nmole CO2/g Fol/s
                 float BaseFolResp = variables[species.Name].BaseFolRespFrac * Amax; //nmole CO2/g Fol/s
@@ -1440,7 +1440,9 @@ namespace Landis.Library.PnETCohorts
 
                 // Compute gross psn from stress factors and reference gross psn (gC/g Fol/month)
                 // Reduction factors include temperature (FTempPSN), water (FWater), light (FRad), age (Fage)
-                GrossPsn[index] = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FWater[index] * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
+                //GrossPsn[index] = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FWater[index] * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
+                // Remove FWater from psn reduction because it is accounted for in WUE through ciModifier
+                GrossPsn[index] = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
                 float GrossPsnPotential = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
                 
 

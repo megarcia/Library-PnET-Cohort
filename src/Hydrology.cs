@@ -38,7 +38,16 @@ namespace Landis.Library.PnETCohorts
         }
 
         //---------------------------------------------------------------------
-        private static PressureHeadSaxton_Rawls pressureheadtable;
+        public static PressureHeadSaxton_Rawls pressureheadtable;
+        //---------------------------------------------------------------------
+        public PressureHeadSaxton_Rawls PressureHeadTable
+        {
+            get
+            {
+                return pressureheadtable;
+            }
+        }
+
         //---------------------------------------------------------------------
         // Get the pressurehead (mmH2O) for the current water content (converted from proportion to percent)
         public float GetPressureHead(IEcoregionPnET ecoregion)

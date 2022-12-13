@@ -2312,7 +2312,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 if (data[m].Tave > 0)
                 {
-                    sumPressureHead += hydrology.GetPressureHead(Ecoregion);
+                    sumPressureHead += hydrology.PressureHeadTable.CalculateWaterPressure(hydrology.Water,Ecoregion.SoilType);
                     countPressureHead += 1;
                 }
 
@@ -4185,7 +4185,7 @@ namespace Landis.Library.PnETCohorts
                 interception + "," +
                 precLoss + "," +
                 hydrology.Water + "," +
-                hydrology.GetPressureHead(Ecoregion) + "," +
+                hydrology.PressureHeadTable.CalculateWaterPressure(hydrology.Water,Ecoregion.SoilType)+ "," +
                 hydrology.SurfaceWater + "," +
                 ((hydrology.Water - Ecoregion.WiltPnt) * Ecoregion.RootingDepth * propRootAboveFrost + hydrology.SurfaceWater) + "," +  // mm of avialable water
                 snowPack + "," +

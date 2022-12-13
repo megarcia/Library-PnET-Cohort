@@ -59,7 +59,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="watercontent": fraction  ></param>
         /// <param name="soiltype"></param>
         /// <returns></returns>
-        float CalculateWaterPressure(double watercontent, string soiltype)
+        public float CalculateWaterPressure(double watercontent, string soiltype)
         { 
             double tension = 0.0;
 

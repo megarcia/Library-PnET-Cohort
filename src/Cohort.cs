@@ -1268,12 +1268,13 @@ namespace Landis.Library.PnETCohorts
             // Reduction factor for radiation on photosynthesis
             float LayerPAR = (float) (mainLayerPAR * Math.Exp(-speciesPnET.K * (LAI.Sum() - LAI[index])));
             FRad[index] = ComputeFrad(LayerPAR, AdjHalfSat);
-                       
+
             // Below-canopy PAR if updated after each subcanopy layer
             //SubCanopyPar *= (float)Math.Exp(-speciesPnET.K * LAI[index]);
 
             // Get pressure head given ecoregion and soil water content (latter in hydrology)
-            float PressureHead = hydrology.GetPressureHead(siteCohort.Ecoregion);
+            //float PressureHead = hydrology.GetPressureHead(siteCohort.Ecoregion);
+            float PressureHead = hydrology.PressureHeadTable.CalculateWaterPressure(hydrology.Water, siteCohort.Ecoregion.SoilType);
 
             // Reduction water for sub or supra optimal soil water content
 
@@ -1331,7 +1332,7 @@ namespace Landis.Library.PnETCohorts
             AdjFracFol[index] = adjFracFol; //Stored for output
 
 
-            float ciModifier = FWater[index]; // if no ozone, ciModifier defaults to fWater
+            float ciModifier = 1.0f; // if no ozone, ciModifier defaults to 1
             if (o3_cum > 0)
             {
                 // Regression coefs estimated from New 3 algorithm for Ozone drought.xlsx
@@ -1365,8 +1366,8 @@ namespace Landis.Library.PnETCohorts
             {
                 // CO2 ratio internal to the leaf versus external
                 float cicaRatio = (-0.075f * adjFolN) + 0.875f;
-                //float modCiCaRatio = cicaRatio * ciModifier;
-                float modCiCaRatio = cicaRatio; //modified 12.6.22 - [mod3]
+                float modCiCaRatio = cicaRatio * ciModifier; 
+                //float modCiCaRatio = cicaRatio; //modified 12.6.22 - [mod3]
                 // Reference co2 ratio
                 float ci350 = 350 * modCiCaRatio;
                 // Elevated leaf internal co2 concentration
@@ -1428,8 +1429,8 @@ namespace Landis.Library.PnETCohorts
                 // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
                 float V = (float)(8314.47 * (variables.Tmin + 273) / 101.3);
                 float JCO2 = (float)(0.139 * ((variables.CO2 - ciElev) / V) * 0.000001);  // Corrected conversion units 11/29/22
-                //float JH2O = variables[species.Name].JH2O / ciModifier;  // Modified from * to / 11.18.2022 [mod1]
-                float JH2O = variables[species.Name].JH2O;  // Modified 11.22.2022 [mod2, mod3]
+                float JH2O = variables[species.Name].JH2O / ciModifier;  // Modified from * to / 11.18.2022 [mod1]
+                //float JH2O = variables[species.Name].JH2O;  // Modified 11.22.2022 [mod2, mod3]
                 float wue = (JCO2 / JH2O) * (44 / 18);  //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
                 float Amax = (float)(delamaxCi * (speciesPnET.AmaxA + variables[species.Name].AmaxB_CO2 * adjFolN)); //nmole CO2/g Fol/s
                 float BaseFolResp = variables[species.Name].BaseFolRespFrac * Amax; //nmole CO2/g Fol/s
@@ -1443,15 +1444,13 @@ namespace Landis.Library.PnETCohorts
                 // Reduction factors include temperature (FTempPSN), water (FWater), light (FRad), age (Fage)
                 //GrossPsn[index] = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FWater[index] * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
                 // Remove FWater from psn reduction because it is accounted for in WUE through ciModifier [mod2, mod3]
-                GrossPsn[index] = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
                 float GrossPsnPotential = (1 / (float)Globals.IMAX) * variables[species.Name].FTempPSN * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
                 
 
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 // JH2O has been modified by CiModifier to reduce water use efficiency
                 // Scale transpiration to proportion of site occupied (CanopyLayerProp)
-                // Corrected conversion factor
-                Transpiration[index] = (float)(0.0015f * (GrossPsn[index] / (JCO2 / JH2O))) * CanopyLayerProp; //mm
+                // Corrected conversion factor                
                 PotentialTranspiration[index] = (float)(0.0015f * (GrossPsnPotential / (JCO2 / JH2O))) * CanopyLayerProp; //mm
 
                 // Modified 11/4/22 to minimize transpiration reduction in approaching H4
@@ -1481,11 +1480,16 @@ namespace Landis.Library.PnETCohorts
                 float wiltPtWater = (float) hydrology.PressureHeadTable.CalculateWaterContent(speciesPnET.H4 * 9.804139432f, siteCohort.Ecoregion.SoilType);
                 float availableWater = (hydrology.Water - wiltPtWater) * siteCohort.Ecoregion.RootingDepth * frostFreeProp;
 
-                if (Transpiration[index] > availableWater)
+                if (PotentialTranspiration[index] > availableWater)
                 {
                     Transpiration[index] = (float)Math.Max(availableWater, 0f); //mm
                     GrossPsn[index] = (Transpiration[index] / 0.0015f) * (JCO2 / JH2O) / CanopyLayerProp;
-                    //NetPsn[index] = GrossPsn[index] - FolResp[index];
+                    FWater[index] = Transpiration[index] / PotentialTranspiration[index];
+                }
+                else
+                {
+                    GrossPsn[index] = GrossPsnPotential * FWater[index];  // gC/m2 ground/mo
+                    Transpiration[index] = PotentialTranspiration[index] * FWater[index]; //mm
                 }
                 /*if(Transpiration[index] > PETmax)
                 {

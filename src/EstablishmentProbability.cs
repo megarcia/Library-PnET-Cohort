@@ -85,7 +85,7 @@ namespace Landis.Library.PnETCohorts
                         adjFrad = 1 - frad_adj_int + frad * frad_slope;
                     }
                     
-                    float PressureHead = hydrology.GetPressureHead(ecoregion);
+                    float PressureHead = hydrology.PressureHeadTable.CalculateWaterContent(hydrology.Water, ecoregion.SoilType);
 
                     float fwater = (float)(Math.Min(1.0,(Math.Pow(Cohort.ComputeFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), 2) * (1/(Math.Pow(spc.EstMoist,2))))));
 

@@ -289,6 +289,10 @@ namespace Landis.Library.PnETCohorts
         /// Proportion of layer canopy growing space available to cohort
         /// </summary>
         public float CanopyGrowingSpace;
+        /// <summary>
+        /// The cohort's ANPP
+        /// </summary>
+        public int ANPP;
 
         /// <summary>
         /// Initializes a new instance.
@@ -309,7 +313,7 @@ namespace Landis.Library.PnETCohorts
             this.BiomassMax = cohort.BiomassMax;
             this.CiModifier = cohort.CiModifier;
             this.ColdKill = cohort.ColdKill;
-            this.DeFolProp = cohort.DefolProp;
+            this.DeFolProp = cohort.DeFolProp;
             this.DelAmax = cohort.DelAmax;
             this.Fol = cohort.Fol;
             this.MaxFolYear = cohort.MaxFolYear;
@@ -339,6 +343,7 @@ namespace Landis.Library.PnETCohorts
             this.CanopyLayerProp = cohort.CanopyLayerProp;
             this.Cohort = cohort;
             this.CanopyGrowingSpace = cohort.CanopyGrowingSpace;
+            this.ANPP = cohort.ANPP;
         }
 
         /// <summary>
@@ -348,7 +353,7 @@ namespace Landis.Library.PnETCohorts
         /// The age of the cohort.
         /// <param name="totalBioamss">
         /// The biomamss of the cohort
-        public CohortData(ushort age, float totalBiomass, ISpecies species, bool cohortStacking)
+        public CohortData(ushort age, float totalBiomass, int totalANPP, ISpecies species, bool cohortStacking)
         {            
             this.AdjFolN = new float[Globals.IMAX];
             this.adjFolN = 0; ;
@@ -394,12 +399,13 @@ namespace Landis.Library.PnETCohorts
             float cohortLAI = 0;
             float cohortIdealFol = (spc.FracFol * (float)Math.Exp(-spc.FrActWd * this.BiomassMax) * this.TotalBiomass);
             for (int i = 0; i < Globals.IMAX; i++)
-                cohortLAI += Cohort.CalculateLAI(spc, cohortIdealFol, i, cohortLAI);
+              cohortLAI += Cohort.CalculateLAI(spc, cohortIdealFol, i, cohortLAI);
             this.LastLAI = cohortLAI;
             this.CanopyLayerProp = this.LastLAI / spc.MaxLAI;
             if (cohortStacking)
                 this.CanopyLayerProp = 1.0f;
             this.CanopyGrowingSpace = 1.0f;
+            this.ANPP = totalANPP;
         }
     }
 }

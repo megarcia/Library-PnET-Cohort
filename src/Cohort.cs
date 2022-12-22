@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class Cohort : Landis.Library.AgeOnlyCohorts.ICohort, Landis.Library.BiomassCohorts.ICohort, Landis.Library.PnETCohorts.ICohort
+    public class Cohort : Landis.Library.PnETCohorts.ICohort
     { 
         public delegate void SubtractTranspiration(float transpiration, ISpeciesPnET Species);
         public ushort index;
@@ -21,17 +21,7 @@ namespace Landis.Library.PnETCohorts
         private LocalOutput cohortoutput;
 
         //---------------------------------------------------------------------
-        /// <summary>
-        /// The cohort's data
-        /// </summary>
-        public CohortData Data
-        {
-            get
-            {
-                return data;
-            }
-        }
-        //---------------------------------------------------------------------
+
         // Age (years)
         public ushort Age
         {
@@ -51,6 +41,17 @@ namespace Landis.Library.PnETCohorts
             set
             {
                 data.NSC = value;
+            }
+        }
+        //---------------------------------------------------------------------
+        /// <summary>
+        /// The cohort's data
+        /// </summary>
+        public CohortData Data
+        {
+            get
+            {
+                return data;
             }
         }
         //---------------------------------------------------------------------
@@ -243,7 +244,7 @@ namespace Landis.Library.PnETCohorts
         }
         //---------------------------------------------------------------------
         // Defoliation proportion - BRM
-        public float DefolProp
+        public float DeFolProp
         {
             get
             {
@@ -256,11 +257,11 @@ namespace Landis.Library.PnETCohorts
         }
         //---------------------------------------------------------------------
         // Annual Woody Senescence (g/m2)
-        public int LastWoodySenescence
+        public float LastWoodySenescence
         {
             get
             {
-                return (int)data.LastWoodySenescence;
+                return data.LastWoodySenescence;
             }
             set
             {
@@ -269,11 +270,11 @@ namespace Landis.Library.PnETCohorts
         }
         //---------------------------------------------------------------------
         // Annual Foliage Senescence (g/m2)
-        public int LastFoliageSenescence
+        public float LastFoliageSenescence
         {
             get
             {
-                return (int)data.LastFoliageSenescence;
+                return data.LastFoliageSenescence;
             }
             set
             {
@@ -564,6 +565,18 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public int ANPP
+        {
+            get
+            {
+                return data.ANPP;
+            }
+            set
+            {
+                data.ANPP = value;
+            }
+        }
+        //---------------------------------------------------------------------
         // List of DisturbanceTypes that have had ReduceDeadPools applied
         public List<ExtensionType> ReducedTypes = null;
         //---------------------------------------------------------------------
@@ -659,6 +672,7 @@ namespace Landis.Library.PnETCohorts
             data.MaxFolYear = Math.Max(MaxFolYear, data.Fol);
             data.AGBiomass = (1 - c.SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             data.Biomass = data.AGBiomass * data.CanopyLayerProp;
+            data.ANPP += c.ANPP;
         }
         //---------------------------------------------------------------------
         /// <summary>
@@ -681,20 +695,28 @@ namespace Landis.Library.PnETCohorts
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
         }
         //---------------------------------------------------------------------
+        /// <summary>
+        /// Changes the cohort's ANPP.
+        /// </summary>
+        public void ChangeANPP(int delta)
+        {            
+            data.ANPP = data.ANPP + delta;
+        }
+        //---------------------------------------------------------------------
         // Constructor
         public Cohort(ISpecies species, ISpeciesPnET speciesPnET, ushort year_of_birth, string SiteName, double propBiomass, bool cohortStacking) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
         {
             this.species = species;
             this.speciesPnET = speciesPnET;
-            data.Age = 1;
-            data.ColdKill = int.MaxValue;
+            this.data.Age = 1;
+            this.data.ColdKill = int.MaxValue;
 
             this.data.NSC = (ushort)speciesPnET.InitialNSC;
 
             // Initialize biomass assuming fixed concentration of NSC, convert gC to gDW
             this.data.TotalBiomass = (uint)Math.Max(1.0,(this.NSC / (speciesPnET.DNSC * speciesPnET.CFracBiomass) * propBiomass)) ;
             this.data.AGBiomass = (1 - speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
-            data.BiomassMax = this.data.TotalBiomass;
+            this.data.BiomassMax = this.data.TotalBiomass;
 
             float cohortLAI = 0;
             float cohortIdealFol = (speciesPnET.FracFol * this.FActiveBiom * this.data.TotalBiomass);
@@ -740,6 +762,7 @@ namespace Landis.Library.PnETCohorts
             this.data.MaxFolYear = cohort.MaxFolYear;
             this.data.LastSeasonFRad = cohort.data.LastSeasonFRad;
             this.data.ColdKill = int.MaxValue;
+            this.data.ANPP = cohort.ANPP;
         }
         //---------------------------------------------------------------------
         public Cohort(Cohort cohort, ushort firstYear, string SiteName) // : base(cohort.species, new Landis.Library.PnETCohorts.CohortData(cohort.age, cohort.Biomass))
@@ -756,6 +779,7 @@ namespace Landis.Library.PnETCohorts
             this.data.MaxFolYear = cohort.MaxFolYear;
             this.data.LastSeasonFRad = cohort.data.LastSeasonFRad;
             this.data.ColdKill = int.MaxValue;
+            this.data.ANPP = cohort.ANPP;
 
             if (SiteName != null)
             {

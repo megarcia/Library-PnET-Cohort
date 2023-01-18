@@ -4,7 +4,7 @@ using Landis.Core;
 
 namespace Landis.Library.PnETCohorts 
 {
-    public interface ISiteCohorts : Landis.Library.BiomassCohorts.ISiteCohorts
+    public interface ISiteCohorts : Landis.Library.BiomassCohorts.ISiteCohorts, Landis.Library.AgeOnlyCohorts.ISiteCohorts
     {
 
         float[] NetPsn { get; }

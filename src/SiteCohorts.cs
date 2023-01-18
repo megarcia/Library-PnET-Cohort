@@ -1956,22 +1956,7 @@ namespace Landis.Library.PnETCohorts
 
                             float PETnonfor = PETcumulative - TransCumulative - InterceptCumulative - hydrology.Evaporation; // hydrology.Evaporation is cumulative
 
-                            /*float evaporationEvent = 0;
-                            if (precipCount > 0)
-                            {
-                                PETnonfor = groundPET / groupList.Count();
-                                if (propRootAboveFrost > 0 && snowPack == 0)
-                                {
-                                    evaporationEvent = hydrology.CalculateEvaporation(this, data[m], PETnonfor); //mm
-                                }
-
-                                success = hydrology.AddWater(-1 * evaporationEvent, Ecoregion.RootingDepth * propRootAboveFrost);
-                                if (success == false)
-                                {
-                                    throw new System.Exception("Error adding water, evaporation = " + evaporationEvent + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                                }
-                                hydrology.Evaporation += evaporationEvent;
-                            }*/
+                            
 
                             
                             success = c.CalculatePhotosynthesis(subCanopyPrecip, precipCount, leakageFrac, ref hydrology, mainLayerPAR,
@@ -1988,8 +1973,27 @@ namespace Landis.Library.PnETCohorts
 
                             // Update for transpiration
                             //PETnonfor = PETcumulative - TransCumulative - InterceptCumulative - hydrology.Evaporation; // hydrology.Evaporation is cumulative
-                            
-                            
+
+                            if (groundPET > 0)
+                            {
+                                float evaporationEvent = 0;
+                                // If more than one precip event assigned to layer, repeat evaporation for all events prior to respiration
+                                for (int p = 1; p <= precipCount; p++)
+                                {
+                                    PETnonfor = groundPETbyEvent;
+                                    if (propRootAboveFrost > 0 && snowPack == 0)
+                                    {
+                                        evaporationEvent = hydrology.CalculateEvaporation(this, PETnonfor); //mm
+                                    }
+
+                                    success = hydrology.AddWater(-1 * evaporationEvent, Ecoregion.RootingDepth * propRootAboveFrost);
+                                    if (success == false)
+                                    {
+                                        throw new System.Exception("Error adding water, evaporation = " + evaporationEvent + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                                    }
+                                    hydrology.Evaporation += evaporationEvent;
+                                }
+                            }
 
                         } // end sublayer loop in canopy b
                         int cCount = AllCohorts.Count();

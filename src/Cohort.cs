@@ -972,7 +972,7 @@ namespace Landis.Library.PnETCohorts
             }
             float precipIn = 0;
             if (PrecInByCanopyLayer > 0)
-            {// If more than one precip event assigned to layer, repeat precip, runoff, leakage, evap for all events prior to respiration
+            {// If more than one precip event assigned to layer, repeat precip, runoff, leakage for all events prior to respiration
                 for (int p = 1; p <= precipCount; p++)
                 {
                     // Incoming precipitation
@@ -1003,8 +1003,8 @@ namespace Landis.Library.PnETCohorts
                     success = hydrology.AddWater(-1 * leakage, siteCohort.Ecoregion.RootingDepth * frostFreeProp);
                     if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
 
-                    // Evaporation
-                    float evaporationEvent = 0;
+                    // Evaporation - moved to SiteCohorts.Grow after transpiration (psn)
+                    /*float evaporationEvent = 0;
                     if (frostFreeProp > 0 && groundPETbyEvent > 0)
                     {
                         evaporationEvent = hydrology.CalculateEvaporation(siteCohort, groundPETbyEvent); //mm
@@ -1014,7 +1014,7 @@ namespace Landis.Library.PnETCohorts
                     {
                         throw new System.Exception("Error adding water, evaporation = " + evaporationEvent + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
                     }
-                    hydrology.Evaporation += evaporationEvent;
+                    hydrology.Evaporation += evaporationEvent;*/
 
                     // Add surface water to soil
                     if (hydrology.SurfaceWater > 0)

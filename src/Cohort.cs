@@ -1819,7 +1819,7 @@ namespace Landis.Library.PnETCohorts
                        CiModifier.Average() + ","+
                        AdjHalfSat + ","+
                        limitingFactor+",";
-            for (int i = 0; i < Globals.IMAX; i++)
+            /*for (int i = 0; i < Globals.IMAX; i++)
             {
                 s = s + PressHead[i] + ",";
             }
@@ -1830,7 +1830,7 @@ namespace Landis.Library.PnETCohorts
             for (int i = 0; i < Globals.IMAX; i++)
             {
                 s = s + NumEvents[i] + ",";
-            }
+            }*/
             cohortoutput.Add(s);
 
        
@@ -1880,7 +1880,7 @@ namespace Landis.Library.PnETCohorts
                             OutputHeaders.CiModifier + ","+
                             OutputHeaders.AdjHalfSat + ","+
                             OutputHeaders.LimitingFactor + ",";
-                for (int i = 0; i < Globals.IMAX; i++)
+                /*for (int i = 0; i < Globals.IMAX; i++)
                 {
                     hdr = hdr + "PressHead[" + i + "]" + ",";
                 }
@@ -1891,7 +1891,7 @@ namespace Landis.Library.PnETCohorts
                 for (int i = 0; i < Globals.IMAX; i++)
                 {
                     hdr = hdr + "NumEvents[" + i + "]" + ",";
-                }
+                }*/
                 return hdr;
             }
         }

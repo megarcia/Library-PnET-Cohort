@@ -165,6 +165,7 @@ namespace Landis.Library.PnETCohorts
             //  young order.
             int youngCount = 0;
             float totalBiomass = 0;
+            int totalANPP = 0;
             for (int i = cohortData.Count - 1; i >= 0; i--)
             {
                 CohortData data = cohortData[i];
@@ -172,6 +173,7 @@ namespace Landis.Library.PnETCohorts
                 {
                     youngCount++;
                     totalBiomass += data.TotalBiomass;
+                    totalANPP += data.ANPP;
                 }
                 else
                     break;
@@ -181,7 +183,7 @@ namespace Landis.Library.PnETCohorts
             {
                 cohortData.RemoveRange(cohortData.Count - youngCount, youngCount);
                 bool cohortStacking = (((Parameter<bool>)Names.GetParameter(Names.CohortStacking)).Value);
-                cohortData.Add(new CohortData((ushort)(Cohorts.SuccessionTimeStep - 1), totalBiomass, this.Species, cohortStacking));
+                cohortData.Add(new CohortData((ushort)(Cohorts.SuccessionTimeStep - 1), totalBiomass, totalANPP, this.Species, cohortStacking));
                 
             }
         }

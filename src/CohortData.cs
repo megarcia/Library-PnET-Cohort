@@ -159,7 +159,12 @@ namespace Landis.Library.PnETCohorts
         public float LastLAI;
 
         //---------------------------------------------------------------------
+        /// <summary>
+        /// Aboveground Biomass last year
+        /// </summary>
+        public float LastAGBio;
 
+        //---------------------------------------------------------------------
         /// <summary>
         /// Gross photosynthesis (gC/mo)
         /// </summary>
@@ -329,6 +334,7 @@ namespace Landis.Library.PnETCohorts
             this.LastFRad = cohort.LastFRad;
             this.LastSeasonFRad = cohort.LastSeasonFRad;
             this.LastWoodySenescence = cohort.LastWoodySenescence;
+            this.LastAGBio = cohort.LastAGBio;
             this.Layer = cohort.Layer;
             this.Leaf_On = cohort.Leaf_On;
             this.MaintenanceRespiration = cohort.MaintenanceRespiration;
@@ -385,6 +391,7 @@ namespace Landis.Library.PnETCohorts
             this.LastFRad = 0;
             this.LastSeasonFRad = new List<float>();
             this.LastWoodySenescence = 0;
+            this.LastAGBio = this.AGBiomass;
             this.Layer = 0;
             this.Leaf_On = false;
             this.MaintenanceRespiration = new float[Globals.IMAX];

@@ -95,6 +95,10 @@ namespace Landis.Library.PnETCohorts
         {
             get;
         }
+        float LastAGBio
+        {
+            get;
+        }
         float[] GrossPsn
         {
             get;

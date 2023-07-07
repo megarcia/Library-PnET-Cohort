@@ -415,6 +415,18 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public float LastAGBio
+        {
+            get
+            {
+                return data.LastAGBio;
+            }
+            set
+            {
+                data.LastAGBio = value;
+            }
+        }
+        //---------------------------------------------------------------------
         public List<float> LastSeasonFRad
         {
             get
@@ -617,6 +629,16 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+        public void SetAvgFRad(float lastAvgFrad)
+        {
+                data.LastSeasonFRad.Add(lastAvgFrad);
+        }
+        //---------------------------------------------------------------------
+        public void ClearFRad()
+        {
+            data.LastSeasonFRad = new List<float>();
+        }
+        //---------------------------------------------------------------------
         public void CalcAdjFracFol()
         {
             if (data.LastSeasonFRad.Count() > 0)
@@ -636,7 +658,7 @@ namespace Landis.Library.PnETCohorts
             else
                 //data.adjFracFol = speciesPnET.MaxFracFol;
                 data.adjFracFol = speciesPnET.FracFol;
-            data.LastSeasonFRad = new List<float>();
+            //data.LastSeasonFRad = new List<float>();
 
         }
         //---------------------------------------------------------------------
@@ -723,11 +745,13 @@ namespace Landis.Library.PnETCohorts
             for (int i = 0; i < Globals.IMAX; i++)
                 cohortLAI += CalculateLAI(this.SpeciesPnET, cohortIdealFol, i, cohortLAI);
             this.data.LastLAI = cohortLAI;
+            this.data.LastAGBio = this.data.AGBiomass;
             this.data.CanopyLayerProp = this.data.LastLAI / speciesPnET.MaxLAI;
             if(cohortStacking)
                 this.data.CanopyLayerProp = 1.0f;
             this.data.CanopyGrowingSpace = 1.0f;
             this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
+            this.data.ANPP = (int)this.data.Biomass;
             
 
             // Then overwrite them if you need stuff for outputs
@@ -825,6 +849,7 @@ namespace Landis.Library.PnETCohorts
                 this.data.CanopyLayerProp = 1.0f;
             this.data.CanopyGrowingSpace = 1.0f;
             this.data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
+            this.data.LastAGBio = this.data.AGBiomass;
             this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
             this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * (this.data.TotalBiomass + this.data.Fol) * speciesPnET.CFracBiomass;
 
@@ -834,7 +859,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
-        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear, bool cohortStacking)
+        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear, bool cohortStacking, float lastSeasonAvgFrad)
         {
             InitializeSubLayers();
             this.species = (ISpecies)speciesPnET;
@@ -846,12 +871,15 @@ namespace Landis.Library.PnETCohorts
             this.data.TotalBiomass = biomass;
             this.data.BiomassMax = Math.Max(biomass,maxBiomass);
             this.data.LastSeasonFRad = new List<float>();
+            this.data.LastSeasonFRad.Add(lastSeasonAvgFrad);
             //this.data.adjFracFol = speciesPnET.FracFol;
-            this.data.adjFracFol = speciesPnET.MaxFracFol;
+            this.CalcAdjFracFol();
+            //this.data.adjFracFol = speciesPnET.MaxFracFol;
             this.data.ColdKill = int.MaxValue;
             float cohortLAI = 0;
             //float cohortIdealFol = (speciesPnET.FracFol * this.FActiveBiom * this.data.TotalBiomass);
-            float cohortIdealFol = (speciesPnET.MaxFracFol * this.FActiveBiom * this.data.TotalBiomass);
+            //float cohortIdealFol = (speciesPnET.MaxFracFol * this.FActiveBiom * this.data.TotalBiomass);
+            float cohortIdealFol = (this.adjFracFol * this.FActiveBiom * this.data.TotalBiomass);
             for (int i = 0; i < Globals.IMAX; i++)
             {
                 float subLayerLAI = CalculateLAI(this.SpeciesPnET, cohortIdealFol, i);
@@ -872,6 +900,7 @@ namespace Landis.Library.PnETCohorts
                 this.data.CanopyLayerProp = 1.0f;
             this.data.CanopyGrowingSpace = 1.0f;
             this.data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
+            this.data.LastAGBio = this.data.AGBiomass;
             this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
             this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * (this.data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
 
@@ -1507,8 +1536,14 @@ namespace Landis.Library.PnETCohorts
                 if (PotentialTranspiration[index] > availableWater)
                 {
                     Transpiration[index] = (float)Math.Max(availableWater, 0f); //mm
-                    GrossPsn[index] = (Transpiration[index] / 0.0015f) * (JCO2 / JH2O) / CanopyLayerProp;
-                    FWater[index] = Transpiration[index] / PotentialTranspiration[index];
+                    if (CanopyLayerProp > 0)
+                        GrossPsn[index] = (Transpiration[index] / 0.0015f) * (JCO2 / JH2O) / CanopyLayerProp;
+                    else
+                        GrossPsn[index] = 0f;
+                    if (PotentialTranspiration[index] > 0)
+                        FWater[index] = Transpiration[index] / PotentialTranspiration[index];
+                    else
+                        FWater[index] = 0f;
                 }
                 else
                 {

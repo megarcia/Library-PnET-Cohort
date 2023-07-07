@@ -23,6 +23,14 @@ namespace Landis.Library.PnETCohorts
         float[] MonthlyAvgSnowPack { get; }
         float[] MonthlyAvgWater { get; }
         float[] MonthlyAvgLAI { get; }
+        float[] MonthlyEvap { get; }
+        float[] MonthlyActualTrans { get; }
+        float[] MonthlyLeakage { get; }
+        float[] MonthlyInterception { get; }
+        float[] MonthlyRunoff { get; }
+        float[] MonthlyAET { get; }
+        float[] MonthlyPotentialEvap { get; }
+        float[] MonthlyPotentialTrans { get; }
         float CanopyLAImax{get;}
 
         float SiteMossDepth { get; }

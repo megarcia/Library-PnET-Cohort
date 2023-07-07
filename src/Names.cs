@@ -48,6 +48,7 @@ namespace Landis.Library.PnETCohorts
         public const string ETMethod = "ETMethod";
         public const string ETExtCoeff = "ETExtCoeff";
         public const string RETCropCoeff = "RETCropCoeff";
+        public const string CanopySumScale = "CanopySumScale";
        
 
         //Ecoregion parameters

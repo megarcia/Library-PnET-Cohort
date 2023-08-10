@@ -2145,8 +2145,11 @@ namespace Landis.Library.PnETCohorts
 
                             if (Frac_list.Count() > 0)
                             {
+                                
+                                float cumulativeFracProp = 1;
+                                /* 
+                                float sumCumulativeProp = 0;
                                 IEnumerable<IEnumerable<int>> index_set = GetPowerSet(index_List);
-                                float cumulativeFracProp = 0;
                                 //IEnumerable<IEnumerable<float>> Frac_set = GetPowerSet(Frac_list);
                                 //IEnumerable<IEnumerable<float>> Prop_set = GetPowerSet(prop_List);
                                 //float cumulativeFrac = 0;
@@ -2174,9 +2177,18 @@ namespace Landis.Library.PnETCohorts
                                     }
                                     float fracProp = cumulativeProp * cumulativeFrac;
                                     cumulativeFracProp += fracProp;
+                                    sumCumulativeProp += cumulativeProp;
+                                    if (sumCumulativeProp > 0.75)
+                                        break;
                                 }
-
-                                subcanopypar = mainLayerPAR * cumulativeFracProp;
+                                */
+                                for (int i = 0; i < Frac_list.Count(); i++)
+                                {
+                                    float prop = prop_List[i];
+                                    float frac = Frac_list[i];
+                                    cumulativeFracProp = cumulativeFracProp * (float)Math.Pow(frac, prop);
+                                }
+                                    subcanopypar = mainLayerPAR * cumulativeFracProp;
                             }
                             else
                             {

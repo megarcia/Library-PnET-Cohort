@@ -39,7 +39,7 @@ namespace Landis.Library.PnETCohorts
         #region private static variables
         private static bool wythers;
         private static bool dtemp;
-        private static string etMethod;
+        //private static string etMethod;
         private static float etExtCoeff;
         private static float retCropCoeff;
 
@@ -387,7 +387,7 @@ namespace Landis.Library.PnETCohorts
 
             wythers = ((Parameter<bool>)Names.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)Names.GetParameter("DTemp")).Value;
-            etMethod = ((Parameter<string>)Names.GetParameter("ETMethod")).Value;
+            //etMethod = ((Parameter<string>)Names.GetParameter("ETMethod")).Value;
             etExtCoeff = ((Parameter<float>)Names.GetParameter("ETExtCoeff")).Value;
             retCropCoeff = ((Parameter<float>)Names.GetParameter("RETCropCoeff")).Value;
 

@@ -89,8 +89,8 @@ namespace Landis.Library.PnETCohorts
         private static bool permafrost;
         private static bool invertPest;
         //private static string parUnits;
-        Dictionary<float, float> depthTempDict = new Dictionary<float, float>();  //for permafrost
-        //float lastTempBelowSnow = float.MaxValue;
+        public SortedList<float, float> depthTempDict = new SortedList<float, float>();  //for permafrost
+        float lastTempBelowSnow = float.MaxValue;
         private static float maxHalfSat;
         private static float minHalfSat;
         private static bool CohortStacking;
@@ -370,6 +370,8 @@ namespace Landis.Library.PnETCohorts
             CohortsKilledByOther = new List<int>(new int[Globals.ModelCore.Species.Count()]);
             DisturbanceTypesReduced = new List<ExtensionType>();
             uint key = ComputeKey((ushort)initialCommunity.MapCode, Globals.ModelCore.Ecoregion[site].MapCode);
+            SiteVars.MonthlyPressureHead[site] = new float[0];
+            SiteVars.MonthlySoilTemp[site] = new SortedList<float, float>[0];
             int tempMaxCanopyLayers = MaxCanopyLayers;
             if (CohortStacking)
                 tempMaxCanopyLayers = initialCommunity.Cohorts.Count();
@@ -452,7 +454,9 @@ namespace Landis.Library.PnETCohorts
                     {
                         ISpecies spp = cohort.Species;
                         int age = cohort.Age;
-                        float lastSeasonAvgFrad = cohort.LastSeasonFRad.ToArray().Average();
+                        float lastSeasonAvgFrad = 0F;
+                        if(cohort.LastSeasonFRad.Count() > 0)
+                            lastSeasonAvgFrad = cohort.LastSeasonFRad.ToArray().Average();
                         if (cohortDictionary.ContainsKey(spp))
                         {
                             if (cohortDictionary[spp].ContainsKey(age))
@@ -1191,6 +1195,8 @@ namespace Landis.Library.PnETCohorts
                 SiteVars.WoodyDebris[Site] = SiteVars.WoodyDebris[initialSites[key].Site].Clone();
                 SiteVars.Litter[Site] = SiteVars.Litter[initialSites[key].Site].Clone();
                 SiteVars.FineFuels[Site] = SiteVars.Litter[Site].Mass;
+                SiteVars.MonthlyPressureHead[site] = (float[])SiteVars.MonthlyPressureHead[initialSites[key].Site].Clone();
+                
                 //PlugIn.PressureHead[Site] = hydrology.GetPressureHead(this.Ecoregion);
                 this.canopylaimax = initialSites[key].CanopyLAImax;
                 List<float> cohortBiomassLayerProp = new List<float>();
@@ -1244,6 +1250,15 @@ namespace Landis.Library.PnETCohorts
                     index++;
                 }
 
+                SiteVars.MonthlySoilTemp[site] = new SortedList<float, float>[SiteVars.MonthlyPressureHead[site].Count()];
+                //SortedList<float,float>[] tempMonthlySoilTemp = new SortedList<float, float>[SiteVars.MonthlyPressureHead[site].Count()];
+                for (int m = 0; m < SiteVars.MonthlyPressureHead[site].Count(); m++)
+                {
+                    //tempMonthlySoilTemp.Add(m, SiteVars.MonthlySoilTemp[initialSites[key].Site][m]);
+                    //SiteVars.MonthlySoilTemp[site].Add(m, SiteVars.MonthlySoilTemp[initialSites[key].Site][m]);
+                    SiteVars.MonthlySoilTemp[site][m] = SiteVars.MonthlySoilTemp[initialSites[key].Site][m];
+                }
+                //SiteVars.MonthlySoilTemp[site] = tempMonthlySoilTemp;
                 this.netpsn = initialSites[key].NetPsn;
                 this.folresp = initialSites[key].FolResp;
                 this.grosspsn = initialSites[key].GrossPsn;
@@ -1546,6 +1561,8 @@ namespace Landis.Library.PnETCohorts
             //Clear pressurehead site values
             sumPressureHead = 0;
             countPressureHead = 0;
+            SiteVars.MonthlyPressureHead[this.Site] = new float[data.Count()];
+            SiteVars.MonthlySoilTemp[this.Site] = new SortedList<float, float>[data.Count()];
             for (int m = 0; m < data.Count(); m++)
             {
                 Ecoregion.Variables = data[m];
@@ -1611,6 +1628,7 @@ namespace Landis.Library.PnETCohorts
                 leakageFrac = Ecoregion.LeakageFrac;
                 float propThawed = 0;
 
+                // Soil temp calculations - need for permafrost and Root Rot
                 // snow calculations - from "Soil thawing worksheet with snow.xlsx"
                 if (data[m].Tave <= 0)
                 {
@@ -1624,24 +1642,14 @@ namespace Landis.Library.PnETCohorts
                 {
                     daysOfWinter = 0;
                 }
-
                 float Psno_kg_m3 = Globals.bulkIntercept + (Globals.bulkSlope * daysOfWinter); //kg/m3
                 float Psno_g_cm3 = Psno_kg_m3 / 1000; //g/cm3
-
                 float sno_dep = Globals.Pwater * (snowPack / 1000) / Psno_kg_m3; //m
-                //if (data[m].Tave >= 0)  -- snowmelt has already been accounted for
-                //{
-                //    float fracAbove0 = data[m].Tmax / (data[m].Tmax - data[m].Tmin);
-                //    sno_dep = sno_dep * fracAbove0;
-                //}
-                // from CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
-                // Eq. 85 - Jordan (1991)
 
-                if (soilIceDepth)
+                if (lastTempBelowSnow == float.MaxValue)
                 {
-                    float lambda_Snow = (float) (Globals.lambAir+((0.0000775*Psno_kg_m3)+(0.000001105*Math.Pow(Psno_kg_m3,2)))*(Globals.lambIce-Globals.lambAir))*3.6F*24F; //(kJ/m/d/K) includes unit conversion from W to kJ
+                    float lambda_Snow = (float)(Globals.lambAir + ((0.0000775 * Psno_kg_m3) + (0.000001105 * Math.Pow(Psno_kg_m3, 2))) * (Globals.lambIce - Globals.lambAir)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
                     float vol_heat_capacity_snow = Globals.snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
-                                                                                          //float Ks_snow = data[m].DaySpan * lambda_Snow / vol_heat_capacity_snow; //thermal diffusivity (m2/month)
                     float Ks_snow = 1000000F / 86400F * (lambda_Snow / vol_heat_capacity_snow); //thermal diffusivity (mm2/s)
                     float damping = (float)Math.Sqrt((2.0F * Ks_snow) / Constants.omega);
                     float DRz_snow = 1F;
@@ -1686,13 +1694,13 @@ namespace Landis.Library.PnETCohorts
 
                     //if (isSummer(data[m].Month))
                     //{
-                        activeLayerDepth[data[m].Month - 1] = bottomFreezeDepth;
+                    activeLayerDepth[data[m].Month - 1] = bottomFreezeDepth;
                     //}
 
                     // When there was permafrost at the end of summer, assume that the bottom of the ice lens is as deep as possible
                     //if (permafrost)
                     //{
-                        frostDepth[data[m].Month - 1] = bottomFreezeDepth;
+                    frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                     //}
 
                     float testDepth = 0;
@@ -1746,20 +1754,25 @@ namespace Landis.Library.PnETCohorts
                     float annualTavg = tSum / mCount;
                     float annualPcpAvg = pSum / mCount;
                     float tAmplitude = (tMax - tMin) / 2;
-
+                    float tempBelowSnow = Ecoregion.Variables.Tave;
+                    if (sno_dep > 0)
+                    {
+                        tempBelowSnow = annualTavg + (Ecoregion.Variables.Tave - annualTavg) * DRz_snow;
+                    }
+                    lastTempBelowSnow = tempBelowSnow;
 
                     // Regardless of permafrost, need to fill the tempDict with values
                     bool foundBottomIce = false;
-
+                  
                     // Calculate depth to bottom of ice lens with FrostDepth
                     while (testDepth <= bottomFreezeDepth)
                     {
                         float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
                                                                                                     //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
-                        // Calculate lag months from both max and min temperature months
+                                                                                                    // Calculate lag months from both max and min temperature months
                         int lagMax = (data[m].Month + (3 - maxMonth));
                         int lagMin = (data[m].Month + (minMonth - 5));
-                        if(minMonth >= 9)
+                        if (minMonth >= 9)
                             lagMin = (data[m].Month + (minMonth - 12 - 5));
                         float lagAvg = ((float)lagMax + (float)lagMin) / 2f;
 
@@ -1784,7 +1797,12 @@ namespace Landis.Library.PnETCohorts
                                 activeLayerDepth[data[m].Month - 1] = testDepth;
                             }
                         }
-                        testDepth += 0.25F;
+                        if (testDepth == 0f)
+                            testDepth = 0.10f;
+                        else if (testDepth == 0.10f)
+                            testDepth = 0.25f;
+                        else
+                            testDepth += 0.25F;
                     }
 
                     // The ice lens is deeper than the max depth
@@ -1792,6 +1810,59 @@ namespace Landis.Library.PnETCohorts
                     {
                         frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                     }
+                }
+                    depthTempDict = Permafrost.CalculateMonthlySoilTemps(depthTempDict, Ecoregion, daysOfWinter, snowPack, hydrology, lastTempBelowSnow);
+                    SortedList<float, float> monthlyDepthTempDict = new SortedList<float, float>();
+                    monthlyDepthTempDict.Add(0.1f, depthTempDict[0.1f]);
+
+                    lastTempBelowSnow = depthTempDict[0];
+
+                if (soilIceDepth)
+                {
+                    // Calculate depth to bottom of ice lens with FrostDepth
+                    float maxDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
+                    float bottomFreezeDepth = maxDepth / 1000;
+                    float lastBelowZeroDepth = 0;
+                    float testDepth = 0;
+                    bool foundBottomIce = false;
+                    float zTemp = 0;
+                    activeLayerDepth[data[m].Month - 1] = bottomFreezeDepth;
+
+                    while (testDepth <= bottomFreezeDepth)
+                    {
+                        zTemp = depthTempDict[testDepth];
+
+                        if (zTemp <= 0 && !permafrost)
+                        {
+                            lastBelowZeroDepth = testDepth;
+                        }
+
+                        if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !permafrost)
+                        {
+                            frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
+                            foundBottomIce = true;
+                        }
+
+                        if (zTemp <= 0)
+                        {
+                            if (testDepth < activeLayerDepth[data[m].Month - 1])
+                            {
+                                activeLayerDepth[data[m].Month - 1] = testDepth;
+                            }
+                        }
+                        if (testDepth == 0f)
+                            testDepth = 0.10f;
+                        else if (testDepth == 0.10f)
+                            testDepth = 0.25f;
+                        else
+                            testDepth += 0.25F;
+                    }
+                    // The ice lens is deeper than the max depth
+                    if (zTemp <= 0 && !foundBottomIce && !permafrost)
+                    {
+                        frostDepth[data[m].Month - 1] = bottomFreezeDepth;
+                    }
+
 
                     propRootAboveFrost = Math.Min(1, (activeLayerDepth[data[m].Month - 1] * 1000) / Ecoregion.RootingDepth);
                     float propRootBelowFrost = 1 - propRootAboveFrost;
@@ -1830,12 +1901,12 @@ namespace Landis.Library.PnETCohorts
                     }
                     leakageFrac = Ecoregion.LeakageFrac * leakageFrostReduction;
                     lastPropBelowFrost = propRootBelowFrost;
-
                 }
-                else
-                {
-                    activeLayerDepth[data[m].Month - 1] = 999;
-                }
+                //}
+                //else
+                //{
+                //    activeLayerDepth[data[m].Month - 1] = 999;
+                //}
 
                 // permafrost
                 //float frostFreeProp = Math.Min(1.0F, frostFreeSoilDepth / Ecoregion.RootingDepth);
@@ -2310,6 +2381,7 @@ namespace Landis.Library.PnETCohorts
                 float[] CanopyLAICount = new float[tempMaxCanopyLayers];
                 float[] CanopyAlbedo = new float[tempMaxCanopyLayers];
                 float[] LayerLAI = new float[tempMaxCanopyLayers];
+                float[] CanopyPropSum = new float[tempMaxCanopyLayers];
                 CumulativeLeafAreas leafAreas = new CumulativeLeafAreas();
 
                 monthCount[data[m].Month - 1]++;
@@ -2351,26 +2423,48 @@ namespace Landis.Library.PnETCohorts
                     LayerLAI[layer] += cohort.SumLAI * cohort.CanopyLayerProp;
                     monthlyLAI[data[m].Month - 1] += (cohort.LAI.Sum() * cohort.CanopyLayerProp);
                     monthlyLAICumulative[data[m].Month - 1] += (cohort.LAI.Sum() * cohort.CanopyLayerProp);
+                    CanopyPropSum[layer] += cohort.CanopyLayerProp;
                 }
                 monthlyActualTrans[data[m].Month - 1] += transpiration;
                 monthlyPotentialTrans[data[m].Month - 1] += potentialTranspiration;
                 monthlyAET[data[m].Month - 1] = monthlyActualTrans[data[m].Month - 1] + monthlyEvap[data[m].Month - 1] + monthlyInterception[data[m].Month - 1];
 
+
+                float groundAlbedo = 0.2F;
+                if (sno_dep > 0)
+                {
+                    float snowMultiplier = sno_dep >= Globals.snowReflectanceThreshold ? 1 : sno_dep / Globals.snowReflectanceThreshold;
+                    groundAlbedo = (float)(groundAlbedo + (groundAlbedo * (3.125 * snowMultiplier)));
+                }
+
+                for (int layer = 0; layer < tempMaxCanopyLayers; layer++)
+                {
+                    if(CanopyPropSum[layer] < 1.0)
+                    {
+                        float propGround = 1.0f - CanopyPropSum[layer];
+                        CanopyAlbedo[layer] += propGround * groundAlbedo;
+                    }
+                }
+
                 if (AllCohorts.Count == 0)
                 {
-                    float albedo = 0.2F;
-                    if (sno_dep > 0)
-                    {
-                        float snowMultiplier = sno_dep >= Globals.snowReflectanceThreshold ? 1 : sno_dep / Globals.snowReflectanceThreshold;
-                        albedo = (float)(albedo + (albedo * (3.125 * snowMultiplier)));
-                    }
-                    averageAlbedo[data[m].Month - 1] = albedo;
+                    averageAlbedo[data[m].Month - 1] = groundAlbedo;
                 }
                 else
                 {
-                    if (LayerLAI.Max() < 1)
+                    if(LayerLAI.Max() == 0)
                     {
-                        var index = Array.FindLastIndex(CanopyAlbedo, value => value != 0);
+                        var index = Array.FindLastIndex(CanopyAlbedo, value => value != groundAlbedo);
+
+                        // If a value not equal to zero was found
+                        if (index != -1)
+                        {
+                            averageAlbedo[data[m].Month - 1] = CanopyAlbedo[index];
+                        }
+                    }
+                    else if (LayerLAI.Max() < 1)
+                    {
+                        var index = Array.FindLastIndex(LayerLAI, value => value != 0);
 
                         // If a value not equal to zero was found
                         if (index != -1)
@@ -2406,6 +2500,20 @@ namespace Landis.Library.PnETCohorts
                 }
                 canopylaimax = (float)Math.Max(canopylaimax, LayerLAI.Sum());
 
+                if (data[m].Tave > 0)
+                {
+                    float monthlyPressureHead = hydrology.GetPressureHead(Ecoregion);
+                    sumPressureHead += monthlyPressureHead;
+                    countPressureHead += 1;
+
+                    SiteVars.MonthlyPressureHead[this.Site][m] = monthlyPressureHead;
+                    SiteVars.MonthlySoilTemp[this.Site][m] = monthlyDepthTempDict;
+                }
+                else
+                {
+                    SiteVars.MonthlyPressureHead[this.Site][m] = -9999;
+                    SiteVars.MonthlySoilTemp[this.Site][m] = null;
+                }
                 // Calculate establishment probability
                 if (Globals.ModelCore.CurrentTime > 0)
                 {

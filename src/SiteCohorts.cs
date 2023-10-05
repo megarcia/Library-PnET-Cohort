@@ -2430,11 +2430,11 @@ namespace Landis.Library.PnETCohorts
                 monthlyAET[data[m].Month - 1] = monthlyActualTrans[data[m].Month - 1] + monthlyEvap[data[m].Month - 1] + monthlyInterception[data[m].Month - 1];
 
 
-                float groundAlbedo = 0.2F;
+                float groundAlbedo = 0.24F;
                 if (sno_dep > 0)
                 {
                     float snowMultiplier = sno_dep >= Globals.snowReflectanceThreshold ? 1 : sno_dep / Globals.snowReflectanceThreshold;
-                    groundAlbedo = (float)(groundAlbedo + (groundAlbedo * (3.125 * snowMultiplier)));
+                    groundAlbedo = (float)(groundAlbedo + (groundAlbedo * (2.125 * snowMultiplier)));
                 }
 
                 for (int layer = 0; layer < tempMaxCanopyLayers; layer++)
@@ -2443,6 +2443,9 @@ namespace Landis.Library.PnETCohorts
                     {
                         float propGround = 1.0f - CanopyPropSum[layer];
                         CanopyAlbedo[layer] += propGround * groundAlbedo;
+                    }else if (CanopyPropSum[layer] > 1.0)
+                    {
+                        CanopyAlbedo[layer] = CanopyAlbedo[layer] / CanopyPropSum[layer];
                     }
                 }
 
@@ -2461,6 +2464,10 @@ namespace Landis.Library.PnETCohorts
                         {
                             averageAlbedo[data[m].Month - 1] = CanopyAlbedo[index];
                         }
+                        else
+                        {
+                            averageAlbedo[data[m].Month - 1] = groundAlbedo;
+                        }
                     }
                     else if (LayerLAI.Max() < 1)
                     {
@@ -2470,6 +2477,10 @@ namespace Landis.Library.PnETCohorts
                         if (index != -1)
                         {
                             averageAlbedo[data[m].Month - 1] = CanopyAlbedo[index];
+                        }
+                        else
+                        {
+                            averageAlbedo[data[m].Month - 1] = groundAlbedo;
                         }
                     }
                     else
@@ -2798,7 +2809,7 @@ namespace Landis.Library.PnETCohorts
             {
                 return -1;
             }
-
+            float finalAlbedo = 0;
             float snowMultiplier = snowDepth >= Globals.snowReflectanceThreshold ? 1 : snowDepth / Globals.snowReflectanceThreshold;
 
             if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
@@ -2806,26 +2817,26 @@ namespace Landis.Library.PnETCohorts
                         || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open")
                         || cohort.SumLAI == 0))
             {
-                return (float)(albedo + (albedo * (2.125 * snowMultiplier)));
+                finalAlbedo = (float)(albedo + (albedo * (2.125 * snowMultiplier)));
             }
             else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
                     && cohort.SpeciesPnET.Lifeform.ToLower().Contains("dark"))
             {
-                return (float)(albedo + (albedo * (0.8 * snowMultiplier)));
+                finalAlbedo = (float)(albedo + (albedo * (0.8 * snowMultiplier)));
             }
             else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
                     && cohort.SpeciesPnET.Lifeform.ToLower().Contains("light"))
             {
-                return (float)(albedo + (albedo * (0.75 * snowMultiplier)));
+                finalAlbedo = (float)(albedo + (albedo * (0.75 * snowMultiplier)));
             }
             else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
                     && cohort.SpeciesPnET.Lifeform.ToLower().Contains("decid"))
             {
-                return (float)(albedo + (albedo * (0.35 * snowMultiplier)));
+                finalAlbedo = (float)(albedo + (albedo * (0.35 * snowMultiplier)));
             }
 
 
-            return 0;
+            return finalAlbedo;
         }
 
         private void CalculateCumulativeLeafArea(ref CumulativeLeafAreas leafAreas, Cohort cohort)

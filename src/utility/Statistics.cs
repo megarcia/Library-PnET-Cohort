@@ -16,8 +16,9 @@ namespace Landis.Library.PnETCohorts
         {
             lock (Globals.distributionThreadLock)
             {
-                Globals.ModelCore.ContinuousUniformDistribution.Alpha = min;
+                Globals.ModelCore.ContinuousUniformDistribution.Alpha = 0;
                 Globals.ModelCore.ContinuousUniformDistribution.Beta = max + 1;
+                Globals.ModelCore.ContinuousUniformDistribution.Alpha = min;
                 Globals.ModelCore.ContinuousUniformDistribution.NextDouble();
 
                 //double testMin = ModelCore.ContinuousUniformDistribution.Minimum;
@@ -34,8 +35,9 @@ namespace Landis.Library.PnETCohorts
         {
             lock (Globals.distributionThreadLock)
             {
-                Globals.ModelCore.ContinuousUniformDistribution.Alpha = min;
+                Globals.ModelCore.ContinuousUniformDistribution.Alpha = 0;
                 Globals.ModelCore.ContinuousUniformDistribution.Beta = max;
+                Globals.ModelCore.ContinuousUniformDistribution.Alpha = min;
                 Globals.ModelCore.ContinuousUniformDistribution.NextDouble();
 
                 double value = Globals.ModelCore.ContinuousUniformDistribution.NextDouble();

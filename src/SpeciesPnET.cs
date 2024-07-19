@@ -479,8 +479,6 @@ namespace Landis.Library.PnETCohorts
             maxSeedDist = species.MaxSeedDist;
             effectiveSeedDist = species.EffectiveSeedDist;
             vegReprodProb = species.VegReprodProb;
-            fireTolerance = species.FireTolerance;
-            shadeTolerance = species.ShadeTolerance;
             maturity = species.Maturity;
             longevity = species.Longevity;
 
@@ -1049,5 +1047,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
+
+        public string FullName
+        {
+            get;
+            set;
+        }
     }
 }

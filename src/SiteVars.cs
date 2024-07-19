@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using Landis.Core;
-using Landis.Library.AgeOnlyCohorts;
-using Landis.Library.Biomass;
+using Landis.Library.UniversalCohorts;
 using Landis.SpatialModeling;
 
 namespace Landis.Library.PnETCohorts

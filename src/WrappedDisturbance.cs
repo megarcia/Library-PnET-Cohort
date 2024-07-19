@@ -1,6 +1,6 @@
 //  Authors:  Robert M. Scheller, James B. Domingo
 
-using Landis.Library.AgeOnlyCohorts;
+using Landis.Library.UniversalCohorts;
 using Landis.SpatialModeling;
 using Landis.Core;
 
@@ -12,11 +12,11 @@ namespace Landis.Library.PnETCohorts
     public class WrappedDisturbance
         : IDisturbance
     {
-        private AgeOnlyCohorts.ICohortDisturbance ageCohortDisturbance;
+        private ICohortDisturbance ageCohortDisturbance;
 
         //---------------------------------------------------------------------
 
-        public WrappedDisturbance(AgeOnlyCohorts.ICohortDisturbance ageCohortDisturbance)
+        public WrappedDisturbance(ICohortDisturbance ageCohortDisturbance)
         {
             this.ageCohortDisturbance = ageCohortDisturbance;
         }
@@ -47,7 +47,7 @@ namespace Landis.Library.PnETCohorts
                 Cohort.KilledByAgeOnlyDisturbance(this, cohort,
                                                   ageCohortDisturbance.CurrentSite,
                                                   ageCohortDisturbance.Type);
-                return cohort.Biomass;
+                return (int)cohort.Data.Biomass;
             }
             else
                 return 0;

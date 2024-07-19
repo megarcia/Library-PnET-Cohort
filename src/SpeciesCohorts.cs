@@ -1,14 +1,13 @@
 //  Authors:  Robert M. Scheller, James B. Domingo
 
 using Landis.Core;
-using Landis.Library.AgeOnlyCohorts;
 using Landis.SpatialModeling;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using Landis.Library.BiomassCohorts;
+using Landis.Library.UniversalCohorts;
 using log4net;
 using System.Linq;
 
@@ -19,8 +18,7 @@ namespace Landis.Library.PnETCohorts
     /// </summary>
     public class SpeciesCohorts
         : PnETCohorts.ISpeciesCohorts,
-          BiomassCohorts.ISpeciesCohorts,
-          AgeOnlyCohorts.ISpeciesCohorts
+          Landis.Library.UniversalCohorts.ISpeciesCohorts
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly bool isDebugEnabled = log.IsDebugEnabled;
@@ -31,7 +29,7 @@ namespace Landis.Library.PnETCohorts
 
         //  Cohort data is in oldest to youngest order.
         private List<CohortData> cohortData;
-        //private List<Landis.Library.BiomassCohorts.CohortData> biocohortData;
+        //private List<Landis.Library.UniversalCohorts.CohortData> biocohortData;
         //---------------------------------------------------------------------
 
         public int Count
@@ -269,12 +267,12 @@ namespace Landis.Library.PnETCohorts
         {
             if (isDebugEnabled)
                 log.DebugFormat("  cohort removed: {0}, {1} yrs, {2} g/m2 ({3})",
-                                cohort.Species.Name, cohort.Age, cohort.Biomass,
+                                cohort.Species.Name, cohort.Data.Age, cohort.Data.Biomass,
                                 disturbanceType != null
                                     ? disturbanceType.Name
-                                    : cohort.Age >= species.Longevity
+                                    : cohort.Data.Age >= species.Longevity
                                         ? "senescence"
-                                        : cohort.Biomass == 0
+                                        : cohort.Data.Biomass == 0
                                             ? "attrition"
                                             : "UNKNOWN");
 
@@ -353,7 +351,7 @@ namespace Landis.Library.PnETCohorts
 
         //---------------------------------------------------------------------
 
-        private static AgeOnlyCohorts.SpeciesCohortBoolArray isSpeciesCohortDamaged;
+        private static SpeciesCohortBoolArray isSpeciesCohortDamaged;
         private ushort age_key;
         private int initialWoodBiomass;
 
@@ -361,7 +359,7 @@ namespace Landis.Library.PnETCohorts
 
         static SpeciesCohorts()
         {
-            isSpeciesCohortDamaged = new AgeOnlyCohorts.SpeciesCohortBoolArray();
+            isSpeciesCohortDamaged = new SpeciesCohortBoolArray();
         }
 
         //---------------------------------------------------------------------
@@ -372,7 +370,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns>
         /// The total biomass of all the cohorts damaged by the disturbance.
         /// </returns>
-        public int MarkCohorts(AgeOnlyCohorts.ISpeciesCohortsDisturbance disturbance)
+        public int MarkCohorts(ISpeciesCohortsDisturbance disturbance)
         {
             isSpeciesCohortDamaged.SetAllFalse(Count);
             disturbance.MarkCohortsForDeath(this, isSpeciesCohortDamaged);
@@ -400,7 +398,7 @@ namespace Landis.Library.PnETCohorts
 
         //---------------------------------------------------------------------
 
-        IEnumerator<Landis.Library.PnETCohorts.ICohort> IEnumerable<Landis.Library.PnETCohorts.ICohort>.GetEnumerator()
+        IEnumerator<Landis.Library.PnETCohorts.ICohort> GetEnumerator()
         {
             //Console.Out.WriteLine("Itor 1");
             foreach (CohortData data in cohortData)
@@ -417,21 +415,12 @@ namespace Landis.Library.PnETCohorts
 
         //---------------------------------------------------------------------
 
-        IEnumerator<Landis.Library.AgeOnlyCohorts.ICohort> IEnumerable<Landis.Library.AgeOnlyCohorts.ICohort>.GetEnumerator()
-        {
-            //Console.Out.WriteLine("Itor 3");
-            foreach (CohortData data in cohortData)
-                yield return new Landis.Library.AgeOnlyCohorts.Cohort(species, data.Age);
-        }
-
-        //---------------------------------------------------------------------
-
-        IEnumerator<Landis.Library.BiomassCohorts.ICohort> IEnumerable<Landis.Library.BiomassCohorts.ICohort>.GetEnumerator()
+        IEnumerator<Landis.Library.UniversalCohorts.ICohort> IEnumerable<Landis.Library.UniversalCohorts.ICohort>.GetEnumerator()
         {
             //Console.Out.WriteLine("Itor 4");
             foreach (CohortData data in cohortData)
             {
-                yield return new Landis.Library.BiomassCohorts.Cohort(species, data.Age, (int)data.Biomass);
+                yield return new Landis.Library.UniversalCohorts.Cohort(species, data.Age, (int)data.Biomass, new System.Dynamic.ExpandoObject());
             }
         }
     }

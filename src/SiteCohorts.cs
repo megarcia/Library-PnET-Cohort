@@ -2430,7 +2430,7 @@ namespace Landis.Library.PnETCohorts
                 monthlyAET[data[m].Month - 1] = monthlyActualTrans[data[m].Month - 1] + monthlyEvap[data[m].Month - 1] + monthlyInterception[data[m].Month - 1];
 
 
-                float groundAlbedo = 0.24F;
+                float groundAlbedo = 0.20F;
                 if (sno_dep > 0)
                 {
                     float snowMultiplier = sno_dep >= Globals.snowReflectanceThreshold ? 1 : sno_dep / Globals.snowReflectanceThreshold;
@@ -2817,7 +2817,7 @@ namespace Landis.Library.PnETCohorts
                         || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open")
                         || cohort.SumLAI == 0))
             {
-                finalAlbedo = (float)(albedo + (albedo * (2.125 * snowMultiplier)));
+                finalAlbedo = (float)(albedo + (albedo * (2.75 * snowMultiplier)));
             }
             else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
                     && cohort.SpeciesPnET.Lifeform.ToLower().Contains("dark"))
@@ -3508,7 +3508,7 @@ namespace Landis.Library.PnETCohorts
                     float[] averageAlbedo_array = new float[12];
                     for (int i = 0; i < averageAlbedo_array.Length; i++)
                     {
-                        averageAlbedo_array[i] = 0.24f;
+                        averageAlbedo_array[i] = 0.20f;
                     }
                     return averageAlbedo_array;
                 }

@@ -278,7 +278,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public static List<IEcoregionPnETVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end, Climate.Climate.Phase spinupOrfuture)
+        public static List<IEcoregionPnETVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
         {
             // Monthly simulation data untill but not including end
             List<IEcoregionPnETVariables> data = new List<IEcoregionPnETVariables>();
@@ -301,7 +301,7 @@ namespace Landis.Library.PnETCohorts
 
                             if (spinupOrfuture == Climate.Climate.Phase.Future_Climate)
                             {
-                                if (Climate.Climate.Future_MonthlyData.ContainsKey(date.Year))
+                                if (Climate.Climate.MonthlyData.ContainsKey(date.Year))
                                     ClimateRegionData.AnnualWeather[ecoregion] = Climate.Climate.Future_MonthlyData[date.Year][ecoregion.Index];
                             }
                             else

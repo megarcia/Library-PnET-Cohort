@@ -299,16 +299,18 @@ namespace Landis.Library.PnETCohorts
                         {
                             //PlugIn.ModelCore.UI.WriteLine($"Retrieving Climate Library for year {date.Year}.");
 
-                            if (spinupOrfuture == Climate.Climate.Phase.Future_Climate)
-                            {
-                                if (Climate.Climate.MonthlyData.ContainsKey(date.Year))
-                                    ClimateRegionData.AnnualClimate[ecoregion] = Climate.Climate.FutureEcoregionYearClimate[ecoregion.Index][date.Year];
-                            }
-                            else
-                            {
-                                if (Climate.Climate.Spinup_MonthlyData.ContainsKey(date.Year))
-                                    ClimateRegionData.AnnualClimate[ecoregion] = Climate.Climate.SpinupEcoregionYearClimate[ecoregion.Index][date.Year];
-                            }
+                            ClimateRegionData.AnnualClimate[ecoregion] = Climate.Climate.SpinupEcoregionYearClimate[ecoregion.Index][date.Year];
+
+                            //if (spinupOrfuture == Climate.Climate.Phase.Future_Climate)
+                            //{
+                            //    if (Climate.Climate.MonthlyData.ContainsKey(date.Year))
+                            //        ClimateRegionData.AnnualClimate[ecoregion] = Climate.Climate.FutureEcoregionYearClimate[ecoregion.Index][date.Year];
+                            //}
+                            //else
+                            //{
+                            //    if (Climate.Climate.Spinup_MonthlyData.ContainsKey(date.Year))
+                            //        ClimateRegionData.AnnualClimate[ecoregion] = Climate.Climate.SpinupEcoregionYearClimate[ecoregion.Index][date.Year];
+                            //}
 
                             oldYear = date.Year;
                         }

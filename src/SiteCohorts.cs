@@ -387,7 +387,7 @@ namespace Landis.Library.PnETCohorts
                 }
             }
 
-            List<IEcoregionPnETVariables> ecoregionInitializer = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, StartDate, StartDate.AddMonths(1), Climate.Climate.Phase.SpinUp_Climate) : EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
+            List<IEcoregionPnETVariables> ecoregionInitializer = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, StartDate, StartDate.AddMonths(1)) : EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
 
             //List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
             hydrology = new Hydrology(Ecoregion.FieldCap);
@@ -1318,7 +1318,7 @@ namespace Landis.Library.PnETCohorts
                 if (date.CompareTo(StartDate) == 0)
                     break;
 
-                var climate_vars = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, date, EndDate, Climate.Climate.Phase.SpinUp_Climate) : EcoregionData.GetData(Ecoregion, date, EndDate);
+                var climate_vars = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, date, EndDate) : EcoregionData.GetData(Ecoregion, date, EndDate);
 
                 Grow(climate_vars, AllowMortality,SiteOutputName != null);
 

@@ -99,9 +99,12 @@ namespace Landis.Library.PnETCohorts
                     testDepth = 0.25f;
                 else
                     testDepth += 0.25F;
-            }
+                }
+
+                if (maxDepth < 100)
+                    depthTempDict[0.1f] = depthTempDict[0];
             //}
-            return depthTempDict;
+                return depthTempDict;
         }
 
         public static float[] CalculateSnowDepth(int daysOfWinter, float snowPack)

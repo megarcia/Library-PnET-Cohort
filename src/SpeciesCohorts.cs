@@ -163,7 +163,7 @@ namespace Landis.Library.PnETCohorts
             //  young order.
             int youngCount = 0;
             float totalBiomass = 0;
-            int totalANPP = 0;
+            double totalANPP = 0;
             for (int i = cohortData.Count - 1; i >= 0; i--)
             {
                 CohortData data = cohortData[i];

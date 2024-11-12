@@ -4,6 +4,7 @@ using Landis.Library.Climate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -298,8 +299,16 @@ namespace Landis.Library.PnETCohorts
                         if (date.Year != oldYear)
                         {
                             //PlugIn.ModelCore.UI.WriteLine($"Retrieving Climate Library for year {date.Year}.");
-
-                            ClimateRegionData.AnnualClimate[ecoregion] = Climate.Climate.SpinupEcoregionYearClimate[ecoregion.Index][date.Year];
+                            if (Globals.IsFutureClimate(date))
+                            {
+                                ClimateRegionData.AnnualClimate[ecoregion] = 
+                                Climate.Climate.FutureEcoregionYearClimate[ecoregion.Index][Globals.ConvertYearToFutureClimateYear(date)];
+                            }
+                            else
+                            {
+                                ClimateRegionData.AnnualClimate[ecoregion] = 
+                                Climate.Climate.SpinupEcoregionYearClimate[ecoregion.Index][Globals.ConvertYearToSpinUpClimateYear(date)];
+                            }
 
                             //if (spinupOrfuture == Climate.Climate.Phase.Future_Climate)
                             //{

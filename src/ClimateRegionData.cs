@@ -2,6 +2,7 @@
 
 using Landis.Core;
 using Landis.Library.Climate;
+using System;
 using System.Linq;
 
 namespace Landis.Library.PnETCohorts
@@ -28,8 +29,14 @@ namespace Landis.Library.PnETCohorts
             }
             */
 
-            // TODO: What should the latitude for all ecoregions be?
-            Climate.Climate.GenerateEcoregionClimateData(45.0);
+            Climate.Climate.GenerateEcoregionClimateData(((Parameter<float>)Names.GetParameter(Names.Latitude)).Value);
+
+            // grab the first year's spinup climate
+            foreach (var ecoregion in Globals.ModelCore.Ecoregions.Where(x => x.Active))
+            {
+                AnnualClimate[ecoregion] = Climate.Climate.SpinupEcoregionYearClimate[ecoregion.Index][1];      // Climate data year index is 1-based
+            }
+            Globals.SetMinMaxClimateYears();
         }
 
         /*

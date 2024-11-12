@@ -580,7 +580,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
-        public int ANPP
+        public double ANPP
         {
             get
             {
@@ -723,7 +723,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Changes the cohort's ANPP.
         /// </summary>
-        public void ChangeANPP(int delta)
+        public void ChangeANPP(double delta)
         {            
             data.ANPP = data.ANPP + delta;
         }

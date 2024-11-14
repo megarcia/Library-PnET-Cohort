@@ -63,10 +63,13 @@ namespace Landis.Library.PnETCohorts
 
         public static void SetAllEcoregionsFutureAnnualClimate(int year)
         {
-            // grab the year's future climate
-            foreach (var ecoregion in Globals.ModelCore.Ecoregions.Where(x => x.Active))
+            if(Names.TryGetParameter(Names.ClimateConfigFile, out var climateLibraryFileName))
             {
-                AnnualClimate[ecoregion] = Climate.Climate.FutureEcoregionYearClimate[ecoregion.Index][year];      // Climate data year index is 1-based
+                // grab the year's future climate
+                foreach (var ecoregion in Globals.ModelCore.Ecoregions.Where(x => x.Active))
+                {
+                    AnnualClimate[ecoregion] = Climate.Climate.FutureEcoregionYearClimate[ecoregion.Index][year];      // Climate data year index is 1-based
+                }
             }
 
             //int actualYear = Climate.Future_MonthlyData.Keys.Min() + year - 1;

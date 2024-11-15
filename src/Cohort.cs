@@ -1829,11 +1829,11 @@ namespace Landis.Library.PnETCohorts
                 {
                     if(PressHeadAvg > this.SpeciesPnET.H3)
                     {
-                        limitingFactor = "Too dry";
+                        limitingFactor = "Too_dry";
                     }
                     else if (PressHeadAvg < this.SpeciesPnET.H2)
                     {
-                        limitingFactor = "Too wet";
+                        limitingFactor = "Too_wet";
                     }
                     else
                         limitingFactor = "fWater";

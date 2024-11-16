@@ -5,20 +5,19 @@ namespace Landis.Library.PnETCohorts
     /// PnET's Cohort Interface
     /// </summary>
     public interface ICohort
-        :Landis.Library.BiomassCohorts.ICohort, Landis.Library.AgeOnlyCohorts.ICohort
+        :Landis.Library.UniversalCohorts.ICohort
     {
 
         //---------------------------------------------------------------------
-
-        //void IncrementAge();
-        CohortData Data
+        new CohortData Data
         {
             get;
         }
+        //void IncrementAge();
         //Cohort Cohort
         //{
         //    get;
-       // }
+        // }
         int AGBiomass
         {
             get;

@@ -4,6 +4,7 @@ using Landis.Library.Climate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -278,7 +279,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public static List<IEcoregionPnETVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end, Climate.Climate.Phase spinupOrfuture)
+        public static List<IEcoregionPnETVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
         {
             // Monthly simulation data untill but not including end
             List<IEcoregionPnETVariables> data = new List<IEcoregionPnETVariables>();
@@ -298,17 +299,27 @@ namespace Landis.Library.PnETCohorts
                         if (date.Year != oldYear)
                         {
                             //PlugIn.ModelCore.UI.WriteLine($"Retrieving Climate Library for year {date.Year}.");
-
-                            if (spinupOrfuture == Climate.Climate.Phase.Future_Climate)
+                            if (Globals.IsFutureClimate(date))
                             {
-                                if (Climate.Climate.Future_MonthlyData.ContainsKey(date.Year))
-                                    ClimateRegionData.AnnualWeather[ecoregion] = Climate.Climate.Future_MonthlyData[date.Year][ecoregion.Index];
+                                ClimateRegionData.AnnualClimate[ecoregion] = 
+                                Climate.Climate.FutureEcoregionYearClimate[ecoregion.Index][Globals.ConvertYearToFutureClimateYear(date)];
                             }
                             else
                             {
-                                if (Climate.Climate.Spinup_MonthlyData.ContainsKey(date.Year))
-                                    ClimateRegionData.AnnualWeather[ecoregion] = Climate.Climate.Spinup_MonthlyData[date.Year][ecoregion.Index];
+                                ClimateRegionData.AnnualClimate[ecoregion] = 
+                                Climate.Climate.SpinupEcoregionYearClimate[ecoregion.Index][Globals.ConvertYearToSpinUpClimateYear(date)];
                             }
+
+                            //if (spinupOrfuture == Climate.Climate.Phase.Future_Climate)
+                            //{
+                            //    if (Climate.Climate.MonthlyData.ContainsKey(date.Year))
+                            //        ClimateRegionData.AnnualClimate[ecoregion] = Climate.Climate.FutureEcoregionYearClimate[ecoregion.Index][date.Year];
+                            //}
+                            //else
+                            //{
+                            //    if (Climate.Climate.Spinup_MonthlyData.ContainsKey(date.Year))
+                            //        ClimateRegionData.AnnualClimate[ecoregion] = Climate.Climate.SpinupEcoregionYearClimate[ecoregion.Index][date.Year];
+                            //}
 
                             oldYear = date.Year;
                         }

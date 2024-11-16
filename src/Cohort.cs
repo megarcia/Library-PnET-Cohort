@@ -1,15 +1,18 @@
 // uses dominance to allocate psn and subtract transpiration from soil water, average cohort vars over layer
 
 using Landis.Core;
+using Landis.Library.UniversalCohorts;
 using Landis.SpatialModeling;
 using Landis.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class Cohort : Landis.Library.PnETCohorts.ICohort
+    public class Cohort : ICohort
     { 
         public delegate void SubtractTranspiration(float transpiration, ISpeciesPnET Species);
         public ushort index;
@@ -577,7 +580,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
         //---------------------------------------------------------------------
-        public int ANPP
+        public double ANPP
         {
             get
             {
@@ -720,7 +723,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Changes the cohort's ANPP.
         /// </summary>
-        public void ChangeANPP(int delta)
+        public void ChangeANPP(double delta)
         {            
             data.ANPP = data.ANPP + delta;
         }
@@ -985,7 +988,7 @@ namespace Landis.Library.PnETCohorts
             //defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, speciesPnET, abovegroundBiomass, SiteAboveGroundBiomass);
             lock (Globals.distributionThreadLock)
             {
-                data.DeFolProp = (float)Landis.Library.BiomassCohorts.CohortDefoliation.Compute(this, site, SiteAboveGroundBiomass);
+                data.DeFolProp = (float)Landis.Library.UniversalCohorts.CohortDefoliation.Compute(site, this, 0, SiteAboveGroundBiomass);
             }
         }
         //---------------------------------------------------------------------
@@ -1826,11 +1829,11 @@ namespace Landis.Library.PnETCohorts
                 {
                     if(PressHeadAvg > this.SpeciesPnET.H3)
                     {
-                        limitingFactor = "Too dry";
+                        limitingFactor = "Too_dry";
                     }
                     else if (PressHeadAvg < this.SpeciesPnET.H2)
                     {
-                        limitingFactor = "Too wet";
+                        limitingFactor = "Too_wet";
                     }
                     else
                         limitingFactor = "fWater";
@@ -1957,6 +1960,7 @@ namespace Landis.Library.PnETCohorts
                 return hdr;
             }
         }
+
         //---------------------------------------------------------------------
         public void WriteCohortData()
         {
@@ -2069,7 +2073,7 @@ namespace Landis.Library.PnETCohorts
         {
             //if (AgeOnlyDeathEvent != null)
             //{
-            //    AgeOnlyDeathEvent(sender, new Landis.Library.BiomassCohorts.DeathEventArgs(cohort, site, disturbanceType));
+            //    AgeOnlyDeathEvent(sender, new Landis.Library.UniversalCohorts.DeathEventArgs(cohort, site, disturbanceType));
             //}
             if (DeathEvent != null)
             {
@@ -2077,7 +2081,15 @@ namespace Landis.Library.PnETCohorts
             }
            
         }
+
+        public void ChangeParameters(ExpandoObject additionalParams)
+        {
+            return;
+        }
         //---------------------------------------------------------------------
+
+        // DO NOT USE, USE THE LIBRARY-PNET VERSION INSTEAD
+        UniversalCohorts.CohortData UniversalCohorts.ICohort.Data => throw new NotImplementedException();
 
     }
 }

@@ -1,0 +1,14 @@
+
+/src/obj
+src/lib/Landis.Library.Climate-v4.4.dll
+src/lib/Landis.Library.InitialCommunity.Universal.dll
+src/lib/Landis.Library.Metadata-v2.dll
+src/lib/Landis.Library.Parameters-v2.dll
+src/lib/Landis.Library.Succession-v9.dll
+src/lib/Landis.Library.UniversalCohorts-v1.dll
+src/.vs/ProjectEvaluation/library-pnet-cohort.metadata.v7.bin
+src/.vs/ProjectEvaluation/library-pnet-cohort.projects.v7.bin
+/src/.vs
+/src/bin
+src/lib/Landis.Library.UniversalCohorts-v1.deps.json
+src/lib/Landis.Library.UniversalCohorts-v1.pdb

@@ -12,13 +12,13 @@ namespace Landis.Library.PnETCohorts
         {
             var month = date.Month - 1; // climate library month is zero-based, while DateTime.Month is one-based
 
-            O3 = ClimateRegionData.AnnualWeather[ecoregion].MonthlyOzone[month];
-            CO2 = ClimateRegionData.AnnualWeather[ecoregion].MonthlyCO2[month];
-            PAR0 = ClimateRegionData.AnnualWeather[ecoregion].MonthlyPAR[month];
-            Prec = ClimateRegionData.AnnualWeather[ecoregion].MonthlyPrecip[month] * 10.0; // The climate library gives precipitation in cm, but PnET expects precipitation in mm, so multiply by 10.
-            Tmax = ClimateRegionData.AnnualWeather[ecoregion].MonthlyMaxTemp[month];
-            Tmin = ClimateRegionData.AnnualWeather[ecoregion].MonthlyMinTemp[month];
-            SPEI = ClimateRegionData.AnnualWeather[ecoregion].MonthlySpei[month];
+            O3 = ClimateRegionData.AnnualClimate[ecoregion].MonthlyOzone[month];
+            CO2 = ClimateRegionData.AnnualClimate[ecoregion].MonthlyCO2[month];
+            PAR0 = ClimateRegionData.AnnualClimate[ecoregion].MonthlyPAR[month];
+            Prec = ClimateRegionData.AnnualClimate[ecoregion].MonthlyPrecip[month] * 10.0; // The climate library gives precipitation in cm, but PnET expects precipitation in mm, so multiply by 10.
+            Tmax = ClimateRegionData.AnnualClimate[ecoregion].MonthlyMaxTemp[month];
+            Tmin = ClimateRegionData.AnnualClimate[ecoregion].MonthlyMinTemp[month];
+            SPEI = ClimateRegionData.AnnualClimate[ecoregion].MonthlySpei[month];
         }
 
         public double O3 { get; }

@@ -3,8 +3,8 @@ namespace Landis.Library.PnETCohorts
 {
     public class OutputHeaders
     {
-        public const string PE = "Potential Evaporation(mm)";
-        public const string PET = "Potential Evapotranspiration(mm)";
+        public const string PE = "PotentialEvaporation(mm)";
+        public const string PET = "PotentialEvapotranspiration(mm)";
         public const string Time = "Time";
         public const string Year = "Year";
         public const string Month = "Month";
@@ -24,7 +24,7 @@ namespace Landis.Library.PnETCohorts
         public const string Tmax = "Tmax(C)";
         public const string Precip = "Precip(mm/mo)";
         public const string CO2 = "CO2(ppm)";
-        public const string O3 = "O3(cum_ppb_h";  
+        public const string O3 = "O3(cum_ppb_h)";  
         public const string RunOff = "RunOff(mm/mo)";
         public const string SurfaceRunOff = "PrecLoss(mm/mo)"; 
         public const string GrossPsn = "GrossPsn(gC_m2_mo)";
@@ -34,20 +34,20 @@ namespace Landis.Library.PnETCohorts
         public const string FrostDepth = "FrostDepth(mm/mo)";
         public const string FolResp = "FolResp(gC_m2_mo)";
         public const string water = "Water(m/m)";
-        public const string availableWater = "Available Water (mm)";
-        public const string SurfaceWater = "Surface Water (mm)";
+        public const string availableWater = "AvailableWater(mm)";
+        public const string SurfaceWater = "SurfaceWater(mm)";
         public const string Leakage = "Leakage(mm)";
         public const string PressureHead = "PressureHead(m)";
         public const string SnowPack = "SnowPack(mm)";
         public const string LAI = "LAI(m2)";
-        public const string LAISite = "Site LAI(m2)";
+        public const string LAISite = "SiteLAI(m2)";
         public const string MaintResp = "MaintenanceRespiration(gC_mo)";                      
         public const string Wood = "Wood(gDW)";                             
         public const string Root = "Root(gDW)";                         
         public const string Fol = "Fol(gDW)";
-        public const string WoodSite = "Site Wood(gDW)";
-        public const string RootSite = "Site Root(gDW)";
-        public const string FolSite = "Site Fol(gDW)"; 
+        public const string WoodSite = "SiteWood(gDW)";
+        public const string RootSite = "SiteRoot(gDW)";
+        public const string FolSite = "SiteFol(gDW)"; 
         public const string NSC = "NSC(gC)";                            
         public const string HeteroResp = "HeteroResp(gC_mo)";                         
         public const string Litter = "Litter(gDW_m2)";
@@ -86,7 +86,7 @@ namespace Landis.Library.PnETCohorts
         public const string AdjFracFol = "AdjFracFol(-)";
         public const string CiModifier = "CiModifier(-)";
         public const string SubCanopyPAR = "SubCanopyPAR";
-        public const string LimitingFactor = "Limiting Factor";
+        public const string LimitingFactor = "LimitingFactor";
         public const string SoilDiffusivity = "SoilDiffusivity(mm2_s)";
         public const string SPEI = "SPEI";
     }

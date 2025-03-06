@@ -75,9 +75,9 @@ namespace Landis.Library.PnETCohorts
             int totalBiomass = 0;
             foreach (ISpeciesCohorts speciesCohorts in (Landis.Library.UniversalCohorts.ISiteCohorts)siteCohorts) {
                 foreach (ICohort cohort in speciesCohorts) {
-                    totalBiomass += (int)cohort.Data.Biomass;
-                    if (cohort.Data.Age < successionTimeStep)
-                        youngBiomass += (int)cohort.Data.Biomass;
+                    totalBiomass += (int)cohort.Data.UniversalData.Biomass;
+                    if (cohort.Data.UniversalData.Age < successionTimeStep)
+                        youngBiomass += (int)cohort.Data.UniversalData.Biomass;
                 }
             }
             return totalBiomass;
@@ -95,8 +95,8 @@ namespace Landis.Library.PnETCohorts
             int totalBiomass = 0;
             foreach (ISpeciesCohorts speciesCohorts in (Landis.Library.UniversalCohorts.ISiteCohorts)siteCohorts) {
                 foreach (ICohort cohort in speciesCohorts) {
-                    if (cohort.Data.Age >= successionTimeStep)
-                        totalBiomass += (int)cohort.Data.Biomass;
+                    if (cohort.Data.UniversalData.Age >= successionTimeStep)
+                        totalBiomass += (int)cohort.Data.UniversalData.Biomass;
                 }
             }
             return totalBiomass;

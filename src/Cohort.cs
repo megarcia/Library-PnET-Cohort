@@ -12,7 +12,7 @@ using System.Runtime.CompilerServices;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class Cohort : ICohort
+    public class Cohort : Landis.Library.UniversalCohorts.Cohort, ICohort
     { 
         public delegate void SubtractTranspiration(float transpiration, ISpeciesPnET Species);
         public ushort index;
@@ -30,7 +30,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return data.Age;
+                return data.UniversalData.Age;
             }
         }
         //---------------------------------------------------------------------
@@ -132,7 +132,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return data.Biomass * speciesPnET.MossScalar;
+                return data.UniversalData.Biomass * speciesPnET.MossScalar;
             }
         }
         //---------------------------------------------------------------------
@@ -584,11 +584,11 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return data.ANPP;
+                return data.UniversalData.ANPP;
             }
             set
             {
-                data.ANPP = value;
+                data.UniversalData.ANPP = value;
             }
         }
         //---------------------------------------------------------------------
@@ -696,8 +696,8 @@ namespace Landis.Library.PnETCohorts
             data.Fol += c.Fol;
             data.MaxFolYear = Math.Max(MaxFolYear, data.Fol);
             data.AGBiomass = (1 - c.SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
-            data.Biomass = data.AGBiomass * data.CanopyLayerProp;
-            data.ANPP += c.ANPP;
+            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            data.UniversalData.ANPP += c.ANPP;
         }
         //---------------------------------------------------------------------
         /// <summary>
@@ -705,7 +705,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public void IncrementAge()
         {
-            data.Age += 1;
+            data.UniversalData.Age += 1;
         }
         //---------------------------------------------------------------------
         /// <summary>
@@ -716,7 +716,7 @@ namespace Landis.Library.PnETCohorts
             float newTotalBiomass = data.TotalBiomass + delta;
             data.TotalBiomass = System.Math.Max(0, newTotalBiomass);
             data.AGBiomass = (1 - this.SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
-            data.Biomass = data.AGBiomass * data.CanopyLayerProp;
+            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
         }
         //---------------------------------------------------------------------
@@ -725,15 +725,16 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public void ChangeANPP(double delta)
         {            
-            data.ANPP = data.ANPP + delta;
+            data.UniversalData.ANPP = data.UniversalData.ANPP + delta;
         }
         //---------------------------------------------------------------------
         // Constructor
+
         public Cohort(ISpecies species, ISpeciesPnET speciesPnET, ushort year_of_birth, string SiteName, double propBiomass, bool cohortStacking) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
         {
             this.species = species;
             this.speciesPnET = speciesPnET;
-            this.data.Age = 1;
+            this.data.UniversalData.Age = 1;
             this.data.ColdKill = int.MaxValue;
 
             this.data.NSC = (ushort)speciesPnET.InitialNSC;
@@ -753,8 +754,8 @@ namespace Landis.Library.PnETCohorts
             if(cohortStacking)
                 this.data.CanopyLayerProp = 1.0f;
             this.data.CanopyGrowingSpace = 1.0f;
-            this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
-            this.data.ANPP = (int)this.data.Biomass;
+            this.data.UniversalData.Biomass = (int)(this.data.AGBiomass * this.data.CanopyLayerProp);
+            this.data.UniversalData.ANPP = this.data.UniversalData.Biomass;
             
 
             // Then overwrite them if you need stuff for outputs
@@ -779,34 +780,34 @@ namespace Landis.Library.PnETCohorts
         {
             this.species = cohort.Species;
             this.speciesPnET = cohort.speciesPnET;
-            this.data.Age = cohort.Age;
+            this.data.UniversalData.Age = cohort.Age;
             this.data.NSC = cohort.NSC;
             this.data.TotalBiomass = cohort.TotalBiomass;
             this.data.AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
-            this.data.Biomass = this.data.AGBiomass * cohort.CanopyLayerProp;
+            this.data.UniversalData.Biomass = (int)(this.data.AGBiomass * cohort.CanopyLayerProp);
             this.data.BiomassMax = cohort.BiomassMax;
             this.data.Fol = cohort.Fol;
             this.data.MaxFolYear = cohort.MaxFolYear;
             this.data.LastSeasonFRad = cohort.data.LastSeasonFRad;
             this.data.ColdKill = int.MaxValue;
-            this.data.ANPP = cohort.ANPP;
+            this.data.UniversalData.ANPP = cohort.ANPP;
         }
         //---------------------------------------------------------------------
         public Cohort(Cohort cohort, ushort firstYear, string SiteName) // : base(cohort.species, new Landis.Library.PnETCohorts.CohortData(cohort.age, cohort.Biomass))
         {
             this.species = cohort.Species;
             this.speciesPnET = cohort.speciesPnET;
-            this.data.Age = cohort.Age;
+            this.data.UniversalData.Age = cohort.Age;
             this.data.NSC = cohort.NSC;
             this.data.TotalBiomass = cohort.TotalBiomass;
             this.data.AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
-            this.data.Biomass = this.data.AGBiomass * cohort.CanopyLayerProp;
+            this.data.UniversalData.Biomass = (int)(this.data.AGBiomass * cohort.CanopyLayerProp);
             this.data.BiomassMax = cohort.BiomassMax;
             this.data.Fol = cohort.Fol;
             this.data.MaxFolYear = cohort.MaxFolYear;
             this.data.LastSeasonFRad = cohort.data.LastSeasonFRad;
             this.data.ColdKill = int.MaxValue;
-            this.data.ANPP = cohort.ANPP;
+            this.data.UniversalData.ANPP = cohort.ANPP;
 
             if (SiteName != null)
             {
@@ -819,7 +820,7 @@ namespace Landis.Library.PnETCohorts
             InitializeSubLayers();
             this.species = (ISpecies)speciesPnET;
             this.speciesPnET = speciesPnET;
-            this.data.Age = age;
+            this.data.UniversalData.Age = age;
             //this.data.Biomass = woodBiomass;
             //incoming biomass is aboveground wood, calculate total biomass
             float biomass = (woodBiomass / (1 - speciesPnET.FracBelowG));
@@ -853,7 +854,7 @@ namespace Landis.Library.PnETCohorts
             this.data.CanopyGrowingSpace = 1.0f;
             this.data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
             this.data.LastAGBio = this.data.AGBiomass;
-            this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
+            this.data.UniversalData.Biomass = (int)(this.data.AGBiomass * this.data.CanopyLayerProp);
             this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * (this.data.TotalBiomass + this.data.Fol) * speciesPnET.CFracBiomass;
 
             if (SiteName != null)
@@ -867,7 +868,7 @@ namespace Landis.Library.PnETCohorts
             InitializeSubLayers();
             this.species = (ISpecies)speciesPnET;
             this.speciesPnET = speciesPnET;
-            this.data.Age = age;
+            this.data.UniversalData.Age = age;
             //this.data.Biomass = woodBiomass;
             //incoming biomass is aboveground wood, calculate total biomass
             float biomass = (woodBiomass / (1 - speciesPnET.FracBelowG));
@@ -904,7 +905,7 @@ namespace Landis.Library.PnETCohorts
             this.data.CanopyGrowingSpace = 1.0f;
             this.data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
             this.data.LastAGBio = this.data.AGBiomass;
-            this.data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
+            this.data.UniversalData.Biomass = (int)(this.data.AGBiomass * this.data.CanopyLayerProp);
             this.data.NSC = this.speciesPnET.DNSC * this.FActiveBiom * (this.data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
 
             if (SiteName != null)
@@ -1159,12 +1160,12 @@ namespace Landis.Library.PnETCohorts
                     float Allocation = Math.Max(NSC - (speciesPnET.DNSC * FActiveBiom * data.TotalBiomass * speciesPnET.CFracBiomass), 0);
                     data.TotalBiomass += Allocation / speciesPnET.CFracBiomass;  // convert gC to gDW
                     data.AGBiomass = (1 - speciesPnET.FracBelowG) * this.data.TotalBiomass + this.data.Fol;
-                    data.Biomass = this.data.AGBiomass * this.data.CanopyLayerProp;
+                    data.UniversalData.Biomass = (int)(this.data.AGBiomass * this.data.CanopyLayerProp);
                     data.BiomassMax = Math.Max(BiomassMax, data.TotalBiomass);
                     data.NSC -= Allocation;
                     if (data.NSC < 0)
                         data.NSC = 0f;
-                    data.Age++;
+                    data.UniversalData.Age++;
 
                     //firstDefol = true;
                     // firstAlloc = true;
@@ -1984,7 +1985,7 @@ namespace Landis.Library.PnETCohorts
             float senescence = ((Root * speciesPnET.TOroot) + Wood * speciesPnET.TOwood);
             data.TotalBiomass -= senescence;
             data.AGBiomass = (1 - speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
-            data.Biomass = data.AGBiomass * data.CanopyLayerProp;
+            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
             return senescence;
         }
@@ -2012,7 +2013,7 @@ namespace Landis.Library.PnETCohorts
 
             data.TotalBiomass *= (float)(1.0 - fraction);
             data.AGBiomass = ((1 - speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol);
-            data.Biomass = data.AGBiomass * data.CanopyLayerProp;
+            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
             Fol *= (float)(1.0 - fraction);
             data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
@@ -2077,7 +2078,7 @@ namespace Landis.Library.PnETCohorts
             //}
             if (DeathEvent != null)
             {
-                DeathEvent(sender, new Landis.Library.PnETCohorts.DeathEventArgs(cohort, site, disturbanceType));
+                DeathEvent(sender, new DeathEventArgs(cohort, site, disturbanceType));
             }
            
         }
@@ -2089,7 +2090,10 @@ namespace Landis.Library.PnETCohorts
         //---------------------------------------------------------------------
 
         // DO NOT USE, USE THE LIBRARY-PNET VERSION INSTEAD
-        UniversalCohorts.CohortData UniversalCohorts.ICohort.Data => throw new NotImplementedException();
+        UniversalCohorts.CohortData UniversalCohorts.ICohort.Data
+        {
+            get { return this.Data.UniversalData; }
+        }
 
     }
 }

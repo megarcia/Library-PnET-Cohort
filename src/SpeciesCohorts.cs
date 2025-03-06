@@ -17,8 +17,7 @@ namespace Landis.Library.PnETCohorts
     /// The cohorts for a particular species at a site.
     /// </summary>
     public class SpeciesCohorts
-        : PnETCohorts.ISpeciesCohorts,
-          Landis.Library.UniversalCohorts.ISpeciesCohorts
+        : PnETCohorts.ISpeciesCohorts
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly bool isDebugEnabled = log.IsDebugEnabled;
@@ -137,7 +136,7 @@ namespace Landis.Library.PnETCohorts
         /// </exception>
         public int GetAge(int index)
         {
-            return cohortData[index].Age;
+            return cohortData[index].UniversalData.Age;
         }
 
         //---------------------------------------------------------------------
@@ -167,11 +166,11 @@ namespace Landis.Library.PnETCohorts
             for (int i = cohortData.Count - 1; i >= 0; i--)
             {
                 CohortData data = cohortData[i];
-                if (data.Age <= Cohorts.SuccessionTimeStep)
+                if (data.UniversalData.Age <= Cohorts.SuccessionTimeStep)
                 {
                     youngCount++;
                     totalBiomass += data.TotalBiomass;
-                    totalANPP += data.ANPP;
+                    totalANPP += data.UniversalData.ANPP;
                 }
                 else
                     break;
@@ -267,12 +266,12 @@ namespace Landis.Library.PnETCohorts
         {
             if (isDebugEnabled)
                 log.DebugFormat("  cohort removed: {0}, {1} yrs, {2} g/m2 ({3})",
-                                cohort.Species.Name, cohort.Data.Age, cohort.Data.Biomass,
+                                cohort.Species.Name, cohort.Data.UniversalData.Age, cohort.Data.UniversalData.Biomass,
                                 disturbanceType != null
                                     ? disturbanceType.Name
-                                    : cohort.Data.Age >= species.Longevity
+                                    : cohort.Data.UniversalData.Age >= species.Longevity
                                         ? "senescence"
-                                        : cohort.Data.Biomass == 0
+                                        : cohort.Data.UniversalData.Biomass == 0
                                             ? "attrition"
                                             : "UNKNOWN");
 
@@ -299,7 +298,7 @@ namespace Landis.Library.PnETCohorts
         {
             isMaturePresent = false;
             for (int i = 0; i < cohortData.Count; i++) {
-                if (cohortData[i].Age >= species.Maturity) {
+                if (cohortData[i].UniversalData.Age >= species.Maturity) {
                     isMaturePresent = true;
                     break;
                 }
@@ -390,7 +389,7 @@ namespace Landis.Library.PnETCohorts
 
                     cohort = null;
                 }
-                else if (cohortData[i].Age >= species.Maturity)
+                else if (cohortData[i].UniversalData.Age >= species.Maturity)
                     isMaturePresent = true;
             }
             return totalReduction;
@@ -420,7 +419,7 @@ namespace Landis.Library.PnETCohorts
             //Console.Out.WriteLine("Itor 4");
             foreach (CohortData data in cohortData)
             {
-                yield return new Landis.Library.UniversalCohorts.Cohort(species, data.Age, (int)data.Biomass, new System.Dynamic.ExpandoObject());
+                yield return new Landis.Library.UniversalCohorts.Cohort(species, data.UniversalData.Age, data.UniversalData.Biomass, new System.Dynamic.ExpandoObject());
             }
         }
     }

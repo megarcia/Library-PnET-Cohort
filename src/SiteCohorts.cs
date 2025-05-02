@@ -1964,14 +1964,17 @@ namespace Landis.Library.PnETCohorts
                 }
                 else // Sublayer selection without replacement
                 {
-                    while (randomNumbers.Count < numEvents)
+                    if (SubCanopyCohorts.Count() > 0)
                     {
-                        List<int> subCanopyList = Enumerable.Range(1, SubCanopyCohorts.Count()).ToList();
-                        while ((randomNumbers.Count < numEvents) && (subCanopyList.Count() > 0))
+                        while (randomNumbers.Count < numEvents)
                         {
-                            int rand = Statistics.DiscreteUniformRandom(0, subCanopyList.Count() - 1);
-                            randomNumbers.Add(subCanopyList[rand]);
-                            subCanopyList.RemoveAt(rand);
+                            List<int> subCanopyList = Enumerable.Range(1, SubCanopyCohorts.Count()).ToList();
+                            while ((randomNumbers.Count < numEvents) && (subCanopyList.Count() > 0))
+                            {
+                                int rand = Statistics.DiscreteUniformRandom(0, subCanopyList.Count() - 1);
+                                randomNumbers.Add(subCanopyList[rand]);
+                                subCanopyList.RemoveAt(rand);
+                            }
                         }
                     }
                 }

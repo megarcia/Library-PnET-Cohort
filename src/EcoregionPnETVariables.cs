@@ -153,32 +153,22 @@ namespace Landis.Library.PnETCohorts
         #region static computation functions
         public static int Calculate_DaySpan(int Month)
         {
-            if (Month == 1)
-                return 31;
-            else if (Month == 2)
-                return 28;
-            else if (Month == 3)
-                return 31;
-            else if (Month == 4)
-                return 30;
-            else if (Month == 5)
-                return 31;
-            else if (Month == 6)
-                return 30;
-            else if (Month == 7)
-                return 31;
-            else if (Month == 8)
-                return 31;
-            else if (Month == 9)
-                return 30;
-            else if (Month == 10)
-                return 31;
-            else if (Month == 11)
-                return 30;
-            else if (Month == 12)
-                return 31;
-            else
-                throw new System.Exception("Month " + Month + " is not an integer between 1-12. Error assigning DaySpan");
+            return Month switch
+            {
+                1 => 31,
+                2 => 28,
+                3 => 31,
+                4 => 30,
+                5 => 31,
+                6 => 30,
+                7 => 31,
+                8 => 31,
+                9 => 30,
+                10 => 31,
+                11 => 30,
+                12 => 31,
+                _ => throw new System.Exception("Month " + Month + " is not an integer between 1-12. Error assigning DaySpan"),
+            };
         }
 
         private static float Calculate_VP(float a, float b, float c, float T)

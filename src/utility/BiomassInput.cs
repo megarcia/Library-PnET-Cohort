@@ -10,7 +10,7 @@ namespace Landis.Library.PnETCohorts
     {
     }
 
-    public class biomassUtil
+    public class BiomassUtil
     {
         private float[] biomassData;
         private int biomassNum;

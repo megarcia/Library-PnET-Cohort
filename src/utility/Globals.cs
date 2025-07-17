@@ -41,9 +41,9 @@ namespace Landis.Library.PnETCohorts
         public static void SetMinMaxClimateYears()
         {
             MinSpinUpClimateYear = Climate.Climate.SpinupCalendarYear(1);
-            MaxSpinUpClimateYear = Climate.Climate.SpinupEcoregionYearClimate.First(x => x != null).Last(x => x!= null).CalendarYear;
+            MaxSpinUpClimateYear = Climate.Climate.SpinupEcoregionYearClimate.First(x => x != null).Last(x => x != null).CalendarYear;
             MinFutureClimateYear = Climate.Climate.FutureCalendarYear(1);
-            MaxSpinUpClimateYear = Climate.Climate.FutureEcoregionYearClimate.First(x => x != null).Last(x => x != null).CalendarYear;
+            MaxFutureClimateYear = Climate.Climate.FutureEcoregionYearClimate.First(x => x != null).Last(x => x != null).CalendarYear;
         }
 
         public static bool IsFutureClimate(DateTime date)

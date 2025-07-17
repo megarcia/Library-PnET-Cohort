@@ -1420,13 +1420,13 @@ namespace Landis.Library.PnETCohorts
                     daysOfWinter += (int)data[m].DaySpan;
                 else
                     daysOfWinter = 0;
-                float Psno_kg_m3 = Globals.bulkIntercept + (Globals.bulkSlope * daysOfWinter); //kg/m3
+                float Psno_kg_m3 = Constants.bulkIntercept + (Constants.bulkSlope * daysOfWinter); //kg/m3
                 float Psno_g_cm3 = Psno_kg_m3 / 1000; //g/cm3
-                float sno_dep = Globals.Pwater * (snowPack / 1000) / Psno_kg_m3; //m
+                float sno_dep = Constants.Pwater * (snowPack / 1000) / Psno_kg_m3; //m
                 if (lastTempBelowSnow == float.MaxValue)
                 {
-                    float lambda_Snow = (float)(Globals.lambAir + ((0.0000775 * Psno_kg_m3) + (0.000001105 * Math.Pow(Psno_kg_m3, 2))) * (Globals.lambIce - Globals.lambAir)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
-                    float vol_heat_capacity_snow = Globals.snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
+                    float lambda_Snow = (float)(Constants.lambAir + ((0.0000775 * Psno_kg_m3) + (0.000001105 * Math.Pow(Psno_kg_m3, 2))) * (Constants.lambIce - Constants.lambAir)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
+                    float vol_heat_capacity_snow = Constants.snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
                     float Ks_snow = 1000000F / 86400F * (lambda_Snow / vol_heat_capacity_snow); //thermal diffusivity (mm2/s)
                     float damping = (float)Math.Sqrt(2.0F * Ks_snow / Constants.omega);
                     float DRz_snow = 1F;
@@ -2004,7 +2004,7 @@ namespace Landis.Library.PnETCohorts
                 float groundAlbedo = 0.20F;
                 if (sno_dep > 0)
                 {
-                    float snowMultiplier = sno_dep >= Globals.snowReflectanceThreshold ? 1 : sno_dep / Globals.snowReflectanceThreshold;
+                    float snowMultiplier = sno_dep >= Constants.snowReflectanceThreshold ? 1 : sno_dep / Constants.snowReflectanceThreshold;
                     groundAlbedo = (float)(groundAlbedo + (groundAlbedo * (2.125 * snowMultiplier)));
                 }
                 for (int layer = 0; layer < tempMaxCanopyLayers; layer++)
@@ -2263,7 +2263,7 @@ namespace Landis.Library.PnETCohorts
             if (!EcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[this.Site]).Active)
                 return -1;
             float finalAlbedo = 0;
-            float snowMultiplier = snowDepth >= Globals.snowReflectanceThreshold ? 1 : snowDepth / Globals.snowReflectanceThreshold;
+            float snowMultiplier = snowDepth >= Constants.snowReflectanceThreshold ? 1 : snowDepth / Constants.snowReflectanceThreshold;
             if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
                     && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground")
                         || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open")

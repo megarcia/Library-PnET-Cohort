@@ -5,13 +5,10 @@ using System.Collections.Generic;
 
 namespace Landis.Library.PnETCohorts
 {
+    /// <summary>
     /// The biomass cohorts for a particular species at a site.
     /// </summary>
-    public interface ISpeciesCohorts
-         : Landis.Library.UniversalCohorts.ISpeciesCohorts
-    //Landis.Library.Cohorts.ISpeciesCohorts<Landis.Library.PnETCohorts.ICohort>, Landis.Library.UniversalCohorts.ISpeciesCohorts, Landis.Library.Cohorts.ISpeciesCohorts<Landis.Library.UniversalCohorts.ICohort>    
+    public interface ISpeciesCohorts : Landis.Library.UniversalCohorts.ISpeciesCohorts
     {
-
     }
-    
 }

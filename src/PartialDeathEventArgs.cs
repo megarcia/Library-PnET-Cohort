@@ -15,8 +15,6 @@ namespace Landis.Library.PnETCohorts
         private ExtensionType disturbanceType;
         private float reduction;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// The cohort that died.
         /// </summary>
@@ -28,8 +26,6 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// The site where the cohort died.
         /// </summary>
@@ -40,8 +36,6 @@ namespace Landis.Library.PnETCohorts
                 return site;
             }
         }
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// The type of disturbance that killed the cohort.
@@ -57,10 +51,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        //---------------------------------------------------------------------
-
         /// <summary>
-        /// The type of disturbance that killed the cohort.
+        /// The biomass reduction factor for the cohort.
         /// </summary>
         public float Reduction
         {
@@ -69,14 +61,11 @@ namespace Landis.Library.PnETCohorts
                 return reduction;
             }
         }
-        //---------------------------------------------------------------------
 
         /// <summary>
-        /// Initializes a new instance.
+        /// Initializes a new PartialDeathEvent.
         /// </summary>
-        public PartialDeathEventArgs(ICohort cohort,
-                              ActiveSite site,
-                              ExtensionType disturbanceType, float reduction)
+        public PartialDeathEventArgs(ICohort cohort, ActiveSite site, ExtensionType disturbanceType, float reduction)
         {
             this.cohort = cohort;
             this.site = site;

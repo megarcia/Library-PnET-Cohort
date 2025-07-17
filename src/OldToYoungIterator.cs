@@ -14,19 +14,25 @@ namespace Landis.Library.PnETCohorts
     {
         private SpeciesCohorts cohorts;
  
-        //  Index of the current cohort among the set of cohorts.
+        /// <summary>
+        /// Index of the current cohort among the set of cohorts.
+        /// </summary>
         private int? index;
 
-        //  Age of the current cohort
+        /// <summary>
+        /// Age of the current cohort
+        /// </summary>
         private int currentCohortAge;
 
-        //  Index of the next cohort among the set of cohorts.
+        /// <summary>
+        /// Index of the next cohort among the set of cohorts.
+        /// </summary>
         private int nextIndex;
 
-        //  Did the current cohort die during its annual growth?
+        /// <summary>
+        /// Did the current cohort die during its annual growth?
+        /// </summary>
         private bool currentCohortDied;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// The age of the current cohort.
@@ -39,26 +45,24 @@ namespace Landis.Library.PnETCohorts
         /// </exception>
         public int Age
         {
-            get {
+            get
+            {
                 if (index.HasValue)
                     return currentCohortAge;
                 throw NoCurrentCohortException();
             }
         }
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// The set of cohorts the iterator is iterating through.
         /// </summary>
         public SpeciesCohorts SpeciesCohorts
         {
-            get {
+            get
+            {
                 return cohorts;
             }
         }
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Initializes a new instance for a set of species cohorts.
@@ -71,8 +75,6 @@ namespace Landis.Library.PnETCohorts
             MoveNext();
         }
 
-        //---------------------------------------------------------------------
-
         private InvalidOperationException NoCurrentCohortException()
         {
             string mesg = "Old-to-young iterator has no current cohort";
@@ -80,8 +82,6 @@ namespace Landis.Library.PnETCohorts
                 mesg = mesg + "; the previous current cohort died";
             return new InvalidOperationException(mesg);
         }
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Grows the current cohort for one year.
@@ -101,20 +101,14 @@ namespace Landis.Library.PnETCohorts
         /// cohort.
         /// </returns>
         public void GrowCurrentCohort(ActiveSite site)
-                                     //ref int    siteBiomass, 
-                                     //int        prevYearMortality)
         {
             if (! index.HasValue)
                 throw NoCurrentCohortException();
+            nextIndex = cohorts.GrowCohort(index.Value, site);
+            currentCohortDied = nextIndex == index.Value;
 
-            //int cohortMortality;
-            nextIndex = cohorts.GrowCohort(index.Value, site); //, ref siteBiomass, prevYearMortality, out cohortMortality);
-
-            currentCohortDied = (nextIndex == index.Value);
-            return; // cohortMortality;
+            return;
         }
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Advances the iterator to the next cohort.
@@ -126,12 +120,14 @@ namespace Landis.Library.PnETCohorts
         public bool MoveNext()
         {
             index = nextIndex;
-            if (0 <= index && index < cohorts.Count) {
+            if (0 <= index && index < cohorts.Count)
+            {
                 currentCohortAge = cohorts.GetAge(index.Value);
                 return true;
             }
-            else {
-                //  No more cohorts
+            else
+            {
+                // No more cohorts
                 index = null;
                 return false;
             }

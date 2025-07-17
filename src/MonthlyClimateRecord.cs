@@ -4,14 +4,13 @@ using System;
 namespace Landis.Library.PnETCohorts
 {
     /// <summary>
-    ///   <para>John McNabb: This is a record of monthly climate data based on the climate library.</para>
+    /// John McNabb: This is a record of monthly climate data based on the climate library.
     /// </summary>
     public class MonthlyClimateRecord
     {
         public MonthlyClimateRecord(IEcoregion ecoregion, DateTime date)
         {
             var month = date.Month - 1; // climate library month is zero-based, while DateTime.Month is one-based
-
             O3 = ClimateRegionData.AnnualClimate[ecoregion].MonthlyOzone[month];
             CO2 = ClimateRegionData.AnnualClimate[ecoregion].MonthlyCO2[month];
             PAR0 = ClimateRegionData.AnnualClimate[ecoregion].MonthlyPAR[month];

@@ -1,19 +1,65 @@
 ﻿
-
-
 namespace Landis.Library.PnETCohorts
 {
     public interface IHydrology
     {
-        float Water { get; } // volumetric water (mm/m)
-        float GetPressureHead(IEcoregionPnET ecoregion); // Get the pressurehead (mmH2O) for the current water content
-        bool AddWater(float water, float activeSoilDepth); // Add mm water to volumetric water content (mm/m) (considering activeSoilDepth - frozen soil cannot accept water)
+        /// <summary>
+        /// volumetric water (mm/m)
+        /// </summary>
+        float Water { get; } 
+
+        /// <summary>
+        /// Get the pressurehead (mmH2O) for the current water content
+        /// </summary>
+        /// <param name="ecoregion"></param>
+        /// <returns></returns>
+        float GetPressureHead(IEcoregionPnET ecoregion); 
+
+        /// <summary>
+        /// Add mm water to volumetric water content (mm/m) (considering activeSoilDepth - frozen soil cannot accept water)
+        /// </summary>
+        /// <param name="water"></param>
+        /// <param name="activeSoilDepth"></param>
+        /// <returns></returns>
+        bool AddWater(float water, float activeSoilDepth); 
+
         float CalculateEvaporation(SiteCohorts sitecohorts, float PET);
-        float FrozenWaterContent { get; } // volumetric water content (mm/m) of the frozen soil
-        float FrozenDepth { get; } // Depth at which soil is frozen (mm); Rooting zone soil below this depth is frozen
-        bool SetFrozenWaterContent(float water);  // Change FrozenWaterContent
-        bool SetFrozenDepth(float depth); // Change FrozenDepth
-        float Calculate_RET_Hamon(float T, float dayLength); // Calculate reference ET
-        PressureHeadSaxton_Rawls PressureHeadTable { get; } // Get the PressureHeadTable object
+
+        /// <summary>
+        /// volumetric water content (mm/m) of the frozen soil
+        /// </summary>
+        float FrozenWaterContent { get; } 
+
+        /// <summary>
+        /// Depth at which soil is frozen (mm); Rooting zone soil below this depth is frozen
+        /// </summary>
+        float FrozenDepth { get; } 
+
+        /// <summary>
+        /// Change FrozenWaterContent
+        /// </summary>
+        /// <param name="water"></param>
+        /// <returns></returns>
+        bool SetFrozenWaterContent(float water);  
+
+        /// <summary>
+        /// Change FrozenDepth
+        /// </summary>
+        /// <param name="depth"></param>
+        /// <returns></returns>
+        bool SetFrozenDepth(float depth); 
+
+        /// <summary>
+        /// Calculate reference ET
+        /// </summary>
+        /// <param name="T"></param>
+        /// <param name="dayLength"></param>
+        /// <returns></returns>
+        float Calculate_RET_Hamon(float T, float dayLength); 
+
+        /// <summary>
+        /// Get the PressureHeadTable object
+        /// </summary>
+        PressureHeadSaxton_Rawls PressureHeadTable { get; } 
     }
 }

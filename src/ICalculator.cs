@@ -12,9 +12,6 @@ namespace Landis.Library.PnETCohorts
     /// </summary>
     public interface ICalculator
     {
-
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// Computes the change in an individual cohort's biomass due to annual
         /// growth and mortality.
@@ -31,11 +28,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="prevYearSiteMortality">
         /// The total mortality at the site during the previous year.
         /// </param>
-
-        int ComputeChange(ICohort cohort,
-                          ActiveSite site);
-
-        //---------------------------------------------------------------------
+        int ComputeChange(ICohort cohort, ActiveSite site);
 
         /// <summary>
         /// Computes the percentage of a cohort's biomass that is non-woody.
@@ -46,8 +39,6 @@ namespace Landis.Library.PnETCohorts
         /// <param name="site">
         /// The site where the cohort is located.
         /// </param>
-        Percentage ComputeNonWoodyPercentage(ICohort    cohort,
-                                             ActiveSite site);
-                                             
+        Percentage ComputeNonWoodyPercentage(ICohort cohort, ActiveSite site);                                 
     }
 }

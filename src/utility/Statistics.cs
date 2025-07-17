@@ -20,13 +20,8 @@ namespace Landis.Library.PnETCohorts
                 Globals.ModelCore.ContinuousUniformDistribution.Beta = max + 1;
                 Globals.ModelCore.ContinuousUniformDistribution.Alpha = min;
                 Globals.ModelCore.ContinuousUniformDistribution.NextDouble();
-
-                //double testMin = ModelCore.ContinuousUniformDistribution.Minimum;
-                //double testMax = ModelCore.ContinuousUniformDistribution.Maximum;
-
                 double valueD = Globals.ModelCore.ContinuousUniformDistribution.NextDouble();
                 int value = Math.Min((int)valueD, max);
-
                 return value;
             }
         }
@@ -39,9 +34,7 @@ namespace Landis.Library.PnETCohorts
                 Globals.ModelCore.ContinuousUniformDistribution.Beta = max;
                 Globals.ModelCore.ContinuousUniformDistribution.Alpha = min;
                 Globals.ModelCore.ContinuousUniformDistribution.NextDouble();
-
                 double value = Globals.ModelCore.ContinuousUniformDistribution.NextDouble();
-
                 return value;
             }
         }

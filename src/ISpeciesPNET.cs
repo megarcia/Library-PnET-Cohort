@@ -6,169 +6,280 @@ namespace Landis.Library.PnETCohorts
     /// </summary>
     public interface ISpeciesPnET : Landis.Core.ISpecies
     {
-        // Carbon fraction in biomass 
+        /// <summary>
+        /// Carbon fraction in biomass 
+        /// </summary>
         float CFracBiomass { get; }
 
-        // Fraction of non-soluble carbon to active biomass
+        /// <summary>
+        /// Fraction of non-soluble carbon to active biomass
+        /// </summary>
         float DNSC { get; }
 
-        // Fraction biomass below-ground
+        /// <summary>
+        /// Fraction biomass below-ground
+        /// </summary>
         float FracBelowG { get; }
 
-        // Fraction foliage to active biomass
+        /// <summary>
+        /// Fraction foliage to active biomass
+        /// </summary>
         float FracFol { get; }
 
-        // Fraction active biomass to total biomass 
+        /// <summary>
+        /// Fraction active biomass to total biomass 
+        /// </summary>
         float FrActWd { get; }
 
-        // Water stress parameter for excess water: pressurehead below which growth halts
+        /// <summary>
+        /// Water stress parameter for excess water: pressurehead below which growth halts
+        /// </summary>
         float H1 { get; }
 
-        // Water stress parameter for excess water: pressurehead below which growth declines
+        /// <summary>
+        /// Water stress parameter for excess water: pressurehead below which growth declines
+        /// </summary>
         float H2 { get; }
 
-        // Water stress parameter for water shortage: pressurehead above which growth declines
+        /// <summary>
+        /// Water stress parameter for water shortage: pressurehead above which growth declines
+        /// </summary>
         float H3 { get; }
 
-        // Water stress parameter: pressurehead above growth halts (= wilting point)
+        /// <summary>
+        /// Water stress parameter: pressurehead above growth halts (= wilting point)
+        /// </summary>
         float H4 { get; }
 
-        // Initial NSC for new cohort
+        /// <summary>
+        /// Initial NSC for new cohort
+        /// </summary>
         float InitialNSC { get; }
 
-        // Half saturation value for radiation (W/m2)
+        /// <summary>
+        /// Half saturation value for radiation (W/m2)
+        /// </summary>
         float HalfSat { get; }
 
-        // Radiation extinction rate through the canopy (LAI-1)
+        /// <summary>
+        /// Radiation extinction rate through the canopy (LAI-1)
+        /// </summary>
         float K { get; }
 
-        // Decompostiaion constant of woody litter (yr-1)
+        /// <summary>
+        /// Decompostiaion constant of woody litter (yr-1)
+        /// </summary>
         float KWdLit { get; }
 
-        //Growth reduction parameter with age
+        /// <summary>
+        /// Growth reduction parameter with age
+        /// </summary>
         float PsnAgeRed { get; }
 
-        // Reduction of specific leaf weight throught the canopy (g/m2/g)
+        /// <summary>
+        /// Reduction of specific leaf weight throught the canopy (g/m2/g)
+        /// </summary>
         float SLWDel { get; }
 
-        // Max specific leaf weight (g/m2)
+        /// <summary>
+        /// Max specific leaf weight (g/m2)
+        /// </summary>
         float SLWmax { get; }
 
-        // Foliage turnover (g/g/y)
+        /// <summary>
+        /// Foliage turnover (g/g/y)
+        /// </summary>
         float TOfol { get; }
 
-        // Root turnover (g/g/y)
+        /// <summary>
+        /// Root turnover (g/g/y)
+        /// </summary>
         float TOroot { get; }
 
-        // Wood turnover (g/g/y)
+        /// <summary>
+        /// Wood turnover (g/g/y)
+        /// </summary>
         float TOwood { get; }
 
-        // Establishment factor related to light - fRad value that equates to optimal light for establishment
+        /// <summary>
+        /// Establishment factor related to light - fRad value that equates to optimal light for establishment
+        /// </summary>
         float EstRad { get; }
 
-        // Establishment factor related to moisture - fWater value that equates to optimal water for establishment
+        /// <summary>
+        /// Establishment factor related to moisture - fWater value that equates to optimal water for establishment
+        /// </summary>
         float EstMoist { get; }
 
-        // Mamximum total probability of establishment under optimal conditions
+        /// <summary>
+        /// Mamximum total probability of establishment under optimal conditions
+        /// </summary>
         float MaxPest { get; }
 
-        // Lignin concentration in foliage
+        /// <summary>
+        /// Lignin concentration in foliage
+        /// </summary>
         float FolLignin { get; }
 
-        // Prevent establishment 
+        /// <summary>
+        /// Prevent establishment 
+        /// </summary>
         bool PreventEstablishment { get; }
 
-        // Optimal temperature for photosynthesis
+        /// <summary>
+        /// Optimal temperature for photosynthesis
+        /// </summary>
         float PsnTOpt { get; }
 
-        // Temperature response factor for respiration
+        /// <summary>
+        /// Temperature response factor for respiration
+        /// </summary>
         float Q10 { get; }
 
-        // Base foliar respiration (g respired / g photosynthesis)
+        /// <summary>
+        /// Base foliar respiration (g respired / g photosynthesis)
+        /// </summary>
         float BFolResp { get; }
 
-        //Minimum temperature for photosynthesis
+        /// <summary>
+        /// Minimum temperature for photosynthesis
+        /// </summary>
         float PsnTMin { get; }
 
-        //Maximum temperature for photosynthesis
+        /// <summary>
+        /// Maximum temperature for photosynthesis
+        /// </summary>
         float PsnTMax { get; }
 
-        // Foliar nitrogen (gN/gC)
+        /// <summary>
+        /// Foliar nitrogen (gN/gC)
+        /// </summary>
         float FolN { get; }
 
-        // Vapor pressure deficit response parameter 
+        /// <summary>
+        /// Vapor pressure deficit response parameter 
+        /// </summary>
         float DVPD1 { get; }
 
-        // Vapor pressure deficit response parameter 
+        /// <summary>
+        /// Vapor pressure deficit response parameter 
+        /// </summary>
         float DVPD2 { get; }
 
-        // Reference photosynthesis (g)
+        /// <summary>
+        /// Reference photosynthesis (g)
+        /// </summary>
         float AmaxA { get; }
 
-        // Response parameter for photosynthesis to N
+        /// <summary>
+        /// Response parameter for photosynthesis to N
+        /// </summary>
         float AmaxB { get; }
 
-        // Modifier of AmaxA due to averaging non-linear Amax data
+        /// <summary>
+        /// Modifier of AmaxA due to averaging non-linear Amax data
+        /// </summary>
         float AmaxFrac { get; }
 
-        // Referece maintenance respiration 
+        /// <summary>
+        /// Referece maintenance respiration 
+        /// </summary>
         float MaintResp { get; }
 
-        // Effect of CO2 on AMaxB (change in AMaxB with increase of 200 ppm CO2)
+        /// <summary>
+        /// Effect of CO2 on AMaxB (change in AMaxB with increase of 200 ppm CO2)
+        /// </summary>
         float CO2AMaxBEff { get; }
 
-        // Effect of CO2 on HalfSat (change in HalfSat with increase of 1 ppm CO2 [slope])
+        /// <summary>
+        /// Effect of CO2 on HalfSat (change in HalfSat with increase of 1 ppm CO2 [slope])
+        /// </summary>
         float CO2HalfSatEff { get; }
 
-        // Ozone stomatal sensitivity class (Sensitive, Intermediate, Tolerant)
+        /// <summary>
+        /// Ozone stomatal sensitivity class (Sensitive, Intermediate, Tolerant)
+        /// </summary>
         string O3StomataSens { get; }
 
-        // Slope for linear FolN relationship
+        /// <summary>
+        /// Slope for linear FolN relationship
+        /// </summary>
         float FolNShape { get; }
 
-        //Intercept for linear FolN relationship
+        /// <summary>
+        /// Intercept for linear FolN relationship
+        /// </summary>
         float MaxFolN { get; }
 
-        // Slope for linear FracFol relationship
+        /// <summary>
+        /// Slope for linear FracFol relationship
+        /// </summary>
         float FracFolShape { get; }
 
-        //Intercept for linear FracFol relationship
+        /// <summary>
+        /// Intercept for linear FracFol relationship
+        /// </summary>
         float MaxFracFol { get; }
 
-        // Slope coefficient for O3Effect
+        /// <summary>
+        /// Slope coefficient for O3Effect
+        /// </summary>
         float O3GrowthSens { get; }
-        // Cold tolerance
+
+        /// <summary>
+        /// Cold tolerance
+        /// </summary>
         float ColdTol { get; }
 
-        // Mininum Temp for leaf-on (optional)
-        // If not provided LeafOnMinT = PsnTMin
+        /// <summary>
+        /// Mininum Temp for leaf-on (optional)
+        /// If not provided, LeafOnMinT = PsnTMin
+        /// </summary>
         float LeafOnMinT { get; }
 
-        // Initial Biomass
+        /// <summary>
+        /// Initial Biomass
+        /// </summary>
         int InitBiomass { get; }
 
-        // Lower canopy NSC reserve 
+        /// <summary>
+        /// Lower canopy NSC reserve 
+        /// </summary>
         float NSCReserve { get; }
 
-        // Lifeform
+        /// <summary>
+        /// Lifeform
+        /// </summary>
         string Lifeform { get; }
 
-        // Minimum defoliation amount that triggers refoliation
+        /// <summary>
+        /// Minimum defoliation amount that triggers refoliation
+        /// </summary>
         float RefoliationMinimumTrigger { get; }
         
-        // Maximum amount of refoliation
+        /// <summary>
+        /// Maximum amount of refoliation
+        /// </summary>
         float RefoliationMaximum { get; }
 
-        // Cost of refoliation
+        /// <summary>
+        /// Cost of refoliation
+        /// </summary>
         float RefoliationCost { get; }
 
-        // Cost to NSC without refoliation
+        /// <summary>
+        /// Cost to NSC without refoliation
+        /// </summary>
         float NonRefoliationCost { get; }
 
-        // Maximum LAI
+        /// <summary>
+        /// Maximum LAI
+        /// </summary>
         float MaxLAI { get; }
 
-        // Scalar value for calculating species moss depth
+        /// <summary>
+        /// Scalar value for calculating species moss depth
+        /// </summary>
         float MossScalar { get; }
     }
 }

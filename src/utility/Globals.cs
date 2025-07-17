@@ -23,8 +23,8 @@ namespace Landis.Library.PnETCohorts
         public static readonly object distributionThreadLock = new object();
         public static readonly object ecoregionDataThreadLock = new object();
         public static readonly object initialSitesThreadLock = new object();
-        public const float bulkIntercept = 165.0f; //kg/m3
-        public const float bulkSlope = 1.3f; //kg/m3
+        public const float bulkIntercept = 165.0f; // kg/m3
+        public const float bulkSlope = 1.3f; // kg/m3
         public const float Pwater = 1000.0f;  // Density of water (kg/m3)
         public const float lambAir = 0.023f; // W/m K (CLM5 documentation, Table 2.7)
         public const float lambIce = 2.29f; // W/m K (CLM5 documentation, Table 2.7)
@@ -42,7 +42,6 @@ namespace Landis.Library.PnETCohorts
         {
             MinSpinUpClimateYear = Climate.Climate.SpinupCalendarYear(1);
             MaxSpinUpClimateYear = Climate.Climate.SpinupEcoregionYearClimate.First(x => x != null).Last(x => x!= null).CalendarYear;
-
             MinFutureClimateYear = Climate.Climate.FutureCalendarYear(1);
             MaxSpinUpClimateYear = Climate.Climate.FutureEcoregionYearClimate.First(x => x != null).Last(x => x != null).CalendarYear;
         }
@@ -50,23 +49,19 @@ namespace Landis.Library.PnETCohorts
         public static bool IsFutureClimate(DateTime date)
         {
             if (date.Year - MinFutureClimateYear + 1 <= 0)
-            {
                 return false;
-            }
             return true;
         }
 
         public static int ConvertYearToFutureClimateYear(DateTime date)
         {
             int convert = date.Year - MinFutureClimateYear + 1;
-
             return convert >= 1 ? convert : -1;
         }
 
         public static int ConvertYearToSpinUpClimateYear(DateTime date)
         {
             int convert = date.Year - MinSpinUpClimateYear + 1;
-
             return convert >= 1 ? convert : -1;
         }
     }

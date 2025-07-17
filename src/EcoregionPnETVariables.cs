@@ -322,12 +322,12 @@ namespace Landis.Library.PnETCohorts
             this.obs_clim = climate_dataset;
             speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
             _tave = (float)0.5 * (climate_dataset.Tmin + climate_dataset.Tmax);
-            _dayspan = EcoregionPnETVariables.Calculate_DaySpan(Date.Month);
+            _dayspan = Calculate_DaySpan(Date.Month);
             float hr = Calculate_hr(Date.DayOfYear, Latitude); //hours of daylight
             _daylength = Calculate_DayLength(hr);
             float nightlength = Calculate_NightLength(hr);
             _tday = (float)0.5 * (climate_dataset.Tmax + _tave);
-            _vpd = EcoregionPnETVariables.Calculate_VPD(Tday, climate_dataset.Tmin);
+            _vpd = Calculate_VPD(Tday, climate_dataset.Tmin);
             foreach (ISpeciesPnET spc in Species)
             {
                 SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, Daylength, nightlength, spc);
@@ -354,9 +354,9 @@ namespace Landis.Library.PnETCohorts
             speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
             // FTempPSN (public for output file)
             if (DTemp)
-                speciespnetvars.FTempPSN = EcoregionPnETVariables.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
+                speciespnetvars.FTempPSN = DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
             else
-                speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax); // Modified 051216(BRM)
+                speciespnetvars.FTempPSN = CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax); // Modified 051216(BRM)
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
             // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
             // Acclimation of respiration to temperature and C02 in seedlings of boreal tree species

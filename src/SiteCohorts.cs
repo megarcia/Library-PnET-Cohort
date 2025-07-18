@@ -1215,7 +1215,7 @@ namespace Landis.Library.PnETCohorts
             return 2.74f * Math.Max(0, Tavg) * DaySpan;
         }
 
-        private static float CumputeSnowFraction(float Tavg)
+        private static float CalcSnowFrac(float Tavg)
         {
             return (float)Math.Max(0.0, Math.Min(1.0, (Tavg - 2) / -7));
         }
@@ -1402,7 +1402,7 @@ namespace Landis.Library.PnETCohorts
                 // Melt snow
                 float snowmelt = Math.Min(snowPack, CalcMaxSnowMelt(data[m].Tavg, data[m].DaySpan)); // mm
                 if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                float newsnow = CumputeSnowFraction(data[m].Tavg) * data[m].Prec;
+                float newsnow = CalcSnowFrac(data[m].Tavg) * data[m].Prec;
                 float newsnowpack = newsnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
                 if (newsnowpack < 0 || newsnowpack > data[m].Prec)
                     throw new System.Exception("Error, newsnowpack = " + newsnowpack + " availablePrecipitation = " + data[m].Prec);

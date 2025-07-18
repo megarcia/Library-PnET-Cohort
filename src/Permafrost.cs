@@ -10,7 +10,7 @@ namespace Landis.Library.PnETCohorts
         {
             float[] snowResults = CalcSnowDepth(daysOfWinter, snowPack);
             float snowDepth = snowResults[0];
-            float Psno_kg_m3 = snowResults[1];
+            float PSnow_kg_m3 = snowResults[1];
             if (Ecoregion.Variables.Tavg >= 0)
             {
                 float fracAbove0 = Ecoregion.Variables.Tmax / (Ecoregion.Variables.Tmax - Ecoregion.Variables.Tmin);
@@ -18,7 +18,7 @@ namespace Landis.Library.PnETCohorts
             }
             // from CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
             // Eq. 85 - Jordan (1991)
-            float damping = CalcSnowDamping(Psno_kg_m3);
+            float damping = CalcSnowDamping(PSnow_kg_m3);
             float DRz_snow = (float)Math.Exp(-1.0F * snowDepth * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
             // Permafrost calculations - from "Soil thawing worksheet.xlsx"
             float porosity = Ecoregion.Porosity / Ecoregion.RootingDepth;  //m3/m3
@@ -62,24 +62,24 @@ namespace Landis.Library.PnETCohorts
             float bulkIntercept = 165.0f; //kg/m3
             float bulkSlope = 1.3f; //kg/m3
             float Pwater = 1000.0f;
-            float Psno_kg_m3 = bulkIntercept + (bulkSlope * daysOfWinter); //kg/m3
-            float Psno_g_cm3 = Psno_kg_m3 / 1000; //g/cm3
-            float snowDepth = Pwater * snowPack / Psno_kg_m3 / 1000; //m
+            float PSnow_kg_m3 = bulkIntercept + (bulkSlope * daysOfWinter); //kg/m3
+            float PSnow_g_cm3 = PSnow_kg_m3 / 1000; //g/cm3
+            float snowDepth = Pwater * snowPack / PSnow_kg_m3 / 1000; //m
             float[] snowArray = new float[2];
             snowArray[0] = snowDepth;
-            snowArray[1] = Psno_kg_m3;
+            snowArray[1] = PSnow_kg_m3;
 
             return snowArray;
         }
 
-        public static float CalcSnowDamping(float Psno_kg_m3)
+        public static float CalcSnowDamping(float PSnow_kg_m3)
         {
             float lambAir = 0.023f;
             float lambIce = 2.29f;
             float omega = (float)(2 * Math.PI / 12.0);
             // from CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
             // Eq. 85 - Jordan (1991)
-            float lambda_Snow = (float)(lambAir + ((0.0000775 * Psno_kg_m3) + (0.000001105 * Math.Pow(Psno_kg_m3, 2))) * (lambIce - lambAir)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
+            float lambda_Snow = (float)(lambAir + ((0.0000775 * PSnow_kg_m3) + (0.000001105 * Math.Pow(PSnow_kg_m3, 2))) * (lambIce - lambAir)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
             float damping = (float)Math.Sqrt(omega / (2.0F * lambda_Snow));
 
             return damping;

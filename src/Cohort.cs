@@ -788,7 +788,7 @@ namespace Landis.Library.PnETCohorts
             float cohortIdealFol = speciesPnET.FracFol * this.FActiveBiom * this.data.TotalBiomass;
 
             for (int i = 0; i < Globals.IMAX; i++)
-                cohortLAI += CalculateLAI(this.SpeciesPnET, cohortIdealFol, i, cohortLAI);
+                cohortLAI += CalcLAI(this.SpeciesPnET, cohortIdealFol, i, cohortLAI);
 
             this.data.LastLAI = cohortLAI;
             this.data.LastAGBio = this.data.AGBiomass;
@@ -866,7 +866,7 @@ namespace Landis.Library.PnETCohorts
 
             for (int i = 0; i < Globals.IMAX; i++)
             {
-                float subLayerLAI = CalculateLAI(this.SpeciesPnET, cohortIdealFol, i);
+                float subLayerLAI = CalcLAI(this.SpeciesPnET, cohortIdealFol, i);
                 cohortLAI += subLayerLAI;
                 if (this.Leaf_On)
                     LAI[index] = subLayerLAI;
@@ -909,7 +909,7 @@ namespace Landis.Library.PnETCohorts
 
             for (int i = 0; i < Globals.IMAX; i++)
             {
-                float subLayerLAI = CalculateLAI(this.SpeciesPnET, cohortIdealFol, i);
+                float subLayerLAI = CalcLAI(this.SpeciesPnET, cohortIdealFol, i);
                 cohortLAI += subLayerLAI;
                 if (this.Leaf_On)
                     LAI[index] = subLayerLAI;
@@ -933,7 +933,7 @@ namespace Landis.Library.PnETCohorts
                 InitializeOutput(SiteName, firstYear);
         }
 
-        public void CalculateDefoliation(ActiveSite site, int SiteAboveGroundBiomass)
+        public void CalcDefoliation(ActiveSite site, int SiteAboveGroundBiomass)
         {
             lock (Globals.distributionThreadLock)
             {
@@ -965,7 +965,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="allowMortality"></param>
         /// <returns></returns>
         /// <exception cref="System.Exception"></exception>
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, int precipCount, float leakageFrac, ref Hydrology hydrology, float mainLayerPAR, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables, SiteCohorts siteCohort, float sumCanopyProp, float groundPETbyEvent, bool allowMortality = true)
+        public bool CalcPhotosynthesis(float PrecInByCanopyLayer, int precipCount, float leakageFrac, ref Hydrology hydrology, float mainLayerPAR, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables, SiteCohorts siteCohort, float sumCanopyProp, float groundPETbyEvent, bool allowMortality = true)
         {
             bool success = true;
             float lastO3Effect = O3Effect;
@@ -973,7 +973,7 @@ namespace Landis.Library.PnETCohorts
 
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
-            data.LAI[index] = CalculateLAI(speciesPnET, data.Fol, index);
+            data.LAI[index] = CalcLAI(speciesPnET, data.Fol, index);
 
             if (MeltInByCanopyLayer > 0)
             {
@@ -1197,7 +1197,7 @@ namespace Landis.Library.PnETCohorts
                             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
                             float tentativeLAI = 0;
                             for (int i = 0; i < Globals.IMAX; i++)
-                                tentativeLAI += CalculateLAI(this.SpeciesPnET, Fol + FolTentative, i, tentativeLAI);
+                                tentativeLAI += CalcLAI(this.SpeciesPnET, Fol + FolTentative, i, tentativeLAI);
                             float tentativeCanopyProp = tentativeLAI / this.speciesPnET.MaxLAI;
                             if (sumCanopyProp > 1)
                                 tentativeCanopyProp = tentativeCanopyProp / sumCanopyProp;
@@ -1215,24 +1215,24 @@ namespace Landis.Library.PnETCohorts
                 }
             }
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
-            data.LAI[index] = CalculateLAI(speciesPnET, Fol, index);
+            data.LAI[index] = CalcLAI(speciesPnET, Fol, index);
             // Adjust HalfSat for CO2 effect
             float halfSatIntercept = speciesPnET.HalfSat - 350 * speciesPnET.CO2HalfSatEff;
             data.AdjHalfSat = speciesPnET.CO2HalfSatEff * variables.CO2 + halfSatIntercept;
             // Reduction factor for radiation on photosynthesis
             float LayerPAR = (float)(mainLayerPAR * Math.Exp(-speciesPnET.K * (LAI.Sum() - LAI[index])));
-            FRad[index] = ComputeFrad(LayerPAR, AdjHalfSat);
+            FRad[index] = CalcFrad(LayerPAR, AdjHalfSat);
             // Get pressure head given ecoregion and soil water content (latter in hydrology)
-            float PressureHead = hydrology.PressureHeadTable.CalculateWaterPressure(hydrology.Water, siteCohort.Ecoregion.SoilType);
+            float PressureHead = hydrology.PressureHeadTable.CalcWaterPressure(hydrology.Water, siteCohort.Ecoregion.SoilType);
             // Reduction water for sub or supra optimal soil water content
             float fWaterOzone = 1.0f;  //fWater for ozone functions; ignores H1 and H2 parameters because only impacts when drought-stressed
             if (Globals.ModelCore.CurrentTime > 0)
             {
-                FWater[index] = ComputeFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
+                FWater[index] = CalcFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
                 Water[index] = hydrology.Water;
                 PressHead[index] = PressureHead;
                 NumEvents[index] = precipCount;
-                fWaterOzone = ComputeFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
+                fWaterOzone = CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
                 if (frostFreeProp <= 0)
                 {
                     FWater[index] = 0;
@@ -1244,8 +1244,8 @@ namespace Landis.Library.PnETCohorts
                 if (((Parameter<string>)Names.GetParameter(Names.SpinUpWaterStress)).Value == "true"
                     || ((Parameter<string>)Names.GetParameter(Names.SpinUpWaterStress)).Value == "yes")
                 {
-                    FWater[index] = ComputeFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
-                    fWaterOzone = ComputeFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
+                    FWater[index] = CalcFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
+                    fWaterOzone = CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
                     if (frostFreeProp <= 0)
                     {
                         FWater[index] = 0;
@@ -1254,7 +1254,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 else // Ignore H1 and H2 parameters during spinup
                 {
-                    FWater[index] = ComputeFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead);
+                    FWater[index] = CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead);
                     fWaterOzone = FWater[index];
                     if (frostFreeProp <= 0)
                     {
@@ -1332,7 +1332,7 @@ namespace Landis.Library.PnETCohorts
                 float GrossAmax = AmaxAdj + BaseFolResp; //nmole CO2/g Fol/s
                 //Reference gross Psn (lab conditions) in gC/g Fol/month
                 float RefGrossPsn = variables.DaySpan * (GrossAmax * variables[species.Name].DVPD * variables.Daylength * Constants.MC) / Constants.billion;
-                // Compute gross psn from stress factors and reference gross psn (gC/g Fol/month)
+                // Calculate gross psn from stress factors and reference gross psn (gC/g Fol/month)
                 // Reduction factors include temperature (FTempPSN), water (FWater), light (FRad), age (Fage)
                 // Remove FWater from psn reduction because it is accounted for in WUE through ciModifier [mod2, mod3]
                 float GrossPsnPotential = 1 / (float)Globals.IMAX * variables[species.Name].FTempPSN * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
@@ -1345,7 +1345,7 @@ namespace Landis.Library.PnETCohorts
                 // In this case, we cap transpiration at available water, and back-calculate GrossPsn and NetPsn to downgrade those as well
                 // Volumetric water content (mm/m) at species wilting point (h4) 
                 // Convert kPA to mH2o (/9.804139432)
-                float wiltPtWater = (float)hydrology.PressureHeadTable.CalculateWaterContent(speciesPnET.H4 * 9.804139432f, siteCohort.Ecoregion.SoilType);
+                float wiltPtWater = (float)hydrology.PressureHeadTable.CalcWaterContent(speciesPnET.H4 * 9.804139432f, siteCohort.Ecoregion.SoilType);
                 float availableWater = (hydrology.Water - wiltPtWater) * siteCohort.Ecoregion.RootingDepth * frostFreeProp;
                 if (PotentialTranspiration[index] > availableWater)
                 {
@@ -1399,7 +1399,7 @@ namespace Landis.Library.PnETCohorts
                 if (o3_month > 0)
                 {
                     float o3Coeff = speciesPnET.O3GrowthSens;
-                    O3Effect = ComputeO3Effect_PnET(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, Fol, lastO3Effect, gwv, LAI[index], o3Coeff);
+                    O3Effect = CalcO3Effect_PnET(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, Fol, lastO3Effect, gwv, LAI[index], o3Coeff);
                 }
                 else
                     O3Effect = 0;
@@ -1428,7 +1428,7 @@ namespace Landis.Library.PnETCohorts
 
         // LightEffect equation from PnET
         // Used in official releases >= 5.0
-        public static float ComputeFrad(float Radiation, float HalfSat)
+        public static float CalcFrad(float Radiation, float HalfSat)
         {
             float fRad = 0.0f;
             if (HalfSat > 0)
@@ -1439,12 +1439,12 @@ namespace Landis.Library.PnETCohorts
             return fRad;
         }
 
-        public static float ComputeFWater(float H1, float H2, float H3, float H4, float pressurehead)
+        public static float CalcFWater(float H1, float H2, float H3, float H4, float pressurehead)
         {
             float minThreshold = H1;
             if (H2 <= H1)
                 minThreshold = H2;
-            // Compute water stress
+            // Calculate water stress
             if (pressurehead <= H1)
                 return 0;
             else if (pressurehead < minThreshold || pressurehead >= H4)
@@ -1457,7 +1457,7 @@ namespace Landis.Library.PnETCohorts
                 return 1;
         }
 
-        public static float ComputeO3Effect_PnET(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastO3Effect, float gwv, float layerLAI, float o3Coeff)
+        public static float CalcO3Effect_PnET(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastO3Effect, float gwv, float layerLAI, float o3Coeff)
         {
             float currentO3Effect = 1.0F;
             float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
@@ -1471,12 +1471,12 @@ namespace Landis.Library.PnETCohorts
             return currentO3Effect;
         }
 
-        public int ComputeNonWoodyBiomass(ActiveSite site)
+        public int CalcNonWoodyBiomass(ActiveSite site)
         {
             return (int)Fol;
         }
 
-        public static Percentage ComputeNonWoodyPercentage(Cohort cohort, ActiveSite site)
+        public static Percentage CalcNonWoodyPercentage(Cohort cohort, ActiveSite site)
         {
             return new Percentage(cohort.Fol / (cohort.Wood + cohort.Fol));
         }
@@ -1723,7 +1723,7 @@ namespace Landis.Library.PnETCohorts
             data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
         }
 
-        public float CalculateLAI(ISpeciesPnET species, float fol, int index)
+        public float CalcLAI(ISpeciesPnET species, float fol, int index)
         {
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
@@ -1748,7 +1748,7 @@ namespace Landis.Library.PnETCohorts
             return LAIlayer;
         }
 
-        public float CalculateLAI(ISpeciesPnET species, float fol, int index, float cumulativeLAI)
+        public float CalcLAI(ISpeciesPnET species, float fol, int index, float cumulativeLAI)
         {
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)

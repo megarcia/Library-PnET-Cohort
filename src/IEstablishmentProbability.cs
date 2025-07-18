@@ -6,7 +6,7 @@ namespace Landis.Library.PnETCohorts
     {
         Landis.Library.Parameters.Species.AuxParm<float> Probability { get; }
 
-        Dictionary<ISpeciesPnET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology, float minHalfSat, float maxHalfSat, bool invertPest, float propRootAboveFrost);
+        Dictionary<ISpeciesPnET,float> CalcEstablishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology, float minHalfSat, float maxHalfSat, bool invertPest, float propRootAboveFrost);
 
         void ResetPerTimeStep();
          

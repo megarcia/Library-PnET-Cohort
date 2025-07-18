@@ -6,9 +6,9 @@ namespace Landis.Library.PnETCohorts
 {
     public class Permafrost
     {
-        public static SortedList<float, float> CalculateMonthlySoilTemps(SortedList<float, float> depthTempDict,IEcoregionPnET Ecoregion, int daysOfWinter, float snowPack, IHydrology hydrology, float lastTempBelowSnow)
+        public static SortedList<float, float> CalcMonthlySoilTemps(SortedList<float, float> depthTempDict,IEcoregionPnET Ecoregion, int daysOfWinter, float snowPack, IHydrology hydrology, float lastTempBelowSnow)
         {
-            float[] snowResults = CalculateSnowDepth(daysOfWinter, snowPack);
+            float[] snowResults = CalcSnowDepth(daysOfWinter, snowPack);
             float sno_dep = snowResults[0];
             float Psno_kg_m3 = snowResults[1];
             if (Ecoregion.Variables.Tave >= 0)
@@ -18,7 +18,7 @@ namespace Landis.Library.PnETCohorts
             }
             // from CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
             // Eq. 85 - Jordan (1991)
-            float damping = CalculateSnowDamping(Psno_kg_m3);
+            float damping = CalcSnowDamping(Psno_kg_m3);
             float DRz_snow = (float)Math.Exp(-1.0F * sno_dep * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
             // Permafrost calculations - from "Soil thawing worksheet.xlsx"
             float porosity = Ecoregion.Porosity / Ecoregion.RootingDepth;  //m3/m3
@@ -57,7 +57,7 @@ namespace Landis.Library.PnETCohorts
             return depthTempDict;
         }
 
-        public static float[] CalculateSnowDepth(int daysOfWinter, float snowPack)
+        public static float[] CalcSnowDepth(int daysOfWinter, float snowPack)
         {
             float bulkIntercept = 165.0f; //kg/m3
             float bulkSlope = 1.3f; //kg/m3
@@ -72,7 +72,7 @@ namespace Landis.Library.PnETCohorts
             return snowArray;
         }
 
-        public static float CalculateSnowDamping(float Psno_kg_m3)
+        public static float CalcSnowDamping(float Psno_kg_m3)
         {
             float lambAir = 0.023f;
             float lambIce = 2.29f;

@@ -28,12 +28,12 @@ namespace Landis.Library.PnETCohorts
             _date = date;
             speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
             _tave = (float)(0.5 * (monthlyClimateRecord.Tmin + monthlyClimateRecord.Tmax));
-            _dayspan = EcoregionPnETVariables.Calculate_DaySpan(date.Month);
-            float hr = EcoregionPnETVariables.Calculate_hr(date.DayOfYear, latitude);
-            _daylength = EcoregionPnETVariables.Calculate_DayLength(hr);
-            float nightlength = EcoregionPnETVariables.Calculate_NightLength(hr);
+            _dayspan = EcoregionPnETVariables.CalcDaySpan(date.Month);
+            float hr = EcoregionPnETVariables.Calchr(date.DayOfYear, latitude);
+            _daylength = EcoregionPnETVariables.CalcDayLength(hr);
+            float nightlength = EcoregionPnETVariables.CalcNightLength(hr);
             _tday = (float)(0.5 * (monthlyClimateRecord.Tmax + _tave));
-            _vpd = EcoregionPnETVariables.Calculate_VPD(Tday, (float)monthlyClimateRecord.Tmin);
+            _vpd = EcoregionPnETVariables.CalcVPD(Tday, (float)monthlyClimateRecord.Tmin);
             foreach (ISpeciesPnET spc in Species)
             {
                 SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, Daylength, nightlength, spc);
@@ -100,7 +100,7 @@ namespace Landis.Library.PnETCohorts
             float Q10base;
             if (wythers == true)
             {
-                //Computed Base foliar respiration based on temp; this is species-level, so you can compute outside this IF block and use for all cohorts of a species
+                //Calculate Base foliar respiration based on temp; this is species-level, so you can compute outside this IF block and use for all cohorts of a species
                 BaseFolRespFrac = 0.138071F - 0.0024519F * Tave;
                 //Midpoint between Tave and Optimal Temp; this is also species-level
                 float Tmidpoint = (Tave + spc.PsnTOpt) / 2F;

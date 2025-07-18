@@ -151,7 +151,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         #region static computation functions
-        public static int Calculate_DaySpan(int Month)
+        public static int CalcDaySpan(int Month)
         {
             return Month switch
             {
@@ -171,7 +171,7 @@ namespace Landis.Library.PnETCohorts
             };
         }
 
-        private static float Calculate_VP(float a, float b, float c, float T)
+        private static float CalcVP(float a, float b, float c, float T)
         {
             // Calculates vapor pressure at temperature (T)
             // a,b,c are coefficients
@@ -179,16 +179,16 @@ namespace Landis.Library.PnETCohorts
             return a * (float)Math.Exp(b * T / (T + c));
         }
 
-        public static float Calculate_VPD(float Tday, float TMin)
+        public static float CalcVPD(float Tday, float TMin)
         {
             float emean;
             // saturated vapor pressure
-            float es = Calculate_VP(0.61078f, 17.26939f, 237.3f, Tday);
+            float es = CalcVP(0.61078f, 17.26939f, 237.3f, Tday);
             if (Tday < 0)
-                es = Calculate_VP(0.61078f, 21.87456f, 265.5f, Tday);
-            emean = Calculate_VP(0.61078f, 17.26939f, 237.3f, TMin);
+                es = CalcVP(0.61078f, 21.87456f, 265.5f, Tday);
+            emean = CalcVP(0.61078f, 17.26939f, 237.3f, TMin);
             if (TMin < 0)
-                emean = Calculate_VP(0.61078f, 21.87456f, 265.5f, TMin);
+                emean = CalcVP(0.61078f, 21.87456f, 265.5f, TMin);
 
             return es - emean;
         }
@@ -229,7 +229,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         /// <param name="hr"></param>
         /// <returns></returns>
-        public static float Calculate_NightLength(float hr)
+        public static float CalcNightLength(float hr)
         {
             return 60 * 60 * (24 - hr);
         }
@@ -239,7 +239,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         /// <param name="hr"></param>
         /// <returns></returns>
-        public static float Calculate_DayLength(float hr)
+        public static float CalcDayLength(float hr)
         {
             return 60 * 60 * hr;
         }
@@ -250,7 +250,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="DOY"></param>
         /// <param name="Latitude"></param>
         /// <returns></returns>
-        public static float Calculate_hr(int DOY, double Latitude)
+        public static float Calchr(int DOY, double Latitude)
         {
             float TA;
             float AC;
@@ -312,12 +312,12 @@ namespace Landis.Library.PnETCohorts
             this.obs_clim = climate_dataset;
             speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
             _tave = (float)0.5 * (climate_dataset.Tmin + climate_dataset.Tmax);
-            _dayspan = Calculate_DaySpan(Date.Month);
-            float hr = Calculate_hr(Date.DayOfYear, Latitude); //hours of daylight
-            _daylength = Calculate_DayLength(hr);
-            float nightlength = Calculate_NightLength(hr);
+            _dayspan = CalcDaySpan(Date.Month);
+            float hr = Calchr(Date.DayOfYear, Latitude); //hours of daylight
+            _daylength = CalcDayLength(hr);
+            float nightlength = CalcNightLength(hr);
             _tday = (float)0.5 * (climate_dataset.Tmax + _tave);
-            _vpd = Calculate_VPD(Tday, climate_dataset.Tmin);
+            _vpd = CalcVPD(Tday, climate_dataset.Tmin);
             foreach (ISpeciesPnET spc in Species)
             {
                 SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, Daylength, nightlength, spc);
@@ -362,7 +362,7 @@ namespace Landis.Library.PnETCohorts
             float Q10base;
             if (Wythers == true)
             {
-                //Computed Base foliar respiration based on temp; this is species-level
+                //Calculate Base foliar respiration based on temp; this is species-level
                 BaseFolRespFrac = 0.138071F - 0.0024519F * Tave;
                 //Midpoint between Tave and Optimal Temp; this is also species-level
                 float Tmidpoint = (Tave + spc.PsnTOpt) / 2F;

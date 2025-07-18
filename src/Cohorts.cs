@@ -47,18 +47,18 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Computes the total biomass for all the cohorts at a site.
+        /// Calculates the total biomass for all the cohorts at a site.
         /// </summary>
-        public static int ComputeBiomass(ISiteCohorts siteCohorts)
+        public static int CalcBiomass(ISiteCohorts siteCohorts)
         {
-            return ComputeBiomass(siteCohorts, out int youngBiomass);
+            return CalcBiomass(siteCohorts, out int youngBiomass);
         }
         
         /// <summary>
-        /// Computes the total aboveground live biomass for all the cohorts at a site, and the
+        /// Calculates the total aboveground live biomass for all the cohorts at a site, and the
         /// total aboveground live biomass for all the young cohorts.
         /// </summary>
-        public static int ComputeBiomass(ISiteCohorts siteCohorts, out int youngBiomass)
+        public static int CalcBiomass(ISiteCohorts siteCohorts, out int youngBiomass)
         {
             youngBiomass = 0;
             int totalBiomass = 0;
@@ -76,9 +76,9 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Computes the total aboveground live biomass for all the cohorts, not including young cohorts.
+        /// Calculates the total aboveground live biomass for all the cohorts, not including young cohorts.
         /// </summary>
-        public static int ComputeNonYoungBiomass(ISiteCohorts siteCohorts)
+        public static int CalcNonYoungBiomass(ISiteCohorts siteCohorts)
         {
             if (siteCohorts == null)
                 return 0;

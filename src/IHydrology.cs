@@ -23,7 +23,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         bool AddWater(float water, float activeSoilDepth); 
 
-        float CalculateEvaporation(SiteCohorts sitecohorts, float PET);
+        float CalcEvaporation(SiteCohorts sitecohorts, float PET);
 
         /// <summary>
         /// volumetric water content (mm/m) of the frozen soil
@@ -55,7 +55,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="T"></param>
         /// <param name="dayLength"></param>
         /// <returns></returns>
-        float Calculate_RET_Hamon(float T, float dayLength); 
+        float CalcRET_Hamon(float T, float dayLength); 
 
         /// <summary>
         /// Get the PressureHeadTable object

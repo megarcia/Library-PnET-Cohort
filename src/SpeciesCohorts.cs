@@ -203,7 +203,7 @@ namespace Landis.Library.PnETCohorts
                 return index;
             }
             cohort.IncrementAge();
-            int biomassChange = (int)Cohorts.BiomassCalculator.ComputeChange(cohort, site);
+            int biomassChange = (int)Cohorts.BiomassCalculator.CalcChange(cohort, site);
             Debug.Assert(-cohort.TotalBiomass <= biomassChange);  // Cohort can't lose more biomass than it has
             cohort.ChangeBiomass(biomassChange);
             if (cohort.TotalBiomass > 0)
@@ -260,7 +260,7 @@ namespace Landis.Library.PnETCohorts
         }
         
         /// <summary>
-        /// Computes how much a disturbance damages the cohorts by reducing
+        /// Calculates how much a disturbance damages the cohorts by reducing
         /// their biomass.
         /// </summary>
         /// <returns>

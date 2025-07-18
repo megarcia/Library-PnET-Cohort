@@ -64,7 +64,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="watercontent"></param>
         /// <param name="soiltype"></param>
         /// <returns></returns>
-        public float CalculateWaterPressure(double watercontent, string soiltype)
+        public float CalcWaterPressure(double watercontent, string soiltype)
         {
             double tension = 0.0;
             if (watercontent <= porosity_OM_comp[soiltype])
@@ -89,7 +89,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="tension"></param>
         /// <param name="soiltype"></param>
         /// <returns></returns>
-        public float CalculateWaterContent(float tension /* kPA*/, string soiltype)
+        public float CalcWaterContent(float tension /* kPA*/, string soiltype)
         {
             float watercontent = (float)Math.Pow(tension / tensionA[soiltype], 1.0 / -tensionB[soiltype]);
 
@@ -155,7 +155,7 @@ namespace Landis.Library.PnETCohorts
                     float pressureHead = float.MaxValue;
                     while (pressureHead > 0.01)
                     {
-                        pressureHead = CalculateWaterPressure(watercontent, SoilType[ecoregion]);
+                        pressureHead = CalcWaterPressure(watercontent, SoilType[ecoregion]);
                         PressureHead.Add(pressureHead);
                         watercontent += 0.01;
                     }

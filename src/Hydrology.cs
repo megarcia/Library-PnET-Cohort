@@ -182,11 +182,11 @@ namespace Landis.Library.PnETCohorts
                     // Volumetric water content (mm/m) at field capacity
                     //  −33 kPa (or −0.33 bar)        
                     // Convert kPA to mH2o (/9.804139432) = 3.37
-                    eco.FieldCap = (float)pressureheadtable.CalculateWaterContent(33, eco.SoilType);
+                    eco.FieldCap = (float)pressureheadtable.CalcWaterContent(33, eco.SoilType);
                     // Volumetric water content (mm/m) at wilting point
                     //  −1500 kPa (or −15 bar)  
                     // Convert kPA to mH2o (/9.804139432) = 153.00
-                    eco.WiltPnt = (float)pressureheadtable.CalculateWaterContent(1500, eco.SoilType);
+                    eco.WiltPnt = (float)pressureheadtable.CalcWaterContent(1500, eco.SoilType);
                     // Volumetric water content (mm/m) at porosity
                     eco.Porosity = (float)pressureheadtable.Porosity(eco.SoilType);
                     float f = eco.FieldCap - eco.WiltPnt;
@@ -202,7 +202,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="_daySpan"></param>
         /// <param name="_daylength"></param>
         /// <returns></returns>
-        static float Calculate_PotentialEvaporation_umol(double _Rads, double _Tair, float _daySpan, float _daylength)
+        static float CalcPotentialEvaporation_umol(double _Rads, double _Tair, float _daySpan, float _daylength)
         {
             //double _Rads                  // Daytime Solar Radiation (PAR) (micromol/m2/s)
             //double _Tair                  // Daytime air temperature (°C) [Tday]
@@ -219,7 +219,7 @@ namespace Landis.Library.PnETCohorts
             return PE * _daySpan;  //mm/month 
         }
 
-        public float CalculateEvaporation(SiteCohorts sitecohorts, float PET)
+        public float CalcEvaporation(SiteCohorts sitecohorts, float PET)
         {
             lock (threadLock)
             {
@@ -233,7 +233,7 @@ namespace Landis.Library.PnETCohorts
                 float evapCritWater = sitecohorts.Ecoregion.FieldCap * 0.75f;
                 float evapCritWaterPH = pressureheadtable[sitecohorts.Ecoregion, (int)Math.Round(evapCritWater * 100.0)];
                 // Delivery potential is 1 if pressurehead < evapCritWater, and declines to 0 at wilting point (153 mH2O)
-                DeliveryPotential = Cohort.ComputeFWater(-1, -1, evapCritWaterPH, 153, pressurehead);
+                DeliveryPotential = Cohort.CalcFWater(-1, -1, evapCritWaterPH, 153, pressurehead);
                 float AEmax = PET; // Modified 11/4/22 in v 5.0-rc19; remove access limitation and only use physical limit at wilting point below
                 // Evaporation cannot remove water below wilting point           
                 float evaporationEvent = Math.Min(AEmax, (Water - sitecohorts.Ecoregion.WiltPnt) * evapSoilDepth);// mm/month
@@ -252,7 +252,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="T"></param>
         /// <param name="daySpan"></param>
         /// <returns></returns>
-        public float Calculate_PotentialGroundET_Radiation_umol(float aboveCanopyPAR, float subCanopyPAR, float daylength, float T, float daySpan)
+        public float CalcPotentialGroundET_Radiation_umol(float aboveCanopyPAR, float subCanopyPAR, float daylength, float T, float daySpan)
         {
             // aboveCanopyPAR   daytime PAR (umol/m2/s) at top of canopy
             // subCanopyPAR     daytime PAR (umol/m2/s) at bottom of canopy
@@ -280,7 +280,7 @@ namespace Landis.Library.PnETCohorts
             return PET_ground * 1000 * daySpan; //mm/month
         }
 
-        public float Calculate_RET_Hamon(float T, float dayLength)
+        public float CalcRET_Hamon(float T, float dayLength)
         {
             // T            average monthly temperature (C)
             // daylength    daytime length in seconds (s)
@@ -296,31 +296,31 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float Calculate_PotentialGroundET_LAI_WATER(float LAI, float T, float dayLength, float daySpan)
+        public float CalcPotentialGroundET_LAI_WATER(float LAI, float T, float dayLength, float daySpan)
         {
             // LAI          Total Canopy LAI
             // T            average monthly temperature (C)
             // daylength    daytime length in seconds (s)
             // daySpan          number of days in the month
-            float RET = Calculate_RET_Hamon(T, dayLength); //mm/day
+            float RET = CalcRET_Hamon(T, dayLength); //mm/day
             float Egp = 0.8f * RET * (float)Math.Exp(-0.695f * LAI); //mm/day
 
             return Egp * daySpan; //mm/month
         }
 
-        public float Calculate_PotentialGroundET_LAI_WEPP(float LAI, float T, float dayLength, float daySpan)
+        public float CalcPotentialGroundET_LAI_WEPP(float LAI, float T, float dayLength, float daySpan)
         {
             // LAI          Total Canopy LAI
             // T            average monthly temperature (C)
             // daylength    daytime length in seconds (s)
             // daySpan          number of days in the month
-            float RET = Calculate_RET_Hamon(T, dayLength); //mm/day
+            float RET = CalcRET_Hamon(T, dayLength); //mm/day
             float Egp = RET * (float)Math.Exp(-0.4f * LAI); //mm/day
 
             return Egp * daySpan; //mm/month
         }
 
-        public float Calculate_PotentialGroundET_LAI(float LAI, float T, float dayLength, float daySpan, float k, float cropCoeff = 1f)
+        public float CalcPotentialGroundET_LAI(float LAI, float T, float dayLength, float daySpan, float k, float cropCoeff = 1f)
         {
             // LAI          Total Canopy LAI
             // T            average monthly temperature (C)
@@ -329,7 +329,7 @@ namespace Landis.Library.PnETCohorts
             // k            extinction coefficient
             // cropCoeff    crop coefficient (scalar adjustment)
             cropCoeff = ((Parameter<float>)Names.GetParameter("RETCropCoeff")).Value;
-            float RET = Calculate_RET_Hamon(T, dayLength); //mm/day
+            float RET = CalcRET_Hamon(T, dayLength); //mm/day
             float Egp = cropCoeff * RET * (float)Math.Exp(-k * LAI); //mm/day
 
             return Egp * daySpan; //mm/month

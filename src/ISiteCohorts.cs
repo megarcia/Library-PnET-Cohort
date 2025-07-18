@@ -20,7 +20,7 @@ namespace Landis.Library.PnETCohorts
         float[] MonthlyLeakage { get; }
         float[] MonthlyInterception { get; }
         float[] MonthlyRunoff { get; }
-        float[] MonthlyAET { get; }
+        float[] MonthlyActualET { get; }
         float[] MonthlyPotentialEvap { get; }
         float[] MonthlyPotentialTrans { get; }
         float CanopyLAImax{ get; }
@@ -55,7 +55,7 @@ namespace Landis.Library.PnETCohorts
         float BelowGroundBiomassSum { get; }
         float FoliageSum { get; }
         float NSCSum { get; }
-        float AETSum { get; } //mm
+        float ActualETSum { get; } //mm
         float NetPsnSum { get; }
         float PotentialET { get; }
 

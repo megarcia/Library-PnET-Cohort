@@ -45,7 +45,7 @@ namespace Landis.Library.PnETCohorts
         private float[] monthlyInterception = null;
         private float[] monthlyLeakage = null;
         private float[] monthlyRunoff = null;
-        private float[] monthlyAET = null;
+        private float[] monthlyActualET = null;
         private float[] monthlyPotentialEvap = null;
         private float[] monthlyPotentialTrans = null;
         private float transpiration;
@@ -68,7 +68,7 @@ namespace Landis.Library.PnETCohorts
         public List<ExtensionType> DisturbanceTypesReduced = null;
         public IEcoregionPnET Ecoregion;
         public LocalOutput siteoutput;
-        private float[] AET = new float[12]; // mm/mo
+        private float[] ActualET = new float[12]; // mm/mo
         private static IDictionary<uint, SiteCohorts> initialSites;
         private static byte MaxCanopyLayers;
         private static float LayerThreshRatio;
@@ -1191,9 +1191,9 @@ namespace Landis.Library.PnETCohorts
             return random_range;
         }
 
-        public void SetAet(float value, int Month)
+        public void SetActualET(float value, int Month)
         {
-            AET[Month-1] = value;
+            ActualET[Month-1] = value;
         }
 
         public void SetPotentialET(float value)
@@ -1304,7 +1304,7 @@ namespace Landis.Library.PnETCohorts
             monthlyInterception = new float[13];
             monthlyLeakage = new float[13];
             monthlyRunoff = new float[13];
-            monthlyAET = new float[13];
+            monthlyActualET = new float[13];
             monthlyPotentialEvap = new float[13];
             monthlyPotentialTrans = new float[13];
             Dictionary<ISpeciesPnET, float> cumulativeEstab = new Dictionary<ISpeciesPnET, float>();
@@ -2000,7 +2000,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 monthlyActualTrans[data[m].Month - 1] += transpiration;
                 monthlyPotentialTrans[data[m].Month - 1] += potentialTranspiration;
-                monthlyAET[data[m].Month - 1] = monthlyActualTrans[data[m].Month - 1] + monthlyEvap[data[m].Month - 1] + monthlyInterception[data[m].Month - 1];
+                monthlyActualET[data[m].Month - 1] = monthlyActualTrans[data[m].Month - 1] + monthlyEvap[data[m].Month - 1] + monthlyInterception[data[m].Month - 1];
                 float groundAlbedo = 0.20F;
                 if (sno_dep > 0)
                 {
@@ -2089,10 +2089,10 @@ namespace Landis.Library.PnETCohorts
                         }
                     }
                 }
-                float AET = hydrology.Evaporation + TransCumulative + InterceptCumulative;
-                this.SetAet(AET, data[m].Month);
+                float ActualET = hydrology.Evaporation + TransCumulative + InterceptCumulative;
+                this.SetActualET(ActualET, data[m].Month);
                 this.SetPotentialET(PotentialETcumulative);
-                SiteVars.ClimaticWaterDeficit[this.Site] += PotentialETcumulative - AET;
+                SiteVars.ClimaticWaterDeficit[this.Site] += PotentialETcumulative - ActualET;
                 // Add surface water to soil
                 if ((hydrology.SurfaceWater > 0) & (hydrology.Water < Ecoregion.Porosity))
                 {
@@ -2572,29 +2572,29 @@ namespace Landis.Library.PnETCohorts
             }
         }
     
-        public float[] MonthlyAET
+        public float[] MonthlyActualET
         {
             get
             {
-                if (monthlyAET == null)
+                if (monthlyActualET == null)
                 {
-                    float[] aet_array = new float[12];
-                    for (int i = 0; i < aet_array.Length; i++)
+                    float[] actualET_array = new float[12];
+                    for (int i = 0; i < actualET_array.Length; i++)
                     {
-                        aet_array[i] = 0;
+                        actualET_array[i] = 0;
                     }
-                    return aet_array;
+                    return actualET_array;
                 }
                 else
                 {
-                    float[] aetSum = monthlyAET.Select(aet => (float)aet).ToArray();
+                    float[] actualETSum = monthlyActualET.Select(actualET => (float)actualET).ToArray();
                     float[] monthSum = monthCount.Select(months => (float)months).ToArray();
-                    float[] aet_array = new float[12];
-                    for (int i = 0; i < aet_array.Length; i++)
+                    float[] actualET_array = new float[12];
+                    for (int i = 0; i < actualET_array.Length; i++)
                     {
-                        aet_array[i] = aetSum[i] / monthSum[i];
+                        actualET_array[i] = actualETSum[i] / monthSum[i];
                     }
-                    return aet_array;
+                    return actualET_array;
                 }
             }
         }
@@ -3034,11 +3034,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float AETSum
+        public float ActualETSum
         {
             get
             {
-                return AET.Sum();
+                return ActualET.Sum();
             }
         }
 
@@ -3433,7 +3433,7 @@ namespace Landis.Library.PnETCohorts
         {
             lock (Globals.litterThreadLock)
             {
-                double KNwdLitter = Math.Max(0.3, -0.5365 + (0.00241 * AET.Sum()) - (-0.01586 + (0.000056 * AET.Sum())) * spc.FolLignin * 100);
+                double KNwdLitter = Math.Max(0.3, -0.5365 + (0.00241 * ActualET.Sum()) - (-0.01586 + (0.000056 * ActualET.Sum())) * spc.FolLignin * 100);
                 SiteVars.Litter[Site].AddMass(AddLitter, KNwdLitter);
             }
         }

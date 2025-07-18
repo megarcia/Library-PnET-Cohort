@@ -355,18 +355,18 @@ namespace Landis.Library.PnETCohorts
             // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
             float JH2O = (float)(0.239 * (VPD / (8314.47 * (climate_dataset.Tmin + 273f))));
             speciespnetvars.JH2O = JH2O;
-            // GROSSPSN gross photosynthesis
+            // GROSSPsn gross photosynthesis
             // Modify AmaxB based on CO2 level
             // Equations solved from 2 known points: (350, AmaxB) and (550, AmaxB * CO2AmaxBEff)
             float AmaxB_slope = (float)((spc.CO2AMaxBEff - 1.0) * spc.AmaxB / 200.0);  // Derived from m = [(AmaxB*CO2AMaxBEff) - AmaxB]/[550 - 350]
             float AmaxB_int = (float)(-1.0 * (((spc.CO2AMaxBEff - 1.0) * 1.75) - 1.0) * spc.AmaxB);  // Derived from b = AmaxB - (AmaxB_slope * 350)
             float AmaxB_CO2 = AmaxB_slope * climate_dataset.CO2 + AmaxB_int;
             speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
-            // FTempPSN (public for output file)
+            // FTempPsn (public for output file)
             if (DTemp)
-                speciespnetvars.FTempPSN = DTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax);
+                speciespnetvars.FTempPsn = DTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax);
             else
-                speciespnetvars.FTempPSN = CurvilinearPsnTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax); // Modified 051216(BRM)
+                speciespnetvars.FTempPsn = CurvilinearPsnTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax); // Modified 051216(BRM)
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
             // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
             // Acclimation of respiration to temperature and C02 in seedlings of boreal tree species

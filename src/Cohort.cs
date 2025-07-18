@@ -1333,9 +1333,9 @@ namespace Landis.Library.PnETCohorts
                 //Reference gross Psn (lab conditions) in gC/g Fol/month
                 float RefGrossPsn = variables.DaySpan * (GrossAmax * variables[species.Name].DVPD * variables.Daylength * Constants.MC) / Constants.billion;
                 // Calculate gross psn from stress factors and reference gross psn (gC/g Fol/month)
-                // Reduction factors include temperature (FTempPSN), water (FWater), light (FRad), age (FAge)
+                // Reduction factors include temperature (FTempPsn), water (FWater), light (FRad), age (FAge)
                 // Remove FWater from psn reduction because it is accounted for in WUE through ciModifier [mod2, mod3]
-                float GrossPsnPotential = 1 / (float)Globals.IMAX * variables[species.Name].FTempPSN * FRad[index] * FAge * RefGrossPsn * Fol;  // gC/m2 ground/mo
+                float GrossPsnPotential = 1 / (float)Globals.IMAX * variables[species.Name].FTempPsn * FRad[index] * FAge * RefGrossPsn * Fol;  // gC/m2 ground/mo
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 // JH2O has been modified by CiModifier to reduce water use efficiency
                 // Scale transpiration to fraction of site occupied (CanopyLayerFrac)
@@ -1550,7 +1550,7 @@ namespace Landis.Library.PnETCohorts
             float PressHeadAvg = PressHead.Average();
             float fRadAvg = FRad.Average();
             float fOzoneAvg = FOzone.Average();
-            float fTemp = monthdata[Species.Name].FTempPSN;
+            float fTemp = monthdata[Species.Name].FTempPsn;
             string limitingFactor = "NA";
             if (ColdKill < int.MaxValue)
                 limitingFactor = "ColdTol (" + ColdKill.ToString() + ")";
@@ -1606,7 +1606,7 @@ namespace Landis.Library.PnETCohorts
                        fRadAvg + "," +
                        fOzoneAvg + "," +
                        DelAmax.Average() + "," +
-                       monthdata[Species.Name].FTempPSN + "," +
+                       monthdata[Species.Name].FTempPsn + "," +
                        monthdata[Species.Name].FTempRespWeightedDayAndNight + "," +
                        FAge + "," +
                        IsLeafOn + "," +

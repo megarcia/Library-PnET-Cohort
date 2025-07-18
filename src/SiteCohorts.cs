@@ -1209,15 +1209,15 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        private static float CalcMaxSnowMelt(float Tave, float DaySpan)
+        private static float CalcMaxSnowMelt(float Tavg, float DaySpan)
         {
             // Snowmelt rate can range between 1.6 to 6.0 mm/degree day, and default should be 2.74 according to NRCS Part 630 Hydrology National Engineering Handbook (Chapter 11: Snowmelt)
-            return 2.74f * Math.Max(0, Tave) * DaySpan;
+            return 2.74f * Math.Max(0, Tavg) * DaySpan;
         }
 
-        private static float CumputeSnowFraction(float Tave)
+        private static float CumputeSnowFraction(float Tavg)
         {
-            return (float)Math.Max(0.0, Math.Min(1.0, (Tave - 2) / -7));
+            return (float)Math.Max(0.0, Math.Min(1.0, (Tavg - 2) / -7));
         }
 
         public bool Grow(List<IEcoregionPnETVariables> data, bool AllowMortality = true, bool outputCohortData = true)
@@ -1339,7 +1339,7 @@ namespace Landis.Library.PnETCohorts
                 int extremeMonth = 0;
                 for (int m = 0; m < data.Count(); m++)
                 {
-                    float minTemp = data[m].Tave - (float)(3.0 * Ecoregion.WinterSTD);
+                    float minTemp = data[m].Tavg - (float)(3.0 * Ecoregion.WinterSTD);
                     if (minTemp < extremeMinTemp)
                     {
                         extremeMinTemp = minTemp;
@@ -1400,9 +1400,9 @@ namespace Landis.Library.PnETCohorts
                     ozoneD40 = data[m].O3;
                 float O3_D40_ppmh = ozoneD40 / 1000; // convert D40 units to ppm h
                 // Melt snow
-                float snowmelt = Math.Min(snowPack, CalcMaxSnowMelt(data[m].Tave, data[m].DaySpan)); // mm
+                float snowmelt = Math.Min(snowPack, CalcMaxSnowMelt(data[m].Tavg, data[m].DaySpan)); // mm
                 if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                float newsnow = CumputeSnowFraction(data[m].Tave) * data[m].Prec;
+                float newsnow = CumputeSnowFraction(data[m].Tavg) * data[m].Prec;
                 float newsnowpack = newsnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
                 if (newsnowpack < 0 || newsnowpack > data[m].Prec)
                     throw new System.Exception("Error, newsnowpack = " + newsnowpack + " availablePrecipitation = " + data[m].Prec);
@@ -1414,7 +1414,7 @@ namespace Landis.Library.PnETCohorts
                 float propThawed = 0;
                 // Soil temp calculations - need for permafrost and Root Rot
                 // snow calculations - from "Soil thawing worksheet with snow.xlsx"
-                if (data[m].Tave <= 0)
+                if (data[m].Tavg <= 0)
                     daysOfWinter += (int)data[m].DaySpan;
                 else if (snowPack > 0)
                     daysOfWinter += (int)data[m].DaySpan;
@@ -1472,16 +1472,16 @@ namespace Landis.Library.PnETCohorts
                         mCount = Math.Min(12, data.Count());
                         foreach (int z in Enumerable.Range(0, mCount))
                         {
-                            tSum += data[z].Tave;
+                            tSum += data[z].Tavg;
                             pSum += data[z].Prec;
-                            if (data[z].Tave > tMax)
+                            if (data[z].Tavg > tMax)
                             {
-                                tMax = data[z].Tave;
+                                tMax = data[z].Tavg;
                                 maxMonth = data[z].Month;
                             }
-                            if (data[z].Tave < tMin)
+                            if (data[z].Tavg < tMin)
                             {
-                                tMin = data[z].Tave;
+                                tMin = data[z].Tavg;
                                 minMonth = data[z].Month;
                             }
                         }
@@ -1491,16 +1491,16 @@ namespace Landis.Library.PnETCohorts
                         mCount = 12;
                         foreach (int z in Enumerable.Range(m - 11, 12))
                         {
-                            tSum += data[z].Tave;
+                            tSum += data[z].Tavg;
                             pSum += data[z].Prec;
-                            if (data[z].Tave > tMax)
+                            if (data[z].Tavg > tMax)
                             {
-                                tMax = data[z].Tave;
+                                tMax = data[z].Tavg;
                                 maxMonth = data[z].Month;
                             }
-                            if (data[z].Tave < tMin)
+                            if (data[z].Tavg < tMin)
                             {
-                                tMin = data[z].Tave;
+                                tMin = data[z].Tavg;
                                 minMonth = data[z].Month;
                             }
                         }
@@ -1508,9 +1508,9 @@ namespace Landis.Library.PnETCohorts
                     float annualTavg = tSum / mCount;
                     float annualPcpAvg = pSum / mCount;
                     float tAmplitude = (tMax - tMin) / 2;
-                    float tempBelowSnow = Ecoregion.Variables.Tave;
+                    float tempBelowSnow = Ecoregion.Variables.Tavg;
                     if (sno_dep > 0)
-                        tempBelowSnow = annualTavg + (Ecoregion.Variables.Tave - annualTavg) * DRz_snow;
+                        tempBelowSnow = annualTavg + (Ecoregion.Variables.Tavg - annualTavg) * DRz_snow;
                     lastTempBelowSnow = tempBelowSnow;
                     // Regardless of permafrost, need to fill the tempDict with values
                     bool foundBottomIce = false;
@@ -1625,7 +1625,7 @@ namespace Landis.Library.PnETCohorts
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
                 if (data[m].Prec < 0) throw new System.Exception("Error, this.data[m].Prec = " + data[m].Prec + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 // Calculate abovecanopy reference daily ET
-                float RET = hydrology.CalcRET_Hamon(data[m].Tave, data[m].Daylength); //mm/day
+                float RET = hydrology.CalcRET_Hamon(data[m].Tavg, data[m].Daylength); //mm/day
                 float newrain = data[m].Prec - newsnow;
                 // Reduced by interception
                 if (CanopyLAI == null)
@@ -1648,7 +1648,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 float MeltInWater = snowmelt;
                 // Calculate ground PET
-                float groundPET = hydrology.CalcPotentialGroundET_LAI(CanopyLAI.Sum(), data[m].Tave, data[m].Daylength, data[m].DaySpan, ((Parameter<float>)Names.GetParameter("ETExtCoeff")).Value);
+                float groundPET = hydrology.CalcPotentialGroundET_LAI(CanopyLAI.Sum(), data[m].Tavg, data[m].Daylength, data[m].DaySpan, ((Parameter<float>)Names.GetParameter("ETExtCoeff")).Value);
                 float  groundPETbyEvent = groundPET / numEvents;  // divide evaporation into discreet events to match precip
                 // Randomly choose which layers will receive the precip events
                 // If # of layers < precipEvents, some layers will show up multiple times in number list.  This ensures the same number of precip events regardless of the number of cohorts
@@ -2059,7 +2059,7 @@ namespace Landis.Library.PnETCohorts
                         CanopyLAI[layer] = 0;
                 }
                 canopylaimax = (float)Math.Max(canopylaimax, LayerLAI.Sum());
-                if (data[m].Tave > 0)
+                if (data[m].Tavg > 0)
                 {
                     float monthlyPressureHead = hydrology.GetPressureHead(Ecoregion);
                     sumPressureHead += monthlyPressureHead;
@@ -2106,7 +2106,7 @@ namespace Landis.Library.PnETCohorts
                     AddSiteOutput(data[m]);
                     AllCohorts.ForEach(a => a.UpdateCohortData(data[m]));
                 }
-                if (data[m].Tave > 0)
+                if (data[m].Tavg > 0)
                 {
                     sumPressureHead += hydrology.PressureHeadTable.CalcWaterPressure(hydrology.Water,Ecoregion.SoilType);
                     countPressureHead += 1;
@@ -3459,7 +3459,7 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.SumCanopyProp + "," +
                        OutputHeaders.PAR0 + "," +
                        OutputHeaders.Tmin + "," +
-                       OutputHeaders.Tave + "," +
+                       OutputHeaders.Tavg + "," +
                        OutputHeaders.Tday + "," +
                        OutputHeaders.Tmax + "," +
                        OutputHeaders.Precip + "," +
@@ -3519,7 +3519,7 @@ namespace Landis.Library.PnETCohorts
                        cohorts.Values.Sum(o => o.Sum(x => x.CanopyLayerProp)) + "," +
                        monthdata.PAR0 + "," +
                        monthdata.Tmin + "," +
-                       monthdata.Tave + "," +
+                       monthdata.Tavg + "," +
                        monthdata.Tday + "," +
                        monthdata.Tmax + "," +
                        monthdata.Prec + "," +

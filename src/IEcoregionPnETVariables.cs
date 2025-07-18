@@ -14,7 +14,7 @@ namespace Landis.Library.PnETCohorts
         float Prec { get; } 
 
         /// <summary>
-        /// Monthly average daytime air temp: (Tmax + Tave)/2
+        /// Monthly average daytime air temp: (Tmax + Tavg)/2
         /// </summary>
         float Tday { get; } 
 
@@ -48,7 +48,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Monthly average air temp: (Tmin + Tmax)/2
         /// </summary>
-        float Tave { get; } 
+        float Tavg { get; } 
 
         /// <summary>
         /// Monthly min air temp

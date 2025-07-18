@@ -9,7 +9,7 @@ namespace Landis.Library.PnETCohorts
         private IObservedClimate obs_clim;
         private float _vpd;
         private float _dayspan;
-        private float _tave;
+        private float _tavg;
         private float _tday;
         private float _daylength;
 
@@ -118,11 +118,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float Tave
+        public float Tavg
         {
             get
             {
-                return _tave;
+                return _tavg;
             }
         }
 
@@ -311,12 +311,12 @@ namespace Landis.Library.PnETCohorts
             this._date = Date;
             this.obs_clim = climate_dataset;
             speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
-            _tave = (float)0.5 * (climate_dataset.Tmin + climate_dataset.Tmax);
+            _tavg = (float)0.5 * (climate_dataset.Tmin + climate_dataset.Tmax);
             _dayspan = CalcDaySpan(Date.Month);
             float hr = Calchr(Date.DayOfYear, Latitude); //hours of daylight
             _daylength = CalcDayLength(hr);
             float nightlength = CalcNightLength(hr);
-            _tday = (float)0.5 * (climate_dataset.Tmax + _tave);
+            _tday = (float)0.5 * (climate_dataset.Tmax + _tavg);
             _vpd = CalcVPD(Tday, climate_dataset.Tmin);
             foreach (ISpeciesPnET spc in Species)
             {
@@ -363,9 +363,9 @@ namespace Landis.Library.PnETCohorts
             if (Wythers == true)
             {
                 //Calculate Base foliar respiration based on temp; this is species-level
-                BaseFolRespFrac = 0.138071F - 0.0024519F * Tave;
-                //Midpoint between Tave and Optimal Temp; this is also species-level
-                float Tmidpoint = (Tave + spc.PsnTOpt) / 2F;
+                BaseFolRespFrac = 0.138071F - 0.0024519F * Tavg;
+                //Midpoint between Tavg and Optimal Temp; this is also species-level
+                float Tmidpoint = (Tavg + spc.PsnTOpt) / 2F;
                 // Base parameter in Q10 temperature dependency calculation in current temperature
                 Q10base = 3.22F - 0.046F * Tmidpoint;
             }
@@ -377,7 +377,7 @@ namespace Landis.Library.PnETCohorts
             }
             speciespnetvars.BaseFolRespFrac = BaseFolRespFrac;
             // Respiration Q10 factor
-            speciespnetvars.Q10Factor = CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
+            speciespnetvars.Q10Factor = CalcQ10Factor(Q10base, Tavg, spc.PsnTOpt);
             // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
             float fTempRespDay = CalcQ10Factor(Q10base, Tday, spc.PsnTOpt);
             // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)

@@ -11,7 +11,7 @@ namespace Landis.Library.PnETCohorts
             float[] snowResults = CalcSnowDepth(daysOfWinter, snowPack);
             float sno_dep = snowResults[0];
             float Psno_kg_m3 = snowResults[1];
-            if (Ecoregion.Variables.Tave >= 0)
+            if (Ecoregion.Variables.Tavg >= 0)
             {
                 float fracAbove0 = Ecoregion.Variables.Tmax / (Ecoregion.Variables.Tmax - Ecoregion.Variables.Tmin);
                 sno_dep = sno_dep * fracAbove0;
@@ -35,9 +35,9 @@ namespace Landis.Library.PnETCohorts
             float maxDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
             float freezeDepth = maxDepth;
             float testDepth = 0;
-            float tempBelowSnow = Ecoregion.Variables.Tave;
+            float tempBelowSnow = Ecoregion.Variables.Tavg;
             if (sno_dep > 0)
-                tempBelowSnow = lastTempBelowSnow + (Ecoregion.Variables.Tave - lastTempBelowSnow) * DRz_snow;
+                tempBelowSnow = lastTempBelowSnow + (Ecoregion.Variables.Tavg - lastTempBelowSnow) * DRz_snow;
             lastTempBelowSnow = tempBelowSnow;
             while (testDepth <= (maxDepth / 1000.0))
             {

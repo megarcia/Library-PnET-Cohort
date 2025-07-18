@@ -1106,7 +1106,7 @@ namespace Landis.Library.PnETCohorts
             {
                 if (coldKillBoolean)
                 {
-                    data.ColdKill = (int)Math.Floor(variables.Tave - (3.0 * siteCohort.Ecoregion.WinterSTD));
+                    data.ColdKill = (int)Math.Floor(variables.Tavg - (3.0 * siteCohort.Ecoregion.WinterSTD));
                     data.Leaf_On = false;
                     data.NSC = 0.0F;
                     float foliageSenescence = FoliageSenescence();
@@ -1377,7 +1377,7 @@ namespace Landis.Library.PnETCohorts
                         throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
                 }
                 // Net foliage respiration depends on reference psn (BaseFolResp)
-                // Substitute 24 hours in place of DayLength because foliar respiration does occur at night.  BaseFolResp and Q10Factor use Tave temps reflecting both day and night temperatures.
+                // Substitute 24 hours in place of DayLength because foliar respiration does occur at night.  BaseFolResp and Q10Factor use Tavg temps reflecting both day and night temperatures.
                 float RefFolResp = BaseFolResp * variables[species.Name].Q10Factor * variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion; // gC/g Fol/month
                 // Actual foliage respiration (growth respiration) 
                 FolResp[index] = RefFolResp * Fol / (float)Globals.IMAX; // gC/m2 ground/mo
@@ -1394,7 +1394,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 //Calculate water vapor conductance (gwv) from Psn and Ci; Kubiske Conductance_5.xlsx
                 float gwv_mol = (float)(netPsn_leaf_s / Ca_Ci * 1.6 * 1000);
-                float gwv = (float)(gwv_mol / (444.5 - 1.3667 * variables.Tave) * 10);
+                float gwv = (float)(gwv_mol / (444.5 - 1.3667 * variables.Tavg) * 10);
                 // Reduction factor for ozone on photosynthesis
                 if (o3_month > 0)
                 {

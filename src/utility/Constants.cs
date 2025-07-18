@@ -53,37 +53,37 @@ namespace Landis.Library.PnETCohorts
         /// heat capacity of solid portion of soil in kJ/m3.K 
         /// (Farouki 1986 in vanLier and Durigon 2013)
         /// </summary>
-        public const float cs = 1942;
+        public const float HeatCapacitySoil = 1942;
 
         /// <summary>
         /// heat capacity of water in kJ/m3.K
         /// (vanLier and Durigon 2013)
         /// </summary>
-        public const float cw = 4186;
+        public const float HeatCapacityWater = 4186;
 
         /// <summary>
         /// thermal conductivity of air in kJ/m.d.K 
         /// (vanLier and Durigon 2013)
         /// </summary>
-        public const float lambda_a = 2.25F;
+        public const float ThermalConductivityAir_kJperday = 2.25F;
 
         /// <summary>
         /// thermal conductivity of water in kJ/m.d.K
         /// (vanLier and Durigon 2013)
         /// </summary>
-        public const float lambda_w = 51.51F;
+        public const float ThermalConductivityWater_kJperday = 51.51F;
 
         /// <summary>
         /// thermal conductivity of clay soil in kJ/m.d.K
         /// (Michot et al. 2008 in vanLier and Durigon 2013)
         /// </summary>
-        public const float lambda_clay = 80F;
+        public const float ThermalConductivityClay = 80F;
 
         /// <summary>
         /// thermal conductivity of sandstone in kJ/m.d.K 
         /// (Gemant 1950 in vanLier and Durigon 2013)
         /// </summary>
-        public const float lambda_0 = 360F;
+        public const float ThermalConductivitySandstone = 360F;
 
         /// <summary>
         /// unexplained coefficient in vanLier and Durigon (2013)
@@ -104,29 +104,29 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// intercept of function for bulk density of snow in kg/m3
         /// </summary>
-        public const float PSnow_intercept = 165.0f; 
+        public const float DensitySnow_intercept = 165.0f; 
 
         /// <summary>
         /// slope of function for bulk density of snow in kg/m3
         /// </summary>
-        public const float PSnow_slope = 1.3f; 
+        public const float DensitySnow_slope = 1.3f; 
 
         /// <summary>
         /// Density of water in kg/m3
         /// </summary>
-        public const float PWater = 1000.0f;  
+        public const float DensityWater = 1000.0f;  
 
         /// <summary>
         /// thermal conductivity of air in W/m.K 
         /// (CLM5 documentation, Table 2.7)
         /// </summary>
-        public const float lambda_Air = 0.023f; 
+        public const float ThermalConductivityAir_Watts = 0.023f; 
 
         /// <summary>
         /// thermal conductivity of ice in W/m.K 
         /// (CLM5 documentation, Table 2.7)
         /// </summary>
-        public const float lambda_Ice = 2.29f; 
+        public const float ThermalConductivityIce_Watts = 2.29f; 
 
         /// <summary>
         /// heat capacity of snow, in J/kg.K 

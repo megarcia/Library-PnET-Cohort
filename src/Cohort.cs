@@ -1378,7 +1378,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 // Net foliage respiration depends on reference psn (BaseFoliarRespiration)
                 // Substitute 24 hours in place of DayLength because foliar respiration does occur at night.  BaseFoliarRespiration and RespirationFQ10 use Tavg temps reflecting both day and night temperatures.
-                float RefFoliarRespiration = BaseFoliarRespiration * variables[species.Name].RespirationFQ10 * variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion; // gC/g Fol/month
+                float RefFoliarRespiration = BaseFoliarRespiration * variables[species.Name].RespirationFQ10 * variables.DaySpan * Constants.SecondsPerDay * Constants.MC / Constants.billion; // gC/g Fol/month
                 // Actual foliage respiration (growth respiration) 
                 FoliarRespiration[index] = RefFoliarRespiration * Fol / (float)Globals.IMAX; // gC/m2 ground/mo
                 // NetPsn psn depends on gross psn and foliage respiration

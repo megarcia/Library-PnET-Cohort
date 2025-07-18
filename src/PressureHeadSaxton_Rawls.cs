@@ -26,7 +26,7 @@ namespace Landis.Library.PnETCohorts
         static Dictionary<string, float> porosity_OM_comp = new Dictionary<string, float>();
         static Dictionary<string, float> clayFrac = new Dictionary<string, float>();
         static Dictionary<string, float> cTheta = new Dictionary<string, float>();
-        static Dictionary<string, float> lambda_s = new Dictionary<string, float>();
+        static Dictionary<string, float> ThermalConductivitySoil = new Dictionary<string, float>();
         static Dictionary<string, float> Fs = new Dictionary<string, float>();
         Landis.Library.Parameters.Ecoregions.AuxParm<float[]> table = new Library.Parameters.Ecoregions.AuxParm<float[]>(Globals.ModelCore.Ecoregions);
 
@@ -135,20 +135,20 @@ namespace Landis.Library.PnETCohorts
                         double porosity_change_comp = 1.0 - density_comp / 2.65 - (1.0 - density_OM / 2.65);
                         double moist33_comp = predMoist33Adj + 0.2 * porosity_change_comp;
                         double porosity_moist33_comp = porosity_OM_comp[SoilType[ecoregion]] - moist33_comp;
-                        double lambda = (Math.Log(moist33_comp) - Math.Log(predMoist1500adj)) / (Math.Log(1500) - Math.Log(33));
+                        double ThermalConductivity = (Math.Log(moist33_comp) - Math.Log(predMoist1500adj)) / (Math.Log(1500) - Math.Log(33));
                         double gravel_red_sat_cond = (1.0 - gravel) / (1.0 - gravel * (1.0 - 1.5 * (density_comp / 2.65)));
-                        double satcond_mmhr = 1930 * Math.Pow(porosity_moist33_comp, 3.0 - lambda) * gravel_red_sat_cond;
+                        double satcond_mmhr = 1930 * Math.Pow(porosity_moist33_comp, 3.0 - ThermalConductivity) * gravel_red_sat_cond;
                         double gravels_vol = density_comp / 2.65 * gravel / (1 - gravel * (1 - density_comp / 2.65));
                         double bulk_density = gravels_vol * 2.65 + (1 - gravels_vol) * density_comp; // g/cm3                      
                         tensionB.Add(SoilType[ecoregion], (float)((Math.Log(1500) - Math.Log(33.0)) / (Math.Log(moist33_comp) - Math.Log(predMoist1500adj))));
                         tensionA.Add(SoilType[ecoregion], (float)Math.Exp(Math.Log(33.0) + (tensionB[SoilType[ecoregion]] * Math.Log(moist33_comp))));
                         // For Permafrost
                         clayFrac.Add(SoilType[ecoregion], (float)clay);
-                        double cTheta_temp = Constants.cs * (1.0 - porosity_OM_comp[SoilType[ecoregion]]) + Constants.cw * porosity_OM_comp[SoilType[ecoregion]];  //specific heat of soil	kJ/m3/K
+                        double cTheta_temp = Constants.HeatCapacitySoil * (1.0 - porosity_OM_comp[SoilType[ecoregion]]) + Constants.HeatCapacityWater * porosity_OM_comp[SoilType[ecoregion]];  //specific heat of soil	kJ/m3/K
                         cTheta.Add(SoilType[ecoregion], (float)cTheta_temp);
-                        double lambda_s_temp = (1.0 - clay) * Constants.lambda_0 + clay * Constants.lambda_clay;   //thermal conductivity soil	kJ/m/d/K
-                        lambda_s.Add(SoilType[ecoregion], (float)lambda_s_temp);
-                        double Fs_temp = (2.0 / 3.0 / (1.0 + Constants.gs * ((lambda_s_temp / Constants.lambda_w) - 1.0))) + (1.0 / 3.0 / (1.0 + (1.0 - 2.0 * Constants.gs) * ((lambda_s_temp / Constants.lambda_w) - 1.0)));  //ratio of solid temp gradient
+                        double ThermalConductivitySoil_temp = (1.0 - clay) * Constants.ThermalConductivitySandstone + clay * Constants.ThermalConductivityClay;   //thermal conductivity soil	kJ/m/d/K
+                        ThermalConductivitySoil.Add(SoilType[ecoregion], (float)ThermalConductivitySoil_temp);
+                        double Fs_temp = (2.0 / 3.0 / (1.0 + Constants.gs * ((ThermalConductivitySoil_temp / Constants.ThermalConductivityWater_kJperday) - 1.0))) + (1.0 / 3.0 / (1.0 + (1.0 - 2.0 * Constants.gs) * ((ThermalConductivitySoil_temp / Constants.ThermalConductivityWater_kJperday) - 1.0)));  //ratio of solid temp gradient
                         Fs.Add(SoilType[ecoregion], (float)Fs_temp);
                     }
                     double watercontent = 0.0;
@@ -176,7 +176,7 @@ namespace Landis.Library.PnETCohorts
 
         public static float GetLambda_s(string SoilType)
         {
-            return lambda_s[SoilType];
+            return ThermalConductivitySoil[SoilType];
         }
 
         public static float GetCTheta(string SoilType)

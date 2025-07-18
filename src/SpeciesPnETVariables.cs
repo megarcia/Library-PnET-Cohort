@@ -16,7 +16,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Respiration Q10 factor
         /// </summary>
-        public float FQ10;  
+        public float RespirationFQ10;  
 
         /// <summary>
         /// Base foliar respiration fraction (using Wythers when selected)

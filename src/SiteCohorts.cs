@@ -1420,12 +1420,12 @@ namespace Landis.Library.PnETCohorts
                     daysOfWinter += (int)data[m].DaySpan;
                 else
                     daysOfWinter = 0;
-                float PSnow_kg_m3 = Constants.bulkIntercept + (Constants.bulkSlope * daysOfWinter); //kg/m3
+                float PSnow_kg_m3 = Constants.PSnow_intercept + (Constants.PSnow_slope * daysOfWinter); //kg/m3
                 float PSnow_g_cm3 = PSnow_kg_m3 / 1000; //g/cm3
-                float snowDepth = Constants.Pwater * (snowPack / 1000) / PSnow_kg_m3; //m
+                float snowDepth = Constants.PWater * (snowPack / 1000) / PSnow_kg_m3; //m
                 if (lastTempBelowSnow == float.MaxValue)
                 {
-                    float lambda_Snow = (float)(Constants.lambAir + ((0.0000775 * PSnow_kg_m3) + (0.000001105 * Math.Pow(PSnow_kg_m3, 2))) * (Constants.lambIce - Constants.lambAir)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
+                    float lambda_Snow = (float)(Constants.lambda_Air + ((0.0000775 * PSnow_kg_m3) + (0.000001105 * Math.Pow(PSnow_kg_m3, 2))) * (Constants.lambda_Ice - Constants.lambda_Air)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
                     float vol_heat_capacity_snow = Constants.snowHeatCapacity * PSnow_kg_m3 / 1000f; // kJ/m3/K
                     float Ks_snow = 1000000F / 86400F * (lambda_Snow / vol_heat_capacity_snow); //thermal diffusivity (mm2/s)
                     float damping = (float)Math.Sqrt(2.0F * Ks_snow / Constants.omega);

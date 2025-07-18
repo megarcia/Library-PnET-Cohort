@@ -104,29 +104,29 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// intercept of function for bulk density of snow in kg/m3
         /// </summary>
-        public const float bulkIntercept = 165.0f; 
+        public const float PSnow_intercept = 165.0f; 
 
         /// <summary>
         /// slope of function for bulk density of snow in kg/m3
         /// </summary>
-        public const float bulkSlope = 1.3f; 
+        public const float PSnow_slope = 1.3f; 
 
         /// <summary>
         /// Density of water in kg/m3
         /// </summary>
-        public const float Pwater = 1000.0f;  
+        public const float PWater = 1000.0f;  
 
         /// <summary>
         /// thermal conductivity of air in W/m.K 
         /// (CLM5 documentation, Table 2.7)
         /// </summary>
-        public const float lambAir = 0.023f; 
+        public const float lambda_Air = 0.023f; 
 
         /// <summary>
         /// thermal conductivity of ice in W/m.K 
         /// (CLM5 documentation, Table 2.7)
         /// </summary>
-        public const float lambIce = 2.29f; 
+        public const float lambda_Ice = 2.29f; 
 
         /// <summary>
         /// heat capacity of snow, in J/kg.K 

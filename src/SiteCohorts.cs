@@ -1330,7 +1330,7 @@ namespace Landis.Library.PnETCohorts
             {
                 lastOzoneEffect[i] = 0;
             }
-            float lastFracBelowFrost = hydrology.FrozenDepth/Ecoregion.RootingDepth;
+            float lastFracBelowFrost = hydrology.FrozenSoilDepth/Ecoregion.RootingDepth;
             int daysOfWinter = 0;
             if (Globals.ModelCore.CurrentTime > 0) // cold can only kill after spinup
             {
@@ -1591,14 +1591,14 @@ namespace Landis.Library.PnETCohorts
                     fracRootAboveFrost = Math.Min(1, activeLayerDepth[data[m].Month - 1] * 1000 / Ecoregion.RootingDepth);
                     float fracRootBelowFrost = 1 - fracRootAboveFrost;
                     fracThawed = Math.Max(0, fracRootAboveFrost - (1 - lastFracBelowFrost));
-                    float fracNewFrozen = Math.Max(0, fracRootBelowFrost - lastFracBelowFrost);
+                    float fracNewFrozenSoil = Math.Max(0, fracRootBelowFrost - lastFracBelowFrost);
                     if (fracRootAboveFrost < 1) // If part of the rooting zone is frozen
                     {
-                        if (fracNewFrozen > 0)  // freezing
+                        if (fracNewFrozenSoil > 0)  // freezing
                         {
-                            float newFrozenSoil = fracNewFrozen * Ecoregion.RootingDepth;
-                            bool successpct = hydrology.SetFrozenWaterContent(((hydrology.FrozenDepth * hydrology.FrozenWaterContent) + (newFrozenSoil * hydrology.Water)) / (hydrology.FrozenDepth + newFrozenSoil));
-                            bool successdepth = hydrology.SetFrozenDepth(Ecoregion.RootingDepth * fracRootBelowFrost); // Volume of rooting soil that is frozen                                                                                                                       
+                            float newFrozenSoil = fracNewFrozenSoil * Ecoregion.RootingDepth;
+                            bool successpct = hydrology.SetFrozenSoilWaterContent(((hydrology.FrozenSoilDepth * hydrology.FrozenSoilWaterContent) + (newFrozenSoil * hydrology.Water)) / (hydrology.FrozenSoilDepth + newFrozenSoil));
+                            bool successdepth = hydrology.SetFrozenSoilDepth(Ecoregion.RootingDepth * fracRootBelowFrost); // Volume of rooting soil that is frozen                                                                                                                       
                             // Water is a volumetric value (mm/m) so frozen water does not need to be removed, as the concentration stays the same
                         }
                     }
@@ -1606,10 +1606,10 @@ namespace Landis.Library.PnETCohorts
                     {
                         // Thawing soil water added to existing water - redistributes evenly in active soil
                         float existingWater = (1 - lastFracBelowFrost) * hydrology.Water;
-                        float thawedWater = fracThawed * hydrology.FrozenWaterContent;
+                        float thawedWater = fracThawed * hydrology.FrozenSoilWaterContent;
                         float newWaterContent = (existingWater + thawedWater) / fracRootAboveFrost;
                         hydrology.AddWater(newWaterContent - hydrology.Water, Ecoregion.RootingDepth * fracRootBelowFrost);
-                        bool successdepth = hydrology.SetFrozenDepth(Ecoregion.RootingDepth * fracRootBelowFrost);  // Volume of rooting soil that is frozen
+                        bool successdepth = hydrology.SetFrozenSoilDepth(Ecoregion.RootingDepth * fracRootBelowFrost);  // Volume of rooting soil that is frozen
                     }
                     float leakageFrostReduction = 1.0F;
                     if ((activeLayerDepth[data[m].Month - 1] * 1000) < (Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth))
@@ -1643,8 +1643,8 @@ namespace Landis.Library.PnETCohorts
                     throw new System.Exception("Error, PrecInByEvent = " + PrecInByEvent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 if (fracRootAboveFrost >= 1)
                 {
-                    bool successpct = hydrology.SetFrozenWaterContent(0F);
-                    bool successdepth = hydrology.SetFrozenDepth(0F);
+                    bool successpct = hydrology.SetFrozenSoilWaterContent(0F);
+                    bool successdepth = hydrology.SetFrozenSoilDepth(0F);
                 }
                 float MeltInWater = snowmelt;
                 // Calculate ground PotentialET

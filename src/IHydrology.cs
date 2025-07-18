@@ -28,26 +28,26 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// volumetric water content (mm/m) of the frozen soil
         /// </summary>
-        float FrozenWaterContent { get; } 
+        float FrozenSoilWaterContent { get; } 
 
         /// <summary>
         /// Depth at which soil is frozen (mm); Rooting zone soil below this depth is frozen
         /// </summary>
-        float FrozenDepth { get; } 
+        float FrozenSoilDepth { get; } 
 
         /// <summary>
-        /// Change FrozenWaterContent
+        /// Change FrozenSoilWaterContent
         /// </summary>
         /// <param name="water"></param>
         /// <returns></returns>
-        bool SetFrozenWaterContent(float water);  
+        bool SetFrozenSoilWaterContent(float water);  
 
         /// <summary>
-        /// Change FrozenDepth
+        /// Change FrozenSoilDepth
         /// </summary>
         /// <param name="depth"></param>
         /// <returns></returns>
-        bool SetFrozenDepth(float depth); 
+        bool SetFrozenSoilDepth(float depth); 
 
         /// <summary>
         /// Calculate reference ET

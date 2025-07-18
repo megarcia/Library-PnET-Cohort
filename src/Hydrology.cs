@@ -5,8 +5,8 @@ namespace Landis.Library.PnETCohorts
     public class Hydrology : IHydrology
     {
         private float water;
-        private float frozenWaterContent;
-        private float frozenDepth;
+        private float frozenSoilWaterContent;
+        private float frozenSoilDepth;
 
         /// <summary>
         /// volumetric water (mm/m)
@@ -22,22 +22,22 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// volumetric water content (mm/m) of the frozen soil
         /// </summary>
-        public float FrozenWaterContent
+        public float FrozenSoilWaterContent
         {
             get
             {
-                return frozenWaterContent;
+                return frozenSoilWaterContent;
             }
         }
 
         /// <summary>
         /// Depth at which soil is frozen (mm); Rooting zone soil below this depth is frozen
         /// </summary>
-        public float FrozenDepth
+        public float FrozenSoilDepth
         {
             get
             {
-                return frozenDepth;
+                return frozenSoilDepth;
             }
         }
 
@@ -140,9 +140,9 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         /// <param name="water"></param>
         /// <returns></returns>
-        public bool SetFrozenWaterContent(float water)
+        public bool SetFrozenSoilWaterContent(float water)
         {
-            this.frozenWaterContent = water;
+            this.frozenSoilWaterContent = water;
             if (water >= 0)
                 return true;
             else
@@ -154,9 +154,9 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         /// <param name="depth"></param>
         /// <returns></returns>
-        public bool SetFrozenDepth(float depth)
+        public bool SetFrozenSoilDepth(float depth)
         {
-            this.frozenDepth = depth;
+            this.frozenSoilDepth = depth;
             if (depth >= 0)
                 return true;
             else
@@ -224,7 +224,7 @@ namespace Landis.Library.PnETCohorts
             lock (threadLock)
             {
                 // permafrost
-                float frostFreeSoilDepth = sitecohorts.Ecoregion.RootingDepth - FrozenDepth;
+                float frostFreeSoilDepth = sitecohorts.Ecoregion.RootingDepth - FrozenSoilDepth;
                 float frostFreeFrac = Math.Min(1.0F, frostFreeSoilDepth / sitecohorts.Ecoregion.RootingDepth);
                 // Evaporation is limited to frost free soil above EvapDepth
                 float evapSoilDepth = Math.Min(sitecohorts.Ecoregion.RootingDepth * frostFreeFrac, sitecohorts.Ecoregion.EvapDepth);

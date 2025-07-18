@@ -11,7 +11,7 @@ namespace Landis.Library.PnETCohorts
         private float _dayspan;
         private float _tavg;
         private float _tday;
-        private float _daylength;
+        private float _dayLength;
 
         public float VPD
         {
@@ -142,11 +142,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float Daylength
+        public float DayLength
         {
             get
             {
-                return _daylength;
+                return _dayLength;
             }
         }
 
@@ -256,7 +256,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Daylength in seconds
+        /// DayLength in seconds
         /// </summary>
         /// <param name="hr"></param>
         /// <returns></returns>
@@ -334,18 +334,18 @@ namespace Landis.Library.PnETCohorts
             _tavg = CalcTavg(climate_dataset.Tmin, climate_dataset.Tmax);
             _dayspan = CalcDaySpan(Date.Month);
             float hr = CalcDaylightHrs(Date.DayOfYear, Latitude); //hours of daylight
-            _daylength = CalcDayLength(hr);
+            _dayLength = CalcDayLength(hr);
             float nightlength = CalcNightLength(hr);
             _tday = CalcTday(Tavg, climate_dataset.Tmax);
             _vpd = CalcVPD(Tday, climate_dataset.Tmin);
             foreach (ISpeciesPnET spc in Species)
             {
-                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, Daylength, nightlength, spc);
+                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, DayLength, nightlength, spc);
                 speciesVariables.Add(spc.Name, speciespnetvars);
             }
         }
 
-        private SpeciesPnETVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, bool DTemp, float daylength, float nightlength, ISpeciesPnET spc)
+        private SpeciesPnETVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, bool DTemp, float dayLength, float nightlength, ISpeciesPnET spc)
         {
             // Class that contains species specific PnET variables for a certain month
             SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
@@ -403,7 +403,7 @@ namespace Landis.Library.PnETCohorts
             // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
             float fTempRespNight = CalcRespirationFQ10(Q10base, Tmin, spc.PsnTopt);
             // Unitless respiration adjustment: public for output file only
-            float RespirationFTemp = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength));
+            float RespirationFTemp = (float)Math.Min(1.0, (fTempRespDay * dayLength + fTempRespNight * nightlength) / ((float)dayLength + (float)nightlength));
             speciespnetvars.RespirationFTemp = RespirationFTemp;
             // Scaling factor of respiration given day and night temperature and day and night length
             speciespnetvars.MaintenanceRespirationFTemp = spc.MaintResp * RespirationFTemp;

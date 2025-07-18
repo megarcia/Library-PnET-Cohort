@@ -200,14 +200,14 @@ namespace Landis.Library.PnETCohorts
         /// <param name="_Rads"></param>
         /// <param name="_Tair"></param>
         /// <param name="_daySpan"></param>
-        /// <param name="_daylength"></param>
+        /// <param name="_dayLength"></param>
         /// <returns></returns>
-        static float CalcPotentialEvaporation_umol(double _Rads, double _Tair, float _daySpan, float _daylength)
+        static float CalcPotentialEvaporation_umol(double _Rads, double _Tair, float _daySpan, float _dayLength)
         {
             //double _Rads                  // Daytime Solar Radiation (PAR) (micromol/m2/s)
             //double _Tair                  // Daytime air temperature (°C) [Tday]
             //float _daySpan                // Number of days in the month
-            //float _daylength              // Length of daylight in seconds
+            //float _dayLength              // Length of daylight in seconds
             float Rs_W = (float)(_Rads / 2.02f); // convert PAR (umol/m2*s) to total solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
             float Rs = Rs_W * 0.0864F; // convert Rs_W (W/m2) to Rs (MJ/m2*d) [Reis and Ribeiro 2019 (eq. 13)]
             float Gamma = 0.062F; // kPa/C; [Cabrera et al. 2016 (Table 1)]
@@ -248,18 +248,18 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         /// <param name="aboveCanopyPAR"></param>
         /// <param name="subCanopyPAR"></param>
-        /// <param name="daylength"></param>
+        /// <param name="dayLength"></param>
         /// <param name="T"></param>
         /// <param name="daySpan"></param>
         /// <returns></returns>
-        public float CalcPotentialGroundET_Radiation_umol(float aboveCanopyPAR, float subCanopyPAR, float daylength, float T, float daySpan)
+        public float CalcPotentialGroundET_Radiation_umol(float aboveCanopyPAR, float subCanopyPAR, float dayLength, float T, float daySpan)
         {
             // aboveCanopyPAR   daytime PAR (umol/m2/s) at top of canopy
             // subCanopyPAR     daytime PAR (umol/m2/s) at bottom of canopy
-            // daylength        daytime length in seconds (s)
+            // dayLength        daytime length in seconds (s)
             // T                average monthly temperature (C)
             // daySpan          number of days in the month
-            float Rs_daily = (float)(aboveCanopyPAR / (24 * Constants.SecondsPerHour / daylength)); // convert daytime PAR (umol/m2*s) to total daily PAR (umol/m2*s)
+            float Rs_daily = (float)(aboveCanopyPAR / (24 * Constants.SecondsPerHour / dayLength)); // convert daytime PAR (umol/m2*s) to total daily PAR (umol/m2*s)
             float Rs_W = (float)(Rs_daily / 2.02f); // convert daily PAR (umol/m2*s) to total solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
             // Back-calculate LAI from aboveCanopyPAR and subCanopyPAR
             float k = 0.3038f;
@@ -283,7 +283,7 @@ namespace Landis.Library.PnETCohorts
         public float CalcRET_Hamon(float T, float dayLength)
         {
             // T            average monthly temperature (C)
-            // daylength    daytime length in seconds (s)
+            // dayLength    daytime length in seconds (s)
             if (T < 0)
                 return 0f;
             else
@@ -300,7 +300,7 @@ namespace Landis.Library.PnETCohorts
         {
             // LAI          Total Canopy LAI
             // T            average monthly temperature (C)
-            // daylength    daytime length in seconds (s)
+            // dayLength    daytime length in seconds (s)
             // daySpan          number of days in the month
             float RET = CalcRET_Hamon(T, dayLength); //mm/day
             float Egp = 0.8f * RET * (float)Math.Exp(-0.695f * LAI); //mm/day
@@ -312,7 +312,7 @@ namespace Landis.Library.PnETCohorts
         {
             // LAI          Total Canopy LAI
             // T            average monthly temperature (C)
-            // daylength    daytime length in seconds (s)
+            // dayLength    daytime length in seconds (s)
             // daySpan          number of days in the month
             float RET = CalcRET_Hamon(T, dayLength); //mm/day
             float Egp = RET * (float)Math.Exp(-0.4f * LAI); //mm/day
@@ -324,7 +324,7 @@ namespace Landis.Library.PnETCohorts
         {
             // LAI          Total Canopy LAI
             // T            average monthly temperature (C)
-            // daylength    daytime length in seconds (s)
+            // dayLength    daytime length in seconds (s)
             // daySpan      number of days in the month
             // k            extinction coefficient
             // cropCoeff    crop coefficient (scalar adjustment)

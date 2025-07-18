@@ -38,7 +38,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Length of daylight in seconds
         /// </summary>
-        float Daylength { get; } 
+        float DayLength { get; } 
 
         /// <summary>
         /// Numeric month

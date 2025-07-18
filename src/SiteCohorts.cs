@@ -1625,7 +1625,7 @@ namespace Landis.Library.PnETCohorts
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
                 if (data[m].Prec < 0) throw new System.Exception("Error, this.data[m].Prec = " + data[m].Prec + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 // Calculate abovecanopy reference daily ET
-                float RET = hydrology.CalcRET_Hamon(data[m].Tavg, data[m].Daylength); //mm/day
+                float RET = hydrology.CalcRET_Hamon(data[m].Tavg, data[m].DayLength); //mm/day
                 float newrain = data[m].Prec - newsnow;
                 // Reduced by interception
                 if (CanopyLAI == null)
@@ -1648,7 +1648,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 float MeltInWater = snowmelt;
                 // Calculate ground PET
-                float groundPET = hydrology.CalcPotentialGroundET_LAI(CanopyLAI.Sum(), data[m].Tavg, data[m].Daylength, data[m].DaySpan, ((Parameter<float>)Names.GetParameter("ETExtCoeff")).Value);
+                float groundPET = hydrology.CalcPotentialGroundET_LAI(CanopyLAI.Sum(), data[m].Tavg, data[m].DayLength, data[m].DaySpan, ((Parameter<float>)Names.GetParameter("ETExtCoeff")).Value);
                 float  groundPETbyEvent = groundPET / numEvents;  // divide evaporation into discreet events to match precip
                 // Randomly choose which layers will receive the precip events
                 // If # of layers < precipEvents, some layers will show up multiple times in number list.  This ensures the same number of precip events regardless of the number of cohorts

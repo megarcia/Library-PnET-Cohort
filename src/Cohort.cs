@@ -1331,7 +1331,7 @@ namespace Landis.Library.PnETCohorts
                 float AmaxAdj = Amax * speciesPnET.AmaxFrac;  //Amax adjustment as applied in PnET
                 float GrossAmax = AmaxAdj + BaseFoliarRespiration; //nmole CO2/g Fol/s
                 //Reference gross Psn (lab conditions) in gC/g Fol/month
-                float RefGrossPsn = variables.DaySpan * (GrossAmax * variables[species.Name].DVPD * variables.Daylength * Constants.MC) / Constants.billion;
+                float RefGrossPsn = variables.DaySpan * (GrossAmax * variables[species.Name].DVPD * variables.DayLength * Constants.MC) / Constants.billion;
                 // Calculate gross psn from stress factors and reference gross psn (gC/g Fol/month)
                 // Reduction factors include temperature (PsnFTemp), water (FWater), light (FRad), age (FAge)
                 // Remove FWater from psn reduction because it is accounted for in WUE through ciModifier [mod2, mod3]
@@ -1384,7 +1384,7 @@ namespace Landis.Library.PnETCohorts
                 // NetPsn psn depends on gross psn and foliage respiration
                 float nonOzoneNetPsn = GrossPsn[index] - FoliarRespiration[index];
                 // Convert Psn gC/m2 ground/mo to umolCO2/m2 fol/s
-                float netPsn_ground = nonOzoneNetPsn * 1000000F * (1F / 12F) * (1F / (variables.Daylength * variables.DaySpan));
+                float netPsn_ground = nonOzoneNetPsn * 1000000F * (1F / 12F) * (1F / (variables.DayLength * variables.DaySpan));
                 float netPsn_leaf_s = 0;
                 if (netPsn_ground > 0 && LAI[index] > 0)
                 {

@@ -1399,7 +1399,7 @@ namespace Landis.Library.PnETCohorts
                 if (o3_month > 0)
                 {
                     float o3Coeff = speciesPnET.O3GrowthSens;
-                    FOzone = CalcFOzone_PnET(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, Fol, lastFOzone, gwv, LAI[index], o3Coeff);
+                    FOzone = CalcFOzone(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, Fol, lastFOzone, gwv, LAI[index], o3Coeff);
                 }
                 else
                     FOzone = 0;
@@ -1457,7 +1457,7 @@ namespace Landis.Library.PnETCohorts
                 return 1;
         }
 
-        public static float CalcFOzone_PnET(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastFOzone, float gwv, float layerLAI, float o3Coeff)
+        public static float CalcFOzone(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastFOzone, float gwv, float layerLAI, float o3Coeff)
         {
             float currentFOzone = 1.0F;
             float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka

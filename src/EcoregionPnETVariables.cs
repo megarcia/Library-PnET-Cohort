@@ -250,7 +250,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="DOY"></param>
         /// <param name="Latitude"></param>
         /// <returns></returns>
-        public static float Calchr(int DOY, double Latitude)
+        public static float CalcDaylightHrs(int DOY, double Latitude)
         {
             float TA;
             float AC;
@@ -313,7 +313,7 @@ namespace Landis.Library.PnETCohorts
             speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
             _tavg = (float)0.5 * (climate_dataset.Tmin + climate_dataset.Tmax);
             _dayspan = CalcDaySpan(Date.Month);
-            float hr = Calchr(Date.DayOfYear, Latitude); //hours of daylight
+            float hr = CalcDaylightHrs(Date.DayOfYear, Latitude); //hours of daylight
             _daylength = CalcDayLength(hr);
             float nightlength = CalcNightLength(hr);
             _tday = (float)0.5 * (climate_dataset.Tmax + _tavg);

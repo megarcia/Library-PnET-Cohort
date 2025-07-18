@@ -25,8 +25,8 @@ namespace Landis.Library.PnETCohorts
         public const string Precip = "Precip(mm/mo)";
         public const string CO2 = "CO2(ppm)";
         public const string O3 = "O3(cum_ppb_h)";  
-        public const string RunOff = "RunOff(mm/mo)";
-        public const string SurfaceRunOff = "PrecLoss(mm/mo)"; 
+        public const string Runoff = "Runoff(mm/mo)";
+        public const string SurfaceRunoff = "PrecLoss(mm/mo)"; 
         public const string GrossPsn = "GrossPsn(gC_m2_mo)";
         public const string NetPsn = "NetPsn(gC_m2_mo)";
         public const string AverageAlbedo = "AverageAlbedo(ratio_W_m2)";

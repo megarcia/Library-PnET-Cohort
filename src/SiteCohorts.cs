@@ -1679,7 +1679,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 var groupList = randomNumbers.GroupBy(i => i);
                 // Reset Hydrology values
-                hydrology.RunOff = 0;
+                hydrology.Runoff = 0;
                 hydrology.Leakage = 0;
                 hydrology.Evaporation = 0;
                 hydrology.PE = groundPotentialET;
@@ -1882,18 +1882,18 @@ namespace Landis.Library.PnETCohorts
                         // Add melted snow to soil moisture
                         // Instantaneous runoff (excess of porosity)
                         float soilWaterCapacity = Ecoregion.Porosity * Ecoregion.RootingDepth * fracRootAboveFrost; //mm
-                        float meltrunoff = Math.Min(MeltInWater, Math.Max(hydrology.SoilWaterContent * Ecoregion.RootingDepth * fracRootAboveFrost + MeltInWater - soilWaterCapacity, 0));
-                        hydrology.RunOff += meltrunoff;
-                        success = hydrology.AddWater(MeltInWater - meltrunoff, Ecoregion.RootingDepth * fracRootAboveFrost);
+                        float snowmeltRunoff = Math.Min(MeltInWater, Math.Max(hydrology.SoilWaterContent * Ecoregion.RootingDepth * fracRootAboveFrost + MeltInWater - soilWaterCapacity, 0));
+                        hydrology.Runoff += snowmeltRunoff;
+                        success = hydrology.AddWater(MeltInWater - snowmeltRunoff, Ecoregion.RootingDepth * fracRootAboveFrost);
                         if (!success)
-                            throw new System.Exception("Error adding water, MeltInWaterr = " + MeltInWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; meltrunoff = " + meltrunoff + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                            throw new System.Exception("Error adding water, MeltInWaterr = " + MeltInWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; snowmeltRunoff = " + snowmeltRunoff + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                         float capturedRunoff = 0;
-                        if ((Ecoregion.RunoffCapture > 0) & (meltrunoff > 0))
+                        if ((Ecoregion.RunoffCapture > 0) & (snowmeltRunoff > 0))
                         {
-                            capturedRunoff = Math.Max(0, Math.Min(meltrunoff, Ecoregion.RunoffCapture - hydrology.SurfaceWater));
+                            capturedRunoff = Math.Max(0, Math.Min(snowmeltRunoff, Ecoregion.RunoffCapture - hydrology.SurfaceWater));
                             hydrology.SurfaceWater += capturedRunoff;
                         }
-                        hydrology.RunOff += meltrunoff - capturedRunoff;
+                        hydrology.Runoff += snowmeltRunoff - capturedRunoff;
                     }
                     if (precin > 0)
                     {
@@ -1901,19 +1901,19 @@ namespace Landis.Library.PnETCohorts
                         {
                             // Instantaneous runoff (excess of porosity)
                             float soilWaterCapacity = Ecoregion.Porosity * Ecoregion.RootingDepth * fracRootAboveFrost; //mm
-                            float rainrunoff = Math.Min(precin, Math.Max(hydrology.SoilWaterContent * Ecoregion.RootingDepth * fracRootAboveFrost + PrecInByEvent - soilWaterCapacity, 0));
+                            float rainRunoff = Math.Min(precin, Math.Max(hydrology.SoilWaterContent * Ecoregion.RootingDepth * fracRootAboveFrost + PrecInByEvent - soilWaterCapacity, 0));
                             float capturedRunoff = 0;
-                            if ((Ecoregion.RunoffCapture > 0) & (rainrunoff > 0))
+                            if ((Ecoregion.RunoffCapture > 0) & (rainRunoff > 0))
                             {
-                                capturedRunoff = Math.Max(0, Math.Min(rainrunoff, Ecoregion.RunoffCapture - hydrology.SurfaceWater));
+                                capturedRunoff = Math.Max(0, Math.Min(rainRunoff, Ecoregion.RunoffCapture - hydrology.SurfaceWater));
                                 hydrology.SurfaceWater += capturedRunoff;
                             }
-                            hydrology.RunOff += rainrunoff - capturedRunoff;
-                            float precipIn = PrecInByEvent - rainrunoff; //mm
+                            hydrology.Runoff += rainRunoff - capturedRunoff;
+                            float precipIn = PrecInByEvent - rainRunoff; //mm
                             // Add incoming precipitation to soil moisture
                             success = hydrology.AddWater(precipIn, Ecoregion.RootingDepth * fracRootAboveFrost);
                             if (!success)
-                                throw new System.Exception("Error adding water, waterIn = " + precipIn + "; soilWaterContent = " + hydrology.SoilWaterContent + "; rainrunoff = " + rainrunoff + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                                throw new System.Exception("Error adding water, waterIn = " + precipIn + "; soilWaterContent = " + hydrology.SoilWaterContent + "; rainRunoff = " + rainRunoff + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                             // Fast Leakage
                             float leakage = Math.Max((float)leakageFrac * (hydrology.SoilWaterContent - Ecoregion.FieldCap), 0) * Ecoregion.RootingDepth * fracRootAboveFrost; //mm
                             hydrology.Leakage += leakage;
@@ -1974,7 +1974,7 @@ namespace Landis.Library.PnETCohorts
                 monthlyEvap[data[m].Month - 1] += hydrology.Evaporation;
                 monthlyInterception[data[m].Month - 1] += InterceptCumulative;
                 monthlyLeakage[data[m].Month - 1] += hydrology.Leakage;
-                monthlyRunoff[data[m].Month - 1] += hydrology.RunOff;
+                monthlyRunoff[data[m].Month - 1] += hydrology.Runoff;
                 monthlyPotentialEvap[data[m].Month - 1] += hydrology.PE;
                 foreach (Cohort cohort in AllCohorts)
                 {
@@ -3467,7 +3467,7 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.Precip + "," +
                        OutputHeaders.CO2 + "," +
                        OutputHeaders.O3 + "," +
-                       OutputHeaders.RunOff + "," + 
+                       OutputHeaders.Runoff + "," + 
                        OutputHeaders.Leakage + "," + 
                        OutputHeaders.PotentialET + "," +
                        OutputHeaders.PE + "," +
@@ -3475,7 +3475,7 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.PotentialTranspiration + "," +
                        OutputHeaders.Transpiration + "," + 
                        OutputHeaders.Interception + "," +
-                       OutputHeaders.SurfaceRunOff + "," +
+                       OutputHeaders.SurfaceRunoff + "," +
                        OutputHeaders.SoilWaterContent + "," +
                        OutputHeaders.PressureHead + "," + 
                        OutputHeaders.SurfaceWater + "," +
@@ -3527,7 +3527,7 @@ namespace Landis.Library.PnETCohorts
                        monthdata.Prec + "," +
                        monthdata.CO2 + "," +
                        monthdata.O3 + "," +
-                       hydrology.RunOff + "," +
+                       hydrology.Runoff + "," +
                        hydrology.Leakage + "," +
                        hydrology.PotentialET + "," +
                        hydrology.PE + "," +

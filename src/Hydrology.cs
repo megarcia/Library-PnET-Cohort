@@ -74,7 +74,7 @@ namespace Landis.Library.PnETCohorts
 
         public float Evaporation;
         public float Leakage;
-        public float RunOff;
+        public float Runoff;
 
         /// <summary>
         /// Potential Evaporation (mm)

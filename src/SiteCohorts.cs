@@ -604,7 +604,7 @@ namespace Landis.Library.PnETCohorts
                     {
                         int layerIndex = c.Layer;
                         float LAISum = c.LAI.Sum();
-                        if (c.Leaf_On)
+                        if (c.IsLeafOn)
                         {
                             if (LAISum > c.LastLAI)
                                 c.LastLAI = LAISum;
@@ -734,7 +734,7 @@ namespace Landis.Library.PnETCohorts
                     {
                         int layerIndex = c.Layer;
                         float LAISum = c.LAI.Sum();
-                        if (c.Leaf_On)
+                        if (c.IsLeafOn)
                         {
                             if (LAISum > c.LastLAI)
                                 c.LastLAI = LAISum;
@@ -1789,7 +1789,7 @@ namespace Landis.Library.PnETCohorts
                             if (c.Layer == b)
                             {
                                 float LAISum = c.LAI.Sum();
-                                if (c.Leaf_On)
+                                if (c.IsLeafOn)
                                 {
                                     if (LAISum > c.LastLAI)
                                         c.LastLAI = LAISum;

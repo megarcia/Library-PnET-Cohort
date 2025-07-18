@@ -10,7 +10,7 @@ namespace Landis.Library.PnETCohorts
         new CohortData Data { get; }
         int AGBiomass { get; }
         int TotalBiomass { get; }
-        bool Leaf_On { get; }
+        bool IsLeafOn { get; }
         float BiomassMax { get; }
         float Fol { get; }
         float MaxFolYear { get; }

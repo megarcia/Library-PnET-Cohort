@@ -34,7 +34,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Are trees phsyiologically active
         /// </summary>
-        public bool Leaf_On;
+        public bool IsLeafOn;
 
         /// <summary>
         /// Max biomass achived in the cohorts' life time. 
@@ -262,7 +262,7 @@ namespace Landis.Library.PnETCohorts
             this.LastWoodySenescence = cohort.LastWoodySenescence;
             this.LastAGBio = cohort.LastAGBio;
             this.Layer = cohort.Layer;
-            this.Leaf_On = cohort.Leaf_On;
+            this.IsLeafOn = cohort.IsLeafOn;
             this.MaintenanceRespiration = cohort.MaintenanceRespiration;
             this.NetPsn = cohort.NetPsn;
             this.NSC = cohort.NSC;
@@ -318,7 +318,7 @@ namespace Landis.Library.PnETCohorts
             this.LastWoodySenescence = 0;
             this.LastAGBio = this.AGBiomass;
             this.Layer = 0;
-            this.Leaf_On = false;
+            this.IsLeafOn = false;
             this.MaintenanceRespiration = new float[Globals.IMAX];
             this.NetPsn = new float[Globals.IMAX];
             this.NSC = 0;

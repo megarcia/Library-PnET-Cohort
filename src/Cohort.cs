@@ -491,11 +491,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public bool Leaf_On
+        public bool IsLeafOn
         {
             get
             {
-                return data.Leaf_On;
+                return data.IsLeafOn;
             }
         }
 
@@ -672,7 +672,7 @@ namespace Landis.Library.PnETCohorts
         public void StoreFRad()
         {
             // Filter for growing season months only
-            if (data.Leaf_On)
+            if (data.IsLeafOn)
             {
                 data.LastFRad = data.FRad.Average();
                 data.LastSeasonFRad.Add(LastFRad);
@@ -868,11 +868,11 @@ namespace Landis.Library.PnETCohorts
             {
                 float subLayerLAI = CalcLAI(this.SpeciesPnET, cohortIdealFol, i);
                 cohortLAI += subLayerLAI;
-                if (this.Leaf_On)
+                if (this.IsLeafOn)
                     LAI[index] = subLayerLAI;
             }
 
-            if (this.Leaf_On)
+            if (this.IsLeafOn)
             {
                 this.data.Fol = cohortIdealFol;
                 this.data.MaxFolYear = cohortIdealFol;
@@ -911,11 +911,11 @@ namespace Landis.Library.PnETCohorts
             {
                 float subLayerLAI = CalcLAI(this.SpeciesPnET, cohortIdealFol, i);
                 cohortLAI += subLayerLAI;
-                if (this.Leaf_On)
+                if (this.IsLeafOn)
                     LAI[index] = subLayerLAI;
             }
 
-            if (this.Leaf_On)
+            if (this.IsLeafOn)
             {
                 this.data.Fol = cohortIdealFol;
                 this.data.MaxFolYear = cohortIdealFol;
@@ -1076,7 +1076,7 @@ namespace Landis.Library.PnETCohorts
                         else if (Globals.ModelCore.CurrentTime > 0 && this.TotalBiomass < (uint)speciesPnET.InitBiomass)  //Check if biomass < Initial Biomass -> cohort dies
                         {
                             data.NSC = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
-                            data.Leaf_On = false;
+                            data.IsLeafOn = false;
                             data.NSC = 0.0F;
                             float foliageSenescence = FoliageSenescence();
                             data.LastFoliageSenescence = foliageSenescence;
@@ -1107,7 +1107,7 @@ namespace Landis.Library.PnETCohorts
                 if (coldKillBoolean)
                 {
                     data.ColdKill = (int)Math.Floor(variables.Tavg - (3.0 * siteCohort.Ecoregion.WinterSTD));
-                    data.Leaf_On = false;
+                    data.IsLeafOn = false;
                     data.NSC = 0.0F;
                     float foliageSenescence = FoliageSenescence();
                     data.LastFoliageSenescence = foliageSenescence;
@@ -1118,9 +1118,9 @@ namespace Landis.Library.PnETCohorts
                     // When LeafOn becomes false for the first time in a year
                     if (variables.Tmin <= this.SpeciesPnET.LeafOnMinT)
                     {
-                        if (data.Leaf_On == true)
+                        if (data.IsLeafOn == true)
                         {
-                            data.Leaf_On = false;
+                            data.IsLeafOn = false;
                             float foliageSenescence = FoliageSenescence();
                             data.LastFoliageSenescence = foliageSenescence;
                             siteCohort.AddLitter(foliageSenescence * data.CanopyLayerProp, SpeciesPnET); // Using Canopy proportioning
@@ -1132,15 +1132,15 @@ namespace Landis.Library.PnETCohorts
                         if (frostFreeProp > 0)
                         {
                             // LeafOn becomes true for the first time in a year
-                            if (data.Leaf_On == false)
+                            if (data.IsLeafOn == false)
                                 growMonth = 1;
                             else
                                 growMonth += 1;
-                            data.Leaf_On = true;
+                            data.IsLeafOn = true;
                         }
                     }
                 }
-                if (data.Leaf_On)
+                if (data.IsLeafOn)
                 {
                     // Apply defoliation only in the second growing season month
                     if (growMonth == 2)
@@ -1300,7 +1300,7 @@ namespace Landis.Library.PnETCohorts
                 ciModifier = 0.00001f;
             CiModifier[index] = ciModifier;  // Stored for output
             // If trees are physiologically active
-            if (Leaf_On)
+            if (IsLeafOn)
             {
                 // CO2 ratio internal to the leaf versus external
                 float cicaRatio = (-0.075f * adjFolN) + 0.875f;
@@ -1609,7 +1609,7 @@ namespace Landis.Library.PnETCohorts
                        monthdata[Species.Name].FTempPSN + "," +
                        monthdata[Species.Name].FTempRespWeightedDayAndNight + "," +
                        Fage + "," +
-                       Leaf_On + "," +
+                       IsLeafOn + "," +
                        FActiveBiom + "," +
                        AdjFolN.Average() + "," +
                        AdjFracFol.Average() + "," +

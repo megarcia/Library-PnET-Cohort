@@ -1238,7 +1238,7 @@ namespace Landis.Library.PnETCohorts
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
             {
                 if (Globals.ModelCore.CurrentTime > 0)
-                    AllCohorts[cohort].CalcDefoliation(Site, SiteAboveGroundBiomass);
+                    AllCohorts[cohort].CalcDefoliationFrac(Site, SiteAboveGroundBiomass);
                 CohortBiomassList.Add(AllCohorts[cohort].TotalBiomass);
                 CohortMaxBiomassList.Add(AllCohorts[cohort].BiomassMax);
             }

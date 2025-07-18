@@ -933,7 +933,7 @@ namespace Landis.Library.PnETCohorts
                 InitializeOutput(SiteName, firstYear);
         }
 
-        public void CalcDefoliation(ActiveSite site, int SiteAboveGroundBiomass)
+        public void CalcDefoliationFrac(ActiveSite site, int SiteAboveGroundBiomass)
         {
             lock (Globals.distributionThreadLock)
             {

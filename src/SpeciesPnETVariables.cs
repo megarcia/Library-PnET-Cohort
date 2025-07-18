@@ -21,7 +21,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Base foliar respiration fraction (using Wythers when selected)
         /// </summary>
-        public float BaseFolRespFrac; 
+        public float BaseFoliarRespirationFrac; 
 
         /// <summary>
         /// Photosynthesis reduction factor due to temperature: for output only

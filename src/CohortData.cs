@@ -133,7 +133,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Foliar respiration (gC/mo)
         /// </summary>
-        public float[] FolResp;
+        public float[] FoliarRespiration;
 
         /// <summary>
         /// Net photosynthesis (gC/mo)
@@ -248,7 +248,7 @@ namespace Landis.Library.PnETCohorts
             this.DelAmax = cohort.DelAmax;
             this.Fol = cohort.Fol;
             this.MaxFolYear = cohort.MaxFolYear;
-            this.FolResp = cohort.FolResp;
+            this.FoliarRespiration = cohort.FoliarRespiration;
             this.FOzone = cohort.FOzone;
             this.FRad = cohort.FRad;
             this.FWater = cohort.FWater;
@@ -305,7 +305,7 @@ namespace Landis.Library.PnETCohorts
             this.DelAmax = new float[Globals.IMAX];
             this.Fol = 0;
             this.MaxFolYear = 0;
-            this.FolResp = new float[Globals.IMAX];
+            this.FoliarRespiration = new float[Globals.IMAX];
             this.FOzone = new float[Globals.IMAX];
             this.FRad = new float[Globals.IMAX];
             this.FWater = new float[Globals.IMAX];

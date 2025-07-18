@@ -29,7 +29,7 @@ namespace Landis.Library.PnETCohorts
         float LastLAI { get; }
         float LastAGBio { get; }
         float[] GrossPsn { get; }
-        float[] FolResp { get; }
+        float[] FoliarRespiration { get; }
         float[] NetPsn { get; }
         float[] MaintenanceRespiration { get; }
         float[] Transpiration { get; }

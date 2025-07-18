@@ -139,7 +139,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Base foliar respiration (g respired / g photosynthesis)
         /// </summary>
-        float BFolResp { get; }
+        float BaseFoliarRespiration { get; }
 
         /// <summary>
         /// Minimum temperature for photosynthesis

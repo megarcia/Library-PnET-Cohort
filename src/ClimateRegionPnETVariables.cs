@@ -91,17 +91,17 @@ namespace Landis.Library.PnETCohorts
             // in relation to plant size and relative growth rate. Global Change Biology. 49:679-691,
             // and Tjoelker, M.G., Oleksyn, J., Reich, P.B. 2001. Modeling respiration of vegetation:
             // evidence for a general temperature-dependent Q10. Global Change Biology. 7:223-230.
-            // This set of algorithms resets the veg parameter "BaseFolRespFrac" from
-            // the static vegetation parameter, then recalculates BaseFolResp based on the adjusted
-            // BaseFolRespFrac
+            // This set of algorithms resets the veg parameter "BaseFoliarRespirationFrac" from
+            // the static vegetation parameter, then recalculates BaseFoliarRespiration based on the adjusted
+            // BaseFoliarRespirationFrac
             // Base foliage respiration 
-            float BaseFolRespFrac;
+            float BaseFoliarRespirationFrac;
             // Base parameter in Q10 temperature dependency calculation
             float Q10base;
             if (wythers == true)
             {
                 //Calculate Base foliar respiration based on temp; this is species-level, so you can compute outside this IF block and use for all cohorts of a species
-                BaseFolRespFrac = 0.138071F - 0.0024519F * Tavg;
+                BaseFoliarRespirationFrac = 0.138071F - 0.0024519F * Tavg;
                 //Midpoint between Tavg and Optimal Temp; this is also species-level
                 float Tmidpoint = (Tavg + spc.PsnTopt) / 2F;
                 // Base parameter in Q10 temperature dependency calculation in current temperature
@@ -110,10 +110,10 @@ namespace Landis.Library.PnETCohorts
             else
             {
                 // The default PnET setting is that these 
-                BaseFolRespFrac = spc.BFolResp;
+                BaseFoliarRespirationFrac = spc.BaseFoliarRespiration;
                 Q10base = spc.Q10;
             }
-            speciespnetvars.BaseFolRespFrac = BaseFolRespFrac;
+            speciespnetvars.BaseFoliarRespirationFrac = BaseFoliarRespirationFrac;
             // Respiration Q10 factor
             speciespnetvars.Q10Factor = EcoregionPnETVariables.CalcQ10Factor(Q10base, Tavg, spc.PsnTopt);
             // Daytime maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)

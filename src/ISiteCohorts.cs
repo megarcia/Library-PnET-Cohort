@@ -8,7 +8,7 @@ namespace Landis.Library.PnETCohorts
         float[] NetPsn { get; }
         float[] MaintResp{ get; }
         float[] GrossPsn{ get; }
-        float[] FolResp { get; }
+        float[] FoliarRespiration { get; }
         float[] AverageAlbedo { get; }
         float[] ActiveLayerDepth { get; }
         float[] FrostDepth { get; }

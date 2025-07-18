@@ -32,7 +32,7 @@ namespace Landis.Library.PnETCohorts
         public const string AverageAlbedo = "AverageAlbedo(ratio_W_m2)";
         public const string ActiveLayerDepth = "ActiveLayerDepth(mm/mo)";
         public const string FrostDepth = "FrostDepth(mm/mo)";
-        public const string FolResp = "FolResp(gC_m2_mo)";
+        public const string FoliarRespiration = "FoliarRespiration(gC_m2_mo)";
         public const string water = "Water(m/m)";
         public const string availableWater = "AvailableWater(mm)";
         public const string SurfaceWater = "SurfaceWater(mm)";

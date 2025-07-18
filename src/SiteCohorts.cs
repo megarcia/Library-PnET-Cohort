@@ -30,7 +30,7 @@ namespace Landis.Library.PnETCohorts
         private float leakageFrac;
         private float[] netpsn = null;
         private float[] grosspsn = null;
-        private float[] folresp = null;
+        private float[] foliarRespiration = null;
         private float[] maintresp = null;
         private float[] averageAlbedo = null;
         private float[] activeLayerDepth = null;
@@ -1109,7 +1109,7 @@ namespace Landis.Library.PnETCohorts
                     SiteVars.MonthlySoilTemp[site][m] = SiteVars.MonthlySoilTemp[initialSites[key].Site][m];
                 }
                 this.netpsn = initialSites[key].NetPsn;
-                this.folresp = initialSites[key].FolResp;
+                this.foliarRespiration = initialSites[key].FoliarRespiration;
                 this.grosspsn = initialSites[key].GrossPsn;
                 this.maintresp = initialSites[key].MaintResp;
                 this.averageAlbedo = initialSites[key].AverageAlbedo;
@@ -1287,7 +1287,7 @@ namespace Landis.Library.PnETCohorts
             }
             MaxLayer = LayeredBins.Count - 1;
             List<List<int>> random_range = GetRandomRange(LayeredBins);
-            folresp = new float[13];
+            foliarRespiration = new float[13];
             netpsn = new float[13];
             grosspsn = new float[13];
             maintresp = new float[13];
@@ -1369,7 +1369,7 @@ namespace Landis.Library.PnETCohorts
                 // Reset monthly variables that get reported as single year snapshots
                 if (data[m].Month == 1)
                 {
-                    folresp = new float[13];
+                    foliarRespiration = new float[13];
                     netpsn = new float[13];
                     grosspsn = new float[13];
                     maintresp = new float[13];
@@ -1977,7 +1977,7 @@ namespace Landis.Library.PnETCohorts
                 monthlyPotentialEvap[data[m].Month - 1] += hydrology.PE;
                 foreach (Cohort cohort in AllCohorts)
                 {
-                    folresp[data[m].Month - 1] += cohort.FolResp.Sum() * cohort.CanopyLayerFrac;
+                    foliarRespiration[data[m].Month - 1] += cohort.FoliarRespiration.Sum() * cohort.CanopyLayerFrac;
                     netpsn[data[m].Month - 1] += cohort.NetPsn.Sum() * cohort.CanopyLayerFrac;
                     grosspsn[data[m].Month - 1] += cohort.GrossPsn.Sum() * cohort.CanopyLayerFrac;
                     maintresp[data[m].Month - 1] += cohort.MaintenanceRespiration.Sum() * cohort.CanopyLayerFrac;
@@ -2321,21 +2321,21 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float[] FolResp
+        public float[] FoliarRespiration
         {
             get
             {
-                if (folresp == null)
+                if (foliarRespiration == null)
                 {
-                    float[] folresp_array = new float[12];
-                    for (int i = 0; i < folresp_array.Length; i++)
+                    float[] foliarRespiration_array = new float[12];
+                    for (int i = 0; i < foliarRespiration_array.Length; i++)
                     {
-                        folresp_array[i] = 0;
+                        foliarRespiration_array[i] = 0;
                     }
-                    return folresp_array;
+                    return foliarRespiration_array;
                 }
                 else
-                    return folresp.Select(psn => (float)psn).ToArray();
+                    return foliarRespiration.Select(psn => (float)psn).ToArray();
             }
         }
 

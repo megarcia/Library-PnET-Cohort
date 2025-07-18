@@ -391,11 +391,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float[] FolResp
+        public float[] FoliarRespiration
         {
             get
             {
-                return data.FolResp;
+                return data.FoliarRespiration;
             }
         }
 
@@ -651,7 +651,7 @@ namespace Landis.Library.PnETCohorts
             index = 0;
             data.LAI = new float[Globals.IMAX];
             data.GrossPsn = new float[Globals.IMAX];
-            data.FolResp = new float[Globals.IMAX];
+            data.FoliarRespiration = new float[Globals.IMAX];
             data.NetPsn = new float[Globals.IMAX];
             data.Transpiration = new float[Globals.IMAX];
             data.PotentialTranspiration = new float[Globals.IMAX];
@@ -711,7 +711,7 @@ namespace Landis.Library.PnETCohorts
         {
             data.LAI = null;
             data.GrossPsn = null;
-            data.FolResp = null;
+            data.FoliarRespiration = null;
             data.NetPsn = null;
             data.Transpiration = null;
             data.PotentialTranspiration = null;
@@ -1327,9 +1327,9 @@ namespace Landis.Library.PnETCohorts
                 float JH2O = variables[species.Name].JH2O / ciModifier;  // Modified from * to / 11.18.2022 [mod1]
                 float wue = JCO2 / JH2O * (44 / 18);  //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
                 float Amax = (float)(delamaxCi * (speciesPnET.AmaxA + variables[species.Name].AmaxB_CO2 * adjFolN)); //nmole CO2/g Fol/s
-                float BaseFolResp = variables[species.Name].BaseFolRespFrac * Amax; //nmole CO2/g Fol/s
+                float BaseFoliarRespiration = variables[species.Name].BaseFoliarRespirationFrac * Amax; //nmole CO2/g Fol/s
                 float AmaxAdj = Amax * speciesPnET.AmaxFrac;  //Amax adjustment as applied in PnET
-                float GrossAmax = AmaxAdj + BaseFolResp; //nmole CO2/g Fol/s
+                float GrossAmax = AmaxAdj + BaseFoliarRespiration; //nmole CO2/g Fol/s
                 //Reference gross Psn (lab conditions) in gC/g Fol/month
                 float RefGrossPsn = variables.DaySpan * (GrossAmax * variables[species.Name].DVPD * variables.Daylength * Constants.MC) / Constants.billion;
                 // Calculate gross psn from stress factors and reference gross psn (gC/g Fol/month)
@@ -1376,13 +1376,13 @@ namespace Landis.Library.PnETCohorts
                     if (success == false)
                         throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
                 }
-                // Net foliage respiration depends on reference psn (BaseFolResp)
-                // Substitute 24 hours in place of DayLength because foliar respiration does occur at night.  BaseFolResp and Q10Factor use Tavg temps reflecting both day and night temperatures.
-                float RefFolResp = BaseFolResp * variables[species.Name].Q10Factor * variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion; // gC/g Fol/month
+                // Net foliage respiration depends on reference psn (BaseFoliarRespiration)
+                // Substitute 24 hours in place of DayLength because foliar respiration does occur at night.  BaseFoliarRespiration and Q10Factor use Tavg temps reflecting both day and night temperatures.
+                float RefFoliarRespiration = BaseFoliarRespiration * variables[species.Name].Q10Factor * variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion; // gC/g Fol/month
                 // Actual foliage respiration (growth respiration) 
-                FolResp[index] = RefFolResp * Fol / (float)Globals.IMAX; // gC/m2 ground/mo
+                FoliarRespiration[index] = RefFoliarRespiration * Fol / (float)Globals.IMAX; // gC/m2 ground/mo
                 // NetPsn psn depends on gross psn and foliage respiration
-                float nonOzoneNetPsn = GrossPsn[index] - FolResp[index];
+                float nonOzoneNetPsn = GrossPsn[index] - FoliarRespiration[index];
                 // Convert Psn gC/m2 ground/mo to umolCO2/m2 fol/s
                 float netPsn_ground = nonOzoneNetPsn * 1000000F * (1F / 12F) * (1F / (variables.Daylength * variables.DaySpan));
                 float netPsn_leaf_s = 0;
@@ -1415,7 +1415,7 @@ namespace Landis.Library.PnETCohorts
             {
                 // Reset subcanopy layer values
                 NetPsn[index] = 0;
-                FolResp[index] = 0;
+                FoliarRespiration[index] = 0;
                 GrossPsn[index] = 0;
                 Transpiration[index] = 0;
                 PotentialTranspiration[index] = 0;
@@ -1587,7 +1587,7 @@ namespace Landis.Library.PnETCohorts
                        SumLAI + "," +
                        SumLAI * CanopyLayerFrac + "," +
                        GrossPsn.Sum() + "," +
-                       FolResp.Sum() + "," +
+                       FoliarRespiration.Sum() + "," +
                        MaintenanceRespiration.Sum() + "," +
                        netPsnSum + "," +                  // Sum over canopy layers
                        transpirationSum + "," +
@@ -1634,7 +1634,7 @@ namespace Landis.Library.PnETCohorts
                              OutputHeaders.LAI + "," +
                              OutputHeaders.LAISite + "," +
                              OutputHeaders.GrossPsn + "," +
-                             OutputHeaders.FolResp + "," +
+                             OutputHeaders.FoliarRespiration + "," +
                              OutputHeaders.MaintResp + "," +
                              OutputHeaders.NetPsn + "," +
                              OutputHeaders.Transpiration + "," +

@@ -222,7 +222,7 @@ namespace Landis.Library.PnETCohorts
         float MaxFracFol { get; }
 
         /// <summary>
-        /// Slope coefficient for O3Effect
+        /// Slope coefficient for FOzone
         /// </summary>
         float O3GrowthSens { get; }
 

@@ -954,7 +954,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="o3_month"></param>
         /// <param name="subCanopyIndex"></param>
         /// <param name="layerCount"></param>
-        /// <param name="O3Effect"></param>
+        /// <param name="FOzone"></param>
         /// <param name="frostFreeFrac"></param>
         /// <param name="MeltInByCanopyLayer"></param>
         /// <param name="coldKillBoolean"></param>
@@ -965,11 +965,11 @@ namespace Landis.Library.PnETCohorts
         /// <param name="allowMortality"></param>
         /// <returns></returns>
         /// <exception cref="System.Exception"></exception>
-        public bool CalcPhotosynthesis(float PrecInByCanopyLayer, int precipCount, float leakageFrac, ref Hydrology hydrology, float mainLayerPAR, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeFrac, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables, SiteCohorts siteCohort, float sumCanopyFrac, float groundPotentialETbyEvent, bool allowMortality = true)
+        public bool CalcPhotosynthesis(float PrecInByCanopyLayer, int precipCount, float leakageFrac, ref Hydrology hydrology, float mainLayerPAR, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float FOzone, float frostFreeFrac, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables, SiteCohorts siteCohort, float sumCanopyFrac, float groundPotentialETbyEvent, bool allowMortality = true)
         {
             bool success = true;
-            float lastO3Effect = O3Effect;
-            O3Effect = 0;
+            float lastFOzone = FOzone;
+            FOzone = 0;
 
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
@@ -1399,12 +1399,12 @@ namespace Landis.Library.PnETCohorts
                 if (o3_month > 0)
                 {
                     float o3Coeff = speciesPnET.O3GrowthSens;
-                    O3Effect = CalcO3Effect_PnET(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, Fol, lastO3Effect, gwv, LAI[index], o3Coeff);
+                    FOzone = CalcFOzone_PnET(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, Fol, lastFOzone, gwv, LAI[index], o3Coeff);
                 }
                 else
-                    O3Effect = 0;
+                    FOzone = 0;
                 //Apply reduction factor for Ozone
-                FOzone[index] = 1 - O3Effect;
+                FOzone[index] = 1 - FOzone;
                 NetPsn[index] = nonOzoneNetPsn * FOzone[index];
                 // Add net psn to non soluble carbons
                 data.NSC += NetPsn[index]; //gC
@@ -1457,18 +1457,18 @@ namespace Landis.Library.PnETCohorts
                 return 1;
         }
 
-        public static float CalcO3Effect_PnET(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastO3Effect, float gwv, float layerLAI, float o3Coeff)
+        public static float CalcFOzone_PnET(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastFOzone, float gwv, float layerLAI, float o3Coeff)
         {
-            float currentO3Effect = 1.0F;
+            float currentFOzone = 1.0F;
             float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
             float kO3Eff = 0.0026F * o3Coeff;  // Scaled by species using input parameters
             float O3Prof = (float)(0.6163 + (0.00105 * FolMass));
             float RelLayer = (float)Layer / (float)nLayers;
             float relO3 = Math.Min(1, 1 - RelLayer * O3Prof * (RelLayer * O3Prof) * (RelLayer * O3Prof));
             // Kubiske method (using gwv in place of conductance
-            currentO3Effect = (float)Math.Min(1, (lastO3Effect * droughtO3Frac) + (kO3Eff * gwv * o3 * relO3));
+            currentFOzone = (float)Math.Min(1, (lastFOzone * droughtO3Frac) + (kO3Eff * gwv * o3 * relO3));
 
-            return currentO3Effect;
+            return currentFOzone;
         }
 
         public int CalcNonWoodyBiomass(ActiveSite site)

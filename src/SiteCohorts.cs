@@ -1758,15 +1758,15 @@ namespace Landis.Library.PnETCohorts
                             ISpeciesPnET spc = c.SpeciesPnET;
                             if (coldKillMonth[spc] == m)
                                 coldKillBoolean = true;
-                            float O3Effect = lastOzoneEffect[subCanopyIndex - 1];
+                            float FOzone = lastOzoneEffect[subCanopyIndex - 1];
                             float PotentialETnonfor = PotentialETcumulative - TransCumulative - InterceptCumulative - hydrology.Evaporation; // hydrology.Evaporation is cumulative
                             success = c.CalcPhotosynthesis(subCanopyPrecip, precipCount, leakageFrac, ref hydrology, mainLayerPAR,
-                                ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect,
+                                ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref FOzone,
                                 fracRootAboveFrost, subCanopyMelt, coldKillBoolean, data[m], this, sumCanopyFrac, subCanopyPotentialET, AllowMortality);
                             if (success == false)
                                 throw new System.Exception("Error CalcPhotosynthesis");
                             TransCumulative = TransCumulative + c.Transpiration[c.index-1];
-                            lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
+                            lastOzoneEffect[subCanopyIndex - 1] = FOzone;
                             if (groundPotentialET > 0)
                             {
                                 float evaporationEvent = 0;

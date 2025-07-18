@@ -7,7 +7,7 @@ namespace Landis.Library.PnETCohorts
     {
         public static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         public const string ExtensionName = "PnET-Succession";
-        public const string PNEToutputsites = "PNEToutputsites";
+        public const string PnEToutputsites = "PnEToutputsites";
         public const string EcoregionParameters = "EcoregionParameters";
         public const string DisturbanceReductions = "DisturbanceReductions";
         public const string PnETGenericParameters = "PnETGenericParameters";
@@ -29,8 +29,8 @@ namespace Landis.Library.PnETCohorts
         public const string WoodyDebrisMap = "WoodyDebrisMap";
         public const string ClimateConfigFile = "ClimateConfigFile";
         public const string MapCoordinates = "MapCoordinates";
-        public const string PNEToutputSiteCoordinates = "PNEToutputSiteCoordinates";
-        public const string PNEToutputSiteLocation = "PNEToutputSiteLocation";
+        public const string PnEToutputSiteCoordinates = "PnEToutputSiteCoordinates";
+        public const string PnEToutputSiteLocation = "PnEToutputSiteLocation";
         public const string PressureHeadCalculationMethod = "PressureHeadCalculationMethod";
         public const string Wythers = "Wythers";
         public const string DTemp = "DTemp";

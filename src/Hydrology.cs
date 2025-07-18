@@ -84,7 +84,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Potential Evapotranspiration (mm)
         /// </summary>
-        public float PET;
+        public float PotentialET;
 
         public static float DeliveryPotential;
         public static readonly object threadLock = new object();
@@ -219,7 +219,7 @@ namespace Landis.Library.PnETCohorts
             return PE * _daySpan;  //mm/month 
         }
 
-        public float CalcEvaporation(SiteCohorts sitecohorts, float PET)
+        public float CalcEvaporation(SiteCohorts sitecohorts, float PotentialET)
         {
             lock (threadLock)
             {
@@ -234,7 +234,7 @@ namespace Landis.Library.PnETCohorts
                 float evapCritWaterPH = pressureheadtable[sitecohorts.Ecoregion, (int)Math.Round(evapCritWater * 100.0)];
                 // Delivery potential is 1 if pressurehead < evapCritWater, and declines to 0 at wilting point (153 mH2O)
                 DeliveryPotential = Cohort.CalcFWater(-1, -1, evapCritWaterPH, 153, pressurehead);
-                float AEmax = PET; // Modified 11/4/22 in v 5.0-rc19; remove access limitation and only use physical limit at wilting point below
+                float AEmax = PotentialET; // Modified 11/4/22 in v 5.0-rc19; remove access limitation and only use physical limit at wilting point below
                 // Evaporation cannot remove water below wilting point           
                 float evaporationEvent = Math.Min(AEmax, (Water - sitecohorts.Ecoregion.WiltPnt) * evapSoilDepth);// mm/month
                 evaporationEvent = Math.Max(0f, evaporationEvent);  // evap cannot be negative
@@ -275,9 +275,9 @@ namespace Landis.Library.PnETCohorts
             float L = 2453f;    // MJ/m3 - latent heat of vaporization
             float es = 0.6108F * (float)Math.Pow(10, 7.5 * T / (237.3 + T)); // water vapor saturation pressure (kPa); [Cabrera et al. 2016 (Table 1)]
             float S = 4098F * es / (float)Math.Pow(T + 237.3, 2); // slope of curve of water pressure and air temp; [Cabrera et al. 2016 (Table 1)]
-            float PET_ground = alpha * (S / (S + gamma)) / L * subCanopyNetRad * 0.0864F; //m/day  (0.0864 conversion W/m2 to MJ/m2*d)
+            float PotentialET_ground = alpha * (S / (S + gamma)) / L * subCanopyNetRad * 0.0864F; //m/day  (0.0864 conversion W/m2 to MJ/m2*d)
 
-            return PET_ground * 1000 * daySpan; //mm/month
+            return PotentialET_ground * 1000 * daySpan; //mm/month
         }
 
         public float CalcRET_Hamon(float T, float dayLength)
@@ -291,8 +291,8 @@ namespace Landis.Library.PnETCohorts
                 float k = 1.2f;   // proportionality coefficient
                 float es = 6.108f * (float)Math.Exp(17.27f * T / (T + 237.3f));
                 float N = dayLength / (float)Constants.SecondsPerHour / 12f;
-                float PET = k * 0.165f * 216.7f * N * (es / (T + 273.3f));
-                return PET; // mm/day
+                float PotentialET = k * 0.165f * 216.7f * N * (es / (T + 273.3f));
+                return PotentialET; // mm/day
             }
         }
 

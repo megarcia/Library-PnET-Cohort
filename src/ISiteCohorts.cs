@@ -57,7 +57,7 @@ namespace Landis.Library.PnETCohorts
         float NSCSum { get; }
         float AETSum { get; } //mm
         float NetPsnSum { get; }
-        float PET { get; }
+        float PotentialET { get; }
 
         List<ISpecies> SpeciesByPlant { get; set; }
         List<ISpecies> SpeciesBySerotiny { get; set; }

@@ -23,7 +23,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         bool AddWater(float water, float activeSoilDepth); 
 
-        float CalcEvaporation(SiteCohorts sitecohorts, float PET);
+        float CalcEvaporation(SiteCohorts sitecohorts, float PotentialET);
 
         /// <summary>
         /// volumetric water content (mm/m) of the frozen soil

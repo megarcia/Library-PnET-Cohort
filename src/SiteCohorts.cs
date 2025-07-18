@@ -1196,9 +1196,9 @@ namespace Landis.Library.PnETCohorts
             AET[Month-1] = value;
         }
 
-        public void SetPET(float value)
+        public void SetPotentialET(float value)
         {
-            PET = value;
+            PotentialET = value;
         }
 
         class DescendingComparer<T> : IComparer<T> where T : IComparable<T>
@@ -1647,9 +1647,9 @@ namespace Landis.Library.PnETCohorts
                     bool successdepth = hydrology.SetFrozenDepth(0F);
                 }
                 float MeltInWater = snowmelt;
-                // Calculate ground PET
-                float groundPET = hydrology.CalcPotentialGroundET_LAI(CanopyLAI.Sum(), data[m].Tavg, data[m].DayLength, data[m].DaySpan, ((Parameter<float>)Names.GetParameter("ETExtCoeff")).Value);
-                float  groundPETbyEvent = groundPET / numEvents;  // divide evaporation into discreet events to match precip
+                // Calculate ground PotentialET
+                float groundPotentialET = hydrology.CalcPotentialGroundET_LAI(CanopyLAI.Sum(), data[m].Tavg, data[m].DayLength, data[m].DaySpan, ((Parameter<float>)Names.GetParameter("ETExtCoeff")).Value);
+                float  groundPotentialETbyEvent = groundPotentialET / numEvents;  // divide evaporation into discreet events to match precip
                 // Randomly choose which layers will receive the precip events
                 // If # of layers < precipEvents, some layers will show up multiple times in number list.  This ensures the same number of precip events regardless of the number of cohorts
                 List<int> randomNumbers = new List<int>();
@@ -1682,9 +1682,9 @@ namespace Landis.Library.PnETCohorts
                 hydrology.RunOff = 0;
                 hydrology.Leakage = 0;
                 hydrology.Evaporation = 0;
-                hydrology.PE = groundPET;
-                hydrology.PET = 0;
-                float PETcumulative = 0;
+                hydrology.PE = groundPotentialET;
+                hydrology.PotentialET = 0;
+                float PotentialETcumulative = 0;
                 float TransCumulative = 0;
                 float InterceptCumulative = 0;
                 float O3_ppmh = data[m].O3 / 1000; // convert AOT40 units to ppm h
@@ -1699,7 +1699,7 @@ namespace Landis.Library.PnETCohorts
                 Dictionary<string, float> PsnFTempRefNetPsn_spp = new Dictionary<string, float>();
                 Dictionary<string, float> Ca_Ci_spp = new Dictionary<string, float>();
                 float subCanopyPrecip = 0;
-                float subCanopyPET = 0;;
+                float subCanopyPotentialET = 0;;
                 float subCanopyMelt = 0;
                 int subCanopyIndex = 0;
                 int layerCount = 0;
@@ -1739,9 +1739,9 @@ namespace Landis.Library.PnETCohorts
                             subCanopyIndex++;
                             int precipCount = 0;
                             subCanopyPrecip = 0;
-                            subCanopyPET = 0;
+                            subCanopyPotentialET = 0;
                             subCanopyMelt = MeltInWater / SubCanopyCohorts.Count();
-                            PETcumulative = PETcumulative + RET * data[m].DaySpan / SubCanopyCohorts.Count();
+                            PotentialETcumulative = PotentialETcumulative + RET * data[m].DaySpan / SubCanopyCohorts.Count();
                             bool coldKillBoolean = false;
                             foreach (var g in groupList)
                             {
@@ -1751,7 +1751,7 @@ namespace Landis.Library.PnETCohorts
                                     subCanopyPrecip = PrecInByEvent; 
                                     InterceptCumulative += interception / groupList.Count();
                                     if (snowPack == 0)
-                                        subCanopyPET = groundPETbyEvent;
+                                        subCanopyPotentialET = groundPotentialETbyEvent;
                                 }
                             }
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
@@ -1759,23 +1759,23 @@ namespace Landis.Library.PnETCohorts
                             if (coldKillMonth[spc] == m)
                                 coldKillBoolean = true;
                             float O3Effect = lastOzoneEffect[subCanopyIndex - 1];
-                            float PETnonfor = PETcumulative - TransCumulative - InterceptCumulative - hydrology.Evaporation; // hydrology.Evaporation is cumulative
+                            float PotentialETnonfor = PotentialETcumulative - TransCumulative - InterceptCumulative - hydrology.Evaporation; // hydrology.Evaporation is cumulative
                             success = c.CalcPhotosynthesis(subCanopyPrecip, precipCount, leakageFrac, ref hydrology, mainLayerPAR,
                                 ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect,
-                                fracRootAboveFrost, subCanopyMelt, coldKillBoolean, data[m], this, sumCanopyFrac, subCanopyPET, AllowMortality);
+                                fracRootAboveFrost, subCanopyMelt, coldKillBoolean, data[m], this, sumCanopyFrac, subCanopyPotentialET, AllowMortality);
                             if (success == false)
                                 throw new System.Exception("Error CalcPhotosynthesis");
                             TransCumulative = TransCumulative + c.Transpiration[c.index-1];
                             lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
-                            if (groundPET > 0)
+                            if (groundPotentialET > 0)
                             {
                                 float evaporationEvent = 0;
                                 // If more than one precip event assigned to layer, repeat evaporation for all events prior to respiration
                                 for (int p = 1; p <= precipCount; p++)
                                 {
-                                    PETnonfor = groundPETbyEvent;
+                                    PotentialETnonfor = groundPotentialETbyEvent;
                                     if (fracRootAboveFrost > 0 && snowPack == 0)
-                                        evaporationEvent = hydrology.CalcEvaporation(this, PETnonfor); //mm
+                                        evaporationEvent = hydrology.CalcEvaporation(this, PotentialETnonfor); //mm
                                     success = hydrology.AddWater(-1 * evaporationEvent, Ecoregion.RootingDepth * fracRootAboveFrost);
                                     if (success == false)
                                         throw new System.Exception("Error adding water, evaporation = " + evaporationEvent + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
@@ -1873,7 +1873,7 @@ namespace Landis.Library.PnETCohorts
                         else
                             subcanopypar = mainLayerPAR;
                     } // end main canopy layer loop
-                    hydrology.PET += PETcumulative;
+                    hydrology.PotentialET += PotentialETcumulative;
                 }
                 else // When no cohorts are present
                 {
@@ -1921,11 +1921,11 @@ namespace Landis.Library.PnETCohorts
                             if (success == false)
                                 throw new System.Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                             // Evaporation
-                            float PETnonfor = groundPET / numEvents;
-                            PETcumulative += RET * data[m].DaySpan / numEvents;
+                            float PotentialETnonfor = groundPotentialET / numEvents;
+                            PotentialETcumulative += RET * data[m].DaySpan / numEvents;
                             float evaporationEvent = 0;
                             if (fracRootAboveFrost > 0 && snowPack == 0)
-                                evaporationEvent = hydrology.CalcEvaporation(this, PETnonfor); //mm
+                                evaporationEvent = hydrology.CalcEvaporation(this, PotentialETnonfor); //mm
                             success = hydrology.AddWater(-1 * evaporationEvent, Ecoregion.RootingDepth * fracRootAboveFrost);
                             if (success == false)
                                 throw new System.Exception("Error adding water, evaporation = " + evaporationEvent + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
@@ -1956,7 +1956,7 @@ namespace Landis.Library.PnETCohorts
                             }
                         }
                     }
-                    hydrology.PET += PETcumulative;
+                    hydrology.PotentialET += PotentialETcumulative;
                 }
                 SiteVars.AnnualPE[Site] = hydrology.PE;
                 int cohortCount = AllCohorts.Count();
@@ -2091,8 +2091,8 @@ namespace Landis.Library.PnETCohorts
                 }
                 float AET = hydrology.Evaporation + TransCumulative + InterceptCumulative;
                 this.SetAet(AET, data[m].Month);
-                this.SetPET(PETcumulative);
-                SiteVars.ClimaticWaterDeficit[this.Site] += PETcumulative - AET;
+                this.SetPotentialET(PotentialETcumulative);
+                SiteVars.ClimaticWaterDeficit[this.Site] += PotentialETcumulative - AET;
                 // Add surface water to soil
                 if ((hydrology.SurfaceWater > 0) & (hydrology.Water < Ecoregion.Porosity))
                 {
@@ -3012,7 +3012,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float PET
+        public float PotentialET
         {
             get;
             set;
@@ -3467,7 +3467,7 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.O3 + "," +
                        OutputHeaders.RunOff + "," + 
                        OutputHeaders.Leakage + "," + 
-                       OutputHeaders.PET + "," +
+                       OutputHeaders.PotentialET + "," +
                        OutputHeaders.PE + "," +
                        OutputHeaders.Evaporation + "," +
                        OutputHeaders.PotentialTranspiration + "," +
@@ -3527,7 +3527,7 @@ namespace Landis.Library.PnETCohorts
                        monthdata.O3 + "," +
                        hydrology.RunOff + "," +
                        hydrology.Leakage + "," +
-                       hydrology.PET + "," +
+                       hydrology.PotentialET + "," +
                        hydrology.PE + "," +
                        hydrology.Evaporation + "," +
                        cohorts.Values.Sum(o => o.Sum(x => x.PotentialTranspiration.Sum())) + "," +

@@ -92,7 +92,7 @@ namespace Landis.Library.PnETCohorts
 
         }
 
-        public float FieldCap
+        public float FieldCapacity
         {
             get
             {

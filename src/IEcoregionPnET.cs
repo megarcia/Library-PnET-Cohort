@@ -32,7 +32,7 @@
         /// <summary>
         /// Volumetric soil water content (mm/m) at field capacity
         /// </summary>
-        float FieldCap { get; set; }
+        float FieldCapacity { get; set; }
 
         /// <summary>
         /// Volumetric soil water content (mm/m) at wilting point

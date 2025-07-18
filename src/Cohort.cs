@@ -1015,7 +1015,7 @@ namespace Landis.Library.PnETCohorts
                     success = hydrology.AddWater(precipIn, siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
                     if (!success)
                         throw new System.Exception("Error adding water, waterIn = " + precipIn + "; soilWaterContent = " + hydrology.SoilWaterContent + "; rainRunoff = " + rainRunoff + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
-                    float leakage = Math.Max((float)leakageFrac * (hydrology.SoilWaterContent - siteCohort.Ecoregion.FieldCap), 0) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac; //mm
+                    float leakage = Math.Max((float)leakageFrac * (hydrology.SoilWaterContent - siteCohort.Ecoregion.FieldCapacity), 0) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac; //mm
                     hydrology.Leakage += leakage;
                     // Remove fast leakage
                     success = hydrology.AddWater(-1 * leakage, siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
@@ -1037,7 +1037,7 @@ namespace Landis.Library.PnETCohorts
                 // Leakage only occurs following precipitation events or incoming melt water
                 if (MeltInByCanopyLayer > 0)
                 {
-                    float leakage = Math.Max((float)leakageFrac * (hydrology.SoilWaterContent - siteCohort.Ecoregion.FieldCap), 0) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac; //mm
+                    float leakage = Math.Max((float)leakageFrac * (hydrology.SoilWaterContent - siteCohort.Ecoregion.FieldCapacity), 0) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac; //mm
                     hydrology.Leakage += leakage;
                     // Remove fast leakage
                     success = hydrology.AddWater(-1 * leakage, siteCohort.Ecoregion.RootingDepth * frostFreeFrac);

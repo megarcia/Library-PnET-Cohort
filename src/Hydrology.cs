@@ -176,21 +176,21 @@ namespace Landis.Library.PnETCohorts
                 string msg = "Missing method for calculating pressurehead, expected keyword " + Names.PressureHeadCalculationMethod + " in " + Names.GetParameter(Names.PnETGenericParameters).Value + " or in " + Names.GetParameter(Names.ExtensionName).Value;
                 throw new System.Exception(msg);
             }
-            Globals.ModelCore.UI.WriteLine("Eco\tSoiltype\tWiltPnt\t\tFieldCap\tFC-WP\t\tPorosity");
+            Globals.ModelCore.UI.WriteLine("Eco\tSoiltype\tWiltPnt\t\tFieldCapacity\tFC-WP\t\tPorosity");
             foreach (IEcoregionPnET eco in EcoregionData.Ecoregions) if (eco.Active)
                 {
                     // Volumetric soil water content (mm/m) at field capacity
                     //  −33 kPa (or −0.33 bar)        
                     // Convert kPA to mH2o (/9.804139432) = 3.37
-                    eco.FieldCap = (float)pressureheadtable.CalcWaterContent(33, eco.SoilType);
+                    eco.FieldCapacity = (float)pressureheadtable.CalcWaterContent(33, eco.SoilType);
                     // Volumetric soil water content (mm/m) at wilting point
                     //  −1500 kPa (or −15 bar)  
                     // Convert kPA to mH2o (/9.804139432) = 153.00
                     eco.WiltPnt = (float)pressureheadtable.CalcWaterContent(1500, eco.SoilType);
                     // Volumetric soil water content (mm/m) at porosity
                     eco.Porosity = (float)pressureheadtable.Porosity(eco.SoilType);
-                    float f = eco.FieldCap - eco.WiltPnt;
-                    Globals.ModelCore.UI.WriteLine(eco.Name + "\t" + eco.SoilType + "\t\t" + eco.WiltPnt + "\t" + eco.FieldCap + "\t" + f + "\t" + eco.Porosity);
+                    float f = eco.FieldCapacity - eco.WiltPnt;
+                    Globals.ModelCore.UI.WriteLine(eco.Name + "\t" + eco.SoilType + "\t\t" + eco.WiltPnt + "\t" + eco.FieldCapacity + "\t" + f + "\t" + eco.Porosity);
                 }
         }
 
@@ -230,7 +230,7 @@ namespace Landis.Library.PnETCohorts
                 float evapSoilDepth = Math.Min(sitecohorts.Ecoregion.RootingDepth * frostFreeFrac, sitecohorts.Ecoregion.EvapDepth);
                 // Evaporation begins to decline at 75% of field capacity (Robock et al. 1995)
                 // Robock, A., Vinnikov, K. Y., Schlosser, C. A., Speranskaya, N. A., & Xue, Y. (1995). Use of midlatitude soil moisture and meteorological observations to validate soil moisture simulations with biosphere and bucket models. Journal of Climate, 8(1), 15-35.
-                float evapCritWater = sitecohorts.Ecoregion.FieldCap * 0.75f;
+                float evapCritWater = sitecohorts.Ecoregion.FieldCapacity * 0.75f;
                 float evapCritWaterPH = pressureheadtable[sitecohorts.Ecoregion, (int)Math.Round(evapCritWater * 100.0)];
                 // Delivery potential is 1 if pressurehead < evapCritWater, and declines to 0 at wilting point (153 mH2O)
                 DeliveryPotential = Cohort.CalcFWater(-1, -1, evapCritWaterPH, 153, pressurehead);

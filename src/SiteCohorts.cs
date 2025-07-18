@@ -364,7 +364,7 @@ namespace Landis.Library.PnETCohorts
                     initialSites.Add(key, this);
             }
             List<IEcoregionPnETVariables> ecoregionInitializer = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, StartDate, StartDate.AddMonths(1)) : EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
-            hydrology = new Hydrology(Ecoregion.FieldCap);
+            hydrology = new Hydrology(Ecoregion.FieldCapacity);
             avgSoilWaterContent = hydrology.SoilWaterContent;
             subcanopypar = ecoregionInitializer[0].PAR0;
             subcanopyparmax = subcanopypar;
@@ -1915,7 +1915,7 @@ namespace Landis.Library.PnETCohorts
                             if (!success)
                                 throw new System.Exception("Error adding water, waterIn = " + precipIn + "; soilWaterContent = " + hydrology.SoilWaterContent + "; rainRunoff = " + rainRunoff + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                             // Fast Leakage
-                            float leakage = Math.Max((float)leakageFrac * (hydrology.SoilWaterContent - Ecoregion.FieldCap), 0) * Ecoregion.RootingDepth * fracRootAboveFrost; //mm
+                            float leakage = Math.Max((float)leakageFrac * (hydrology.SoilWaterContent - Ecoregion.FieldCapacity), 0) * Ecoregion.RootingDepth * fracRootAboveFrost; //mm
                             hydrology.Leakage += leakage;
                             // Remove fast leakage
                             success = hydrology.AddWater(-1 * leakage, Ecoregion.RootingDepth * fracRootAboveFrost);

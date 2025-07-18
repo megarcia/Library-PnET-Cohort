@@ -31,12 +31,12 @@ namespace Landis.Library.PnETCohorts
             _dayspan = EcoregionPnETVariables.CalcDaySpan(date.Month);
             float hr = EcoregionPnETVariables.CalcDaylightHrs(date.DayOfYear, latitude);
             _dayLength = EcoregionPnETVariables.CalcDayLength(hr);
-            float nightlength = EcoregionPnETVariables.CalcNightLength(hr);
+            float nightLength = EcoregionPnETVariables.CalcNightLength(hr);
             _tday = (float)(0.5 * (monthlyClimateRecord.Tmax + _tavg));
             _vpd = EcoregionPnETVariables.CalcVPD(Tday, (float)monthlyClimateRecord.Tmin);
             foreach (ISpeciesPnET spc in Species)
             {
-                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, dayLength, nightlength, spc);
+                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, dayLength, nightLength, spc);
                 speciesVariables.Add(spc.Name, speciespnetvars);
             }
         }
@@ -63,7 +63,7 @@ namespace Landis.Library.PnETCohorts
         #endregion
 
         #region private methods
-        private SpeciesPnETVariables GetSpeciesVariables(MonthlyClimateRecord monthlyClimateRecord, bool wythers, bool dTemp, float dayLength, float nightlength, ISpeciesPnET spc)
+        private SpeciesPnETVariables GetSpeciesVariables(MonthlyClimateRecord monthlyClimateRecord, bool wythers, bool dTemp, float dayLength, float nightLength, ISpeciesPnET spc)
         {
             // Class that contains species specific PnET variables for a certain month
             SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
@@ -121,7 +121,7 @@ namespace Landis.Library.PnETCohorts
             // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
             float fTempRespNight = EcoregionPnETVariables.CalcRespirationFQ10(Q10base, Tmin, spc.PsnTopt);
             // Unitless respiration adjustment based on temperature: public for output file only
-            float RespirationFTemp = (float)Math.Min(1.0, (fTempRespDay * dayLength + fTempRespNight * nightlength) / ((float)dayLength + (float)nightlength)); ;
+            float RespirationFTemp = (float)Math.Min(1.0, (fTempRespDay * dayLength + fTempRespNight * nightLength) / ((float)dayLength + (float)nightLength)); ;
             speciespnetvars.RespirationFTemp = RespirationFTemp;
             // Scaling factor of respiration given day and night temperature and day and night length
             speciespnetvars.MaintenanceRespirationFTemp = spc.MaintResp * RespirationFTemp;

@@ -168,7 +168,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Actual water used to calculate FWater
         /// </summary>
-        public float[] Water;
+        public float[] SoilWaterContent;
 
         /// <summary>
         /// Actual pressurehead used to calculate FWater
@@ -270,7 +270,7 @@ namespace Landis.Library.PnETCohorts
             this.NumEvents = cohort.NumEvents;
             this.Transpiration = cohort.Transpiration;
             this.PotentialTranspiration = cohort.PotentialTranspiration;
-            this.Water = cohort.Water;
+            this.SoilWaterContent = cohort.SoilWaterContent;
             this.BiomassLayerFrac = cohort.BiomassLayerFrac;
             this.CanopyLayerFrac = cohort.CanopyLayerFrac;
             this.Cohort = cohort;
@@ -326,7 +326,7 @@ namespace Landis.Library.PnETCohorts
             this.NumEvents = new int[Globals.IMAX];
             this.Transpiration = new float[Globals.IMAX];
             this.PotentialTranspiration = new float[Globals.IMAX];
-            this.Water = new float[Globals.IMAX];
+            this.SoilWaterContent = new float[Globals.IMAX];
             this.BiomassLayerFrac = 1.0f;
             float cohortLAI = 0;
             float cohortIdealFol = spc.FracFol * (float)Math.Exp(-spc.FrActWd * this.BiomassMax) * this.TotalBiomass;

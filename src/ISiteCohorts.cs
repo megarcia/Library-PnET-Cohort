@@ -51,7 +51,7 @@ namespace Landis.Library.PnETCohorts
         double Litter{ get; }
         double WoodyDebris { get; }
         int AgeMax { get; }
-        float WaterAvg { get; }
+        float avgSoilWaterContent { get; }
         float BelowGroundBiomassSum { get; }
         float FoliageSum { get; }
         float NSCSum { get; }

@@ -4,23 +4,23 @@ namespace Landis.Library.PnETCohorts
 {
     public class Hydrology : IHydrology
     {
-        private float water;
+        private float soilWaterContent;
         private float frozenSoilWaterContent;
         private float frozenSoilDepth;
 
         /// <summary>
         /// volumetric water (mm/m)
         /// </summary>
-        public float Water
+        public float SoilWaterContent
         {
             get
             {
-                return water;
+                return soilWaterContent;
             }
         }
 
         /// <summary>
-        /// volumetric water content (mm/m) of the frozen soil
+        /// volumetric soil water content (mm/m) of the frozen soil
         /// </summary>
         public float FrozenSoilWaterContent
         {
@@ -52,24 +52,24 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Get the pressurehead (mmH2O) for the current water content (converted from fraction to percent)
+        /// Get the pressurehead (mmH2O) for the current soil water content (converted from fraction to percent)
         /// </summary>
         /// <param name="ecoregion"></param>
         /// <returns></returns>
         public float GetPressureHead(IEcoregionPnET ecoregion)
         {
-            return pressureheadtable[ecoregion, (int)Math.Round(water * 100.0)];
+            return pressureheadtable[ecoregion, (int)Math.Round(soilWaterContent * 100.0)];
         }
 
         /// <summary>
-        /// Get the pressurehead (mmH2O) for a provided water content (converted from fraction to percent)
+        /// Get the pressurehead (mmH2O) for a provided soil water content (converted from fraction to percent)
         /// </summary>
         /// <param name="ecoregion"></param>
-        /// <param name="temp_water"></param>
+        /// <param name="temp_soilWaterContent"></param>
         /// <returns></returns>
-        public float GetPressureHead(IEcoregionPnET ecoregion, float temp_water)
+        public float GetPressureHead(IEcoregionPnET ecoregion, float temp_soilWaterContent)
         {
-            return pressureheadtable[ecoregion, (int)Math.Round(temp_water * 100.0)];
+            return pressureheadtable[ecoregion, (int)Math.Round(temp_soilWaterContent * 100.0)];
         }
 
         public float Evaporation;
@@ -91,59 +91,59 @@ namespace Landis.Library.PnETCohorts
         public float SurfaceWater = 0; // Volume of water captured above saturatino on the surface
 
         /// <summary>
-        /// Add mm water to volumetric water content (mm/m) (considering activeSoilDepth - frozen soil cannot accept water)
+        /// Add mm water to volumetric soil water content (mm/m) (considering activeSoilDepth - frozen soil cannot accept water)
         /// </summary>
-        /// <param name="addwater"></param>
+        /// <param name="addWater"></param>
         /// <param name="activeSoilDepth"></param>
         /// <returns></returns>
-        public bool AddWater(float addwater, float activeSoilDepth)
+        public bool AddWater(float addWater, float activeSoilDepth)
         {
-            float adjWater = 0;
+            float adjSoilWaterContent = 0;
             if (activeSoilDepth > 0)
-                adjWater = addwater / activeSoilDepth;
-            water += adjWater;
-            if (water < 0)
-                water = 0;
-            if (water >= 0)
+                adjSoilWaterContent = addWater / activeSoilDepth;
+            soilWaterContent += adjSoilWaterContent;
+            if (soilWaterContent < 0)
+                soilWaterContent = 0;
+            if (soilWaterContent >= 0)
                 return true;
             else
                 return false;
         }
 
         /// <summary>
-        /// Add mm water to volumetric water content (mm/m) (considering activeSoilDepth - frozen soil cannot accept water)
+        /// Add mm water to volumetric soil water content (mm/m) (considering activeSoilDepth - frozen soil cannot accept water)
         /// </summary>
         /// <param name="currentWater"></param>
-        /// <param name="addwater"></param>
+        /// <param name="addWater"></param>
         /// <param name="activeSoilDepth"></param>
         /// <returns></returns>
-        public float AddWater(float currentWater, float addwater, float activeSoilDepth)
+        public float AddWater(float currentWater, float addWater, float activeSoilDepth)
         {
-            float adjWater = 0;
+            float adjSoilWaterContent = 0;
             if (activeSoilDepth > 0)
-                adjWater = addwater / activeSoilDepth;
-            currentWater += adjWater;
+                adjSoilWaterContent = addWater / activeSoilDepth;
+            currentWater += adjSoilWaterContent;
             if (currentWater < 0)
                 currentWater = 0;
 
             return currentWater;
         }
 
-        public Hydrology(float water)
+        public Hydrology(float soilWaterContent)
         {
             // mm of water per m of active soil (volumetric content)
-            this.water = water;
+            this.soilWaterContent = soilWaterContent;
         }
 
         /// <summary>
         /// volumetric water content (mm/m) of the frozen soil
         /// </summary>
-        /// <param name="water"></param>
+        /// <param name="soilWaterContent"></param>
         /// <returns></returns>
-        public bool SetFrozenSoilWaterContent(float water)
+        public bool SetFrozenSoilWaterContent(float soilWaterContent)
         {
-            this.frozenSoilWaterContent = water;
-            if (water >= 0)
+            this.frozenSoilWaterContent = soilWaterContent;
+            if (soilWaterContent >= 0)
                 return true;
             else
                 return false;
@@ -179,15 +179,15 @@ namespace Landis.Library.PnETCohorts
             Globals.ModelCore.UI.WriteLine("Eco\tSoiltype\tWiltPnt\t\tFieldCap\tFC-WP\t\tPorosity");
             foreach (IEcoregionPnET eco in EcoregionData.Ecoregions) if (eco.Active)
                 {
-                    // Volumetric water content (mm/m) at field capacity
+                    // Volumetric soil water content (mm/m) at field capacity
                     //  −33 kPa (or −0.33 bar)        
                     // Convert kPA to mH2o (/9.804139432) = 3.37
                     eco.FieldCap = (float)pressureheadtable.CalcWaterContent(33, eco.SoilType);
-                    // Volumetric water content (mm/m) at wilting point
+                    // Volumetric soil water content (mm/m) at wilting point
                     //  −1500 kPa (or −15 bar)  
                     // Convert kPA to mH2o (/9.804139432) = 153.00
                     eco.WiltPnt = (float)pressureheadtable.CalcWaterContent(1500, eco.SoilType);
-                    // Volumetric water content (mm/m) at porosity
+                    // Volumetric soil water content (mm/m) at porosity
                     eco.Porosity = (float)pressureheadtable.Porosity(eco.SoilType);
                     float f = eco.FieldCap - eco.WiltPnt;
                     Globals.ModelCore.UI.WriteLine(eco.Name + "\t" + eco.SoilType + "\t\t" + eco.WiltPnt + "\t" + eco.FieldCap + "\t" + f + "\t" + eco.Porosity);

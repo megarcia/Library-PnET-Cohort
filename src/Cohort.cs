@@ -539,11 +539,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float[] Water
+        public float[] SoilWaterContent
         {
             get
             {
-                return data.Water;
+                return data.SoilWaterContent;
             }
         }
 
@@ -657,7 +657,7 @@ namespace Landis.Library.PnETCohorts
             data.PotentialTranspiration = new float[Globals.IMAX];
             data.FRad = new float[Globals.IMAX];
             data.FWater = new float[Globals.IMAX];
-            data.Water = new float[Globals.IMAX];
+            data.SoilWaterContent = new float[Globals.IMAX];
             data.PressHead = new float[Globals.IMAX];
             data.NumEvents = new int[Globals.IMAX];
             data.FOzone = new float[Globals.IMAX];
@@ -719,7 +719,7 @@ namespace Landis.Library.PnETCohorts
             data.FWater = null;
             data.PressHead = null;
             data.NumEvents = null;
-            data.Water = null;
+            data.SoilWaterContent = null;
             data.FOzone = null;
             data.MaintenanceRespiration = null;
             data.Interception = null;
@@ -979,8 +979,8 @@ namespace Landis.Library.PnETCohorts
             {
                 // Add melted snow water to soil moisture
                 // Instantaneous runoff (excess of porosity + RunoffCapture)
-                float waterCapacity = siteCohort.Ecoregion.Porosity * siteCohort.Ecoregion.RootingDepth * frostFreeFrac; //mm
-                float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.Water * siteCohort.Ecoregion.RootingDepth * frostFreeFrac + MeltInByCanopyLayer - waterCapacity, 0));
+                float soilWaterCapacity = siteCohort.Ecoregion.Porosity * siteCohort.Ecoregion.RootingDepth * frostFreeFrac; //mm
+                float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.SoilWaterContent * siteCohort.Ecoregion.RootingDepth * frostFreeFrac + MeltInByCanopyLayer - soilWaterCapacity, 0));
                 float capturedRunoff = 0;
                 if ((siteCohort.Ecoregion.RunoffCapture > 0) & (meltrunoff > 0))
                 {
@@ -990,7 +990,7 @@ namespace Landis.Library.PnETCohorts
                 hydrology.RunOff += meltrunoff - capturedRunoff;
                 success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff, siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
                 if (!success)
-                    throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
+                    throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; soilWaterContent = " + hydrology.SoilWaterContent + "; meltrunoff = " + meltrunoff + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
             }
 
             float precipIn = 0;
@@ -1001,8 +1001,8 @@ namespace Landis.Library.PnETCohorts
                 {
                     // Incoming precipitation
                     // Instantaneous runoff (excess of porosity)
-                    float waterCapacity = siteCohort.Ecoregion.Porosity * siteCohort.Ecoregion.RootingDepth * frostFreeFrac; //mm
-                    float rainrunoff = Math.Min(PrecInByCanopyLayer, Math.Max(hydrology.Water * siteCohort.Ecoregion.RootingDepth * frostFreeFrac + PrecInByCanopyLayer - waterCapacity, 0));
+                    float soilWaterCapacity = siteCohort.Ecoregion.Porosity * siteCohort.Ecoregion.RootingDepth * frostFreeFrac; //mm
+                    float rainrunoff = Math.Min(PrecInByCanopyLayer, Math.Max(hydrology.SoilWaterContent * siteCohort.Ecoregion.RootingDepth * frostFreeFrac + PrecInByCanopyLayer - soilWaterCapacity, 0));
                     float capturedRunoff = 0;
                     if ((siteCohort.Ecoregion.RunoffCapture > 0) & (rainrunoff > 0))
                     {
@@ -1014,21 +1014,21 @@ namespace Landis.Library.PnETCohorts
                     // Add incoming precipitation to soil moisture
                     success = hydrology.AddWater(precipIn, siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
                     if (!success)
-                        throw new System.Exception("Error adding water, waterIn = " + precipIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
-                    float leakage = Math.Max((float)leakageFrac * (hydrology.Water - siteCohort.Ecoregion.FieldCap), 0) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac; //mm
+                        throw new System.Exception("Error adding water, waterIn = " + precipIn + "; soilWaterContent = " + hydrology.SoilWaterContent + "; rainrunoff = " + rainrunoff + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
+                    float leakage = Math.Max((float)leakageFrac * (hydrology.SoilWaterContent - siteCohort.Ecoregion.FieldCap), 0) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac; //mm
                     hydrology.Leakage += leakage;
                     // Remove fast leakage
                     success = hydrology.AddWater(-1 * leakage, siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
                     if (!success)
-                        throw new System.Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
+                        throw new System.Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
                     // Add surface water to soil
                     if (hydrology.SurfaceWater > 0)
                     {
-                        float surfaceInput = Math.Min(hydrology.SurfaceWater, (siteCohort.Ecoregion.Porosity - hydrology.Water) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
+                        float surfaceInput = Math.Min(hydrology.SurfaceWater, (siteCohort.Ecoregion.Porosity - hydrology.SoilWaterContent) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
                         hydrology.SurfaceWater -= surfaceInput;
                         success = hydrology.AddWater(surfaceInput, siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
                         if (!success)
-                            throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
+                            throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
                     }
                 }
             }
@@ -1037,20 +1037,20 @@ namespace Landis.Library.PnETCohorts
                 // Leakage only occurs following precipitation events or incoming melt water
                 if (MeltInByCanopyLayer > 0)
                 {
-                    float leakage = Math.Max((float)leakageFrac * (hydrology.Water - siteCohort.Ecoregion.FieldCap), 0) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac; //mm
+                    float leakage = Math.Max((float)leakageFrac * (hydrology.SoilWaterContent - siteCohort.Ecoregion.FieldCap), 0) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac; //mm
                     hydrology.Leakage += leakage;
                     // Remove fast leakage
                     success = hydrology.AddWater(-1 * leakage, siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
                     if (!success)
-                        throw new System.Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
+                        throw new System.Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
                     // Add surface water to soil
                     if (hydrology.SurfaceWater > 0)
                     {
-                        float surfaceInput = Math.Min(hydrology.SurfaceWater, (siteCohort.Ecoregion.Porosity - hydrology.Water) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
+                        float surfaceInput = Math.Min(hydrology.SurfaceWater, (siteCohort.Ecoregion.Porosity - hydrology.SoilWaterContent) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
                         hydrology.SurfaceWater -= surfaceInput;
                         success = hydrology.AddWater(surfaceInput, siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
                         if (!success)
-                            throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
+                            throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
                     }
                 }
             }
@@ -1223,13 +1223,13 @@ namespace Landis.Library.PnETCohorts
             float LayerPAR = (float)(mainLayerPAR * Math.Exp(-speciesPnET.K * (LAI.Sum() - LAI[index])));
             FRad[index] = CalcFRad(LayerPAR, AdjHalfSat);
             // Get pressure head given ecoregion and soil water content (latter in hydrology)
-            float PressureHead = hydrology.PressureHeadTable.CalcWaterPressure(hydrology.Water, siteCohort.Ecoregion.SoilType);
+            float PressureHead = hydrology.PressureHeadTable.CalcWaterPressure(hydrology.SoilWaterContent, siteCohort.Ecoregion.SoilType);
             // Reduction water for sub or supra optimal soil water content
             float fWaterOzone = 1.0f;  //fWater for ozone functions; ignores H1 and H2 parameters because only impacts when drought-stressed
             if (Globals.ModelCore.CurrentTime > 0)
             {
                 FWater[index] = CalcFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
-                Water[index] = hydrology.Water;
+                SoilWaterContent[index] = hydrology.SoilWaterContent;
                 PressHead[index] = PressureHead;
                 NumEvents[index] = precipCount;
                 fWaterOzone = CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
@@ -1262,7 +1262,7 @@ namespace Landis.Library.PnETCohorts
                         fWaterOzone = 0;
                     }
                 }
-                Water[index] = hydrology.Water;
+                SoilWaterContent[index] = hydrology.SoilWaterContent;
                 PressHead[index] = PressureHead;
                 NumEvents[index] = precipCount;
             }
@@ -1343,10 +1343,10 @@ namespace Landis.Library.PnETCohorts
                 PotentialTranspiration[index] = (float)(0.0015f * (GrossPsnPotential / (JCO2 / JH2O))) * CanopyLayerFrac; //mm
                 // It is possible for transpiration to calculate to exceed available water
                 // In this case, we cap transpiration at available water, and back-calculate GrossPsn and NetPsn to downgrade those as well
-                // Volumetric water content (mm/m) at species wilting point (h4) 
+                // Volumetric soil water content (mm/m) at species wilting point (h4) 
                 // Convert kPA to mH2o (/9.804139432)
                 float wiltPtWater = (float)hydrology.PressureHeadTable.CalcWaterContent(speciesPnET.H4 * 9.804139432f, siteCohort.Ecoregion.SoilType);
-                float availableWater = (hydrology.Water - wiltPtWater) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac;
+                float availableWater = (hydrology.SoilWaterContent - wiltPtWater) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac;
                 if (PotentialTranspiration[index] > availableWater)
                 {
                     Transpiration[index] = (float)Math.Max(availableWater, 0f); //mm
@@ -1367,14 +1367,14 @@ namespace Landis.Library.PnETCohorts
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index], siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
                 if (!success)
-                    throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
+                    throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
                 if (hydrology.SurfaceWater > 0)
                 {
-                    float surfaceInput = Math.Min(hydrology.SurfaceWater, (siteCohort.Ecoregion.Porosity - hydrology.Water) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
+                    float surfaceInput = Math.Min(hydrology.SurfaceWater, (siteCohort.Ecoregion.Porosity - hydrology.SoilWaterContent) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
                     hydrology.SurfaceWater -= surfaceInput;
                     success = hydrology.AddWater(surfaceInput, siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
                     if (!success)
-                        throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
+                        throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
                 }
                 // Net foliage respiration depends on reference psn (BaseFoliarRespiration)
                 // Substitute 24 hours in place of DayLength because foliar respiration does occur at night.  BaseFoliarRespiration and RespirationFQ10 use Tavg temps reflecting both day and night temperatures.
@@ -1601,7 +1601,7 @@ namespace Landis.Library.PnETCohorts
                        NSC + "," +
                        NSCfrac + "," +
                        fWaterAvg + "," +
-                       Water.Average() + "," +
+                       SoilWaterContent.Average() + "," +
                        PressHead.Average() + "," +
                        fRadAvg + "," +
                        fOzoneAvg + "," +
@@ -1647,8 +1647,8 @@ namespace Landis.Library.PnETCohorts
                              OutputHeaders.WoodSite + "," +
                              OutputHeaders.NSC + "," +
                              OutputHeaders.NSCfrac + "," +
-                             OutputHeaders.fWater + "," +
-                             OutputHeaders.water + "," +
+                             OutputHeaders.FWater + "," +
+                             OutputHeaders.SoilWaterContent + "," +
                              OutputHeaders.PressureHead + "," +
                              OutputHeaders.fRad + "," +
                              OutputHeaders.FOzone + "," +

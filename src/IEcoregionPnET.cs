@@ -30,17 +30,17 @@
         float RootingDepth { get; }
 
         /// <summary>
-        /// Volumetric water content (mm/m) at field capacity
+        /// Volumetric soil water content (mm/m) at field capacity
         /// </summary>
         float FieldCap { get; set; }
 
         /// <summary>
-        /// Volumetric water content (mm/m) at wilting point
+        /// Volumetric soil water content (mm/m) at wilting point
         /// </summary>
         float WiltPnt { get; set; }
 
         /// <summary>
-        /// Volumetric water content (mm/m) at porosity
+        /// Volumetric soil water content (mm/m) at porosity
         /// </summary>
         float Porosity { get; set; }
 

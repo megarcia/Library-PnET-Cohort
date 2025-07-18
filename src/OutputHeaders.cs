@@ -33,8 +33,8 @@ namespace Landis.Library.PnETCohorts
         public const string ActiveLayerDepth = "ActiveLayerDepth(mm/mo)";
         public const string FrostDepth = "FrostDepth(mm/mo)";
         public const string FoliarRespiration = "FoliarRespiration(gC_m2_mo)";
-        public const string water = "Water(m/m)";
-        public const string availableWater = "AvailableWater(mm)";
+        public const string SoilWaterContent = "SoilWaterContent(m/m)";
+        public const string AvailableWater = "AvailableWater(mm)";
         public const string SurfaceWater = "SurfaceWater(mm)";
         public const string Leakage = "Leakage(mm)";
         public const string PressureHead = "PressureHead(m)";

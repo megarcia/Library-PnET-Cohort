@@ -74,7 +74,7 @@ namespace Landis.Library.PnETCohorts
                         float fRad_slope = (fRad_adj_int * 2) - 1;
                         adjFRad = 1 - fRad_adj_int + fRad * fRad_slope;
                     }
-                    float PressureHead = hydrology.PressureHeadTable.CalcWaterContent(hydrology.Water, ecoregion.SoilType);
+                    float PressureHead = hydrology.PressureHeadTable.CalcWaterContent(hydrology.SoilWaterContent, ecoregion.SoilType);
                     float fWater = (float)Math.Min(1.0,Math.Pow(Cohort.CalcFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), 2) * (1/Math.Pow(spc.EstMoist,2)));
                     float pest = (float) Math.Min(1.0,adjFRad * fWater);
                     estabDict[spc] = pest;

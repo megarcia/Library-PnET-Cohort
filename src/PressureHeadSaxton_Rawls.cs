@@ -40,20 +40,20 @@ namespace Landis.Library.PnETCohorts
             return porosity_OM_comp[SoilType];
         }
 
-        public float this[IEcoregion ecoregion, int water]
+        public float this[IEcoregion ecoregion, int soilWaterContent]
         {
             get
             {
                 try
                 {
-                    if (water >= table[ecoregion].Length)
+                    if (soilWaterContent >= table[ecoregion].Length)
                         return 0;
 
-                    return table[ecoregion][water];
+                    return table[ecoregion][soilWaterContent];
                 }
                 catch (System.Exception e)
                 {
-                    throw new System.Exception("Cannot get pressure head for water content " + water);
+                    throw new System.Exception("Cannot get pressure head for soil water content " + soilWaterContent);
                 }
             }
         }
@@ -61,14 +61,14 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// tension =  pressurehead (kPA) 
         /// </summary>
-        /// <param name="watercontent"></param>
+        /// <param name="soilWaterContent"></param>
         /// <param name="soiltype"></param>
         /// <returns></returns>
-        public float CalcWaterPressure(double watercontent, string soiltype)
+        public float CalcWaterPressure(double soilWaterContent, string soiltype)
         {
             double tension = 0.0;
-            if (watercontent <= porosity_OM_comp[soiltype])
-                tension = tensionA[soiltype] * Math.Pow(watercontent, -tensionB[soiltype]);
+            if (soilWaterContent <= porosity_OM_comp[soiltype])
+                tension = tensionA[soiltype] * Math.Pow(soilWaterContent, -tensionB[soiltype]);
             float pressureHead;
             if (double.IsInfinity(tension))
                 pressureHead = float.MaxValue;
@@ -84,16 +84,16 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Calculates volumetric water content (m3H2O/m3 SOIL)
+        /// Calculates volumetric soil water content (m3H2O/m3 SOIL)
         /// </summary>
         /// <param name="tension"></param>
         /// <param name="soiltype"></param>
         /// <returns></returns>
         public float CalcWaterContent(float tension /* kPA*/, string soiltype)
         {
-            float watercontent = (float)Math.Pow(tension / tensionA[soiltype], 1.0 / -tensionB[soiltype]);
+            float soilWaterContent = (float)Math.Pow(tension / tensionA[soiltype], 1.0 / -tensionB[soiltype]);
 
-            return watercontent;
+            return soilWaterContent;
         }
 
         public PressureHeadSaxton_Rawls()
@@ -151,13 +151,13 @@ namespace Landis.Library.PnETCohorts
                         double Fs_temp = (2.0 / 3.0 / (1.0 + Constants.gs * ((ThermalConductivitySoil_temp / Constants.ThermalConductivityWater_kJperday) - 1.0))) + (1.0 / 3.0 / (1.0 + (1.0 - 2.0 * Constants.gs) * ((ThermalConductivitySoil_temp / Constants.ThermalConductivityWater_kJperday) - 1.0)));  //ratio of solid temp gradient
                         Fs.Add(SoilType[ecoregion], (float)Fs_temp);
                     }
-                    double watercontent = 0.0;
+                    double soilWaterContent = 0.0;
                     float pressureHead = float.MaxValue;
                     while (pressureHead > 0.01)
                     {
-                        pressureHead = CalcWaterPressure(watercontent, SoilType[ecoregion]);
+                        pressureHead = CalcWaterPressure(soilWaterContent, SoilType[ecoregion]);
                         PressureHead.Add(pressureHead);
-                        watercontent += 0.01;
+                        soilWaterContent += 0.01;
                     }
                     table[ecoregion] = PressureHead.ToArray();
                 }

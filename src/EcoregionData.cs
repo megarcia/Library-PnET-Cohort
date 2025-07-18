@@ -384,7 +384,7 @@ namespace Landis.Library.PnETCohorts
             wythers = ((Parameter<bool>)Names.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)Names.GetParameter("DTemp")).Value;
             etExtCoeff = ((Parameter<float>)Names.GetParameter("ETExtCoeff")).Value;
-            retCropCoeff = ((Parameter<float>)Names.GetParameter("RETCropCoeff")).Value;
+            retCropCoeff = ((Parameter<float>)Names.GetParameter("ReferenceETCropCoeff")).Value;
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeakageFrac", 0, 1);
             runoffcapture = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter(Names.RunoffCapture, 0, 999999);
             frostFactor = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("FrostFactor", 0, 999999);

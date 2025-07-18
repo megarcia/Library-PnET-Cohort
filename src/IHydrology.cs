@@ -55,7 +55,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="T"></param>
         /// <param name="dayLength"></param>
         /// <returns></returns>
-        float CalcRET_Hamon(float T, float dayLength); 
+        float CalcReferenceET_Hamon(float T, float dayLength); 
 
         /// <summary>
         /// Get the PressureHeadTable object

@@ -1625,7 +1625,7 @@ namespace Landis.Library.PnETCohorts
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
                 if (data[m].Prec < 0) throw new System.Exception("Error, this.data[m].Prec = " + data[m].Prec + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 // Calculate abovecanopy reference daily ET
-                float RET = hydrology.CalcRET_Hamon(data[m].Tavg, data[m].DayLength); //mm/day
+                float ReferenceET = hydrology.CalcReferenceET_Hamon(data[m].Tavg, data[m].DayLength); //mm/day
                 float newrain = data[m].Prec - newsnow;
                 // Reduced by interception
                 if (CanopyLAI == null)
@@ -1741,7 +1741,7 @@ namespace Landis.Library.PnETCohorts
                             subCanopyPrecip = 0;
                             subCanopyPotentialET = 0;
                             subCanopyMelt = MeltInWater / SubCanopyCohorts.Count();
-                            PotentialETcumulative = PotentialETcumulative + RET * data[m].DaySpan / SubCanopyCohorts.Count();
+                            PotentialETcumulative = PotentialETcumulative + ReferenceET * data[m].DaySpan / SubCanopyCohorts.Count();
                             bool coldKillBoolean = false;
                             foreach (var g in groupList)
                             {
@@ -1922,7 +1922,7 @@ namespace Landis.Library.PnETCohorts
                                 throw new System.Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                             // Evaporation
                             float PotentialETnonfor = groundPotentialET / numEvents;
-                            PotentialETcumulative += RET * data[m].DaySpan / numEvents;
+                            PotentialETcumulative += ReferenceET * data[m].DaySpan / numEvents;
                             float evaporationEvent = 0;
                             if (fracRootAboveFrost > 0 && snowPack == 0)
                                 evaporationEvent = hydrology.CalcEvaporation(this, PotentialETnonfor); //mm

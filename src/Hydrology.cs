@@ -280,7 +280,7 @@ namespace Landis.Library.PnETCohorts
             return PotentialET_ground * 1000 * daySpan; //mm/month
         }
 
-        public float CalcRET_Hamon(float T, float dayLength)
+        public float CalcReferenceET_Hamon(float T, float dayLength)
         {
             // T            average monthly temperature (C)
             // dayLength    daytime length in seconds (s)
@@ -302,8 +302,8 @@ namespace Landis.Library.PnETCohorts
             // T            average monthly temperature (C)
             // dayLength    daytime length in seconds (s)
             // daySpan          number of days in the month
-            float RET = CalcRET_Hamon(T, dayLength); //mm/day
-            float Egp = 0.8f * RET * (float)Math.Exp(-0.695f * LAI); //mm/day
+            float ReferenceET = CalcReferenceET_Hamon(T, dayLength); //mm/day
+            float Egp = 0.8f * ReferenceET * (float)Math.Exp(-0.695f * LAI); //mm/day
 
             return Egp * daySpan; //mm/month
         }
@@ -314,8 +314,8 @@ namespace Landis.Library.PnETCohorts
             // T            average monthly temperature (C)
             // dayLength    daytime length in seconds (s)
             // daySpan          number of days in the month
-            float RET = CalcRET_Hamon(T, dayLength); //mm/day
-            float Egp = RET * (float)Math.Exp(-0.4f * LAI); //mm/day
+            float ReferenceET = CalcReferenceET_Hamon(T, dayLength); //mm/day
+            float Egp = ReferenceET * (float)Math.Exp(-0.4f * LAI); //mm/day
 
             return Egp * daySpan; //mm/month
         }
@@ -328,9 +328,9 @@ namespace Landis.Library.PnETCohorts
             // daySpan      number of days in the month
             // k            extinction coefficient
             // cropCoeff    crop coefficient (scalar adjustment)
-            cropCoeff = ((Parameter<float>)Names.GetParameter("RETCropCoeff")).Value;
-            float RET = CalcRET_Hamon(T, dayLength); //mm/day
-            float Egp = cropCoeff * RET * (float)Math.Exp(-k * LAI); //mm/day
+            cropCoeff = ((Parameter<float>)Names.GetParameter("ReferenceETCropCoeff")).Value;
+            float ReferenceET = CalcReferenceET_Hamon(T, dayLength); //mm/day
+            float Egp = cropCoeff * ReferenceET * (float)Math.Exp(-k * LAI); //mm/day
 
             return Egp * daySpan; //mm/month
         }

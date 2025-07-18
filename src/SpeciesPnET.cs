@@ -543,7 +543,7 @@ namespace Landis.Library.PnETCohorts
 
         }
 
-        public float PsnTOpt
+        public float PsnTopt
         {
             get
             {

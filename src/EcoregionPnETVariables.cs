@@ -193,17 +193,17 @@ namespace Landis.Library.PnETCohorts
             return es - emean;
         }
 
-        public static float CurvilinearPsnTempResponse(float tday, float PsnTOpt, float PsnTmin, float PsnTmax)
+        public static float CurvilinearPsnTempResponse(float tday, float PsnTopt, float PsnTmin, float PsnTmax)
         {
             if (tday < PsnTmin)
                 return 0;
-            else if (tday > PsnTOpt)
+            else if (tday > PsnTopt)
                 return 1;
             else
                 return (PsnTmax - tday) * (tday - PsnTmin) / (float)Math.Pow((PsnTmax - PsnTmin) / 2, 2);
         }
 
-        public static float DTempResponse(float tday, float PsnTOpt, float PsnTmin, float PsnTmax)
+        public static float DTempResponse(float tday, float PsnTopt, float PsnTmin, float PsnTmax)
         {
             if (tday < PsnTmin)
                 return 0;
@@ -211,14 +211,14 @@ namespace Landis.Library.PnETCohorts
                 return 0;
             else
             {
-                if (tday <= PsnTOpt)
+                if (tday <= PsnTopt)
                 {
-                    float PsnTmaxestimate = PsnTOpt + (PsnTOpt - PsnTmin);
+                    float PsnTmaxestimate = PsnTopt + (PsnTopt - PsnTmin);
                     return (float)Math.Max(0.0, (PsnTmaxestimate - tday) * (tday - PsnTmin) / (float)Math.Pow((PsnTmaxestimate - PsnTmin) / 2, 2));
                 }
                 else
                 {
-                    float PsnTminestimate = PsnTOpt + (PsnTOpt - PsnTmax);
+                    float PsnTminestimate = PsnTopt + (PsnTopt - PsnTmax);
                     return (float)Math.Max(0.0, (PsnTmax - tday) * (tday - PsnTminestimate) / (float)Math.Pow((PsnTmax - PsnTminestimate) / 2, 2));
                 }
             }
@@ -344,9 +344,9 @@ namespace Landis.Library.PnETCohorts
             speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
             // FTempPSN (public for output file)
             if (DTemp)
-                speciespnetvars.FTempPSN = DTempResponse(Tday, spc.PsnTOpt, spc.PsnTmin, spc.PsnTmax);
+                speciespnetvars.FTempPSN = DTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax);
             else
-                speciespnetvars.FTempPSN = CurvilinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTmin, spc.PsnTmax); // Modified 051216(BRM)
+                speciespnetvars.FTempPSN = CurvilinearPsnTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax); // Modified 051216(BRM)
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
             // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
             // Acclimation of respiration to temperature and C02 in seedlings of boreal tree species
@@ -365,7 +365,7 @@ namespace Landis.Library.PnETCohorts
                 //Calculate Base foliar respiration based on temp; this is species-level
                 BaseFolRespFrac = 0.138071F - 0.0024519F * Tavg;
                 //Midpoint between Tavg and Optimal Temp; this is also species-level
-                float Tmidpoint = (Tavg + spc.PsnTOpt) / 2F;
+                float Tmidpoint = (Tavg + spc.PsnTopt) / 2F;
                 // Base parameter in Q10 temperature dependency calculation in current temperature
                 Q10base = 3.22F - 0.046F * Tmidpoint;
             }
@@ -377,11 +377,11 @@ namespace Landis.Library.PnETCohorts
             }
             speciespnetvars.BaseFolRespFrac = BaseFolRespFrac;
             // Respiration Q10 factor
-            speciespnetvars.Q10Factor = CalcQ10Factor(Q10base, Tavg, spc.PsnTOpt);
+            speciespnetvars.Q10Factor = CalcQ10Factor(Q10base, Tavg, spc.PsnTopt);
             // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
-            float fTempRespDay = CalcQ10Factor(Q10base, Tday, spc.PsnTOpt);
+            float fTempRespDay = CalcQ10Factor(Q10base, Tday, spc.PsnTopt);
             // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
-            float fTempRespNight = CalcQ10Factor(Q10base, Tmin, spc.PsnTOpt);
+            float fTempRespNight = CalcQ10Factor(Q10base, Tmin, spc.PsnTopt);
             // Unitless respiration adjustment: public for output file only
             float FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength));
             speciespnetvars.FTempRespWeightedDayAndNight = FTempRespWeightedDayAndNight;
@@ -396,11 +396,11 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         /// <param name="Q10"></param>
         /// <param name="Tday"></param>
-        /// <param name="PsnTOpt"></param>
+        /// <param name="PsnTopt"></param>
         /// <returns></returns>
-        public static float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
+        public static float CalcQ10Factor(float Q10, float Tday, float PsnTopt)
         {
-            float q10Fact = (float)Math.Pow(Q10, (Tday - PsnTOpt) / 10);
+            float q10Fact = (float)Math.Pow(Q10, (Tday - PsnTopt) / 10);
             return q10Fact;
         }
     }

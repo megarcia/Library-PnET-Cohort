@@ -129,7 +129,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Optimal temperature for photosynthesis
         /// </summary>
-        float PsnTOpt { get; }
+        float PsnTopt { get; }
 
         /// <summary>
         /// Temperature response factor for respiration

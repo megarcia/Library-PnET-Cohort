@@ -26,7 +26,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Photosynthesis reduction factor due to temperature: for output only
         /// </summary>
-        public float FTempPsn; 
+        public float PsnFTemp; 
 
         /// <summary>
         /// Adjustment to Amax based on CO2: for output only

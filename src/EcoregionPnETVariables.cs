@@ -362,11 +362,11 @@ namespace Landis.Library.PnETCohorts
             float AmaxB_int = (float)(-1.0 * (((spc.CO2AMaxBEff - 1.0) * 1.75) - 1.0) * spc.AmaxB);  // Derived from b = AmaxB - (AmaxB_slope * 350)
             float AmaxB_CO2 = AmaxB_slope * climate_dataset.CO2 + AmaxB_int;
             speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
-            // FTempPsn (public for output file)
+            // PsnFTemp (public for output file)
             if (DTemp)
-                speciespnetvars.FTempPsn = DTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax);
+                speciespnetvars.PsnFTemp = DTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax);
             else
-                speciespnetvars.FTempPsn = CurvilinearPsnTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax); // Modified 051216(BRM)
+                speciespnetvars.PsnFTemp = CurvilinearPsnTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax); // Modified 051216(BRM)
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
             // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
             // Acclimation of respiration to temperature and C02 in seedlings of boreal tree species

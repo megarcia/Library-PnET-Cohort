@@ -1696,7 +1696,7 @@ namespace Landis.Library.PnETCohorts
                 Dictionary<string, float> DelAmax_spp = new Dictionary<string, float>();
                 Dictionary<string, float> JCO2_spp = new Dictionary<string, float>();
                 Dictionary<string, float> Amax_spp = new Dictionary<string, float>();
-                Dictionary<string, float> FTempPsnRefNetPsn_spp = new Dictionary<string, float>();
+                Dictionary<string, float> PsnFTempRefNetPsn_spp = new Dictionary<string, float>();
                 Dictionary<string, float> Ca_Ci_spp = new Dictionary<string, float>();
                 float subCanopyPrecip = 0;
                 float subCanopyPET = 0;;

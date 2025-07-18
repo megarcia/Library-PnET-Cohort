@@ -144,7 +144,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Minimum temperature for photosynthesis
         /// </summary>
-        float PsnTMin { get; }
+        float PsnTmin { get; }
 
         /// <summary>
         /// Maximum temperature for photosynthesis
@@ -233,7 +233,7 @@ namespace Landis.Library.PnETCohorts
 
         /// <summary>
         /// Mininum Temp for leaf-on (optional)
-        /// If not provided, LeafOnMinT = PsnTMin
+        /// If not provided, LeafOnMinT = PsnTmin
         /// </summary>
         float LeafOnMinT { get; }
 

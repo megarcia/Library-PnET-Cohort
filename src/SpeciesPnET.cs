@@ -499,7 +499,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float PsnTMin
+        public float PsnTmin
         {
             get
             {

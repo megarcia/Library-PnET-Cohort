@@ -176,7 +176,7 @@ namespace Landis.Library.PnETCohorts
             public int Year;
             public int Month;
             public int TMax;
-            public int TMin;
+            public int Tmin;
             public int CO2;
             public int PAR0;
             public int Prec;
@@ -199,7 +199,7 @@ namespace Landis.Library.PnETCohorts
                 Year = GetColNr(Headers, "Year");
                 Month = GetColNr(Headers, "Month");
                 TMax = GetColNr(Headers, "TMax");
-                TMin = GetColNr(Headers, "TMin");
+                Tmin = GetColNr(Headers, "TMin");
                 CO2 = GetColNr(Headers, "CO2");
                 PAR0 = GetColNr(Headers, "PAR");
                 Prec = GetColNr(Headers, "Prec");
@@ -246,7 +246,7 @@ namespace Landis.Library.PnETCohorts
                 string[] terms = line.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries);
                 // Get one state of static information for the line in the climate file
                 climate.tmax = CheckInRange<float>(float.Parse(terms[columns.TMax]), -80, 80, "TMax");
-                climate.tmin = CheckInRange<float>(float.Parse(terms[columns.TMin]), -80, climate.tmax, "TMin");
+                climate.tmin = CheckInRange<float>(float.Parse(terms[columns.Tmin]), -80, climate.tmax, "TMin");
                 climate.co2 = CheckInRange<float>(float.Parse(terms[columns.CO2]), 0, float.MaxValue, "CO2");
                 climate.par0 = (ushort)CheckInRange<float>(float.Parse(terms[columns.PAR0]), 0, float.MaxValue, "PAR0");
                 climate.prec = CheckInRange<float>(float.Parse(terms[columns.Prec]), 0, float.MaxValue, "PREC");

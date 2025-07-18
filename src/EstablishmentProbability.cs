@@ -60,7 +60,7 @@ namespace Landis.Library.PnETCohorts
             float halfSatRange = maxHalfSat - minHalfSat;
             foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
-                if (pnetvars.Tmin > spc.PsnTMin && pnetvars.Tmax < spc.PsnTMax && propRootAboveFrost > 0)
+                if (pnetvars.Tmin > spc.PsnTmin && pnetvars.Tmax < spc.PsnTMax && propRootAboveFrost > 0)
                 {
                     // Adjust HalfSat for CO2 effect
                     float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;

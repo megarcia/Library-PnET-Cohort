@@ -6,7 +6,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Unitless respiration adjustment based on temperature: for output only
         /// </summary>
-        public float FTempRespWeightedDayAndNight; 
+        public float RespirationFTemp; 
 
         /// <summary>
         /// Scaling factor of respiration given day and night temperature and day and night length

@@ -1607,7 +1607,7 @@ namespace Landis.Library.PnETCohorts
                        fOzoneAvg + "," +
                        DelAmax.Average() + "," +
                        monthdata[Species.Name].PsnFTemp + "," +
-                       monthdata[Species.Name].FTempRespWeightedDayAndNight + "," +
+                       monthdata[Species.Name].RespirationFTemp + "," +
                        FAge + "," +
                        IsLeafOn + "," +
                        FActiveBiom + "," +

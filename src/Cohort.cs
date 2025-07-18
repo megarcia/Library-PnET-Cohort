@@ -679,9 +679,9 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public void SetAvgFRad(float lastAvgFrad)
+        public void SetAvgFRad(float lastAvgFRad)
         {
-            data.LastSeasonFRad.Add(lastAvgFrad);
+            data.LastSeasonFRad.Add(lastAvgFRad);
         }
 
         public void ClearFRad()
@@ -890,7 +890,7 @@ namespace Landis.Library.PnETCohorts
                 InitializeOutput(SiteName, firstYear);
         }
 
-        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear, bool cohortStacking, float lastSeasonAvgFrad)
+        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear, bool cohortStacking, float lastSeasonAvgFRad)
         {
             InitializeSubLayers();
             this.species = (ISpecies)speciesPnET;
@@ -901,7 +901,7 @@ namespace Landis.Library.PnETCohorts
             this.data.TotalBiomass = biomass;
             this.data.BiomassMax = Math.Max(biomass, maxBiomass);
             this.data.LastSeasonFRad = new List<float>();
-            this.data.LastSeasonFRad.Add(lastSeasonAvgFrad);
+            this.data.LastSeasonFRad.Add(lastSeasonAvgFRad);
             this.CalcAdjFracFol();
             this.data.ColdKill = int.MaxValue;
             float cohortLAI = 0;
@@ -1221,7 +1221,7 @@ namespace Landis.Library.PnETCohorts
             data.AdjHalfSat = speciesPnET.CO2HalfSatEff * variables.CO2 + halfSatIntercept;
             // Reduction factor for radiation on photosynthesis
             float LayerPAR = (float)(mainLayerPAR * Math.Exp(-speciesPnET.K * (LAI.Sum() - LAI[index])));
-            FRad[index] = CalcFrad(LayerPAR, AdjHalfSat);
+            FRad[index] = CalcFRad(LayerPAR, AdjHalfSat);
             // Get pressure head given ecoregion and soil water content (latter in hydrology)
             float PressureHead = hydrology.PressureHeadTable.CalcWaterPressure(hydrology.Water, siteCohort.Ecoregion.SoilType);
             // Reduction water for sub or supra optimal soil water content
@@ -1428,7 +1428,7 @@ namespace Landis.Library.PnETCohorts
 
         // LightEffect equation from PnET
         // Used in official releases >= 5.0
-        public static float CalcFrad(float Radiation, float HalfSat)
+        public static float CalcFRad(float Radiation, float HalfSat)
         {
             float fRad = 0.0f;
             if (HalfSat > 0)

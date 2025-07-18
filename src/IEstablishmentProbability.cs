@@ -14,7 +14,7 @@ namespace Landis.Library.PnETCohorts
 
         void EstablishmentTrue(ISpeciesPnET spc);
 
-        void RecordPest(int year, ISpeciesPnET spc, float pest,float fwater,float frad, bool estab, int monthCount);
+        void RecordPest(int year, ISpeciesPnET spc, float pest,float fwater,float fRad, bool estab, int monthCount);
 
         float Get_FWater(ISpeciesPnET species);
 

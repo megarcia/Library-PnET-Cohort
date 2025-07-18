@@ -282,15 +282,15 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Defoliation fraction - BRM
         /// </summary>
-        public float DeFolFrac
+        public float DefoliationFrac
         {
             get
             {
-                return data.DeFolFrac;
+                return data.DefoliationFrac;
             }
             private set
             {
-                data.DeFolFrac = value;
+                data.DefoliationFrac = value;
             }
         }
 
@@ -937,7 +937,7 @@ namespace Landis.Library.PnETCohorts
         {
             lock (Globals.distributionThreadLock)
             {
-                data.DeFolFrac = (float)Library.UniversalCohorts.CohortDefoliation.Compute(site, this, 0, SiteAboveGroundBiomass);
+                data.DefoliationFrac = (float)Library.UniversalCohorts.CohortDefoliation.Compute(site, this, 0, SiteAboveGroundBiomass);
             }
         }
 
@@ -1144,7 +1144,7 @@ namespace Landis.Library.PnETCohorts
                 {
                     // Apply defoliation only in the second growing season month
                     if (growMonth == 2)
-                        ReduceFoliage(data.DeFolFrac);
+                        ReduceFoliage(data.DefoliationFrac);
                     else
                     {
                         if (firstYear)
@@ -1173,9 +1173,9 @@ namespace Landis.Library.PnETCohorts
                         }
                         else if (growMonth == 3) // Refoliation can occur in the 3rd growing season month
                         {
-                            if (data.DeFolFrac > 0)  // Only defoliated cohorts can add refoliate
+                            if (data.DefoliationFrac > 0)  // Only defoliated cohorts can add refoliate
                             {
-                                if (data.DeFolFrac > speciesPnET.RefoliationMinimumTrigger)  // Refoliation threshold is variable
+                                if (data.DefoliationFrac > speciesPnET.RefoliationMinimumTrigger)  // Refoliation threshold is variable
                                 {
                                     // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                                     // carbon fraction of biomass to convert C to DW

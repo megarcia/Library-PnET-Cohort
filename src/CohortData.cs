@@ -63,7 +63,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Defoliation Fraction
         /// </summary>
-        public float DeFolFrac;
+        public float DefoliationFrac;
 
         /// <summary>
         /// Annual Woody Senescence (g/m2)
@@ -244,7 +244,7 @@ namespace Landis.Library.PnETCohorts
             this.BiomassMax = cohort.BiomassMax;
             this.CiModifier = cohort.CiModifier;
             this.ColdKill = cohort.ColdKill;
-            this.DeFolFrac = cohort.DeFolFrac;
+            this.DefoliationFrac = cohort.DefoliationFrac;
             this.DelAmax = cohort.DelAmax;
             this.Fol = cohort.Fol;
             this.MaxFolYear = cohort.MaxFolYear;
@@ -301,7 +301,7 @@ namespace Landis.Library.PnETCohorts
             this.BiomassMax = totalBiomass;
             this.CiModifier = new float[Globals.IMAX];
             this.ColdKill = int.MaxValue;
-            this.DeFolFrac = 0;
+            this.DefoliationFrac = 0;
             this.DelAmax = new float[Globals.IMAX];
             this.Fol = 0;
             this.MaxFolYear = 0;

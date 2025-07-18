@@ -24,7 +24,7 @@ namespace Landis.Library.PnETCohorts
         static Dictionary<string, float> tensionA = new Dictionary<string, float>();
         static Dictionary<string, float> tensionB = new Dictionary<string, float>();
         static Dictionary<string, float> porosity_OM_comp = new Dictionary<string, float>();
-        static Dictionary<string, float> clayProp = new Dictionary<string, float>();
+        static Dictionary<string, float> clayFrac = new Dictionary<string, float>();
         static Dictionary<string, float> cTheta = new Dictionary<string, float>();
         static Dictionary<string, float> lambda_s = new Dictionary<string, float>();
         static Dictionary<string, float> Fs = new Dictionary<string, float>();
@@ -143,7 +143,7 @@ namespace Landis.Library.PnETCohorts
                         tensionB.Add(SoilType[ecoregion], (float)((Math.Log(1500) - Math.Log(33.0)) / (Math.Log(moist33_comp) - Math.Log(predMoist1500adj))));
                         tensionA.Add(SoilType[ecoregion], (float)Math.Exp(Math.Log(33.0) + (tensionB[SoilType[ecoregion]] * Math.Log(moist33_comp))));
                         // For Permafrost
-                        clayProp.Add(SoilType[ecoregion], (float)clay);
+                        clayFrac.Add(SoilType[ecoregion], (float)clay);
                         double cTheta_temp = Constants.cs * (1.0 - porosity_OM_comp[SoilType[ecoregion]]) + Constants.cw * porosity_OM_comp[SoilType[ecoregion]];  //specific heat of soil	kJ/m3/K
                         cTheta.Add(SoilType[ecoregion], (float)cTheta_temp);
                         double lambda_s_temp = (1.0 - clay) * Constants.lambda_0 + clay * Constants.lambda_clay;   //thermal conductivity soil	kJ/m/d/K
@@ -166,7 +166,7 @@ namespace Landis.Library.PnETCohorts
 
         public static float GetClay(string SoilType)
         {
-            return clayProp[SoilType];
+            return clayFrac[SoilType];
         }
 
         public static float GetFs(string SoilType)

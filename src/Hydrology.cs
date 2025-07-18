@@ -52,7 +52,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Get the pressurehead (mmH2O) for the current water content (converted from proportion to percent)
+        /// Get the pressurehead (mmH2O) for the current water content (converted from fraction to percent)
         /// </summary>
         /// <param name="ecoregion"></param>
         /// <returns></returns>
@@ -62,7 +62,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Get the pressurehead (mmH2O) for a provided water content (converted from proportion to percent)
+        /// Get the pressurehead (mmH2O) for a provided water content (converted from fraction to percent)
         /// </summary>
         /// <param name="ecoregion"></param>
         /// <param name="temp_water"></param>
@@ -225,9 +225,9 @@ namespace Landis.Library.PnETCohorts
             {
                 // permafrost
                 float frostFreeSoilDepth = sitecohorts.Ecoregion.RootingDepth - FrozenDepth;
-                float frostFreeProp = Math.Min(1.0F, frostFreeSoilDepth / sitecohorts.Ecoregion.RootingDepth);
+                float frostFreeFrac = Math.Min(1.0F, frostFreeSoilDepth / sitecohorts.Ecoregion.RootingDepth);
                 // Evaporation is limited to frost free soil above EvapDepth
-                float evapSoilDepth = Math.Min(sitecohorts.Ecoregion.RootingDepth * frostFreeProp, sitecohorts.Ecoregion.EvapDepth);
+                float evapSoilDepth = Math.Min(sitecohorts.Ecoregion.RootingDepth * frostFreeFrac, sitecohorts.Ecoregion.EvapDepth);
                 // Evaporation begins to decline at 75% of field capacity (Robock et al. 1995)
                 // Robock, A., Vinnikov, K. Y., Schlosser, C. A., Speranskaya, N. A., & Xue, Y. (1995). Use of midlatitude soil moisture and meteorological observations to validate soil moisture simulations with biosphere and bucket models. Journal of Climate, 8(1), 15-35.
                 float evapCritWater = sitecohorts.Ecoregion.FieldCap * 0.75f;

@@ -53,7 +53,7 @@ namespace Landis.Library.PnETCohorts
             ((SiteCohorts)sitecohorts).RemoveLitter(plitterlost);
         }
 
-        public static void Allocate(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double fraction)
+        public static void Allocate(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double frac)
         {
             if (sitecohorts == null)
                 throw new System.Exception("sitecohorts should not be null");
@@ -73,15 +73,15 @@ namespace Landis.Library.PnETCohorts
                     pfollost = float.Parse(parameter["FolReduction"]);
             }            
             // Add new dead wood and litter
-            float woodAdded = (float)((1 - pwoodlost) * cohort.Wood * fraction);
-            float rootAdded = (float)((1 - prootlost) * cohort.Root * fraction);
-            float folAdded = (float)((1 - pfollost) * cohort.Fol * fraction);
-            // Using Canopy proportioning
-            ((SiteCohorts)sitecohorts).AddWoodyDebris(woodAdded * cohort.CanopyLayerProp, cohort.SpeciesPnET.KWdLit);
-            ((SiteCohorts)sitecohorts).AddWoodyDebris(rootAdded * cohort.CanopyLayerProp, cohort.SpeciesPnET.KWdLit);
-            ((SiteCohorts)sitecohorts).AddLitter(folAdded * cohort.CanopyLayerProp, cohort.SpeciesPnET);
-            cohort.AccumulateWoodySenescence((int)((woodAdded + rootAdded) * cohort.CanopyLayerProp));
-            cohort.AccumulateFoliageSenescence((int)((folAdded) * cohort.CanopyLayerProp));
+            float woodAdded = (float)((1 - pwoodlost) * cohort.Wood * frac);
+            float rootAdded = (float)((1 - prootlost) * cohort.Root * frac);
+            float folAdded = (float)((1 - pfollost) * cohort.Fol * frac);
+            // Using Canopy fractioning
+            ((SiteCohorts)sitecohorts).AddWoodyDebris(woodAdded * cohort.CanopyLayerFrac, cohort.SpeciesPnET.KWdLit);
+            ((SiteCohorts)sitecohorts).AddWoodyDebris(rootAdded * cohort.CanopyLayerFrac, cohort.SpeciesPnET.KWdLit);
+            ((SiteCohorts)sitecohorts).AddLitter(folAdded * cohort.CanopyLayerFrac, cohort.SpeciesPnET);
+            cohort.AccumulateWoodySenescence((int)((woodAdded + rootAdded) * cohort.CanopyLayerFrac));
+            cohort.AccumulateFoliageSenescence((int)((folAdded) * cohort.CanopyLayerFrac));
         }
     }
 }

@@ -13,11 +13,11 @@ namespace Landis.Library.PnETCohorts
         public const string NrOfCohorts = "NrOfCohorts";
         public const string MaxLayerRatio = "MaxLayerRatio";
         public const string Layers = "Layers";
-        public const string CanopyLayerProp = "CanopyLayerProp";
+        public const string CanopyLayerFrac = "CanopyLayerFrac";
         public const string CanopyGrowingSpace = "CanopyGrowingSpace";
-        public const string BiomassLayerProp = "BiomassLayerProp";
+        public const string BiomassLayerFrac = "BiomassLayerFrac";
         public const string TopLayer = "TopLayer";
-        public const string SumCanopyProp = "SumCanopyProp";
+        public const string SumCanopyFrac = "SumCanopyFrac";
         public const string Tmin = "Tmin(C)";
         public const string Tavg = "Tavg(C)";
         public const string Tday = "Tday(C)";

@@ -3,7 +3,7 @@
     public interface IEcoregionPnET : Landis.Core.IEcoregion
     {
         /// <summary>
-        /// Proportion of water above field capacity that drains out of the soil rooting zone immediately after entering the soil (fast leakage)
+        /// Fraction of water above field capacity that drains out of the soil rooting zone immediately after entering the soil (fast leakage)
         /// </summary>
         float LeakageFrac{ get; }
 
@@ -13,7 +13,7 @@
         float RunoffCapture { get; }
 
         /// <summary>
-        /// Proportion of incoming precipitation that does not enter the soil - surface runoff due to impermeability, slope, etc.
+        /// Fraction of incoming precipitation that does not enter the soil - surface runoff due to impermeability, slope, etc.
         /// </summary>
         float PrecLossFrac { get; } 
 
@@ -45,7 +45,7 @@
         float Porosity { get; set; }
 
         /// <summary>
-        /// Proportion of snow pack that sublimates before melting
+        /// Fraction of snow pack that sublimates before melting
         /// </summary>
         float SnowSublimFrac { get; }
 

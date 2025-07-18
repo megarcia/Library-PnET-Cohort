@@ -406,7 +406,7 @@ namespace Landis.Library.PnETCohorts
             float RespirationFTemp = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength));
             speciespnetvars.RespirationFTemp = RespirationFTemp;
             // Scaling factor of respiration given day and night temperature and day and night length
-            speciespnetvars.MaintRespFTempResp = spc.MaintResp * RespirationFTemp;
+            speciespnetvars.MaintenanceRespirationFTemp = spc.MaintResp * RespirationFTemp;
             return speciespnetvars;
         }
 

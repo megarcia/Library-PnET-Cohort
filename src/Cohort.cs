@@ -1056,7 +1056,7 @@ namespace Landis.Library.PnETCohorts
             }
 
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature
-            data.MaintenanceRespiration[index] = 1 / (float)Globals.IMAX * (float)Math.Min(NSC, variables[Species.Name].MaintRespFTempResp * (data.TotalBiomass * speciesPnET.CFracBiomass));//gC //IMAXinverse
+            data.MaintenanceRespiration[index] = 1 / (float)Globals.IMAX * (float)Math.Min(NSC, variables[Species.Name].MaintenanceRespirationFTemp * (data.TotalBiomass * speciesPnET.CFracBiomass));//gC //IMAXinverse
             // Subtract mainenance respiration (gC/mo)
             data.NSC -= MaintenanceRespiration[index];
             if (data.NSC < 0)

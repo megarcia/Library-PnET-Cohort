@@ -11,7 +11,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Scaling factor of respiration given day and night temperature and day and night length
         /// </summary>
-        public float MaintRespFTempResp; 
+        public float MaintenanceRespirationFTemp; 
 
         /// <summary>
         /// Respiration Q10 factor

@@ -149,7 +149,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Maximum temperature for photosynthesis
         /// </summary>
-        float PsnTMax { get; }
+        float PsnTmax { get; }
 
         /// <summary>
         /// Foliar nitrogen (gN/gC)

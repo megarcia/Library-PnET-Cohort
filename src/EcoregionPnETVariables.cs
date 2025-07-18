@@ -193,33 +193,33 @@ namespace Landis.Library.PnETCohorts
             return es - emean;
         }
 
-        public static float CurvilinearPsnTempResponse(float tday, float PsnTOpt, float PsnTmin, float PsnTMax)
+        public static float CurvilinearPsnTempResponse(float tday, float PsnTOpt, float PsnTmin, float PsnTmax)
         {
             if (tday < PsnTmin)
                 return 0;
             else if (tday > PsnTOpt)
                 return 1;
             else
-                return (PsnTMax - tday) * (tday - PsnTmin) / (float)Math.Pow((PsnTMax - PsnTmin) / 2, 2);
+                return (PsnTmax - tday) * (tday - PsnTmin) / (float)Math.Pow((PsnTmax - PsnTmin) / 2, 2);
         }
 
-        public static float DTempResponse(float tday, float PsnTOpt, float PsnTmin, float PsnTMax)
+        public static float DTempResponse(float tday, float PsnTOpt, float PsnTmin, float PsnTmax)
         {
             if (tday < PsnTmin)
                 return 0;
-            else if (tday > PsnTMax)
+            else if (tday > PsnTmax)
                 return 0;
             else
             {
                 if (tday <= PsnTOpt)
                 {
-                    float PsnTMaxestimate = PsnTOpt + (PsnTOpt - PsnTmin);
-                    return (float)Math.Max(0.0, (PsnTMaxestimate - tday) * (tday - PsnTmin) / (float)Math.Pow((PsnTMaxestimate - PsnTmin) / 2, 2));
+                    float PsnTmaxestimate = PsnTOpt + (PsnTOpt - PsnTmin);
+                    return (float)Math.Max(0.0, (PsnTmaxestimate - tday) * (tday - PsnTmin) / (float)Math.Pow((PsnTmaxestimate - PsnTmin) / 2, 2));
                 }
                 else
                 {
-                    float PsnTminestimate = PsnTOpt + (PsnTOpt - PsnTMax);
-                    return (float)Math.Max(0.0, (PsnTMax - tday) * (tday - PsnTminestimate) / (float)Math.Pow((PsnTMax - PsnTminestimate) / 2, 2));
+                    float PsnTminestimate = PsnTOpt + (PsnTOpt - PsnTmax);
+                    return (float)Math.Max(0.0, (PsnTmax - tday) * (tday - PsnTminestimate) / (float)Math.Pow((PsnTmax - PsnTminestimate) / 2, 2));
                 }
             }
         }
@@ -344,9 +344,9 @@ namespace Landis.Library.PnETCohorts
             speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
             // FTempPSN (public for output file)
             if (DTemp)
-                speciespnetvars.FTempPSN = DTempResponse(Tday, spc.PsnTOpt, spc.PsnTmin, spc.PsnTMax);
+                speciespnetvars.FTempPSN = DTempResponse(Tday, spc.PsnTOpt, spc.PsnTmin, spc.PsnTmax);
             else
-                speciespnetvars.FTempPSN = CurvilinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTmin, spc.PsnTMax); // Modified 051216(BRM)
+                speciespnetvars.FTempPSN = CurvilinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTmin, spc.PsnTmax); // Modified 051216(BRM)
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
             // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
             // Acclimation of respiration to temperature and C02 in seedlings of boreal tree species

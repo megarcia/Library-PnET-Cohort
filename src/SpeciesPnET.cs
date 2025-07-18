@@ -507,7 +507,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float PsnTMax
+        public float PsnTmax
         {
             get
             {

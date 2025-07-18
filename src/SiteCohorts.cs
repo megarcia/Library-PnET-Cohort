@@ -1462,7 +1462,7 @@ namespace Landis.Library.PnETCohorts
                     float zTemp = 0;
                     float tSum = 0;
                     float pSum = 0;
-                    float tMax = float.MinValue;
+                    float tmax = float.MinValue;
                     float tmin = float.MaxValue;
                     int maxMonth = 0;
                     int minMonth = 0;
@@ -1474,9 +1474,9 @@ namespace Landis.Library.PnETCohorts
                         {
                             tSum += data[z].Tavg;
                             pSum += data[z].Prec;
-                            if (data[z].Tavg > tMax)
+                            if (data[z].Tavg > tmax)
                             {
-                                tMax = data[z].Tavg;
+                                tmax = data[z].Tavg;
                                 maxMonth = data[z].Month;
                             }
                             if (data[z].Tavg < tmin)
@@ -1493,9 +1493,9 @@ namespace Landis.Library.PnETCohorts
                         {
                             tSum += data[z].Tavg;
                             pSum += data[z].Prec;
-                            if (data[z].Tavg > tMax)
+                            if (data[z].Tavg > tmax)
                             {
-                                tMax = data[z].Tavg;
+                                tmax = data[z].Tavg;
                                 maxMonth = data[z].Month;
                             }
                             if (data[z].Tavg < tmin)
@@ -1507,7 +1507,7 @@ namespace Landis.Library.PnETCohorts
                     }
                     float annualTavg = tSum / mCount;
                     float annualPcpAvg = pSum / mCount;
-                    float tAmplitude = (tMax - tmin) / 2;
+                    float tAmplitude = (tmax - tmin) / 2;
                     float tempBelowSnow = Ecoregion.Variables.Tavg;
                     if (sno_dep > 0)
                         tempBelowSnow = annualTavg + (Ecoregion.Variables.Tavg - annualTavg) * DRz_snow;
@@ -2080,7 +2080,7 @@ namespace Landis.Library.PnETCohorts
                     {
                         if (annualFwater.ContainsKey(spc))
                         {
-                            if (data[m].Tmin > spc.PsnTmin && data[m].Tmax < spc.PsnTMax && propRootAboveFrost > 0) // Active growing season
+                            if (data[m].Tmin > spc.PsnTmin && data[m].Tmax < spc.PsnTmax && propRootAboveFrost > 0) // Active growing season
                             {
                                 // Store monthly values for later averaging
                                 annualFwater[spc].Add(establishmentProbability.Get_FWater(spc));

@@ -397,11 +397,11 @@ namespace Landis.Library.PnETCohorts
             }
             speciespnetvars.BaseFoliarRespirationFrac = BaseFoliarRespirationFrac;
             // Respiration Q10 factor
-            speciespnetvars.FQ10 = CalcPsnFQ10(Q10base, Tavg, spc.PsnTopt);
+            speciespnetvars.FQ10 = CalcRespirationFQ10(Q10base, Tavg, spc.PsnTopt);
             // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
-            float fTempRespDay = CalcPsnFQ10(Q10base, Tday, spc.PsnTopt);
+            float fTempRespDay = CalcRespirationFQ10(Q10base, Tday, spc.PsnTopt);
             // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
-            float fTempRespNight = CalcPsnFQ10(Q10base, Tmin, spc.PsnTopt);
+            float fTempRespNight = CalcRespirationFQ10(Q10base, Tmin, spc.PsnTopt);
             // Unitless respiration adjustment: public for output file only
             float RespirationFTemp = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength));
             speciespnetvars.RespirationFTemp = RespirationFTemp;
@@ -417,7 +417,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="Tday"></param>
         /// <param name="PsnTopt"></param>
         /// <returns></returns>
-        public static float CalcPsnFQ10(float Q10, float Tday, float PsnTopt)
+        public static float CalcRespirationFQ10(float Q10, float Tday, float PsnTopt)
         {
             float fQ10 = (float)Math.Pow(Q10, (Tday - PsnTopt) / 10);
             return fQ10;

@@ -238,7 +238,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Growth reduction factor for age
         /// </summary>
-        float Fage
+        float FAge
         {
             get
             {
@@ -1333,9 +1333,9 @@ namespace Landis.Library.PnETCohorts
                 //Reference gross Psn (lab conditions) in gC/g Fol/month
                 float RefGrossPsn = variables.DaySpan * (GrossAmax * variables[species.Name].DVPD * variables.Daylength * Constants.MC) / Constants.billion;
                 // Calculate gross psn from stress factors and reference gross psn (gC/g Fol/month)
-                // Reduction factors include temperature (FTempPSN), water (FWater), light (FRad), age (Fage)
+                // Reduction factors include temperature (FTempPSN), water (FWater), light (FRad), age (FAge)
                 // Remove FWater from psn reduction because it is accounted for in WUE through ciModifier [mod2, mod3]
-                float GrossPsnPotential = 1 / (float)Globals.IMAX * variables[species.Name].FTempPSN * FRad[index] * Fage * RefGrossPsn * Fol;  // gC/m2 ground/mo
+                float GrossPsnPotential = 1 / (float)Globals.IMAX * variables[species.Name].FTempPSN * FRad[index] * FAge * RefGrossPsn * Fol;  // gC/m2 ground/mo
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 // JH2O has been modified by CiModifier to reduce water use efficiency
                 // Scale transpiration to fraction of site occupied (CanopyLayerFrac)
@@ -1560,7 +1560,7 @@ namespace Landis.Library.PnETCohorts
                 float minFactor = factorList.Min();
                 if (minFactor == fTemp)
                     limitingFactor = "fTemp";
-                else if (minFactor == Fage)
+                else if (minFactor == FAge)
                     limitingFactor = "fAge";
                 else if (minFactor == fWaterAvg)
                 {
@@ -1608,7 +1608,7 @@ namespace Landis.Library.PnETCohorts
                        DelAmax.Average() + "," +
                        monthdata[Species.Name].FTempPSN + "," +
                        monthdata[Species.Name].FTempRespWeightedDayAndNight + "," +
-                       Fage + "," +
+                       FAge + "," +
                        IsLeafOn + "," +
                        FActiveBiom + "," +
                        AdjFolN.Average() + "," +
@@ -1655,7 +1655,7 @@ namespace Landis.Library.PnETCohorts
                              OutputHeaders.DelAMax + "," +
                              OutputHeaders.fTemp_psn + "," +
                              OutputHeaders.fTemp_resp + "," +
-                             OutputHeaders.fage + "," +
+                             OutputHeaders.fAge + "," +
                              OutputHeaders.LeafOn + "," +
                              OutputHeaders.FActiveBiom + "," +
                              OutputHeaders.AdjFolN + "," +

@@ -1402,11 +1402,11 @@ namespace Landis.Library.PnETCohorts
                 // Melt snow
                 float snowmelt = Math.Min(snowPack, CalcMaxSnowMelt(data[m].Tavg, data[m].DaySpan)); // mm
                 if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                float newsnow = CalcSnowFrac(data[m].Tavg) * data[m].Prec;
-                float newsnowpack = newsnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
-                if (newsnowpack < 0 || newsnowpack > data[m].Prec)
-                    throw new System.Exception("Error, newsnowpack = " + newsnowpack + " availablePrecipitation = " + data[m].Prec);
-                snowPack += newsnowpack - snowmelt;
+                float newSnow = CalcSnowFrac(data[m].Tavg) * data[m].Prec;
+                float newSnowDepth = newSnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
+                if (newSnowDepth < 0 || newSnowDepth > data[m].Prec)
+                    throw new System.Exception("Error, newSnowDepth = " + newSnowDepth + " availablePrecipitation = " + data[m].Prec);
+                snowPack += newSnowDepth - snowmelt;
                 if (snowPack < 0)
                     throw new System.Exception("Error, snowPack = " + snowPack + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 fracRootAboveFrost = 1;
@@ -1422,7 +1422,7 @@ namespace Landis.Library.PnETCohorts
                     daysOfWinter = 0;
                 float Psno_kg_m3 = Constants.bulkIntercept + (Constants.bulkSlope * daysOfWinter); //kg/m3
                 float Psno_g_cm3 = Psno_kg_m3 / 1000; //g/cm3
-                float sno_dep = Constants.Pwater * (snowPack / 1000) / Psno_kg_m3; //m
+                float snowDepth = Constants.Pwater * (snowPack / 1000) / Psno_kg_m3; //m
                 if (lastTempBelowSnow == float.MaxValue)
                 {
                     float lambda_Snow = (float)(Constants.lambAir + ((0.0000775 * Psno_kg_m3) + (0.000001105 * Math.Pow(Psno_kg_m3, 2))) * (Constants.lambIce - Constants.lambAir)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
@@ -1430,8 +1430,8 @@ namespace Landis.Library.PnETCohorts
                     float Ks_snow = 1000000F / 86400F * (lambda_Snow / vol_heat_capacity_snow); //thermal diffusivity (mm2/s)
                     float damping = (float)Math.Sqrt(2.0F * Ks_snow / Constants.omega);
                     float DRz_snow = 1F;
-                    if (sno_dep > 0)
-                        DRz_snow = (float)Math.Exp(-1.0F * sno_dep * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
+                    if (snowDepth > 0)
+                        DRz_snow = (float)Math.Exp(-1.0F * snowDepth * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
                     float mossDepth = this.SiteMossDepth;
                     float cv = 2500; // heat capacity moss - kJ/m3/K (Sazonova and Romanovsky 2003)
                     float lambda_moss = 432; // kJ/m/d/K - converted from 0.2 W/mK (Sazonova and Romanovsky 2003)
@@ -1509,7 +1509,7 @@ namespace Landis.Library.PnETCohorts
                     float annualPcpAvg = pSum / mCount;
                     float tAmplitude = (tmax - tmin) / 2;
                     float tempBelowSnow = Ecoregion.Variables.Tavg;
-                    if (sno_dep > 0)
+                    if (snowDepth > 0)
                         tempBelowSnow = annualTavg + (Ecoregion.Variables.Tavg - annualTavg) * DRz_snow;
                     lastTempBelowSnow = tempBelowSnow;
                     // Regardless of permafrost, need to fill the tempDict with values
@@ -1626,7 +1626,7 @@ namespace Landis.Library.PnETCohorts
                 if (data[m].Prec < 0) throw new System.Exception("Error, this.data[m].Prec = " + data[m].Prec + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 // Calculate abovecanopy reference daily ET
                 float ReferenceET = hydrology.CalcReferenceET_Hamon(data[m].Tavg, data[m].DayLength); //mm/day
-                float newrain = data[m].Prec - newsnow;
+                float newrain = data[m].Prec - newSnow;
                 // Reduced by interception
                 if (CanopyLAI == null)
                     CanopyLAI = new float[tempMaxCanopyLayers];
@@ -1636,7 +1636,7 @@ namespace Landis.Library.PnETCohorts
                 precLoss = surfaceRain * Ecoregion.PrecLossFrac;
                 float precin = surfaceRain - precLoss;
                 if (precin < 0)
-                    throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                    throw new System.Exception("Error, precin = " + precin + " newSnow = " + newSnow + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 int numEvents = Ecoregion.PrecipEvents;  // maximum number of precipitation events per month
                 float PrecInByEvent = precin / numEvents;  // Divide precip into discreet events within the month
                 if (PrecInByEvent < 0)
@@ -1992,7 +1992,7 @@ namespace Landis.Library.PnETCohorts
                     }
                     else
                         Globals.ModelCore.UI.WriteLine("DEBUG: Cohort count = " + AllCohorts.Count() + "; CanopyLAISum count = " + CanopyLAISum.Count());
-                    CanopyAlbedo[layer] += CalcAlbedoWithSnow(cohort, cohort.Albedo, sno_dep) * cohort.CanopyLayerFrac;
+                    CanopyAlbedo[layer] += CalcAlbedoWithSnow(cohort, cohort.Albedo, snowDepth) * cohort.CanopyLayerFrac;
                     LayerLAI[layer] += cohort.SumLAI * cohort.CanopyLayerFrac;
                     monthlyLAI[data[m].Month - 1] += cohort.LAI.Sum() * cohort.CanopyLayerFrac;
                     monthlyLAICumulative[data[m].Month - 1] += cohort.LAI.Sum() * cohort.CanopyLayerFrac;
@@ -2002,9 +2002,9 @@ namespace Landis.Library.PnETCohorts
                 monthlyPotentialTrans[data[m].Month - 1] += potentialTranspiration;
                 monthlyActualET[data[m].Month - 1] = monthlyActualTrans[data[m].Month - 1] + monthlyEvap[data[m].Month - 1] + monthlyInterception[data[m].Month - 1];
                 float groundAlbedo = 0.20F;
-                if (sno_dep > 0)
+                if (snowDepth > 0)
                 {
-                    float snowMultiplier = sno_dep >= Constants.snowReflectanceThreshold ? 1 : sno_dep / Constants.snowReflectanceThreshold;
+                    float snowMultiplier = snowDepth >= Constants.snowReflectanceThreshold ? 1 : snowDepth / Constants.snowReflectanceThreshold;
                     groundAlbedo = (float)(groundAlbedo + (groundAlbedo * (2.125 * snowMultiplier)));
                 }
                 for (int layer = 0; layer < tempMaxCanopyLayers; layer++)

@@ -115,11 +115,11 @@ namespace Landis.Library.PnETCohorts
             }
             speciespnetvars.BaseFoliarRespirationFrac = BaseFoliarRespirationFrac;
             // Respiration Q10 factor
-            speciespnetvars.Q10Factor = EcoregionPnETVariables.CalcQ10Factor(Q10base, Tavg, spc.PsnTopt);
+            speciespnetvars.Q10Factor = EcoregionPnETVariables.CalcPsnFQ10(Q10base, Tavg, spc.PsnTopt);
             // Daytime maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
-            float fTempRespDay = EcoregionPnETVariables.CalcQ10Factor(Q10base, Tday, spc.PsnTopt);
+            float fTempRespDay = EcoregionPnETVariables.CalcPsnFQ10(Q10base, Tday, spc.PsnTopt);
             // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
-            float fTempRespNight = EcoregionPnETVariables.CalcQ10Factor(Q10base, Tmin, spc.PsnTopt);
+            float fTempRespNight = EcoregionPnETVariables.CalcPsnFQ10(Q10base, Tmin, spc.PsnTopt);
             // Unitless respiration adjustment based on temperature: public for output file only
             float FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength)); ;
             speciespnetvars.FTempRespWeightedDayAndNight = FTempRespWeightedDayAndNight;

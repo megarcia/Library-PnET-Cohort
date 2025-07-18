@@ -397,7 +397,7 @@ namespace Landis.Library.PnETCohorts
             }
             speciespnetvars.BaseFoliarRespirationFrac = BaseFoliarRespirationFrac;
             // Respiration Q10 factor
-            speciespnetvars.Q10Factor = CalcPsnFQ10(Q10base, Tavg, spc.PsnTopt);
+            speciespnetvars.FQ10 = CalcPsnFQ10(Q10base, Tavg, spc.PsnTopt);
             // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
             float fTempRespDay = CalcPsnFQ10(Q10base, Tday, spc.PsnTopt);
             // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
@@ -419,8 +419,8 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcPsnFQ10(float Q10, float Tday, float PsnTopt)
         {
-            float q10Fact = (float)Math.Pow(Q10, (Tday - PsnTopt) / 10);
-            return q10Fact;
+            float fQ10 = (float)Math.Pow(Q10, (Tday - PsnTopt) / 10);
+            return fQ10;
         }
     }
 }

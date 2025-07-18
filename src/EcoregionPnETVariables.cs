@@ -171,6 +171,28 @@ namespace Landis.Library.PnETCohorts
             };
         }
 
+        /// <summary>
+        /// Calculate average temperature (ºC)
+        /// </summary>
+        /// <param name="Tmin"></param>
+        /// <param name="Tmax"></param>
+        /// <returns></returns>
+        public static float CalcTavg(float Tmin, float Tmax)
+        {
+            return (float)((Tmin + Tmax) / 2.0f);
+        }
+
+        /// <summary>
+        /// Calculate daytime average temperature (ºC)
+        /// </summary>
+        /// <param name="Tavg"></param>
+        /// <param name="Tmax"></param>
+        /// <returns></returns>
+        public static float CalcTday(float Tavg, float Tmax)
+        {
+            return (float)((Tavg + Tmax) / 2.0f);
+        }
+
         private static float CalcVP(float a, float b, float c, float T)
         {
             // Calculates vapor pressure at temperature (T)
@@ -189,7 +211,6 @@ namespace Landis.Library.PnETCohorts
             emean = CalcVP(0.61078f, 17.26939f, 237.3f, Tmin);
             if (Tmin < 0)
                 emean = CalcVP(0.61078f, 21.87456f, 265.5f, Tmin);
-
             return es - emean;
         }
 
@@ -291,7 +312,6 @@ namespace Landis.Library.PnETCohorts
                 else
                     h = AC;
             }
-
             return 2.0f * (h * 24.0f) / (2.0f * (float)Math.PI);
         }
         #endregion
@@ -311,12 +331,12 @@ namespace Landis.Library.PnETCohorts
             this._date = Date;
             this.obs_clim = climate_dataset;
             speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
-            _tavg = (float)0.5 * (climate_dataset.Tmin + climate_dataset.Tmax);
+            _tavg = CalcTavg(climate_dataset.Tmin, climate_dataset.Tmax);
             _dayspan = CalcDaySpan(Date.Month);
             float hr = CalcDaylightHrs(Date.DayOfYear, Latitude); //hours of daylight
             _daylength = CalcDayLength(hr);
             float nightlength = CalcNightLength(hr);
-            _tday = (float)0.5 * (climate_dataset.Tmax + _tavg);
+            _tday = CalcTday(Tavg, climate_dataset.Tmax);
             _vpd = CalcVPD(Tday, climate_dataset.Tmin);
             foreach (ISpeciesPnET spc in Species)
             {
@@ -387,7 +407,6 @@ namespace Landis.Library.PnETCohorts
             speciespnetvars.FTempRespWeightedDayAndNight = FTempRespWeightedDayAndNight;
             // Scaling factor of respiration given day and night temperature and day and night length
             speciespnetvars.MaintRespFTempResp = spc.MaintResp * FTempRespWeightedDayAndNight;
-
             return speciespnetvars;
         }
 

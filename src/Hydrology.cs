@@ -79,7 +79,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Potential Evaporation (mm)
         /// </summary>
-        public float PE;
+        public float PotentialEvaporation;
 
         /// <summary>
         /// Potential Evapotranspiration (mm)
@@ -213,10 +213,10 @@ namespace Landis.Library.PnETCohorts
             float Gamma = 0.062F; // kPa/C; [Cabrera et al. 2016 (Table 1)]
             float es = 0.6108F * (float)Math.Pow(10, 7.5 * _Tair / (237.3 + _Tair)); // water vapor saturation pressure (kPa); [Cabrera et al. 2016 (Table 1)]
             float S = 4098F * es / (float)Math.Pow(_Tair + 237.3, 2); // slope of curve of water pressure and air temp; [Cabrera et al. 2016 (Table 1)]
-            float PEMJ = S / (S + Gamma) * (1.624F + 0.9265F * Rs); // MJ/m2 day; Stewart & Rouse 1976 (eq. 11)
-            float PE = PEMJ * 0.408F; // convert MJ/m2 day to mm/day http://www.fao.org/3/x0490e/x0490e0i.htm
+            float PotentialEvaporation_MJ = S / (S + Gamma) * (1.624F + 0.9265F * Rs); // MJ/m2 day; Stewart & Rouse 1976 (eq. 11)
+            float PotentialEvaporation = PotentialEvaporation_MJ * 0.408F; // convert MJ/m2 day to mm/day http://www.fao.org/3/x0490e/x0490e0i.htm
 
-            return PE * _daySpan;  //mm/month 
+            return PotentialEvaporation * _daySpan;  //mm/month 
         }
 
         public float CalcEvaporation(SiteCohorts sitecohorts, float PotentialET)

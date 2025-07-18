@@ -1377,7 +1377,7 @@ namespace Landis.Library.PnETCohorts
                     activeLayerDepth = new float[13];
                     frostDepth = new float[13];
                     // Reset annual SiteVars
-                    SiteVars.AnnualPE[Site] = 0;
+                    SiteVars.AnnualPotentialEvaporation[Site] = 0;
                     SiteVars.ClimaticWaterDeficit[Site] = 0;
                     canopylaimax = float.MinValue;
                     monthlyLAI = new float[13];
@@ -1682,7 +1682,7 @@ namespace Landis.Library.PnETCohorts
                 hydrology.Runoff = 0;
                 hydrology.Leakage = 0;
                 hydrology.Evaporation = 0;
-                hydrology.PE = groundPotentialET;
+                hydrology.PotentialEvaporation = groundPotentialET;
                 hydrology.PotentialET = 0;
                 float PotentialETcumulative = 0;
                 float TransCumulative = 0;
@@ -1959,7 +1959,7 @@ namespace Landis.Library.PnETCohorts
                     }
                     hydrology.PotentialET += PotentialETcumulative;
                 }
-                SiteVars.AnnualPE[Site] = hydrology.PE;
+                SiteVars.AnnualPotentialEvaporation[Site] = hydrology.PotentialEvaporation;
                 int cohortCount = AllCohorts.Count();
                 CanopyLAI = new float[tempMaxCanopyLayers];
                 float[] CanopyLAISum = new float[tempMaxCanopyLayers];
@@ -1975,7 +1975,7 @@ namespace Landis.Library.PnETCohorts
                 monthlyInterception[data[m].Month - 1] += InterceptCumulative;
                 monthlyLeakage[data[m].Month - 1] += hydrology.Leakage;
                 monthlyRunoff[data[m].Month - 1] += hydrology.Runoff;
-                monthlyPotentialEvap[data[m].Month - 1] += hydrology.PE;
+                monthlyPotentialEvap[data[m].Month - 1] += hydrology.PotentialEvaporation;
                 foreach (Cohort cohort in AllCohorts)
                 {
                     foliarRespiration[data[m].Month - 1] += cohort.FoliarRespiration.Sum() * cohort.CanopyLayerFrac;
@@ -3470,7 +3470,7 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.Runoff + "," + 
                        OutputHeaders.Leakage + "," + 
                        OutputHeaders.PotentialET + "," +
-                       OutputHeaders.PE + "," +
+                       OutputHeaders.PotentialEvaporation + "," +
                        OutputHeaders.Evaporation + "," +
                        OutputHeaders.PotentialTranspiration + "," +
                        OutputHeaders.Transpiration + "," + 
@@ -3530,7 +3530,7 @@ namespace Landis.Library.PnETCohorts
                        hydrology.Runoff + "," +
                        hydrology.Leakage + "," +
                        hydrology.PotentialET + "," +
-                       hydrology.PE + "," +
+                       hydrology.PotentialEvaporation + "," +
                        hydrology.Evaporation + "," +
                        cohorts.Values.Sum(o => o.Sum(x => x.PotentialTranspiration.Sum())) + "," +
                        cohorts.Values.Sum(o => o.Sum(x => x.Transpiration.Sum())) + "," +

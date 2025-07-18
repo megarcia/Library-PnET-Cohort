@@ -3,7 +3,7 @@ namespace Landis.Library.PnETCohorts
 {
     public class OutputHeaders
     {
-        public const string PE = "PotentialEvaporation(mm)";
+        public const string PotentialEvaporation = "PotentialEvaporation(mm)";
         public const string PotentialET = "PotentialEvapotranspiration(mm)";
         public const string Time = "Time";
         public const string Year = "Year";

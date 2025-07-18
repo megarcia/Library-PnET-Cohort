@@ -14,7 +14,7 @@ namespace Landis.Library.PnETCohorts
         public static ISiteVar<Double> FineFuels;
         public static ISiteVar<float> PressureHead;
         public static ISiteVar<float> ExtremeMinTemp;
-        public static ISiteVar<double> AnnualPE;  //Annual Potential Evaporation
+        public static ISiteVar<double> AnnualPotentialEvaporation;  //Annual Potential Evaporation
         public static ISiteVar<double> ClimaticWaterDeficit;
         public static ISiteVar<double> SmolderConsumption;
         public static ISiteVar<double> FlamingConsumption;
@@ -33,7 +33,7 @@ namespace Landis.Library.PnETCohorts
             UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<Landis.Library.UniversalCohorts.SiteCohorts>();
             PressureHead = Globals.ModelCore.Landscape.NewSiteVar<float>();
             ExtremeMinTemp = Globals.ModelCore.Landscape.NewSiteVar<float>();
-            AnnualPE = Globals.ModelCore.Landscape.NewSiteVar<Double>();
+            AnnualPotentialEvaporation = Globals.ModelCore.Landscape.NewSiteVar<Double>();
             ClimaticWaterDeficit = Globals.ModelCore.Landscape.NewSiteVar<Double>();
             SmolderConsumption = Globals.ModelCore.Landscape.NewSiteVar<Double>();
             FlamingConsumption = Globals.ModelCore.Landscape.NewSiteVar<Double>();
@@ -45,7 +45,7 @@ namespace Landis.Library.PnETCohorts
             Globals.ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
             Globals.ModelCore.RegisterSiteVar(PressureHead, "Succession.PressureHead");
             Globals.ModelCore.RegisterSiteVar(ExtremeMinTemp, "Succession.ExtremeMinTemp");
-            Globals.ModelCore.RegisterSiteVar(AnnualPE, "Succession.PET"); //FIXME
+            Globals.ModelCore.RegisterSiteVar(AnnualPotentialEvaporation, "Succession.PET"); //FIXME
             Globals.ModelCore.RegisterSiteVar(ClimaticWaterDeficit, "Succession.CWD");
             Globals.ModelCore.RegisterSiteVar(SmolderConsumption, "Succession.SmolderConsumption");
             Globals.ModelCore.RegisterSiteVar(FlamingConsumption, "Succession.FlamingConsumption");

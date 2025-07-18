@@ -259,7 +259,7 @@ namespace Landis.Library.PnETCohorts
             // dayLength        daytime length in seconds (s)
             // T                average monthly temperature (C)
             // daySpan          number of days in the month
-            float Rs_daily = (float)(aboveCanopyPAR / Constants.SecondsPerDay / dayLength)); // convert daytime PAR (umol/m2*s) to total daily PAR (umol/m2*s)
+            float Rs_daily = (float)(aboveCanopyPAR / Constants.SecondsPerDay / dayLength); // convert daytime PAR (umol/m2*s) to total daily PAR (umol/m2*s)
             float Rs_W = (float)(Rs_daily / 2.02f); // convert daily PAR (umol/m2*s) to total solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
             // Back-calculate LAI from aboveCanopyPAR and subCanopyPAR
             float k = 0.3038f;

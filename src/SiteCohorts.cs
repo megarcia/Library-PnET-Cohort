@@ -1308,8 +1308,8 @@ namespace Landis.Library.PnETCohorts
             monthlyPotentialEvap = new float[13];
             monthlyPotentialTrans = new float[13];
             Dictionary<ISpeciesPnET, float> cumulativeEstab = new Dictionary<ISpeciesPnET, float>();
-            Dictionary<ISpeciesPnET, List<float>> annualFwater = new Dictionary<ISpeciesPnET, List<float>>();
-            Dictionary<ISpeciesPnET, float> cumulativeFwater = new Dictionary<ISpeciesPnET, float>();
+            Dictionary<ISpeciesPnET, List<float>> annualFWater = new Dictionary<ISpeciesPnET, List<float>>();
+            Dictionary<ISpeciesPnET, float> cumulativeFWater = new Dictionary<ISpeciesPnET, float>();
             Dictionary<ISpeciesPnET, List<float>> annualFRad = new Dictionary<ISpeciesPnET, List<float>>();
             Dictionary<ISpeciesPnET, float> cumulativeFRad = new Dictionary<ISpeciesPnET, float>();
             Dictionary<ISpeciesPnET, float> monthlyEstab = new Dictionary<ISpeciesPnET, float>();
@@ -1318,8 +1318,8 @@ namespace Landis.Library.PnETCohorts
             foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
                 cumulativeEstab[spc] = 1;
-                annualFwater[spc] = new List<float>();
-                cumulativeFwater[spc] = 0;
+                annualFWater[spc] = new List<float>();
+                cumulativeFWater[spc] = 0;
                 annualFRad[spc] = new List<float>();
                 cumulativeFRad[spc] = 0;
                 monthlyCount[spc] = 0;
@@ -2078,12 +2078,12 @@ namespace Landis.Library.PnETCohorts
                     establishmentProbability.CalcEstablishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat, invertPest, fracRootAboveFrost);
                     foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
                     {
-                        if (annualFwater.ContainsKey(spc))
+                        if (annualFWater.ContainsKey(spc))
                         {
                             if (data[m].Tmin > spc.PsnTmin && data[m].Tmax < spc.PsnTmax && fracRootAboveFrost > 0) // Active growing season
                             {
                                 // Store monthly values for later averaging
-                                annualFwater[spc].Add(establishmentProbability.Get_FWater(spc));
+                                annualFWater[spc].Add(establishmentProbability.Get_FWater(spc));
                                 annualFRad[spc].Add(establishmentProbability.Get_FRad(spc));
                             }
                         }
@@ -2131,32 +2131,32 @@ namespace Landis.Library.PnETCohorts
                     // When < 3 months, include all months
                     foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
                     {
-                        if (annualFwater[spc].Count > 3)
+                        if (annualFWater[spc].Count > 3)
                         {
-                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][1] + annualFwater[spc][2] + annualFwater[spc][3];
+                            cumulativeFWater[spc] = cumulativeFWater[spc] + annualFWater[spc][1] + annualFWater[spc][2] + annualFWater[spc][3];
                             cumulativeFRad[spc] = cumulativeFRad[spc] + annualFRad[spc][1] + annualFRad[spc][2] + annualFRad[spc][3];
                             monthlyCount[spc] = monthlyCount[spc] + 3;
                         }
-                        else if (annualFwater[spc].Count > 2)
+                        else if (annualFWater[spc].Count > 2)
                         {
-                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0] + annualFwater[spc][1] + annualFwater[spc][2];
+                            cumulativeFWater[spc] = cumulativeFWater[spc] + annualFWater[spc][0] + annualFWater[spc][1] + annualFWater[spc][2];
                             cumulativeFRad[spc] = cumulativeFRad[spc] + annualFRad[spc][0] + annualFRad[spc][1] + annualFRad[spc][2];
                             monthlyCount[spc] = monthlyCount[spc] + 3;
                         }
-                        else if (annualFwater[spc].Count > 1)
+                        else if (annualFWater[spc].Count > 1)
                         {
-                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0] + annualFwater[spc][1];
+                            cumulativeFWater[spc] = cumulativeFWater[spc] + annualFWater[spc][0] + annualFWater[spc][1];
                             cumulativeFRad[spc] = cumulativeFRad[spc] + annualFRad[spc][0] + annualFRad[spc][1];
                             monthlyCount[spc] = monthlyCount[spc] + 2;
                         }
-                        else if (annualFwater[spc].Count == 1)
+                        else if (annualFWater[spc].Count == 1)
                         {
-                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0];
+                            cumulativeFWater[spc] = cumulativeFWater[spc] + annualFWater[spc][0];
                             cumulativeFRad[spc] = cumulativeFRad[spc] + annualFRad[spc][0];
                             monthlyCount[spc] = monthlyCount[spc] + 1;
                         }
                         //Reset annual lists for next year
-                        annualFwater[spc].Clear();
+                        annualFWater[spc].Clear();
                         annualFRad[spc].Clear();
                     }
                 }
@@ -2174,10 +2174,10 @@ namespace Landis.Library.PnETCohorts
                     if (monthlyCount[spc] > 0)
                     {
                         // Transform cumulative probability of no successful establishments to probability of at least one successful establishment
-                        cumulativeFwater[spc] = cumulativeFwater[spc] / monthlyCount[spc];
+                        cumulativeFWater[spc] = cumulativeFWater[spc] / monthlyCount[spc];
                         cumulativeFRad[spc] = cumulativeFRad[spc] / monthlyCount[spc];
-                        // Calculate Pest from average Fwater, FRad and modified by MaxPest
-                        pest = cumulativeFwater[spc] * cumulativeFRad[spc] * spc.MaxPest;
+                        // Calculate Pest from average FWater, FRad and modified by MaxPest
+                        pest = cumulativeFWater[spc] * cumulativeFRad[spc] * spc.MaxPest;
                     }                    
                     if (!spc.PreventEstablishment)
                     {
@@ -2187,7 +2187,7 @@ namespace Landis.Library.PnETCohorts
                             estab = true;
                         }
                     }
-                    EstablishmentProbability.RecordPest(Globals.ModelCore.CurrentTime, spc, pest, cumulativeFwater[spc], cumulativeFRad[spc], estab, monthlyCount[spc]);
+                    EstablishmentProbability.RecordPest(Globals.ModelCore.CurrentTime, spc, pest, cumulativeFWater[spc], cumulativeFRad[spc], estab, monthlyCount[spc]);
                 }
             }
             if (siteoutput != null && outputCohortData)

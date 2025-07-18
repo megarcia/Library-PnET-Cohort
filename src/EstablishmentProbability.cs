@@ -9,7 +9,7 @@ namespace Landis.Library.PnETCohorts
         private LocalOutput establishment_siteoutput;
         private List<ISpeciesPnET> _hasEstablished;
         private Dictionary<ISpeciesPnET, float> _pest;
-        private Dictionary<ISpeciesPnET, float> _fwater;
+        private Dictionary<ISpeciesPnET, float> _fWater;
         private Dictionary<ISpeciesPnET, float> _fRad;
 
         public bool HasEstablished(ISpeciesPnET species)
@@ -35,7 +35,7 @@ namespace Landis.Library.PnETCohorts
         public float Get_FWater(ISpeciesPnET species)
         {
             {
-                return _fwater[species];
+                return _fWater[species];
             }
         }
 
@@ -75,10 +75,10 @@ namespace Landis.Library.PnETCohorts
                         adjFRad = 1 - fRad_adj_int + fRad * fRad_slope;
                     }
                     float PressureHead = hydrology.PressureHeadTable.CalcWaterContent(hydrology.Water, ecoregion.SoilType);
-                    float fwater = (float)Math.Min(1.0,Math.Pow(Cohort.CalcFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), 2) * (1/Math.Pow(spc.EstMoist,2)));
-                    float pest = (float) Math.Min(1.0,adjFRad * fwater);
+                    float fWater = (float)Math.Min(1.0,Math.Pow(Cohort.CalcFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), 2) * (1/Math.Pow(spc.EstMoist,2)));
+                    float pest = (float) Math.Min(1.0,adjFRad * fWater);
                     estabDict[spc] = pest;
-                    _fwater[spc] = fwater;
+                    _fWater[spc] = fWater;
                     _fRad[spc] = adjFRad;
                 }                
             }
@@ -89,13 +89,13 @@ namespace Landis.Library.PnETCohorts
         public void ResetPerTimeStep()
         {
             _pest = new Dictionary<ISpeciesPnET, float>();
-            _fwater = new Dictionary<ISpeciesPnET, float>();
+            _fWater = new Dictionary<ISpeciesPnET, float>();
             _fRad = new Dictionary<ISpeciesPnET, float>();
             _hasEstablished = new List<ISpeciesPnET>();
             foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
                 _pest.Add(spc, 0);
-                _fwater.Add(spc, 0);
+                _fWater.Add(spc, 0);
                 _fRad.Add(spc, 0);
             }
         }

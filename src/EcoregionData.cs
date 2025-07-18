@@ -103,7 +103,7 @@ namespace Landis.Library.PnETCohorts
                 _fieldcap = value;
             }
         }
-        public float WiltPnt
+        public float WiltingPoint
         {
             get
             {

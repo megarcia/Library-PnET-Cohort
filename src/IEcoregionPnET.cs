@@ -37,7 +37,7 @@
         /// <summary>
         /// Volumetric soil water content (mm/m) at wilting point
         /// </summary>
-        float WiltPnt { get; set; }
+        float WiltingPoint { get; set; }
 
         /// <summary>
         /// Volumetric soil water content (mm/m) at porosity

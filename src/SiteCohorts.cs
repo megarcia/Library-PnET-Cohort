@@ -3539,7 +3539,7 @@ namespace Landis.Library.PnETCohorts
                        hydrology.SoilWaterContent + "," +
                        hydrology.PressureHeadTable.CalcWaterPressure(hydrology.SoilWaterContent,Ecoregion.SoilType)+ "," +
                        hydrology.SurfaceWater + "," +
-                       ((hydrology.SoilWaterContent - Ecoregion.WiltPnt) * Ecoregion.RootingDepth * fracRootAboveFrost + hydrology.SurfaceWater) + "," +  // mm of avialable water
+                       ((hydrology.SoilWaterContent - Ecoregion.WiltingPoint) * Ecoregion.RootingDepth * fracRootAboveFrost + hydrology.SurfaceWater) + "," +  // mm of avialable water
                        snowPack + "," +
                        cohorts.Values.Sum(o => o.Sum(x => x.LAI.Sum() * x.CanopyLayerFrac)) + "," +
                        monthdata.VPD + "," +

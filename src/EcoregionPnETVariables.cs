@@ -193,24 +193,10 @@ namespace Landis.Library.PnETCohorts
             return (float)((Tavg + Tmax) / 2.0f);
         }
 
-        private static float CalcVP(float a, float b, float c, float T)
-        {
-            // Calculates vapor pressure at temperature (T)
-            // a,b,c are coefficients
-            // Equation from PnET-II
-            return a * (float)Math.Exp(b * T / (T + c));
-        }
-
         public static float CalcVPD(float Tday, float Tmin)
         {
-            float emean;
-            // saturated vapor pressure
-            float es = CalcVP(0.61078f, 17.26939f, 237.3f, Tday);
-            if (Tday < 0)
-                es = CalcVP(0.61078f, 21.87456f, 265.5f, Tday);
-            emean = CalcVP(0.61078f, 17.26939f, 237.3f, Tmin);
-            if (Tmin < 0)
-                emean = CalcVP(0.61078f, 21.87456f, 265.5f, Tmin);
+            float es = Hydrology.CalcVaporPressure(Tday);
+            float emean = Hydrology.CalcVaporPressure(Tmin);
             return es - emean;
         }
 

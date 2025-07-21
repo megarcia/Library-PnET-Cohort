@@ -195,6 +195,21 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
+        /// Calculates vapor pressure at temperature (T) via the Tetens equation
+        /// (see https://en.wikipedia.org/wiki/Tetens_equation) 
+        /// </summary>
+        /// <param name="T"></param>
+        private static float CalcVaporPressure(float T)
+        {
+            float es;
+            if (T >= 0f)
+                es = 0.61078f * (float)Math.Exp(17.26939f * T / (T + 237.3f));
+            else
+                es = 0.61078f * (float)Math.Exp(21.87456f * T / (T + 265.5f));
+            return es;
+        }
+
+        /// <summary>
         /// PE calculations based on Stewart & Rouse 1976 and Cabrera et al. 2016
         /// </summary>
         /// <param name="_Rads"></param>
@@ -211,7 +226,7 @@ namespace Landis.Library.PnETCohorts
             float Rs_W = (float)(_Rads / 2.02f); // convert PAR (umol/m2*s) to total solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
             float Rs = Rs_W * 0.0864F; // convert Rs_W (W/m2) to Rs (MJ/m2*d) [Reis and Ribeiro 2019 (eq. 13)]
             float Gamma = 0.062F; // kPa/C; [Cabrera et al. 2016 (Table 1)]
-            float es = 0.6108F * (float)Math.Pow(10, 7.5 * _Tair / (237.3 + _Tair)); // water vapor saturation pressure (kPa); [Cabrera et al. 2016 (Table 1)]
+            float es = CalcVaporPressure((float)_Tair); 
             float S = 4098F * es / (float)Math.Pow(_Tair + 237.3, 2); // slope of curve of water pressure and air temp; [Cabrera et al. 2016 (Table 1)]
             float PotentialEvaporation_MJ = S / (S + Gamma) * (1.624F + 0.9265F * Rs); // MJ/m2 day; Stewart & Rouse 1976 (eq. 11)
             float PotentialEvaporation = PotentialEvaporation_MJ * 0.408F; // convert MJ/m2 day to mm/day http://www.fao.org/3/x0490e/x0490e0i.htm
@@ -273,7 +288,7 @@ namespace Landis.Library.PnETCohorts
             float alpha = 1.0f;
             float gamma = 0.066f;    // kPA/C
             float L = 2453f;    // MJ/m3 - latent heat of vaporization
-            float es = 0.6108F * (float)Math.Pow(10, 7.5 * T / (237.3 + T)); // water vapor saturation pressure (kPa); [Cabrera et al. 2016 (Table 1)]
+            float es = CalcVaporPressure(T); 
             float S = 4098F * es / (float)Math.Pow(T + 237.3, 2); // slope of curve of water pressure and air temp; [Cabrera et al. 2016 (Table 1)]
             float PotentialET_ground = alpha * (S / (S + gamma)) / L * subCanopyNetRad * 0.0864F; //m/day  (0.0864 conversion W/m2 to MJ/m2*d)
 
@@ -289,9 +304,9 @@ namespace Landis.Library.PnETCohorts
             else
             {
                 float k = 1.2f;   // proportionality coefficient
-                float es = 6.108f * (float)Math.Exp(17.27f * T / (T + 237.3f));
+                float es = CalcVaporPressure(T);
                 float N = dayLength / (float)Constants.SecondsPerHour / 12f;
-                float PotentialET = k * 0.165f * 216.7f * N * (es / (T + 273.3f));
+                float PotentialET = k * 0.165f * 216.7f * N * (10f * es / (T + 273.3f)); // TODO: verify the 10x factor
                 return PotentialET; // mm/day
             }
         }

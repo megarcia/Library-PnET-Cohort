@@ -102,8 +102,10 @@ namespace Landis.Library.PnETCohorts
             if (activeSoilDepth > 0)
                 adjSoilWaterContent = addWater / activeSoilDepth;
             soilWaterContent += adjSoilWaterContent;
+            // Note 20250721 MG: always returns true because of this value reset
             if (soilWaterContent < 0)
                 soilWaterContent = 0;
+            // end Note
             if (soilWaterContent >= 0)
                 return true;
             else

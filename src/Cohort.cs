@@ -1223,7 +1223,7 @@ namespace Landis.Library.PnETCohorts
             float LayerPAR = (float)(mainLayerPAR * Math.Exp(-speciesPnET.K * (LAI.Sum() - LAI[index])));
             FRad[index] = CalcFRad(LayerPAR, AdjHalfSat);
             // Get pressure head given ecoregion and soil water content (latter in hydrology)
-            float PressureHead = hydrology.PressureHeadTable.CalcWaterPressure(hydrology.SoilWaterContent, siteCohort.Ecoregion.SoilType);
+            float PressureHead = hydrology.PressureHeadTable.CalcSoilWaterPressureHead(hydrology.SoilWaterContent, siteCohort.Ecoregion.SoilType);
             // Reduction water for sub or supra optimal soil water content
             float fWaterOzone = 1.0f;  //fWater for ozone functions; ignores H1 and H2 parameters because only impacts when drought-stressed
             if (Globals.ModelCore.CurrentTime > 0)
@@ -1345,7 +1345,7 @@ namespace Landis.Library.PnETCohorts
                 // In this case, we cap transpiration at available water, and back-calculate GrossPsn and NetPsn to downgrade those as well
                 // Volumetric soil water content (mm/m) at species wilting point (h4) 
                 // Convert kPA to mH2o (/9.804139432)
-                float wiltPtWater = (float)hydrology.PressureHeadTable.CalcWaterContent(speciesPnET.H4 * 9.804139432f, siteCohort.Ecoregion.SoilType);
+                float wiltPtWater = (float)hydrology.PressureHeadTable.CalcSoilWaterContent(speciesPnET.H4 * 9.804139432f, siteCohort.Ecoregion.SoilType);
                 float availableWater = (hydrology.SoilWaterContent - wiltPtWater) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac;
                 if (PotentialTranspiration[index] > availableWater)
                 {

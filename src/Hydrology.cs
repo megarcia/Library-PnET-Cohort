@@ -41,9 +41,9 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public static PressureHeadSaxton_Rawls pressureheadtable;
+        public static Hydrology_SaxtonRawls pressureheadtable;
 
-        public PressureHeadSaxton_Rawls PressureHeadTable
+        public Hydrology_SaxtonRawls PressureHeadTable
         {
             get
             {
@@ -171,7 +171,7 @@ namespace Landis.Library.PnETCohorts
             if (Names.TryGetParameter(Names.PressureHeadCalculationMethod, out PressureHeadCalculationMethod))
             {
                 Parameter<string> p = Names.GetParameter(Names.PressureHeadCalculationMethod);
-                pressureheadtable = new PressureHeadSaxton_Rawls();
+                pressureheadtable = new Hydrology_SaxtonRawls();
             }
             else
             {
@@ -184,11 +184,11 @@ namespace Landis.Library.PnETCohorts
                     // Volumetric soil water content (mm/m) at field capacity
                     //  −33 kPa (or −0.33 bar)        
                     // Convert kPA to mH2o (/9.804139432) = 3.37
-                    eco.FieldCapacity = (float)pressureheadtable.CalcWaterContent(33, eco.SoilType);
+                    eco.FieldCapacity = (float)pressureheadtable.CalcSoilWaterContent(33, eco.SoilType);
                     // Volumetric soil water content (mm/m) at wilting point
                     //  −1500 kPa (or −15 bar)  
                     // Convert kPA to mH2o (/9.804139432) = 153.00
-                    eco.WiltingPoint = (float)pressureheadtable.CalcWaterContent(1500, eco.SoilType);
+                    eco.WiltingPoint = (float)pressureheadtable.CalcSoilWaterContent(1500, eco.SoilType);
                     // Volumetric soil water content (mm/m) at porosity
                     eco.Porosity = (float)pressureheadtable.Porosity(eco.SoilType);
                     float f = eco.FieldCapacity - eco.WiltingPoint;

@@ -60,6 +60,6 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Get the PressureHeadTable object
         /// </summary>
-        PressureHeadSaxton_Rawls PressureHeadTable { get; } 
+        Hydrology_SaxtonRawls PressureHeadTable { get; } 
     }
 }

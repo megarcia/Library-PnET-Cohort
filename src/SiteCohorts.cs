@@ -1443,10 +1443,10 @@ namespace Landis.Library.PnETCohorts
                     float porosity = Ecoregion.Porosity;  // volumetric m/m 
                     float ga = 0.035F + 0.298F * (soilWaterContent / porosity);
                     float Fa = (2.0F / 3.0F / (1.0F + ga * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))) + (1.0F / 3.0F / (1.0F + (1.0F - 2.0F * ga) * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))); // ratio of air temp gradient
-                    float Fs = PressureHeadSaxton_Rawls.GetFs(Ecoregion.SoilType);
-                    float ThermalConductivitySoil = PressureHeadSaxton_Rawls.GetLambda_s(Ecoregion.SoilType);
+                    float Fs = Hydrology_SaxtonRawls.GetFs(Ecoregion.SoilType);
+                    float ThermalConductivitySoil = Hydrology_SaxtonRawls.GetThermalConductivitySoil(Ecoregion.SoilType);
                     float ThermalConductivity_theta = (Fs * (1.0F - porosity) * ThermalConductivitySoil + Fa * (porosity - soilWaterContent) * Constants.ThermalConductivityAir_kJperday + soilWaterContent * Constants.ThermalConductivityWater_kJperday) / (Fs * (1.0F - porosity) + Fa * (porosity - soilWaterContent) + soilWaterContent); //soil thermal conductivity (kJ/m/d/K)
-                    float D = ThermalConductivity_theta / PressureHeadSaxton_Rawls.GetCTheta(Ecoregion.SoilType);  //m2/day
+                    float D = ThermalConductivity_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  //m2/day
                     float Dmms = D * 1000000 / 86400; //mm2/s
                     soilDiffusivity = Dmms;
                     float Dmonth = D * data[m].DaySpan; // m2/month
@@ -2110,7 +2110,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 if (data[m].Tavg > 0)
                 {
-                    sumPressureHead += hydrology.PressureHeadTable.CalcWaterPressure(hydrology.SoilWaterContent,Ecoregion.SoilType);
+                    sumPressureHead += hydrology.PressureHeadTable.CalcSoilWaterPressureHead(hydrology.SoilWaterContent,Ecoregion.SoilType);
                     countPressureHead += 1;
                 }
                 if (data[m].Month == 7)
@@ -3537,7 +3537,7 @@ namespace Landis.Library.PnETCohorts
                        interception + "," +
                        precLoss + "," +
                        hydrology.SoilWaterContent + "," +
-                       hydrology.PressureHeadTable.CalcWaterPressure(hydrology.SoilWaterContent,Ecoregion.SoilType)+ "," +
+                       hydrology.PressureHeadTable.CalcSoilWaterPressureHead(hydrology.SoilWaterContent,Ecoregion.SoilType)+ "," +
                        hydrology.SurfaceWater + "," +
                        ((hydrology.SoilWaterContent - Ecoregion.WiltingPoint) * Ecoregion.RootingDepth * fracRootAboveFrost + hydrology.SurfaceWater) + "," +  // mm of avialable water
                        snowPack + "," +

@@ -25,10 +25,10 @@ namespace Landis.Library.PnETCohorts
             float soilWaterContent = hydrology.SoilWaterContent / Ecoregion.RootingDepth;  //m3/m3
             float ga = 0.035F + 0.298F * (soilWaterContent / porosity);
             float Fa = (2.0F / 3.0F / (1.0F + ga * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))) + (1.0F / 3.0F / (1.0F + (1.0F - 2.0F * ga) * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))); // ratio of air temp gradient
-            float Fs = PressureHeadSaxton_Rawls.GetFs(Ecoregion.SoilType);
-            float ThermalConductivitySoil = PressureHeadSaxton_Rawls.GetLambda_s(Ecoregion.SoilType);
+            float Fs = Hydrology_SaxtonRawls.GetFs(Ecoregion.SoilType);
+            float ThermalConductivitySoil = Hydrology_SaxtonRawls.GetThermalConductivitySoil(Ecoregion.SoilType);
             float ThermalConductivity_theta = (Fs * (1.0F - porosity) * ThermalConductivitySoil + Fa * (porosity - soilWaterContent) * Constants.ThermalConductivityAir_kJperday + soilWaterContent * Constants.ThermalConductivityWater_kJperday) / (Fs * (1.0F - porosity) + Fa * (porosity - soilWaterContent) + soilWaterContent); //soil thermal conductivity (kJ/m/d/K)
-            float D = ThermalConductivity_theta / PressureHeadSaxton_Rawls.GetCTheta(Ecoregion.SoilType);  //m2/day
+            float D = ThermalConductivity_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  //m2/day
             float Dmonth = D * Ecoregion.Variables.DaySpan; // m2/month
             float ks = Dmonth * 1000000F / (Ecoregion.Variables.DaySpan * Constants.SecondsPerDay); // mm2/s
             float d = (float)Math.Pow(Constants.omega / (2.0F * Dmonth), 0.5);

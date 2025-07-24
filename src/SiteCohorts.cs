@@ -1421,18 +1421,13 @@ namespace Landis.Library.PnETCohorts
                     daysOfWinter += (int)data[m].DaySpan;
                 else
                     daysOfWinter = 0;
-                float DensitySnow_kg_m3 = Constants.DensitySnow_intercept + (Constants.DensitySnow_slope * daysOfWinter);
-                float DensitySnow_g_cm3 = DensitySnow_kg_m3 / 1000;
-                float snowDepth = Constants.DensityWater * (snowpack / 1000) / DensitySnow_kg_m3; //m
+                float densitySnow_kg_m3 = Snow.CalcDensity(daysOfWinter);
+                float snowDepth = Snow.CalcDepth(densitySnow_kg_m3, snowpack);
                 if (lastTempBelowSnow == float.MaxValue)
                 {
-                    float ThermalConductivity_Snow = (float)(Constants.ThermalConductivityAir_Watts + ((0.0000775 * DensitySnow_kg_m3) + (0.000001105 * Math.Pow(DensitySnow_kg_m3, 2))) * (Constants.ThermalConductivityIce_Watts - Constants.ThermalConductivityAir_Watts)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
-                    float vol_heat_capacity_snow = Constants.HeatCapacitySnow_Jperkg * DensitySnow_kg_m3 / 1000f; // kJ/m3/K
-                    float Ks_snow = 1000000F / 86400F * (ThermalConductivity_Snow / vol_heat_capacity_snow); //thermal diffusivity (mm2/s)
-                    float damping = (float)Math.Sqrt(2.0F * Ks_snow / Constants.omega);
-                    float DRz_snow = 1F;
-                    if (snowDepth > 0)
-                        DRz_snow = (float)Math.Exp(-1.0F * snowDepth * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
+                    float thermalConductivity_Snow = Snow.CalcThermalConductivity(densitySnow_kg_m3);
+                    float thermalDamping_Snow = Snow.CalcThermalDamping(thermalConductivity_Snow);
+                    float DRz_snow = Snow.CalcDampingRatio(snowDepth, thermalDamping_Snow);
                     // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
                     float DRz_moss = (float)Math.Exp(-1.0F * this.SiteMossDepth * Constants.ThermalDampingMoss); 
                     // Soil diffusivity 

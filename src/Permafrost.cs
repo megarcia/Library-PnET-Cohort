@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class Permafrost
+    public class FrozenSoils
     {
         public static SortedList<float, float> CalcMonthlySoilTemps(SortedList<float, float> depthTempDict, IEcoregionPnET Ecoregion, int daysOfWinter, float snowpack, IHydrology hydrology, float lastTempBelowSnow)
         {

@@ -23,7 +23,7 @@ namespace Landis.Library.PnETCohorts
         private float _runoffcapture;
         private float _fieldcap;
         private float _wiltpnt;
-        private float _porosity;
+        private float _soilPorosity;
         private float _snowsublimfrac;
         private float _latitude;
         private int _precipEvents;
@@ -118,11 +118,11 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return _porosity;
+                return _soilPorosity;
             }
             set
             {
-                _porosity = value;
+                _soilPorosity = value;
             }
         }
 

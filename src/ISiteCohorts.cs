@@ -12,7 +12,7 @@ namespace Landis.Library.PnETCohorts
         float[] AverageAlbedo { get; }
         float[] ActiveLayerDepth { get; }
         float[] FrostDepth { get; }
-        float[] MonthlyAvgSnowPack { get; }
+        float[] MonthlyAvgSnowpack { get; }
         float[] MonthlyAvgWater { get; }
         float[] MonthlyAvgLAI { get; }
         float[] MonthlyEvap { get; }

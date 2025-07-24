@@ -1401,7 +1401,8 @@ namespace Landis.Library.PnETCohorts
                 float O3_D40_ppmh = ozoneD40 / 1000; // convert D40 units to ppm h
                 // Melt snow
                 float snowmelt = Math.Min(snowpack, CalcMaxSnowMelt(data[m].Tavg, data[m].DaySpan)); // mm
-                if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                if (snowmelt < 0)
+                    throw new System.Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 float newSnow = CalcSnowFrac(data[m].Tavg) * data[m].Prec;
                 float newSnowDepth = newSnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
                 if (newSnowDepth < 0 || newSnowDepth > data[m].Prec)
@@ -1426,20 +1427,16 @@ namespace Landis.Library.PnETCohorts
                 if (lastTempBelowSnow == float.MaxValue)
                 {
                     float ThermalConductivity_Snow = (float)(Constants.ThermalConductivityAir_Watts + ((0.0000775 * DensitySnow_kg_m3) + (0.000001105 * Math.Pow(DensitySnow_kg_m3, 2))) * (Constants.ThermalConductivityIce_Watts - Constants.ThermalConductivityAir_Watts)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
-                    float vol_heat_capacity_snow = Constants.snowHeatCapacity * DensitySnow_kg_m3 / 1000f; // kJ/m3/K
+                    float vol_heat_capacity_snow = Constants.HeatCapacitySnow_Jperkg * DensitySnow_kg_m3 / 1000f; // kJ/m3/K
                     float Ks_snow = 1000000F / 86400F * (ThermalConductivity_Snow / vol_heat_capacity_snow); //thermal diffusivity (mm2/s)
                     float damping = (float)Math.Sqrt(2.0F * Ks_snow / Constants.omega);
                     float DRz_snow = 1F;
                     if (snowDepth > 0)
                         DRz_snow = (float)Math.Exp(-1.0F * snowDepth * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
-                    float mossDepth = this.SiteMossDepth;
-                    float cv = 2500; // heat capacity moss - kJ/m3/K (Sazonova and Romanovsky 2003)
-                    float ThermalConductivity_moss = 432; // kJ/m/d/K - converted from 0.2 W/mK (Sazonova and Romanovsky 2003)
-                    float moss_diffusivity = ThermalConductivity_moss / cv;
-                    float damping_moss = (float)Math.Sqrt(2.0F * moss_diffusivity / Constants.omega);
-                    float DRz_moss = (float)Math.Exp(-1.0F * mossDepth * damping_moss); // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
+                    // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
+                    float DRz_moss = (float)Math.Exp(-1.0F * this.SiteMossDepth * Constants.ThermalDampingMoss); 
+                    // Soil diffusivity 
                     float soilWaterContent = hydrology.SoilWaterContent;// volumetric m/m
-                    // Calculations of diffusivity from soil properties 
                     float soilPorosity = Ecoregion.Porosity;  // volumetric m/m 
                     float ga = 0.035F + 0.298F * (soilWaterContent / soilPorosity);
                     float Fa = (2.0F / 3.0F / (1.0F + ga * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))) + (1.0F / 3.0F / (1.0F + (1.0F - 2.0F * ga) * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))); // ratio of air temp gradient
@@ -1733,7 +1730,7 @@ namespace Landis.Library.PnETCohorts
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
                             sumCanopyFrac += c.LastLAI / c.SpeciesPnET.MaxLAI;
                         }
-                        sumCanopyFrac = sumCanopyFrac / Globals.IMAX;
+                        sumCanopyFrac /= Globals.IMAX;
                         foreach (int r in random_range[b]) // sublayers within main canopy b
                         {
                             subCanopyIndex++;

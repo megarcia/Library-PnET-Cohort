@@ -4,131 +4,129 @@ using System.Collections.Generic;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class EstablishmentProbability : IEstablishmentProbability
+    public class ProbEstablishment : IProbEstablishment
     {
-        private LocalOutput establishment_siteoutput;
-        private List<ISpeciesPnET> _hasEstablished;
-        private Dictionary<ISpeciesPnET, float> _pest;
-        private Dictionary<ISpeciesPnET, float> _fWater;
-        private Dictionary<ISpeciesPnET, float> _fRad;
+        private List<ISpeciesPnET> establishedSpecies;
+        private Dictionary<ISpeciesPnET, float> speciesProbEstablishment;
+        private Dictionary<ISpeciesPnET, float> speciesFWater;
+        private Dictionary<ISpeciesPnET, float> speciesFRad;
+        private LocalOutput probEstablishmentSiteOutput;
 
-        public bool HasEstablished(ISpeciesPnET species)
-        {
-            return _hasEstablished.Contains(species);
-        }
-       
-        public Landis.Library.Parameters.Species.AuxParm<float> Probability
+        public Library.Parameters.Species.AuxParm<float> SpeciesProbEstablishment
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<float> probability = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
-                foreach (ISpecies spc in Globals.ModelCore.Species)
+                Library.Parameters.Species.AuxParm<float> SpeciesProbEstablishment = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
+                foreach (ISpecies species in Globals.ModelCore.Species)
                 {
-                    ISpeciesPnET speciespnet = SpeciesParameters.SpeciesPnET[spc];
-                    probability[spc] = _pest[speciespnet];
+                    ISpeciesPnET speciespnet = SpeciesParameters.SpeciesPnET[species];
+                    SpeciesProbEstablishment[species] = speciesProbEstablishment[speciespnet];
                 }
-
-                return probability; //0.0-1.0 index
+                return SpeciesProbEstablishment; // 0.0-1.0 index
             }
         }
 
-        public float Get_FWater(ISpeciesPnET species)
+        public ProbEstablishment(string SiteOutputName, string FileName)
+        {
+            Reset();
+            if (SiteOutputName != null && FileName != null)
+                probEstablishmentSiteOutput = new LocalOutput(SiteOutputName, "Establishment.csv", OutputHeader);
+        }
+
+        public float GetSpeciesFWater(ISpeciesPnET species)
         {
             {
-                return _fWater[species];
+                return speciesFWater[species];
             }
         }
 
-        public float Get_FRad(ISpeciesPnET species)
+        public float GetSpeciesFRad(ISpeciesPnET species)
         {
             {
-                return _fRad[species];
+                return speciesFRad[species];
             }
         }
 
-        public string Header
+        public string OutputHeader
         {
             get
             {
-                return "Year" + "," + "Species" + "," + "Pest" + "," + "FWater_Avg" +"," + "FRad_Avg" +","+"ActiveMonths"+"," + "Est";
+                return "Year,Species,ProbEstablishment,FWater_Avg,FRad_Avg,ActiveMonths,IsEstablished";
             }
         }
 
-        public Dictionary<ISpeciesPnET,float> CalcEstablishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat, bool invertPest, float fracRootAboveFrost)
+        public Dictionary<ISpeciesPnET,float> CalcProbEstablishmentForMonth(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat, bool invertProbEstablishment, float fracRootAboveFrost)
         {
-            Dictionary<ISpeciesPnET, float> estabDict = new Dictionary<ISpeciesPnET, float>();
+            Dictionary<ISpeciesPnET, float> speciesProbEstablishment = new Dictionary<ISpeciesPnET, float>();
             float halfSatRange = maxHalfSat - minHalfSat;
-            foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
+            foreach (ISpeciesPnET species in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
-                if (pnetvars.Tmin > spc.PsnTmin && pnetvars.Tmax < spc.PsnTmax && fracRootAboveFrost > 0)
+                if (pnetvars.Tmin > species.PsnTmin && pnetvars.Tmax < species.PsnTmax && fracRootAboveFrost > 0)
                 {
                     // Adjust HalfSat for CO2 effect
-                    float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
-                    float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
-                    float fRad = (float)Math.Min(1.0,Math.Pow(Cohort.CalcFRad(PAR, adjHalfSat),2) * (1/Math.Pow(spc.EstRad,2)));
-                    float adjFRad = fRad;
-                    // Optional adjustment to invert Pest based on relative halfSat
-                    if (invertPest && halfSatRange > 0)
+                    float halfSatIntercept = species.HalfSat - Constants.CO2RefConc * species.CO2HalfSatEff;
+                    float adjHalfSat = species.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
+                    float fRad = (float)Math.Min(1.0, Math.Pow(Cohort.CalcFRad(PAR, adjHalfSat), 2) * (1 / Math.Pow(species.EstRad, 2)));
+                    float fRad_adj = fRad;
+                    // Optional adjustment to invert ProbEstablishment based on relative halfSat
+                    if (invertProbEstablishment && halfSatRange > 0)
                     {
-                        float fRad_adj_int = (spc.HalfSat - minHalfSat) / halfSatRange;
-                        float fRad_slope = (fRad_adj_int * 2) - 1;
-                        adjFRad = 1 - fRad_adj_int + fRad * fRad_slope;
+                        float fRad_adj_intercept = (species.HalfSat - minHalfSat) / halfSatRange;
+                        float fRad_adj_slope = (fRad_adj_intercept * 2) - 1;
+                        fRad_adj = 1 - fRad_adj_intercept + fRad * fRad_adj_slope;
                     }
-                    float PressureHead = hydrology.PressureHeadTable.CalcWaterContent(hydrology.SoilWaterContent, ecoregion.SoilType);
-                    float fWater = (float)Math.Min(1.0,Math.Pow(Cohort.CalcFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), 2) * (1/Math.Pow(spc.EstMoist,2)));
-                    float pest = (float) Math.Min(1.0,adjFRad * fWater);
-                    estabDict[spc] = pest;
-                    _fWater[spc] = fWater;
-                    _fRad[spc] = adjFRad;
+                    float soilWaterPressureHead = hydrology.PressureHeadTable.CalcWaterContent(hydrology.SoilWaterContent, ecoregion.SoilType);
+                    float fWater = (float)Math.Min(1.0, Math.Pow(Cohort.CalcFWater(species.H1,species.H2, species.H3, species.H4, soilWaterPressureHead), 2) * (1 / Math.Pow(species.EstMoist, 2)));
+                    float probEstablishment = (float) Math.Min(1.0, fRad_adj * fWater);
+                    speciesProbEstablishment[species] = probEstablishment;
+                    speciesFWater[species] = fWater;
+                    speciesFRad[species] = fRad_adj;
                 }                
             }
-
-            return estabDict;
+            return speciesProbEstablishment;
         }
 
-        public void ResetPerTimeStep()
+        public bool IsEstablishedSpecies(ISpeciesPnET species)
         {
-            _pest = new Dictionary<ISpeciesPnET, float>();
-            _fWater = new Dictionary<ISpeciesPnET, float>();
-            _fRad = new Dictionary<ISpeciesPnET, float>();
-            _hasEstablished = new List<ISpeciesPnET>();
-            foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
-            {
-                _pest.Add(spc, 0);
-                _fWater.Add(spc, 0);
-                _fRad.Add(spc, 0);
-            }
+            return establishedSpecies.Contains(species);
         }
-
-        public EstablishmentProbability(string SiteOutputName, string FileName)
+       
+        public void AddEstablishedSpecies(ISpeciesPnET species)
         {
-            ResetPerTimeStep();
-            if (SiteOutputName != null && FileName != null)
-                establishment_siteoutput = new LocalOutput(SiteOutputName, "Establishment.csv", Header);
-        }
-
-        public void EstablishmentTrue(ISpeciesPnET spc)
-        {
-            _hasEstablished.Add(spc);
+            establishedSpecies.Add(species);
         }
         
-        public void RecordPest(int year, ISpeciesPnET spc, float annualPest, float annualfWater, float annualfRad, bool estab, int monthCount)
+        public void RecordProbEstablishment(int year, ISpeciesPnET species, float annualProbEstablishment, float annualFWater, float annualFRad, bool established, int monthCount)
         {
-            if (estab)
+            if (established)
             {
-                if (HasEstablished(spc) == false)
-                    _hasEstablished.Add(spc);
+                if (! IsEstablishedSpecies(species))
+                    establishedSpecies.Add(species);
             }
-            if (establishment_siteoutput != null)
+            if (probEstablishmentSiteOutput != null)
             {
                 if (monthCount == 0)
-                    establishment_siteoutput.Add(year.ToString() + "," + spc.Name + "," + annualPest + "," + 0 + "," + 0 + ","+0+"," + HasEstablished(spc));
+                    probEstablishmentSiteOutput.Add(year.ToString() + "," + species.Name + "," + annualProbEstablishment + "," + 0 + "," + 0 + "," + 0 + "," + IsEstablishedSpecies(species));
                 else
-                    establishment_siteoutput.Add(year.ToString() + "," + spc.Name + "," + annualPest + "," + annualfWater + "," + annualfRad + ","+monthCount+"," + HasEstablished(spc));
-                establishment_siteoutput.Write();
+                    probEstablishmentSiteOutput.Add(year.ToString() + "," + species.Name + "," + annualProbEstablishment + "," + annualFWater + "," + annualFRad + "," + monthCount + "," + IsEstablishedSpecies(species));
+                probEstablishmentSiteOutput.Write();
             }
-            // Record annualPest to be accessed as Probability
-            _pest[spc] = annualPest;
+            // Record annualProbEstablishment to be accessed as speciesProbEstablishment
+            speciesProbEstablishment[species] = annualProbEstablishment;
+        }
+
+        public void Reset()
+        {
+            speciesProbEstablishment = new Dictionary<ISpeciesPnET, float>();
+            speciesFWater = new Dictionary<ISpeciesPnET, float>();
+            speciesFRad = new Dictionary<ISpeciesPnET, float>();
+            establishedSpecies = new List<ISpeciesPnET>();
+            foreach (ISpeciesPnET species in SpeciesParameters.SpeciesPnET.AllSpecies)
+            {
+                speciesProbEstablishment.Add(species, 0F);
+                speciesFWater.Add(species, 0F);
+                speciesFRad.Add(species, 0F);
+            }
         }
     }
 }

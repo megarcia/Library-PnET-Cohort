@@ -6,18 +6,23 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Molecular weight of C
         /// </summary>
-        public const float MC = 12;
+        public const float MC = 12F;
 
         /// <summary>
         /// Molecular weight of CO2
         /// </summary>
-        public const float MCO2 = 44;
+        public const float MCO2 = 44F;
 
         /// <summary>
         /// Molecular weight of CO2 relative to C 
         /// </summary>
         public const float MCO2_MC = MCO2 / MC;
 
+        /// <summary>
+        /// Reference atmospheric concentration of CO2 (ppm) )
+        /// </summary>
+        public const float CO2RefConc = 350F;
+        
         /// <summary>
         /// Seconds per hour
         /// </summary>
@@ -53,13 +58,13 @@ namespace Landis.Library.PnETCohorts
         /// heat capacity of solid portion of soil in kJ/m3.K 
         /// (Farouki 1986 in vanLier and Durigon 2013)
         /// </summary>
-        public const float HeatCapacitySoil = 1942;
+        public const float HeatCapacitySoil = 1942F;
 
         /// <summary>
         /// heat capacity of water in kJ/m3.K
         /// (vanLier and Durigon 2013)
         /// </summary>
-        public const float HeatCapacityWater = 4186;
+        public const float HeatCapacityWater = 4186F;
 
         /// <summary>
         /// thermal conductivity of air in kJ/m.d.K 
@@ -94,7 +99,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// angular velocity of Earth in radians/month
         /// </summary>
-        public const float omega = (float)System.Math.PI * 2 / 12;
+        public const float omega = (float)System.Math.PI * 2 / 12F;
 
         /// <summary>
         /// length of temp record in months
@@ -104,40 +109,40 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// intercept of function for bulk density of snow in kg/m3
         /// </summary>
-        public const float DensitySnow_intercept = 165.0f; 
+        public const float DensitySnow_intercept = 165.0F; 
 
         /// <summary>
         /// slope of function for bulk density of snow in kg/m3
         /// </summary>
-        public const float DensitySnow_slope = 1.3f; 
+        public const float DensitySnow_slope = 1.3F; 
 
         /// <summary>
         /// Density of water in kg/m3
         /// </summary>
-        public const float DensityWater = 1000.0f;  
+        public const float DensityWater = 1000.0F;  
 
         /// <summary>
         /// thermal conductivity of air in W/m.K 
         /// (CLM5 documentation, Table 2.7)
         /// </summary>
-        public const float ThermalConductivityAir_Watts = 0.023f; 
+        public const float ThermalConductivityAir_Watts = 0.023F; 
 
         /// <summary>
         /// thermal conductivity of ice in W/m.K 
         /// (CLM5 documentation, Table 2.7)
         /// </summary>
-        public const float ThermalConductivityIce_Watts = 2.29f; 
+        public const float ThermalConductivityIce_Watts = 2.29F; 
 
         /// <summary>
         /// heat capacity of snow, in J/kg.K 
         /// (https://www.engineeringtoolbox.com/specific-heat-capacity-d_391.html)
         /// </summary>
-        public const float snowHeatCapacity = 2090f;
+        public const float snowHeatCapacity = 2090.0F;
 
         /// <summary>
         /// minimum depth of snow (m) that counts as 
         /// full snow cover for albedo calculations
         /// </summary>
-        public const float snowReflectanceThreshold = 0.100f;  
+        public const float snowReflectanceThreshold = 0.1F;  
     }
 }

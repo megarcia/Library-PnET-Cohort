@@ -2,22 +2,22 @@
 
 namespace Landis.Library.PnETCohorts
 {
-    public interface IEstablishmentProbability
+    public interface IProbEstablishment
     {
-        Landis.Library.Parameters.Species.AuxParm<float> Probability { get; }
+        Library.Parameters.Species.AuxParm<float> SpeciesProbEstablishment { get; }
 
-        Dictionary<ISpeciesPnET,float> CalcEstablishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology, float minHalfSat, float maxHalfSat, bool invertPest, float fracRootAboveFrost);
+        float GetSpeciesFWater(ISpeciesPnET species);
 
-        void ResetPerTimeStep();
+        float GetSpeciesFRad(ISpeciesPnET species);
+
+        Dictionary<ISpeciesPnET, float> CalcProbEstablishmentForMonth(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology, float minHalfSat, float maxHalfSat, bool invertProbEstablishment, float fracRootAboveFrost);
          
-        bool HasEstablished(ISpeciesPnET species);
+        bool IsEstablishedSpecies(ISpeciesPnET species);
 
-        void EstablishmentTrue(ISpeciesPnET spc);
+        void AddEstablishedSpecies(ISpeciesPnET species);
 
-        void RecordPest(int year, ISpeciesPnET spc, float pest,float fWater,float fRad, bool estab, int monthCount);
+        void RecordProbEstablishment(int year, ISpeciesPnET species, float annualProbEstablishment, float annualFWater, float annualFRad, bool established, int monthCount);
 
-        float Get_FWater(ISpeciesPnET species);
-
-        float Get_FRad(ISpeciesPnET species);
+        void Reset();
     }
 }

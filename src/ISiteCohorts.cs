@@ -28,7 +28,7 @@ namespace Landis.Library.PnETCohorts
         int AverageAge { get; }
         Landis.Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<bool> SpeciesPresent { get; }
-        IEstablishmentProbability EstablishmentProbability { get; }
+        IProbEstablishment ProbEstablishment { get; }
         Landis.Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies { get; }

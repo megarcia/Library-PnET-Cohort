@@ -52,7 +52,7 @@ namespace Landis.Library.PnETCohorts
         private float potentialTranspiration;
         private double HeterotrophicRespiration;
         private Hydrology hydrology = null;
-        IEstablishmentProbability establishmentProbability = null;
+        IProbEstablishment probEstablishment = null;
         public ActiveSite Site;
         public Dictionary<ISpecies, List<Cohort>> cohorts = null;
         public List<ISpecies> SpeciesEstablishedByPlant = null;
@@ -81,7 +81,7 @@ namespace Landis.Library.PnETCohorts
         private static int MaxLayer;
         private static bool soilIceDepth;
         private static bool permafrost;
-        private static bool invertPest;
+        private static bool invertProbEstablishment;
         public SortedList<float, float> depthTempDict = new SortedList<float, float>();  //for permafrost
         float lastTempBelowSnow = float.MaxValue;
         private static float maxHalfSat;
@@ -242,11 +242,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public IEstablishmentProbability EstablishmentProbability
+        public IProbEstablishment ProbEstablishment
         {
             get
             {
-                return establishmentProbability;
+                return probEstablishment;
             }
         }
 
@@ -299,7 +299,7 @@ namespace Landis.Library.PnETCohorts
             LayerThreshRatio = ((Parameter<float>)Names.GetParameter(Names.LayerThreshRatio, 0, float.MaxValue)).Value;
             MaxCanopyLayers = ((Parameter<byte>)Names.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
             soilIceDepth = ((Parameter<bool>)Names.GetParameter(Names.SoilIceDepth)).Value;
-            invertPest = ((Parameter<bool>)Names.GetParameter(Names.InvertPest)).Value;
+            invertProbEstablishment = ((Parameter<bool>)Names.GetParameter(Names.InvertPest)).Value;
             CohortStacking = ((Parameter<bool>)Names.GetParameter(Names.CohortStacking)).Value;
             CanopySumScale = ((Parameter<float>)Names.GetParameter(Names.CanopySumScale, 0f, 1f)).Value;
             permafrost = false;
@@ -376,10 +376,10 @@ namespace Landis.Library.PnETCohorts
             if (SiteOutputName != null)
             {
                 this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", Header(site));
-                establishmentProbability = new EstablishmentProbability(SiteOutputName, "Establishment.csv");
+                probEstablishment = new ProbEstablishment(SiteOutputName, "Establishment.csv");
             }
             else
-                establishmentProbability = new EstablishmentProbability(null, null);
+                probEstablishment = new ProbEstablishment(null, null);
             bool biomassProvided = false;
             foreach (Landis.Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
             {
@@ -1049,10 +1049,10 @@ namespace Landis.Library.PnETCohorts
                 if (SiteOutputName != null)
                 {
                     this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", Header(site));
-                    establishmentProbability = new EstablishmentProbability(SiteOutputName, "Establishment.csv");
+                    probEstablishment = new ProbEstablishment(SiteOutputName, "Establishment.csv");
                 }
                 else
-                    establishmentProbability = new EstablishmentProbability(null, null);
+                    probEstablishment = new ProbEstablishment(null, null);
                 subcanopypar = initialSites[key].subcanopypar;
                 subcanopyparmax = initialSites[key].SubCanopyParMAX;
                 avgSoilWaterContent = initialSites[key].wateravg;
@@ -1225,7 +1225,7 @@ namespace Landis.Library.PnETCohorts
             bool success = true;
             float sumPressureHead = 0;
             int countPressureHead = 0;
-            establishmentProbability.ResetPerTimeStep();
+            probEstablishment.Reset();
             canopylaimax = float.MinValue;
             int tempMaxCanopyLayers = MaxCanopyLayers;
             if (CohortStacking)
@@ -2076,7 +2076,7 @@ namespace Landis.Library.PnETCohorts
                 // Calculate establishment probability
                 if (Globals.ModelCore.CurrentTime > 0)
                 {
-                    establishmentProbability.CalcEstablishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat, invertPest, fracRootAboveFrost);
+                    probEstablishment.CalcProbEstablishmentForMonth(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat, invertProbEstablishment, fracRootAboveFrost);
                     foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
                     {
                         if (annualFWater.ContainsKey(spc))
@@ -2084,8 +2084,8 @@ namespace Landis.Library.PnETCohorts
                             if (data[m].Tmin > spc.PsnTmin && data[m].Tmax < spc.PsnTmax && fracRootAboveFrost > 0) // Active growing season
                             {
                                 // Store monthly values for later averaging
-                                annualFWater[spc].Add(establishmentProbability.Get_FWater(spc));
-                                annualFRad[spc].Add(establishmentProbability.Get_FRad(spc));
+                                annualFWater[spc].Add(probEstablishment.GetSpeciesFWater(spc));
+                                annualFRad[spc].Add(probEstablishment.GetSpeciesFRad(spc));
                             }
                         }
                     }
@@ -2185,11 +2185,11 @@ namespace Landis.Library.PnETCohorts
                     {
                         if (pest > (float)Statistics.ContinuousUniformRandom())
                         {
-                            establishmentProbability.EstablishmentTrue(spc);
+                            probEstablishment.AddEstablishedSpecies(spc);
                             estab = true;
                         }
                     }
-                    EstablishmentProbability.RecordPest(Globals.ModelCore.CurrentTime, spc, pest, cumulativeFWater[spc], cumulativeFRad[spc], estab, monthlyCount[spc]);
+                    ProbEstablishment.RecordProbEstablishment(Globals.ModelCore.CurrentTime, spc, pest, cumulativeFWater[spc], cumulativeFRad[spc], estab, monthlyCount[spc]);
                 }
             }
             if (siteoutput != null && outputCohortData)

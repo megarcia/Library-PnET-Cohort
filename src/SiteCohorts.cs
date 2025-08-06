@@ -258,7 +258,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float avgSoilWaterContent
+        public float AvgSoilWaterContent
         {
             get
             {
@@ -842,9 +842,7 @@ namespace Landis.Library.PnETCohorts
                             cohort.ChangeBiomass((int)Math.Round((newTotalBiomass - cohort.TotalBiomass) * 1f / 1f));
                         }
                         else
-                        {
                             cohort.Fol = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
-                        }
                         float cohortLAI = 0;
                         for (int i = 0; i < Globals.IMAX; i++)
                             cohortLAI += cohort.CalcLAI(cohort.SpeciesPnET, cohort.Fol, i, cohortLAI);
@@ -867,7 +865,6 @@ namespace Landis.Library.PnETCohorts
                         {
                             badSpinup = true;
                             break;
-                            //Globals.ModelCore.UI.WriteLine("Warning:");
                         }
                         cohortIndex++;
                     }
@@ -1434,12 +1431,14 @@ namespace Landis.Library.PnETCohorts
                     float soilWaterContent = hydrology.SoilWaterContent;// volumetric m/m
                     float soilPorosity = Ecoregion.Porosity;  // volumetric m/m 
                     float ga = 0.035F + 0.298F * (soilWaterContent / soilPorosity);
-                    float Fa = (2.0F / 3.0F / (1.0F + ga * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))) + (1.0F / 3.0F / (1.0F + (1.0F - 2.0F * ga) * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))); // ratio of air temp gradient
+                    // ratio of air temp gradient
+                    float Fa = (2.0F / 3.0F / (1.0F + ga * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))) + (1.0F / 3.0F / (1.0F + (1.0F - 2.0F * ga) * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F)));
                     float Fs = Hydrology_SaxtonRawls.GetFs(Ecoregion.SoilType);
                     float ThermalConductivitySoil = Hydrology_SaxtonRawls.GetThermalConductivitySoil(Ecoregion.SoilType);
-                    float ThermalConductivity_theta = (Fs * (1.0F - soilPorosity) * ThermalConductivitySoil + Fa * (soilPorosity - soilWaterContent) * Constants.ThermalConductivityAir_kJperday + soilWaterContent * Constants.ThermalConductivityWater_kJperday) / (Fs * (1.0F - soilPorosity) + Fa * (soilPorosity - soilWaterContent) + soilWaterContent); //soil thermal conductivity (kJ/m/d/K)
-                    float D = ThermalConductivity_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  //m2/day
-                    float Dmms = D * 1000000 / 86400; //mm2/s
+                    // soil thermal conductivity (kJ/m.d.K)
+                    float ThermalConductivity_theta = (Fs * (1.0F - soilPorosity) * ThermalConductivitySoil + Fa * (soilPorosity - soilWaterContent) * Constants.ThermalConductivityAir_kJperday + soilWaterContent * Constants.ThermalConductivityWater_kJperday) / (Fs * (1.0F - soilPorosity) + Fa * (soilPorosity - soilWaterContent) + soilWaterContent);
+                    float D = ThermalConductivity_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  // m2/day
+                    float Dmms = D * 1000000 / 86400; // mm2/s
                     soilDiffusivity = Dmms;
                     float Dmonth = D * data[m].DaySpan; // m2/month
                     float ks = Dmonth * 1000000F / (data[m].DaySpan * Constants.SecondsPerDay); // mm2/s
@@ -1590,7 +1589,8 @@ namespace Landis.Library.PnETCohorts
                         {
                             float newFrozenSoil = fracNewFrozenSoil * Ecoregion.RootingDepth;
                             bool successpct = hydrology.SetFrozenSoilWaterContent(((hydrology.FrozenSoilDepth * hydrology.FrozenSoilWaterContent) + (newFrozenSoil * hydrology.SoilWaterContent)) / (hydrology.FrozenSoilDepth + newFrozenSoil));
-                            bool successdepth = hydrology.SetFrozenSoilDepth(Ecoregion.RootingDepth * fracRootBelowFrost); // Volume of rooting soil that is frozen                                                                                                                       
+                            // Volume of rooting soil that is frozen
+                            bool successdepth = hydrology.SetFrozenSoilDepth(Ecoregion.RootingDepth * fracRootBelowFrost);
                             // SoilWaterContent is a volumetric value (mm/m) so frozen water does not need to be removed, as the concentration stays the same
                         }
                     }
@@ -1601,7 +1601,8 @@ namespace Landis.Library.PnETCohorts
                         float thawedWater = fracThawed * hydrology.FrozenSoilWaterContent;
                         float newWaterContent = (existingWater + thawedWater) / fracRootAboveFrost;
                         hydrology.AddWater(newWaterContent - hydrology.SoilWaterContent, Ecoregion.RootingDepth * fracRootBelowFrost);
-                        bool successdepth = hydrology.SetFrozenSoilDepth(Ecoregion.RootingDepth * fracRootBelowFrost);  // Volume of rooting soil that is frozen
+                        // Volume of rooting soil that is frozen
+                        bool successdepth = hydrology.SetFrozenSoilDepth(Ecoregion.RootingDepth * fracRootBelowFrost);  
                     }
                     float leakageFrostReduction = 1.0F;
                     if ((activeLayerDepth[data[m].Month - 1] * 1000) < (Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth))
@@ -1615,7 +1616,8 @@ namespace Landis.Library.PnETCohorts
                     lastFracBelowFrost = fracRootBelowFrost;
                 }
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
-                if (data[m].Prec < 0) throw new System.Exception("Error, this.data[m].Prec = " + data[m].Prec + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                if (data[m].Prec < 0)
+                    throw new System.Exception("Error, this.data[m].Prec = " + data[m].Prec + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 // Calculate abovecanopy reference daily ET
                 float ReferenceET = hydrology.CalcReferenceET_Hamon(data[m].Tavg, data[m].DayLength); //mm/day
                 float newrain = data[m].Prec - newSnow;
@@ -1629,8 +1631,10 @@ namespace Landis.Library.PnETCohorts
                 float precin = surfaceRain - precLoss;
                 if (precin < 0)
                     throw new System.Exception("Error, precin = " + precin + " newSnow = " + newSnow + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                int numEvents = Ecoregion.PrecipEvents;  // maximum number of precipitation events per month
-                float PrecInByEvent = precin / numEvents;  // Divide precip into discreet events within the month
+                // maximum number of precipitation events per month
+                int numEvents = Ecoregion.PrecipEvents;
+                // Divide precip into discrete events within the month
+                float PrecInByEvent = precin / numEvents;
                 if (PrecInByEvent < 0)
                     throw new System.Exception("Error, PrecInByEvent = " + PrecInByEvent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 if (fracRootAboveFrost >= 1)
@@ -1645,16 +1649,18 @@ namespace Landis.Library.PnETCohorts
                 // Randomly choose which layers will receive the precip events
                 // If # of layers < precipEvents, some layers will show up multiple times in number list.  This ensures the same number of precip events regardless of the number of cohorts
                 List<int> randomNumbers = new List<int>();
-                if (PrecipEventsWithReplacement)// Sublayer selection with replacement
+                if (PrecipEventsWithReplacement)
                 {
+                    // Sublayer selection with replacement    
                     while (randomNumbers.Count < numEvents)
                     {
                         int rand = Statistics.DiscreteUniformRandom(1, SubCanopyCohorts.Count());
                         randomNumbers.Add(rand);
                     }
                 }
-                else // Sublayer selection without replacement
+                else
                 {
+                    // Sublayer selection without replacement
                     if (SubCanopyCohorts.Count() > 0)
                     {
                         while (randomNumbers.Count < numEvents)
@@ -1702,17 +1708,20 @@ namespace Landis.Library.PnETCohorts
                 float[] layerSumCanopyFrac = new float[layerCount];
                 if (LayeredBins != null && LayeredBins.Count() > 0)
                 {
-                    for (int b = LayeredBins.Count() - 1; b >= 0; b--) // main canopy layers
+                    // main canopy layers
+                    for (int b = LayeredBins.Count() - 1; b >= 0; b--)
                     {
-                        foreach (int r in random_range[b]) // sublayers within main canopy b
+                        // sublayers within main canopy b
+                        foreach (int r in random_range[b])
                         {
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
                             // A cohort cannot be reduced to a lower layer once it reaches a higher layer
                             c.Layer = (byte)b;
                         }
                     }
-                    for (int b = LayeredBins.Count() - 1; b >= 0; b--) // main canopy layers
+                    for (int b = LayeredBins.Count() - 1; b >= 0; b--)
                     {
+                        // main canopy layers
                         float mainLayerPARweightedSum = 0;
                         float mainLayerLAIweightedSum = 0;
                         float mainLayerPAR = subcanopypar;
@@ -1720,14 +1729,16 @@ namespace Landis.Library.PnETCohorts
                         float mainLayerCanopyFrac = 0;
                         // Estimate layer SumCanopyFrac
                         float sumCanopyFrac = 0;
-                        foreach (int r in random_range[b]) // sublayers within main canopy b
+                        foreach (int r in random_range[b])
                         {
+                            // sublayers within main canopy b
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
                             sumCanopyFrac += c.LastLAI / c.SpeciesPnET.MaxLAI;
                         }
                         sumCanopyFrac /= Globals.IMAX;
-                        foreach (int r in random_range[b]) // sublayers within main canopy b
+                        foreach (int r in random_range[b])
                         {
+                            // sublayers within main canopy b
                             subCanopyIndex++;
                             int precipCount = 0;
                             subCanopyPrecip = 0;
@@ -1864,11 +1875,13 @@ namespace Landis.Library.PnETCohorts
                         }
                         else
                             subcanopypar = mainLayerPAR;
-                    } // end main canopy layer loop
+                    }
+                    // end main canopy layer loop
                     hydrology.PotentialET += PotentialETcumulative;
                 }
-                else // When no cohorts are present
+                else
                 {
+                    // When no cohorts are present
                     if (MeltInWater > 0)
                     {
                         // Add melted snow to soil moisture
@@ -2158,7 +2171,7 @@ namespace Landis.Library.PnETCohorts
             }
             // Above is monthly loop                           
             // Below runs once per timestep
-            avgSoilWaterContent = avgSoilWaterContent / data.Count(); // convert to average value
+            avgSoilWaterContent /= data.Count(); // convert to average value
             if (Globals.ModelCore.CurrentTime > 0)
             {
                 foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)

@@ -3,6 +3,11 @@
     public interface IEcoregionPnET : Landis.Core.IEcoregion
     {
         /// <summary>
+        /// Ecoregion name
+        /// </summary>
+        string Name { get; } 
+
+        /// <summary>
         /// Fraction of water above field capacity that drains out of the soil rooting zone immediately after entering the soil (fast leakage)
         /// </summary>
         float LeakageFrac{ get; }
@@ -17,6 +22,9 @@
         /// </summary>
         float PrecLossFrac { get; } 
 
+        /// <summary>
+        /// Ecoregion soil type descriptor 
+        /// </summary>
         string SoilType { get; }
 
         /// <summary>
@@ -53,6 +61,9 @@
 
         int PrecipEvents { get; }
 
+        /// <summary>
+        /// Ecoregion latitude
+        /// </summary>
         float Latitude { get; } 
 
         float WinterSTD { get; }

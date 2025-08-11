@@ -22,7 +22,7 @@ namespace Landis.Library.PnETCohorts
         #endregion
 
         #region constructor
-        public ClimateRegionPnETVariables(MonthlyClimateRecord monthlyClimateRecord, DateTime date, bool wythers, bool dTemp, List<ISpeciesPnET> Species, float latitude)
+        public ClimateRegionPnETVariables(MonthlyClimateRecord monthlyClimateRecord, DateTime date, bool wythers, bool dTemp, List<IPnETSpecies> Species, float latitude)
         {
             _monthlyClimateRecord = monthlyClimateRecord;
             _date = date;
@@ -34,7 +34,7 @@ namespace Landis.Library.PnETCohorts
             float nightLength = EcoregionPnETVariables.CalcNightLength(hr);
             _tday = (float)(0.5 * (monthlyClimateRecord.Tmax + _tavg));
             _vpd = EcoregionPnETVariables.CalcVPD(Tday, (float)monthlyClimateRecord.Tmin);
-            foreach (ISpeciesPnET spc in Species)
+            foreach (IPnETSpecies spc in Species)
             {
                 SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, dayLength, nightLength, spc);
                 speciesVariables.Add(spc.Name, speciespnetvars);
@@ -63,7 +63,7 @@ namespace Landis.Library.PnETCohorts
         #endregion
 
         #region private methods
-        private SpeciesPnETVariables GetSpeciesVariables(MonthlyClimateRecord monthlyClimateRecord, bool wythers, bool dTemp, float dayLength, float nightLength, ISpeciesPnET spc)
+        private SpeciesPnETVariables GetSpeciesVariables(MonthlyClimateRecord monthlyClimateRecord, bool wythers, bool dTemp, float dayLength, float nightLength, IPnETSpecies spc)
         {
             // Class that contains species specific PnET variables for a certain month
             SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();

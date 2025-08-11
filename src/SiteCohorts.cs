@@ -317,7 +317,7 @@ namespace Landis.Library.PnETCohorts
                 PrecipEventsWithReplacement = false;
             maxHalfSat = 0;
             minHalfSat = float.MaxValue;
-            foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
+            foreach (IPnETSpecies spc in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
                 if (spc.HalfSat > maxHalfSat)
                     maxHalfSat = spc.HalfSat;
@@ -1304,15 +1304,15 @@ namespace Landis.Library.PnETCohorts
             monthlyActualET = new float[13];
             monthlyPotentialEvap = new float[13];
             monthlyPotentialTrans = new float[13];
-            Dictionary<ISpeciesPnET, float> cumulativeEstab = new Dictionary<ISpeciesPnET, float>();
-            Dictionary<ISpeciesPnET, List<float>> annualFWater = new Dictionary<ISpeciesPnET, List<float>>();
-            Dictionary<ISpeciesPnET, float> cumulativeFWater = new Dictionary<ISpeciesPnET, float>();
-            Dictionary<ISpeciesPnET, List<float>> annualFRad = new Dictionary<ISpeciesPnET, List<float>>();
-            Dictionary<ISpeciesPnET, float> cumulativeFRad = new Dictionary<ISpeciesPnET, float>();
-            Dictionary<ISpeciesPnET, float> monthlyEstab = new Dictionary<ISpeciesPnET, float>();
-            Dictionary<ISpeciesPnET, int> monthlyCount = new Dictionary<ISpeciesPnET, int>();
-            Dictionary<ISpeciesPnET, int> coldKillMonth = new Dictionary<ISpeciesPnET, int>(); // month in which cold kills each species
-            foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
+            Dictionary<IPnETSpecies, float> cumulativeEstab = new Dictionary<IPnETSpecies, float>();
+            Dictionary<IPnETSpecies, List<float>> annualFWater = new Dictionary<IPnETSpecies, List<float>>();
+            Dictionary<IPnETSpecies, float> cumulativeFWater = new Dictionary<IPnETSpecies, float>();
+            Dictionary<IPnETSpecies, List<float>> annualFRad = new Dictionary<IPnETSpecies, List<float>>();
+            Dictionary<IPnETSpecies, float> cumulativeFRad = new Dictionary<IPnETSpecies, float>();
+            Dictionary<IPnETSpecies, float> monthlyEstab = new Dictionary<IPnETSpecies, float>();
+            Dictionary<IPnETSpecies, int> monthlyCount = new Dictionary<IPnETSpecies, int>();
+            Dictionary<IPnETSpecies, int> coldKillMonth = new Dictionary<IPnETSpecies, int>(); // month in which cold kills each species
+            foreach (IPnETSpecies spc in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
                 cumulativeEstab[spc] = 1;
                 annualFWater[spc] = new List<float>();
@@ -1344,7 +1344,7 @@ namespace Landis.Library.PnETCohorts
                     }
                 }
                 SiteVars.ExtremeMinTemp[Site] = extremeMinTemp;
-                foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
+                foreach (IPnETSpecies spc in SpeciesParameters.SpeciesPnET.AllSpecies)
                 {
                     // Check if low temp kills species
                     if (extremeMinTemp < spc.ColdTol)
@@ -1690,7 +1690,7 @@ namespace Landis.Library.PnETCohorts
                 if (m > 0)
                     lastO3 = data[m - 1].O3 / 1000f;
                 float O3_ppmh_month = Math.Max(0, O3_ppmh - lastO3);
-                List<ISpeciesPnET> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
+                List<IPnETSpecies> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
                 Dictionary<string, float> DelAmax_spp = new Dictionary<string, float>();
                 Dictionary<string, float> JCO2_spp = new Dictionary<string, float>();
                 Dictionary<string, float> Amax_spp = new Dictionary<string, float>();
@@ -1758,7 +1758,7 @@ namespace Landis.Library.PnETCohorts
                                 }
                             }
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
-                            ISpeciesPnET spc = c.SpeciesPnET;
+                            IPnETSpecies spc = c.SpeciesPnET;
                             if (coldKillMonth[spc] == m)
                                 coldKillBoolean = true;
                             float FOzone = lastOzoneEffect[subCanopyIndex - 1];
@@ -2082,7 +2082,7 @@ namespace Landis.Library.PnETCohorts
                 if (Globals.ModelCore.CurrentTime > 0)
                 {
                     probEstablishment.CalcProbEstablishmentForMonth(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat, invertProbEstablishment, fracRootAboveFrost);
-                    foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
+                    foreach (IPnETSpecies spc in SpeciesParameters.SpeciesPnET.AllSpecies)
                     {
                         if (annualFWater.ContainsKey(spc))
                         {
@@ -2136,7 +2136,7 @@ namespace Landis.Library.PnETCohorts
                     // When > 3 months of growing season, exlcude 1st month, assuming trees focus on foliage growth in first month
                     // When > 4 months, ignore the 4th month and beyond as not primarily relevant for establishment
                     // When < 3 months, include all months
-                    foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
+                    foreach (IPnETSpecies spc in SpeciesParameters.SpeciesPnET.AllSpecies)
                     {
                         if (annualFWater[spc].Count > 3)
                         {
@@ -2174,7 +2174,7 @@ namespace Landis.Library.PnETCohorts
             avgSoilWaterContent /= data.Count(); // convert to average value
             if (Globals.ModelCore.CurrentTime > 0)
             {
-                foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
+                foreach (IPnETSpecies spc in SpeciesParameters.SpeciesPnET.AllSpecies)
                 {
                     bool estab = false;
                     float pest = 0;
@@ -3436,7 +3436,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public void AddLitter(float AddLitter, ISpeciesPnET spc)
+        public void AddLitter(float AddLitter, IPnETSpecies spc)
         {
             lock (Globals.litterThreadLock)
             {

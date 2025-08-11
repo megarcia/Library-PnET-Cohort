@@ -8,9 +8,9 @@ namespace Landis.Library.PnETCohorts
     /// <summary>
     /// The information for a tree species (its index and parameters).
     /// </summary>
-    public class SpeciesPnET : ISpeciesPnET
+    public class SpeciesPnET : IPnETSpecies
     {
-        static List<Tuple<ISpecies, ISpeciesPnET>> SpeciesCombinations;
+        static List<Tuple<ISpecies, IPnETSpecies>> SpeciesCombinations;
 
         #region private variables
         private float _co2HalfSatEff;
@@ -240,11 +240,11 @@ namespace Landis.Library.PnETCohorts
             }
             #endregion
 
-            SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPnET>>();
+            SpeciesCombinations = new List<Tuple<ISpecies, IPnETSpecies>>();
             foreach (ISpecies spc in Globals.ModelCore.Species)
             {
                 SpeciesPnET species = new SpeciesPnET(spc);
-                SpeciesCombinations.Add(new Tuple<ISpecies, ISpeciesPnET>(spc, species));
+                SpeciesCombinations.Add(new Tuple<ISpecies, IPnETSpecies>(spc, species));
             }
         }
 
@@ -411,7 +411,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         #region Accessors
-        public List<ISpeciesPnET> AllSpecies
+        public List<IPnETSpecies> AllSpecies
         {
             get
             {
@@ -419,7 +419,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public ISpeciesPnET this[ISpecies species]
+        public IPnETSpecies this[ISpecies species]
         {
             get
             {
@@ -427,7 +427,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public ISpecies this[ISpeciesPnET species]
+        public ISpecies this[IPnETSpecies species]
         {
             get
             {

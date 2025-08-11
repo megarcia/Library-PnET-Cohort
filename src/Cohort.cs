@@ -14,10 +14,10 @@ namespace Landis.Library.PnETCohorts
 {
     public class Cohort : Library.UniversalCohorts.Cohort, ICohort
     { 
-        public delegate void SubtractTranspiration(float transpiration, ISpeciesPnET Species);
+        public delegate void SubtractTranspiration(float transpiration, IPnETSpecies Species);
         public ushort index;
         private ISpecies species;
-        private ISpeciesPnET speciesPnET;
+        private IPnETSpecies speciesPnET;
         private CohortData data;
         private bool firstYear;
         private LocalOutput cohortoutput;
@@ -260,7 +260,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Species with PnET parameter additions
         /// </summary>
-        public ISpeciesPnET SpeciesPnET
+        public IPnETSpecies SpeciesPnET
         {
             get
             {
@@ -773,7 +773,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         // Constructor
-        public Cohort(ISpecies species, ISpeciesPnET speciesPnET, ushort year_of_birth, string SiteName, double fracBiomass, bool cohortStacking) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
+        public Cohort(ISpecies species, IPnETSpecies speciesPnET, ushort year_of_birth, string SiteName, double fracBiomass, bool cohortStacking) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
         {
             this.species = species;
             this.speciesPnET = speciesPnET;
@@ -848,7 +848,7 @@ namespace Landis.Library.PnETCohorts
                 InitializeOutput(SiteName, firstYear);
         }
 
-        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, string SiteName, ushort firstYear, bool cohortStacking)
+        public Cohort(IPnETSpecies speciesPnET, ushort age, int woodBiomass, string SiteName, ushort firstYear, bool cohortStacking)
         {
             InitializeSubLayers();
             this.species = (ISpecies)speciesPnET;
@@ -890,7 +890,7 @@ namespace Landis.Library.PnETCohorts
                 InitializeOutput(SiteName, firstYear);
         }
 
-        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear, bool cohortStacking, float lastSeasonAvgFRad)
+        public Cohort(IPnETSpecies speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear, bool cohortStacking, float lastSeasonAvgFRad)
         {
             InitializeSubLayers();
             this.species = (ISpecies)speciesPnET;
@@ -1723,7 +1723,7 @@ namespace Landis.Library.PnETCohorts
             data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
         }
 
-        public float CalcLAI(ISpeciesPnET species, float fol, int index)
+        public float CalcLAI(IPnETSpecies species, float fol, int index)
         {
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
@@ -1748,7 +1748,7 @@ namespace Landis.Library.PnETCohorts
             return LAIlayer;
         }
 
-        public float CalcLAI(ISpeciesPnET species, float fol, int index, float cumulativeLAI)
+        public float CalcLAI(IPnETSpecies species, float fol, int index, float cumulativeLAI)
         {
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)

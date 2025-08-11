@@ -4,7 +4,7 @@ namespace Landis.Library.PnETCohorts
     /// <summary>
     /// The information for a tree species (its index and parameters).
     /// </summary>
-    public interface ISpeciesPnET : Landis.Core.ISpecies
+    public interface IPnETSpecies : Landis.Core.ISpecies
     {
         /// <summary>
         /// Carbon fraction in biomass 

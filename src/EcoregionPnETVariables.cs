@@ -312,7 +312,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public EcoregionPnETVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<ISpeciesPnET> Species, float Latitude)
+        public EcoregionPnETVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<IPnETSpecies> Species, float Latitude)
         {
             this._date = Date;
             this.obs_clim = climate_dataset;
@@ -324,14 +324,14 @@ namespace Landis.Library.PnETCohorts
             float nightLength = CalcNightLength(hr);
             _tday = CalcTday(Tavg, climate_dataset.Tmax);
             _vpd = CalcVPD(Tday, climate_dataset.Tmin);
-            foreach (ISpeciesPnET spc in Species)
+            foreach (IPnETSpecies spc in Species)
             {
                 SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, DayLength, nightLength, spc);
                 speciesVariables.Add(spc.Name, speciespnetvars);
             }
         }
 
-        private SpeciesPnETVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, bool DTemp, float dayLength, float nightLength, ISpeciesPnET spc)
+        private SpeciesPnETVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, bool DTemp, float dayLength, float nightLength, IPnETSpecies spc)
         {
             // Class that contains species specific PnET variables for a certain month
             SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();

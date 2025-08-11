@@ -6,10 +6,10 @@ namespace Landis.Library.PnETCohorts
 {
     public class ProbEstablishment : IProbEstablishment
     {
-        private List<ISpeciesPnET> establishedSpecies;
-        private Dictionary<ISpeciesPnET, float> speciesProbEstablishment;
-        private Dictionary<ISpeciesPnET, float> speciesFWater;
-        private Dictionary<ISpeciesPnET, float> speciesFRad;
+        private List<IPnETSpecies> establishedSpecies;
+        private Dictionary<IPnETSpecies, float> speciesProbEstablishment;
+        private Dictionary<IPnETSpecies, float> speciesFWater;
+        private Dictionary<IPnETSpecies, float> speciesFRad;
         private LocalOutput probEstablishmentSiteOutput;
 
         public Library.Parameters.Species.AuxParm<float> SpeciesProbEstablishment
@@ -19,7 +19,7 @@ namespace Landis.Library.PnETCohorts
                 Library.Parameters.Species.AuxParm<float> SpeciesProbEstablishment = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
                 foreach (ISpecies species in Globals.ModelCore.Species)
                 {
-                    ISpeciesPnET speciespnet = SpeciesParameters.SpeciesPnET[species];
+                    IPnETSpecies speciespnet = SpeciesParameters.SpeciesPnET[species];
                     SpeciesProbEstablishment[species] = speciesProbEstablishment[speciespnet];
                 }
                 return SpeciesProbEstablishment; // 0.0-1.0 index
@@ -33,14 +33,14 @@ namespace Landis.Library.PnETCohorts
                 probEstablishmentSiteOutput = new LocalOutput(SiteOutputName, "Establishment.csv", OutputHeader);
         }
 
-        public float GetSpeciesFWater(ISpeciesPnET species)
+        public float GetSpeciesFWater(IPnETSpecies species)
         {
             {
                 return speciesFWater[species];
             }
         }
 
-        public float GetSpeciesFRad(ISpeciesPnET species)
+        public float GetSpeciesFRad(IPnETSpecies species)
         {
             {
                 return speciesFRad[species];
@@ -55,11 +55,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Dictionary<ISpeciesPnET,float> CalcProbEstablishmentForMonth(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat, bool invertProbEstablishment, float fracRootAboveFrost)
+        public Dictionary<IPnETSpecies,float> CalcProbEstablishmentForMonth(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat, bool invertProbEstablishment, float fracRootAboveFrost)
         {
-            Dictionary<ISpeciesPnET, float> speciesProbEstablishment = new Dictionary<ISpeciesPnET, float>();
+            Dictionary<IPnETSpecies, float> speciesProbEstablishment = new Dictionary<IPnETSpecies, float>();
             float halfSatRange = maxHalfSat - minHalfSat;
-            foreach (ISpeciesPnET species in SpeciesParameters.SpeciesPnET.AllSpecies)
+            foreach (IPnETSpecies species in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
                 if (pnetvars.Tmin > species.PsnTmin && pnetvars.Tmax < species.PsnTmax && fracRootAboveFrost > 0)
                 {
@@ -86,17 +86,17 @@ namespace Landis.Library.PnETCohorts
             return speciesProbEstablishment;
         }
 
-        public bool IsEstablishedSpecies(ISpeciesPnET species)
+        public bool IsEstablishedSpecies(IPnETSpecies species)
         {
             return establishedSpecies.Contains(species);
         }
        
-        public void AddEstablishedSpecies(ISpeciesPnET species)
+        public void AddEstablishedSpecies(IPnETSpecies species)
         {
             establishedSpecies.Add(species);
         }
         
-        public void RecordProbEstablishment(int year, ISpeciesPnET species, float annualProbEstablishment, float annualFWater, float annualFRad, bool established, int monthCount)
+        public void RecordProbEstablishment(int year, IPnETSpecies species, float annualProbEstablishment, float annualFWater, float annualFRad, bool established, int monthCount)
         {
             if (established)
             {
@@ -117,11 +117,11 @@ namespace Landis.Library.PnETCohorts
 
         public void Reset()
         {
-            speciesProbEstablishment = new Dictionary<ISpeciesPnET, float>();
-            speciesFWater = new Dictionary<ISpeciesPnET, float>();
-            speciesFRad = new Dictionary<ISpeciesPnET, float>();
-            establishedSpecies = new List<ISpeciesPnET>();
-            foreach (ISpeciesPnET species in SpeciesParameters.SpeciesPnET.AllSpecies)
+            speciesProbEstablishment = new Dictionary<IPnETSpecies, float>();
+            speciesFWater = new Dictionary<IPnETSpecies, float>();
+            speciesFRad = new Dictionary<IPnETSpecies, float>();
+            establishedSpecies = new List<IPnETSpecies>();
+            foreach (IPnETSpecies species in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
                 speciesProbEstablishment.Add(species, 0F);
                 speciesFWater.Add(species, 0F);

@@ -18,7 +18,7 @@ namespace Landis.Library.PnETCohorts
         private float _tavg;
         private float _tday;
         private float _dayLength;
-        private Dictionary<string, SpeciesPnETVariables> speciesVariables;
+        private Dictionary<string, PnETSpeciesVariables> speciesVariables;
         #endregion
 
         #region constructor
@@ -26,7 +26,7 @@ namespace Landis.Library.PnETCohorts
         {
             _monthlyClimateRecord = monthlyClimateRecord;
             _date = date;
-            speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
+            speciesVariables = new Dictionary<string, PnETSpeciesVariables>();
             _tavg = (float)(0.5 * (monthlyClimateRecord.Tmin + monthlyClimateRecord.Tmax));
             _dayspan = EcoregionPnETVariables.CalcDaySpan(date.Month);
             float hr = EcoregionPnETVariables.CalcDaylightHrs(date.DayOfYear, latitude);
@@ -36,7 +36,7 @@ namespace Landis.Library.PnETCohorts
             _vpd = EcoregionPnETVariables.CalcVPD(Tday, (float)monthlyClimateRecord.Tmin);
             foreach (IPnETSpecies spc in Species)
             {
-                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, dayLength, nightLength, spc);
+                PnETSpeciesVariables speciespnetvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, dayLength, nightLength, spc);
                 speciesVariables.Add(spc.Name, speciespnetvars);
             }
         }
@@ -59,14 +59,14 @@ namespace Landis.Library.PnETCohorts
         public float Tmax => (float)_monthlyClimateRecord.Tmax;
         public float DayLength => _dayLength;
         public float SPEI => (float)_monthlyClimateRecord.SPEI;
-        public SpeciesPnETVariables this[string species] => speciesVariables[species];
+        public PnETSpeciesVariables this[string species] => speciesVariables[species];
         #endregion
 
         #region private methods
-        private SpeciesPnETVariables GetSpeciesVariables(MonthlyClimateRecord monthlyClimateRecord, bool wythers, bool dTemp, float dayLength, float nightLength, IPnETSpecies spc)
+        private PnETSpeciesVariables GetSpeciesVariables(MonthlyClimateRecord monthlyClimateRecord, bool wythers, bool dTemp, float dayLength, float nightLength, IPnETSpecies spc)
         {
             // Class that contains species specific PnET variables for a certain month
-            SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
+            PnETSpeciesVariables speciespnetvars = new PnETSpeciesVariables();
             // Gradient of effect of vapour pressure deficit on growth. 
             speciespnetvars.DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
             // ** CO2 effect on growth **

@@ -323,7 +323,7 @@ namespace Landis.Library.PnETCohorts
                             oldYear = date.Year;
                         }
                         var monthlyData = new MonthlyClimateRecord(ecoregion, date);
-                        List<IPnETSpecies> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
+                        List<IPnETSpecies> species = SpeciesParameters.PnETSpecies.AllSpecies.ToList();
                         IEcoregionPnETVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
                         all_values[ecoregion].Add(date, ecoregion_variables);
                     }
@@ -349,7 +349,7 @@ namespace Landis.Library.PnETCohorts
                     if (all_values[ecoregion].ContainsKey(date) == false)
                     {
                         IObservedClimate observedClimate = ObservedClimate.GetData(ecoregion, date);
-                        List<IPnETSpecies> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
+                        List<IPnETSpecies> species = SpeciesParameters.PnETSpecies.AllSpecies.ToList();
                         IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species, ecoregion.Latitude);
                         try
                         {

@@ -7,7 +7,7 @@ namespace Landis.Library.PnETCohorts
     public class SpeciesParameters
     {
         public static BiomassUtil biomass_util = new BiomassUtil();
-        public static SpeciesPnET SpeciesPnET;
+        public static PnETSpecies PnETSpecies;
 
         public static bool TryGetParameter(string label, out Parameter<string> parameter)
         {
@@ -46,9 +46,9 @@ namespace Landis.Library.PnETCohorts
             return p;
         }
 
-        public static void LoadParameters(SpeciesPnET modelSpecies)
+        public static void LoadParameters(PnETSpecies modelSpecies)
         {
-            SpeciesPnET = modelSpecies;
+            PnETSpecies = modelSpecies;
         }
     }
 }

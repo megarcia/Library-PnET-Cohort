@@ -1,7 +1,7 @@
 ﻿
 namespace Landis.Library.PnETCohorts
 {
-    public class SpeciesPnETVariables
+    public class PnETSpeciesVariables
     {
         /// <summary>
         /// Unitless respiration adjustment based on temperature: for output only

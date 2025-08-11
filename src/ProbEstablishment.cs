@@ -19,7 +19,7 @@ namespace Landis.Library.PnETCohorts
                 Library.Parameters.Species.AuxParm<float> SpeciesProbEstablishment = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
                 foreach (ISpecies species in Globals.ModelCore.Species)
                 {
-                    IPnETSpecies speciespnet = SpeciesParameters.SpeciesPnET[species];
+                    IPnETSpecies speciespnet = SpeciesParameters.PnETSpecies[species];
                     SpeciesProbEstablishment[species] = speciesProbEstablishment[speciespnet];
                 }
                 return SpeciesProbEstablishment; // 0.0-1.0 index
@@ -59,7 +59,7 @@ namespace Landis.Library.PnETCohorts
         {
             Dictionary<IPnETSpecies, float> speciesProbEstablishment = new Dictionary<IPnETSpecies, float>();
             float halfSatRange = maxHalfSat - minHalfSat;
-            foreach (IPnETSpecies species in SpeciesParameters.SpeciesPnET.AllSpecies)
+            foreach (IPnETSpecies species in SpeciesParameters.PnETSpecies.AllSpecies)
             {
                 if (pnetvars.Tmin > species.PsnTmin && pnetvars.Tmax < species.PsnTmax && fracRootAboveFrost > 0)
                 {
@@ -121,7 +121,7 @@ namespace Landis.Library.PnETCohorts
             speciesFWater = new Dictionary<IPnETSpecies, float>();
             speciesFRad = new Dictionary<IPnETSpecies, float>();
             establishedSpecies = new List<IPnETSpecies>();
-            foreach (IPnETSpecies species in SpeciesParameters.SpeciesPnET.AllSpecies)
+            foreach (IPnETSpecies species in SpeciesParameters.PnETSpecies.AllSpecies)
             {
                 speciesProbEstablishment.Add(species, 0F);
                 speciesFWater.Add(species, 0F);

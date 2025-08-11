@@ -8,7 +8,7 @@ namespace Landis.Library.PnETCohorts
     /// <summary>
     /// The information for a tree species (its index and parameters).
     /// </summary>
-    public class SpeciesPnET : IPnETSpecies
+    public class PnETSpecies : IPnETSpecies
     {
         static List<Tuple<ISpecies, IPnETSpecies>> SpeciesCombinations;
 
@@ -141,7 +141,7 @@ namespace Landis.Library.PnETCohorts
         private static Dictionary<ISpecies, string> lifeForm;
         #endregion
 
-        public SpeciesPnET()
+        public PnETSpecies()
         {
             #region initialize private static species variables
             co2HalfSatEff = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CO2HalfSatEff");
@@ -243,12 +243,12 @@ namespace Landis.Library.PnETCohorts
             SpeciesCombinations = new List<Tuple<ISpecies, IPnETSpecies>>();
             foreach (ISpecies spc in Globals.ModelCore.Species)
             {
-                SpeciesPnET species = new SpeciesPnET(spc);
+                PnETSpecies species = new PnETSpecies(spc);
                 SpeciesCombinations.Add(new Tuple<ISpecies, IPnETSpecies>(spc, species));
             }
         }
 
-        SpeciesPnET(PostFireRegeneration postFireGeneration,
+        PnETSpecies(PostFireRegeneration postFireGeneration,
                     float dnsc, float cfracbiomass, float kwdlit,
                     float fracbelowg, float fracfol, float fractWd,
                     float psnagered, float h1, float h2, float h3,
@@ -340,7 +340,7 @@ namespace Landis.Library.PnETCohorts
             this._maxLAI = maxLAI;
         }
 
-        private SpeciesPnET(ISpecies species)
+        private PnETSpecies(ISpecies species)
         {
             uint initBiomass = (uint)(initialnsc[species] / (dnsc[species] * cfracbiomass[species]));
             _initBiomass = (int)(initBiomass - ((uint)(fracbelowg[species] * initBiomass)) * toroot[species] - ((uint)((1 - fracbelowg[species]) * initBiomass) * towood[species]));
@@ -981,7 +981,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                System.Type type = typeof(SpeciesPnET); // Get type pointer
+                System.Type type = typeof(PnETSpecies); // Get type pointer
                 List<string> names = type.GetProperties().Select(x => x.Name).ToList(); // Obtain all fields
                 return names;
             }

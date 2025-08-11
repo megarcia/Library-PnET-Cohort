@@ -238,7 +238,7 @@ namespace Landis.Library.PnETCohorts
             this.adjFracFol = cohort.adjFracFol;
             this.AdjHalfSat = cohort.AdjHalfSat;
             this.UniversalData.Age = cohort.Age;
-            this.AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
+            this.AGBiomass = (1 - cohort.PnETSpecies.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
             this.UniversalData.Biomass = (int)(this.AGBiomass * cohort.CanopyLayerFrac);
             this.TotalBiomass = cohort.TotalBiomass;
             this.BiomassMax = cohort.BiomassMax;
@@ -293,7 +293,7 @@ namespace Landis.Library.PnETCohorts
             this.adjFracFol = 0;
             this.AdjHalfSat = 0;
             this.UniversalData.Age = age;
-            IPnETSpecies spc = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
+            IPnETSpecies spc = SpeciesParameters.PnETSpecies.AllSpecies[species.Index];
             this.Cohort = new Cohort(species,spc,0,"",1, cohortStacking);
             this.AGBiomass = (1- spc.FracBelowG) * totalBiomass;
             this.UniversalData.Biomass = (int)this.AGBiomass;

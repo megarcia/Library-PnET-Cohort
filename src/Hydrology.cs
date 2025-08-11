@@ -12,7 +12,7 @@ namespace Landis.Library.PnETCohorts
         private float soilWaterContent;
         private float frozenSoilWaterContent;
         private float frozenSoilDepth;
-        private Hydrology_SaxtonRawls pressureHeadTable;
+        public static Hydrology_SaxtonRawls pressureHeadTable;
 
         /// <summary>
         /// soil volumetric water content (mm/m)
@@ -199,7 +199,7 @@ namespace Landis.Library.PnETCohorts
             if (Names.TryGetParameter(Names.PressureHeadCalculationMethod, out PressureHeadCalculationMethod))
             {
                 Parameter<string> p = Names.GetParameter(Names.PressureHeadCalculationMethod);
-                Hydrology_SaxtonRawls pressureHeadTable = new Hydrology_SaxtonRawls();
+                pressureHeadTable = new Hydrology_SaxtonRawls();
             }
             else
             {
@@ -208,16 +208,16 @@ namespace Landis.Library.PnETCohorts
             }
             Globals.ModelCore.UI.WriteLine("Eco\tSoiltype\tWiltingPoint\t\tFieldCapacity\tFC-WP\t\tPorosity");
             foreach (IEcoregionPnET ecoregion in EcoregionData.Ecoregions) if (ecoregion.Active)
-                {
-                    // Volumetric soil water content (mm/m) at field capacity
-                    ecoregion.FieldCapacity = (float)pressureHeadTable.CalcSoilWaterContent(-Constants.FieldCapacity_kPa, ecoregion.SoilType);
-                    // Volumetric soil water content (mm/m) at wilting point
-                    ecoregion.WiltingPoint = (float)pressureHeadTable.CalcSoilWaterContent(-Constants.WiltingPoint_kPa, ecoregion.SoilType);
-                    // Volumetric soil water content (mm/m) at porosity
-                    ecoregion.Porosity = (float)pressureHeadTable.Porosity(ecoregion.SoilType);
-                    float f = ecoregion.FieldCapacity - ecoregion.WiltingPoint;
-                    Globals.ModelCore.UI.WriteLine(ecoregion.Name + "\t" + ecoregion.SoilType + "\t\t" + ecoregion.WiltingPoint + "\t" + ecoregion.FieldCapacity + "\t" + f + "\t" + ecoregion.Porosity);
-                }
+            {
+                // Volumetric soil water content (mm/m) at field capacity
+                ecoregion.FieldCapacity = (float)pressureHeadTable.CalcSoilWaterContent(-Constants.FieldCapacity_kPa, ecoregion.SoilType);
+                // Volumetric soil water content (mm/m) at wilting point
+                ecoregion.WiltingPoint = (float)pressureHeadTable.CalcSoilWaterContent(-Constants.WiltingPoint_kPa, ecoregion.SoilType);
+                // Volumetric soil water content (mm/m) at porosity
+                ecoregion.Porosity = (float)pressureHeadTable.SoilPorosity(ecoregion.SoilType);
+                float f = ecoregion.FieldCapacity - ecoregion.WiltingPoint;
+                Globals.ModelCore.UI.WriteLine(ecoregion.Name + "\t" + ecoregion.SoilType + "\t\t" + ecoregion.WiltingPoint + "\t" + ecoregion.FieldCapacity + "\t" + f + "\t" + ecoregion.Porosity);
+            }
         }
 
         /// <summary>
@@ -281,11 +281,7 @@ namespace Landis.Library.PnETCohorts
                 float frostFreeFrac = Math.Min(1.0F, frostFreeSoilDepth / sitecohorts.Ecoregion.RootingDepth);
                 // Evaporation is limited to frost free soil above EvapDepth
                 float evapSoilDepth = Math.Min(sitecohorts.Ecoregion.RootingDepth * frostFreeFrac, sitecohorts.Ecoregion.EvapDepth);
-                // Evaporation begins to decline at 75% of field capacity (Robock et al., 1995)
-                float evapCritWater = sitecohorts.Ecoregion.FieldCapacity * 0.75f;
-                float evapCritWaterPH = GetPressureHead(sitecohorts.Ecoregion, evapCritWater);
-                // Delivery potential is 1 if pressurehead < evapCritWater, and declines to 0 at wilting point (153 mH2O)
-                DeliveryPotential = Cohort.CalcFWater(-1, -1, evapCritWaterPH, 153, pressurehead);
+                // Maximum actual evaporation = Potential ET
                 float AEmax = PotentialET; // Modified 11/4/22 in v 5.0-rc19; remove access limitation and only use physical limit at wilting point below
                 // Evaporation cannot remove water below wilting point           
                 float evaporationEvent = Math.Min(AEmax, (soilWaterContent - sitecohorts.Ecoregion.WiltingPoint) * evapSoilDepth); // mm/month

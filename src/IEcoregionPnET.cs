@@ -5,7 +5,12 @@
         /// <summary>
         /// Ecoregion name
         /// </summary>
-        string Name { get; } 
+        string Name { get; }
+
+        /// <summary>
+        /// Is active ecoregion
+        /// </summary>
+        bool Active { get; }
 
         /// <summary>
         /// Fraction of water above field capacity that drains out of the soil rooting zone immediately after entering the soil (fast leakage)

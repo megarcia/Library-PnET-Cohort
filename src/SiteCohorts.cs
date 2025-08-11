@@ -368,7 +368,7 @@ namespace Landis.Library.PnETCohorts
             avgSoilWaterContent = hydrology.SoilWaterContent;
             subcanopypar = ecoregionInitializer[0].PAR0;
             subcanopyparmax = subcanopypar;
-            SiteVars.WoodyDebris[Site] = new Pool();
+            SiteVars.WoodDebris[Site] = new Pool();
             SiteVars.Litter[Site] = new Pool();
             SiteVars.FineFuels[Site] = SiteVars.Litter[Site].Mass;
             List<float> cohortBiomassLayerFrac = new List<float>();
@@ -1054,7 +1054,7 @@ namespace Landis.Library.PnETCohorts
                 subcanopyparmax = initialSites[key].SubCanopyParMAX;
                 avgSoilWaterContent = initialSites[key].wateravg;
                 hydrology = new Hydrology(initialSites[key].hydrology.SoilWaterContent);
-                SiteVars.WoodyDebris[Site] = SiteVars.WoodyDebris[initialSites[key].Site].Clone();
+                SiteVars.WoodDebris[Site] = SiteVars.WoodDebris[initialSites[key].Site].Clone();
                 SiteVars.Litter[Site] = SiteVars.Litter[initialSites[key].Site].Clone();
                 SiteVars.FineFuels[Site] = SiteVars.Litter[Site].Mass;
                 SiteVars.MonthlyPressureHead[site] = (float[])SiteVars.MonthlyPressureHead[initialSites[key].Site].Clone();
@@ -1063,7 +1063,7 @@ namespace Landis.Library.PnETCohorts
                 List<float> cohortCanopyLayerFrac = new List<float>();
                 List<float> cohortCanopyGrowingSpace = new List<float>();
                 List<float> cohortLastLAI = new List<float>();
-                List<float> cohortLastWoodySenescence = new List<float>();
+                List<float> cohortLastWoodSenescence = new List<float>();
                 List<float> cohortLastFolSenescence = new List<float>();
                 List<float> cohortLastYearAvgFRad = new List<float>();
                 foreach (ISpecies spc in initialSites[key].cohorts.Keys)
@@ -1083,8 +1083,8 @@ namespace Landis.Library.PnETCohorts
                         cohortCanopyGrowingSpace.Add(canopyGrowingSpace);
                         float lastLAI = cohort.LastLAI;
                         cohortLastLAI.Add(lastLAI);
-                        float lastWoodySenes = cohort.LastWoodySenescence;
-                        cohortLastWoodySenescence.Add(lastWoodySenes);
+                        float lastWoodSenes = cohort.LastWoodSenescence;
+                        cohortLastWoodSenescence.Add(lastWoodSenes);
                         float lastFolSenes = cohort.LastFoliageSenescence;
                         cohortLastFolSenescence.Add(lastFolSenes);
                     }
@@ -1096,7 +1096,7 @@ namespace Landis.Library.PnETCohorts
                     cohort.CanopyLayerFrac = cohortCanopyLayerFrac[index];
                     cohort.CanopyGrowingSpace = cohortCanopyGrowingSpace[index];
                     cohort.LastLAI = cohortLastLAI[index];
-                    cohort.LastWoodySenescence = cohortLastWoodySenescence[index];
+                    cohort.LastWoodSenescence = cohortLastWoodSenescence[index];
                     cohort.LastFoliageSenescence = cohortLastFolSenescence[index];
                     index++;
                 }
@@ -2128,7 +2128,7 @@ namespace Landis.Library.PnETCohorts
                 if (data[m].Month == (int)Constants.Months.December)
                 {
                     //  Decompose litter
-                    HeterotrophicRespiration = (ushort)(SiteVars.Litter[Site].Decompose() + SiteVars.WoodyDebris[Site].Decompose());
+                    HeterotrophicRespiration = (ushort)(SiteVars.Litter[Site].Decompose() + SiteVars.WoodDebris[Site].Decompose());
                     // Calculate AdjFolFrac
                     AllCohorts.ForEach(x => x.CalcAdjFracFol());
                     // Filter monthly pest values
@@ -2765,11 +2765,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public double WoodyDebris 
+        public double WoodDebris 
         {
             get
             {
-                return SiteVars.WoodyDebris[Site].Mass;
+                return SiteVars.WoodDebris[Site].Mass;
             }
         }
 
@@ -2901,16 +2901,16 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies
+        public Landis.Library.Parameters.Species.AuxParm<int> WoodSenescencePerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<int> WoodSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    WoodySenescencePerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LastWoodySenescence * o.CanopyLayerFrac));
+                    WoodSenescencePerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LastWoodSenescence * o.CanopyLayerFrac));
                 }
-                return WoodySenescencePerSpecies;
+                return WoodSenescencePerSpecies;
             }
         }
 
@@ -2978,11 +2978,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float WoodySenescenceSum
+        public float WoodSenescenceSum
         {
             get
             {
-                return AllCohorts.Sum(o => o.LastWoodySenescence * o.CanopyLayerFrac);
+                return AllCohorts.Sum(o => o.LastWoodSenescence * o.CanopyLayerFrac);
             }
         }
 
@@ -3420,19 +3420,19 @@ namespace Landis.Library.PnETCohorts
             return spc;
         }
 
-        public void AddWoodyDebris(float Litter, float KWdLit)
+        public void AddWoodDebris(float Litter, float KWdLit)
         {
             lock (Globals.CWDThreadLock)
             {
-                SiteVars.WoodyDebris[Site].AddMass(Litter, KWdLit);
+                SiteVars.WoodDebris[Site].AddMass(Litter, KWdLit);
             }
         }
 
-        public void RemoveWoodyDebris(double percentReduction)
+        public void RemoveWoodDebris(double percentReduction)
         {
             lock (Globals.CWDThreadLock)
             {
-                SiteVars.WoodyDebris[Site].ReduceMass(percentReduction);
+                SiteVars.WoodDebris[Site].ReduceMass(percentReduction);
             }
         }
 
@@ -3498,7 +3498,7 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.HeteroResp + "," +
                        OutputHeaders.Litter + "," + 
                        OutputHeaders.CWD + "," +
-                       OutputHeaders.WoodySenescence + "," + 
+                       OutputHeaders.WoodSenescence + "," + 
                        OutputHeaders.FoliageSenescence + "," +
                        OutputHeaders.SubCanopyPAR + ","+
                        OutputHeaders.SoilDiffusivity + "," +
@@ -3557,8 +3557,8 @@ namespace Landis.Library.PnETCohorts
                        cohorts.Values.Sum(o => o.Sum(x => x.NSC * x.CanopyLayerFrac)) + "," +
                        HeterotrophicRespiration + "," +
                        SiteVars.Litter[Site].Mass + "," +
-                       SiteVars.WoodyDebris[Site].Mass + "," +
-                       cohorts.Values.Sum(o => o.Sum(x => x.LastWoodySenescence * x.CanopyLayerFrac)) + "," +
+                       SiteVars.WoodDebris[Site].Mass + "," +
+                       cohorts.Values.Sum(o => o.Sum(x => x.LastWoodSenescence * x.CanopyLayerFrac)) + "," +
                        cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence * x.CanopyLayerFrac)) + "," +
                        subcanopypar + "," +
                        soilDiffusivity + "," +

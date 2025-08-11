@@ -16,7 +16,7 @@ namespace Landis.Library.PnETCohorts
         float MaxFolYear { get; }
         float NSC { get; }
         float DefoliationFrac { get; }
-        float LastWoodySenescence { get; }
+        float LastWoodSenescence { get; }
         float LastFoliageSenescence { get; }
         float LastFRad { get; }
         List<float> LastSeasonFRad { get; }

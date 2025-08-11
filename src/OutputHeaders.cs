@@ -77,7 +77,7 @@ namespace Landis.Library.PnETCohorts
         public const string SoilType = "SoilType";
         public const string FOzone = "fOzone(-)";
         public const string LeakageFrac = "LeakageFrac(-)";
-        public const string WoodySenescence = "WoodSenescence(gDW_m2)";
+        public const string WoodSenescence = "WoodSenescence(gDW_m2)";
         public const string FoliageSenescence = "FoliageSenescence(gDW_m2)";
         public const string DelAMax = "DelAMax(-)";
         public const string AdjHalfSat = "AdjHalfSat";

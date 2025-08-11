@@ -31,7 +31,7 @@ namespace Landis.Library.PnETCohorts
         int CalcChange(ICohort cohort, ActiveSite site);
 
         /// <summary>
-        /// Calculates the percentage of a cohort's biomass that is non-woody.
+        /// Calculates the percentage of a cohort's biomass that is non-wood.
         /// </summary>
         /// <param name="cohort">
         /// The cohort.
@@ -39,6 +39,6 @@ namespace Landis.Library.PnETCohorts
         /// <param name="site">
         /// The site where the cohort is located.
         /// </param>
-        Percentage CalcNonWoodyPercentage(ICohort cohort, ActiveSite site);                                 
+        Percentage CalcNonWoodPercentage(ICohort cohort, ActiveSite site);                                 
     }
 }

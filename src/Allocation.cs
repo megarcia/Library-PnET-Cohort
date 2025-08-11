@@ -49,7 +49,7 @@ namespace Landis.Library.PnETCohorts
                 if (parameter.ContainsKey("LitterReduction"))
                     plitterlost = float.Parse(parameter["LitterReduction"]);
             }
-            ((SiteCohorts)sitecohorts).RemoveWoodyDebris(pdeadwoodlost);
+            ((SiteCohorts)sitecohorts).RemoveWoodDebris(pdeadwoodlost);
             ((SiteCohorts)sitecohorts).RemoveLitter(plitterlost);
         }
 
@@ -57,7 +57,7 @@ namespace Landis.Library.PnETCohorts
         {
             if (sitecohorts == null)
                 throw new System.Exception("sitecohorts should not be null");
-            // By default, all material is allocated to the woody debris or the litter pool
+            // By default, all material is allocated to the wood debris or the litter pool
             float pwoodlost = 0;
             float prootlost = 0;
             float pfollost = 0;
@@ -77,10 +77,10 @@ namespace Landis.Library.PnETCohorts
             float rootAdded = (float)((1 - prootlost) * cohort.Root * frac);
             float folAdded = (float)((1 - pfollost) * cohort.Fol * frac);
             // Using Canopy fractioning
-            ((SiteCohorts)sitecohorts).AddWoodyDebris(woodAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies.KWdLit);
-            ((SiteCohorts)sitecohorts).AddWoodyDebris(rootAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies.KWdLit);
+            ((SiteCohorts)sitecohorts).AddWoodDebris(woodAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies.KWdLit);
+            ((SiteCohorts)sitecohorts).AddWoodDebris(rootAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies.KWdLit);
             ((SiteCohorts)sitecohorts).AddLitter(folAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies);
-            cohort.AccumulateWoodySenescence((int)((woodAdded + rootAdded) * cohort.CanopyLayerFrac));
+            cohort.AccumulateWoodSenescence((int)((woodAdded + rootAdded) * cohort.CanopyLayerFrac));
             cohort.AccumulateFoliageSenescence((int)((folAdded) * cohort.CanopyLayerFrac));
         }
     }

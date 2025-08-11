@@ -67,7 +67,7 @@ namespace Landis.Library.PnETCohorts
         float K { get; }
 
         /// <summary>
-        /// Decompostiaion constant of woody litter (yr-1)
+        /// Decompostiaion constant of wood litter (yr-1)
         /// </summary>
         float KWdLit { get; }
 

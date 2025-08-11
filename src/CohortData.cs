@@ -66,9 +66,9 @@ namespace Landis.Library.PnETCohorts
         public float DefoliationFrac;
 
         /// <summary>
-        /// Annual Woody Senescence (g/m2)
+        /// Annual Wood Senescence (g/m2)
         /// </summary>
-        public float LastWoodySenescence;
+        public float LastWoodSenescence;
 
         /// <summary>
         /// Annual Foliage Senescence (g/m2)
@@ -259,7 +259,7 @@ namespace Landis.Library.PnETCohorts
             this.LastFoliageSenescence = cohort.LastFoliageSenescence;
             this.LastFRad = cohort.LastFRad;
             this.LastSeasonFRad = cohort.LastSeasonFRad;
-            this.LastWoodySenescence = cohort.LastWoodySenescence;
+            this.LastWoodSenescence = cohort.LastWoodSenescence;
             this.LastAGBio = cohort.LastAGBio;
             this.Layer = cohort.Layer;
             this.IsLeafOn = cohort.IsLeafOn;
@@ -315,7 +315,7 @@ namespace Landis.Library.PnETCohorts
             this.LastFoliageSenescence = 0;
             this.LastFRad = 0;
             this.LastSeasonFRad = new List<float>();
-            this.LastWoodySenescence = 0;
+            this.LastWoodSenescence = 0;
             this.LastAGBio = this.AGBiomass;
             this.Layer = 0;
             this.IsLeafOn = false;

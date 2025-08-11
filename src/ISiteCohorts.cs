@@ -37,19 +37,19 @@ namespace Landis.Library.PnETCohorts
         Landis.Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<int> NSCPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<float> LAIPerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies { get; }
+        Landis.Library.Parameters.Species.AuxParm<int> WoodSenescencePerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<List<ushort>> CohortAges { get; }
         float BiomassSum { get; }
         float AbovegroundBiomassSum { get; }
         float WoodBiomassSum { get; }
-        float WoodySenescenceSum { get; }
+        float WoodSenescenceSum { get; }
         float FoliageSenescenceSum { get; }
         int CohortCount { get; }
         float JulySubCanopyPar { get; }
         float SubCanopyParMAX { get; }
         double Litter{ get; }
-        double WoodyDebris { get; }
+        double WoodDebris { get; }
         int AgeMax { get; }
         float AvgSoilWaterContent { get; }
         float BelowGroundBiomassSum { get; }

@@ -9,7 +9,7 @@ namespace Landis.Library.PnETCohorts
 {
     public static class SiteVars
     {
-        public static ISiteVar<Pool> WoodyDebris;
+        public static ISiteVar<Pool> WoodDebris;
         public static ISiteVar<Pool> Litter;
         public static ISiteVar<Double> FineFuels;
         public static ISiteVar<float> PressureHead;
@@ -26,7 +26,7 @@ namespace Landis.Library.PnETCohorts
 
         public static void Initialize()
         {
-            WoodyDebris = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
+            WoodDebris = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             Litter = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             FineFuels = Globals.ModelCore.Landscape.NewSiteVar<Double>();
             SiteCohorts = Globals.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
@@ -40,7 +40,7 @@ namespace Landis.Library.PnETCohorts
             MonthlyPressureHead = Globals.ModelCore.Landscape.NewSiteVar<float[]>();
             MonthlySoilTemp = Globals.ModelCore.Landscape.NewSiteVar<SortedList<float, float>[]>();
             FieldCapacity = Globals.ModelCore.Landscape.NewSiteVar<float>();
-            Globals.ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
+            Globals.ModelCore.RegisterSiteVar(WoodDebris, "Succession.WoodyDebris");
             Globals.ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
             Globals.ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
             Globals.ModelCore.RegisterSiteVar(PressureHead, "Succession.PressureHead");

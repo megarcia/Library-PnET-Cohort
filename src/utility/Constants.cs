@@ -39,7 +39,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public const int billion = 1000000000;
 
-        enum Months : int
+        public enum Months : int
         {
             January = 1,
             February = 2,

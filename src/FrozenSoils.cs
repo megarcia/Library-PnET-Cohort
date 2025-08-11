@@ -7,17 +7,19 @@ namespace Landis.Library.PnETCohorts
     {
         public static SortedList<float, float> CalcMonthlySoilTemps(SortedList<float, float> depthTempDict, IEcoregionPnET Ecoregion, int daysOfWinter, float snowpack, IHydrology hydrology, float lastTempBelowSnow)
         {
+            //
             // Snow calculations, now handled in Snow class
             float densitySnow_kg_m3 = Snow.CalcDensity(daysOfWinter);
             float snowDepth = Snow.CalcDepth(densitySnow_kg_m3, snowpack);
             if (Ecoregion.Variables.Tavg >= 0)
             {
                 float fracAbove0 = Ecoregion.Variables.Tmax / (Ecoregion.Variables.Tmax - Ecoregion.Variables.Tmin);
-                snowDepth = snowDepth * fracAbove0;
+                snowDepth *= fracAbove0;
             }
             float snowThermalConductivity = Snow.CalcThermalConductivity(densitySnow_kg_m3);
             float snowThermalDamping = Snow.CalcThermalDamping(snowThermalConductivity);
-            float snowDampingRatio = Snow.CalcDampingRatio(snowDepth, snowThermalDamping); 
+            float snowDampingRatio = Snow.CalcDampingRatio(snowDepth, snowThermalDamping);
+            //
             // Frozen soil calculations
             float soilPorosity = Ecoregion.Porosity / Ecoregion.RootingDepth;  //m3/m3
             float soilWaterContent = hydrology.SoilWaterContent / Ecoregion.RootingDepth;  //m3/m3
@@ -28,16 +30,12 @@ namespace Landis.Library.PnETCohorts
             float ThermalConductivity_theta = (Fs * (1.0F - soilPorosity) * ThermalConductivitySoil + Fa * (soilPorosity - soilWaterContent) * Constants.ThermalConductivityAir_kJperday + soilWaterContent * Constants.ThermalConductivityWater_kJperday) / (Fs * (1.0F - soilPorosity) + Fa * (soilPorosity - soilWaterContent) + soilWaterContent); //soil thermal conductivity (kJ/m/d/K)
             float D = ThermalConductivity_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  //m2/day
             float Dmonth = D * Ecoregion.Variables.DaySpan; // m2/month
-            float ks = Dmonth * 1000000F / (Ecoregion.Variables.DaySpan * Constants.SecondsPerDay); // mm2/s
             float d = (float)Math.Pow(Constants.omega / (2.0F * Dmonth), 0.5);
-            // 
             float maxDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
-            float freezeDepth = maxDepth;
             float testDepth = 0;
             float tempBelowSnow = Ecoregion.Variables.Tavg;
             if (snowDepth > 0)
                 tempBelowSnow = lastTempBelowSnow + (Ecoregion.Variables.Tavg - lastTempBelowSnow) * snowDampingRatio;
-            lastTempBelowSnow = tempBelowSnow;
             while (testDepth <= (maxDepth / 1000.0))
             {
                 float DRz = (float)Math.Exp(-1.0F * testDepth * d); // adapted from Kang et al. (2000) and Liang et al. (2014)

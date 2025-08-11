@@ -1225,18 +1225,13 @@ namespace Landis.Library.PnETCohorts
             float PressureHead = hydrology.PressureHeadTable.CalcSoilWaterPressureHead(hydrology.SoilWaterContent, siteCohort.Ecoregion.SoilType);
             // Reduction water for sub or supra optimal soil water content
             float fWaterOzone = 1.0f;  //fWater for ozone functions; ignores H1 and H2 parameters because only impacts when drought-stressed
+            SoilWaterContent[index] = hydrology.SoilWaterContent;
+            PressHead[index] = PressureHead;
+            NumEvents[index] = precipCount;
             if (Globals.ModelCore.CurrentTime > 0)
             {
                 FWater[index] = CalcFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
-                SoilWaterContent[index] = hydrology.SoilWaterContent;
-                PressHead[index] = PressureHead;
-                NumEvents[index] = precipCount;
                 fWaterOzone = CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
-                if (frostFreeFrac <= 0)
-                {
-                    FWater[index] = 0;
-                    fWaterOzone = 0;
-                }
             }
             else // Spinup
             {
@@ -1245,25 +1240,17 @@ namespace Landis.Library.PnETCohorts
                 {
                     FWater[index] = CalcFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
                     fWaterOzone = CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
-                    if (frostFreeFrac <= 0)
-                    {
-                        FWater[index] = 0;
-                        fWaterOzone = 0;
-                    }
                 }
                 else // Ignore H1 and H2 parameters during spinup
                 {
                     FWater[index] = CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead);
                     fWaterOzone = FWater[index];
-                    if (frostFreeFrac <= 0)
-                    {
-                        FWater[index] = 0;
-                        fWaterOzone = 0;
-                    }
                 }
-                SoilWaterContent[index] = hydrology.SoilWaterContent;
-                PressHead[index] = PressureHead;
-                NumEvents[index] = precipCount;
+            }
+            if (frostFreeFrac <= 0)
+            {
+                FWater[index] = 0;
+                fWaterOzone = 0;
             }
             // FoliarN adjusted based on canopy position (FRad)
             float folN_shape = speciesPnET.FolNShape; // Slope for linear FolN relationship

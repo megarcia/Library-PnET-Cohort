@@ -40,7 +40,7 @@ namespace Landis.Library.PnETCohorts
             return soilPorosity_OM_comp[soilType];
         }
 
-        public float this[IEcoregion ecoregion, int soilWaterContent]
+        public float this[IEcoregionPnET ecoregion, int soilWaterContent]
         {
             get
             {
@@ -50,9 +50,9 @@ namespace Landis.Library.PnETCohorts
                         return 0;
                     return table[ecoregion][soilWaterContent];
                 }
-                catch (System.Exception)
+                catch (Exception)
                 {
-                    throw new System.Exception("Cannot get pressure head for soil water content " + soilWaterContent);
+                    throw new Exception("Cannot get pressure head for soil water content " + soilWaterContent);
                 }
             }
         }
@@ -83,12 +83,12 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Calculate volumetric soil water content (m3 H2O/m3 SOIL)
+        /// Calculate volumetric soil water content (m3 H2O/m3 soil)
         /// </summary>
-        /// <param name="tension"></param>
-        /// <param name="soilType"></param>
+        /// <param name="tension">float in kPa</param>
+        /// <param name="soilType">string</param>
         /// <returns></returns>
-        public float CalcSoilWaterContent(float tension /* kPA*/, string soilType)
+        public float CalcSoilWaterContent(float tension, string soilType)
         {
             float soilWaterContent = (float)Math.Pow(tension / tensionA[soilType], 1.0 / -tensionB[soilType]);
             return soilWaterContent;
@@ -104,7 +104,7 @@ namespace Landis.Library.PnETCohorts
             PctOM = Names.GetParameter("pctOM");
             DensFactor = Names.GetParameter("densFactor");
             Gravel = Names.GetParameter("gravel");
-            foreach (IEcoregion ecoregion in Globals.ModelCore.Ecoregions)
+            foreach (IEcoregionPnET ecoregion in Globals.ModelCore.Ecoregions)
             {
                 if (ecoregion.Active)
                 {
@@ -162,24 +162,24 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public static float GetClayFrac(string SoilType)
+        public static float GetClayFrac(string soilType)
         {
-            return clayFrac[SoilType];
+            return clayFrac[soilType];
         }
 
-        public static float GetFs(string SoilType)
+        public static float GetFs(string soilType)
         {
-            return Fs[SoilType];
+            return Fs[soilType];
         }
 
-        public static float GetThermalConductivitySoil(string SoilType)
+        public static float GetThermalConductivitySoil(string soilType)
         {
-            return ThermalConductivitySoil[SoilType];
+            return ThermalConductivitySoil[soilType];
         }
 
-        public static float GetCTheta(string SoilType)
+        public static float GetCTheta(string soilType)
         {
-            return cTheta[SoilType];
+            return cTheta[soilType];
         }
     }
 }

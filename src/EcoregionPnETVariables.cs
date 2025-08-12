@@ -153,35 +153,6 @@ namespace Landis.Library.PnETCohorts
 
         #region static computation functions
 
-        /// <summary>
-        /// Calculate average temperature (ºC)
-        /// </summary>
-        /// <param name="Tmin"></param>
-        /// <param name="Tmax"></param>
-        /// <returns></returns>
-        public static float CalcTavg(float Tmin, float Tmax)
-        {
-            return (float)((Tmin + Tmax) / 2.0f);
-        }
-
-        /// <summary>
-        /// Calculate daytime average temperature (ºC)
-        /// </summary>
-        /// <param name="Tavg"></param>
-        /// <param name="Tmax"></param>
-        /// <returns></returns>
-        public static float CalcTday(float Tavg, float Tmax)
-        {
-            return (float)((Tavg + Tmax) / 2.0f);
-        }
-
-        public static float CalcVPD(float Tday, float Tmin)
-        {
-            float es = Hydrology.CalcVaporPressure(Tday);
-            float emean = Hydrology.CalcVaporPressure(Tmin);
-            return es - emean;
-        }
-
         public static float CurvilinearPsnTempResponse(float tday, float PsnTopt, float PsnTmin, float PsnTmax)
         {
             if (tday < PsnTmin)

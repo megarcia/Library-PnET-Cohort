@@ -71,7 +71,7 @@ namespace Landis.Library.PnETCohorts
             speciespnetvars.DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
             // ** CO2 effect on growth **
             // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
-            float JH2O = (float)(0.239 * (VPD / (8314.47 * (monthlyClimateRecord.Tmin + 273))));
+            float JH2O = (float)(Constants.CalperJ * (VPD / (Constants.GasConst_JperkmolK * (monthlyClimateRecord.Tmin + Constants.Tref_K))));
             speciespnetvars.JH2O = JH2O;
             // NETPsn net photosynthesis
             // Modify AmaxB based on CO2 level

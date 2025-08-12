@@ -151,41 +151,6 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        #region static computation functions
-
-        public static float CurvilinearPsnTempResponse(float tday, float PsnTopt, float PsnTmin, float PsnTmax)
-        {
-            if (tday < PsnTmin)
-                return 0;
-            else if (tday > PsnTopt)
-                return 1;
-            else
-                return (PsnTmax - tday) * (tday - PsnTmin) / (float)Math.Pow((PsnTmax - PsnTmin) / 2, 2);
-        }
-
-        public static float DTempResponse(float tday, float PsnTopt, float PsnTmin, float PsnTmax)
-        {
-            if (tday < PsnTmin)
-                return 0;
-            else if (tday > PsnTmax)
-                return 0;
-            else
-            {
-                if (tday <= PsnTopt)
-                {
-                    float PsnTmaxestimate = PsnTopt + (PsnTopt - PsnTmin);
-                    return (float)Math.Max(0.0, (PsnTmaxestimate - tday) * (tday - PsnTmin) / (float)Math.Pow((PsnTmaxestimate - PsnTmin) / 2, 2));
-                }
-                else
-                {
-                    float PsnTminestimate = PsnTopt + (PsnTopt - PsnTmax);
-                    return (float)Math.Max(0.0, (PsnTmax - tday) * (tday - PsnTminestimate) / (float)Math.Pow((PsnTmax - PsnTminestimate) / 2, 2));
-                }
-            }
-        }
-
-        #endregion
-
         private Dictionary<string, PnETSpeciesVariables> speciesVariables;
 
         public PnETSpeciesVariables this[string species]

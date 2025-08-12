@@ -4,7 +4,7 @@ namespace Landis.Library.PnETCohorts
     public class Evapotranspiration
     {
         /// <summary>
-        /// PE calculations based on Stewart & Rouse 1976 and Cabrera et al. 2016
+        /// PE calculations based on Stewart and Rouse 1976 and Cabrera et al. 2016
         /// </summary>
         /// <param name="par">Daytime solar radiation (PAR) (micromol/m2.s)</param>
         /// <param name="tair">Daytime air temperature (°C) [Tday]</param>
@@ -17,7 +17,7 @@ namespace Landis.Library.PnETCohorts
             // convert Rs_W (W/m2) to Rs (MJ/m2.d) (Reis and Ribeiro, 2019, eq. 13)
             float Rs = (float)par / 2.02F * Constants.SecondsPerDay / 1000000F;
             // get slope of vapor pressure curve at Tair
-            float VPSlope = CalcVaporPressureCurveSlope((float)tair);
+            float VPSlope = Weather.CalcVaporPressureCurveSlope((float)tair);
             // calculate potential evaporation (Stewart & Rouse, 1976, eq. 11)
             float PotentialEvaporation_MJ = VPSlope / (VPSlope + Constants.PsychrometricCoeff) * (1.624F + 0.9265F * Rs); // MJ/m2.day 
             // convert MJ/m2.day to mm/day (http://www.fao.org/3/x0490e/x0490e0i.htm)
@@ -51,7 +51,7 @@ namespace Landis.Library.PnETCohorts
                 aboveCanopyNetRad = -33.2467f + 0.741644f * Rs_W;
             float subCanopyNetRad = aboveCanopyNetRad * (float)Math.Exp(-1.0f * k * LAI);
             float alpha = 1.0f;
-            float VPSlope = CalcVaporPressureCurveSlope((float)T);
+            float VPSlope = Weather.CalcVaporPressureCurveSlope((float)T);
             // conversion W/m2 to MJ/m2.d
             float PotentialET_ground = alpha * (VPSlope / (VPSlope + Constants.PsychrometricCoeff)) / Constants.LatentHeatVaporWater * subCanopyNetRad * Constants.SecondsPerDay / 1000000F; // m/day
             return PotentialET_ground * 1000 * daySpan; //mm/month
@@ -68,7 +68,7 @@ namespace Landis.Library.PnETCohorts
             if (T < 0)
                 return 0f;
             float k = 1.2f;   // proportionality coefficient
-            float es = CalcVaporPressure(T);
+            float es = Weather.CalcVaporPressure(T);
             float N = dayLength / Constants.SecondsPerHour / 12f;
             float ReferenceET = k * 0.165f * 216.7f * N * (10f * es / (T + 273.3f)); // TODO: verify the 10x factor
             return ReferenceET; // mm/day

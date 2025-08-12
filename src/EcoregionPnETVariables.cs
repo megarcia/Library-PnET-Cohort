@@ -201,13 +201,13 @@ namespace Landis.Library.PnETCohorts
             this._date = Date;
             this.obs_clim = climate_dataset;
             speciesVariables = new Dictionary<string, PnETSpeciesVariables>();
-            _tavg = CalcTavg(climate_dataset.Tmin, climate_dataset.Tmax);
+            _tavg = Weather.CalcTavg(climate_dataset.Tmin, climate_dataset.Tmax);
             _dayspan = Calendar.CalcDaySpan(Date.Month);
             float hr = Calendar.CalcDaylightHrs(Date.DayOfYear, Latitude); //hours of daylight
             _dayLength = Calendar.CalcDayLength(hr);
             float nightLength = Calendar.CalcNightLength(hr);
-            _tday = CalcTday(Tavg, climate_dataset.Tmax);
-            _vpd = CalcVPD(Tday, climate_dataset.Tmin);
+            _tday = Weather.CalcTday(Tavg, climate_dataset.Tmax);
+            _vpd = Weather.CalcVPD(Tday, climate_dataset.Tmin);
             foreach (IPnETSpecies spc in Species)
             {
                 PnETSpeciesVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, DayLength, nightLength, spc);

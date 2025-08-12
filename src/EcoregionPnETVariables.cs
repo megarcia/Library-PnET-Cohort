@@ -279,18 +279,5 @@ namespace Landis.Library.PnETCohorts
             speciespnetvars.MaintenanceRespirationFTemp = spc.MaintResp * RespirationFTemp;
             return speciespnetvars;
         }
-
-        /// <summary>
-        /// Generic computation for a Q10 reduction factor used for respiration calculations
-        /// </summary>
-        /// <param name="Q10"></param>
-        /// <param name="Tday"></param>
-        /// <param name="PsnTopt"></param>
-        /// <returns></returns>
-        public static float CalcRespirationFQ10(float Q10, float Tday, float PsnTopt)
-        {
-            float RespirationFQ10 = (float)Math.Pow(Q10, (Tday - PsnTopt) / 10);
-            return RespirationFQ10;
-        }
     }
 }

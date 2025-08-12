@@ -55,6 +55,25 @@ namespace Landis.Library.PnETCohorts
             December = 12
         }
 
+        // Joules <--> calorie conversion
+        public const float Jpercal = 4.184F;
+        public const float CalperJ = 1F / Jpercal;
+
+        /// <summary>
+        /// Universal gas constant in J/kmol.K
+        /// </summary>
+        public const float GasConst_JperkmolK = 8314.47F;
+
+        /// <summary>
+        /// Reference temperature in K
+        /// </summary>
+        public const float Tref_K = 273.15F;
+
+        /// <summary>
+        /// Reference pressure in kPa
+        /// </summary>
+        public const float Pref_kPa = 101.3F;
+
         /// <summary>
         /// latent heat of vaporization for water in MJ/m3
         /// </summary>

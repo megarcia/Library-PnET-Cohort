@@ -5,6 +5,7 @@ namespace Landis.Library.PnETCohorts
     {
         /// <summary>
         /// PE calculations based on Stewart and Rouse 1976 and Cabrera et al. 2016
+        /// NOTE: apparently unreferenced in PnET-Cohort library
         /// </summary>
         /// <param name="par">Daytime solar radiation (PAR) (micromol/m2.s)</param>
         /// <param name="tair">Daytime air temperature (°C) [Tday]</param>
@@ -27,6 +28,7 @@ namespace Landis.Library.PnETCohorts
 
         /// <summary>
         /// PET calculations via Priestley-Taylor
+        /// NOTE: apparently unreferenced in PnET-Cohort library
         /// </summary>
         /// <param name="aboveCanopyPAR">Daytime PAR (umol/m2.s) at top of canopy</param>
         /// <param name="subCanopyPAR">Daytime PAR (umol/m2.s) at bottom of canopy</param>
@@ -59,6 +61,7 @@ namespace Landis.Library.PnETCohorts
 
         /// <summary>
         /// Reference ET calculations via Hamon
+        /// NOTE: has interface entry
         /// </summary>
         /// <param name="T">Average monthly temperature (C)</param>
         /// <param name="dayLength">Daytime length (s)</param>
@@ -76,6 +79,7 @@ namespace Landis.Library.PnETCohorts
 
         /// <summary>
         /// Potential ET given LAI via WATER (???)
+        /// NOTE: apparently unreferenced in PnET-Cohort library
         /// </summary>
         /// <param name="LAI">Total canopy LAI</param>
         /// <param name="T">Average monthly temperature (C)</param>
@@ -91,6 +95,7 @@ namespace Landis.Library.PnETCohorts
 
         /// <summary>
         /// Potential ET given LAI via WEPP (???)
+        /// NOTE: apparently unreferenced in PnET-Cohort library
         /// </summary>
         /// <param name="LAI">Total canopy LAI</param>
         /// <param name="T">Average monthly temperature (C)</param>

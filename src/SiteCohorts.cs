@@ -1209,7 +1209,7 @@ namespace Landis.Library.PnETCohorts
         private static float CalcMaxSnowMelt(float Tavg, float DaySpan)
         {
             // Snowmelt rate can range between 1.6 to 6.0 mm/degree day, and default should be 2.74 according to NRCS Part 630 Hydrology National Engineering Handbook (Chapter 11: Snowmelt)
-            return 2.74f * Math.Max(0, Tavg) * DaySpan;
+            return (float)2.74f * Math.Max(0, Tavg) * DaySpan;
         }
 
         private static float CalcSnowFrac(float Tavg)
@@ -1438,7 +1438,7 @@ namespace Landis.Library.PnETCohorts
                     // soil thermal conductivity (kJ/m.d.K)
                     float ThermalConductivity_theta = (Fs * (1.0F - soilPorosity) * ThermalConductivitySoil + Fa * (soilPorosity - soilWaterContent) * Constants.ThermalConductivityAir_kJperday + soilWaterContent * Constants.ThermalConductivityWater_kJperday) / (Fs * (1.0F - soilPorosity) + Fa * (soilPorosity - soilWaterContent) + soilWaterContent);
                     float D = ThermalConductivity_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  // m2/day
-                    float Dmms = D * 1000000 / 86400; // mm2/s
+                    float Dmms = D * 1000000F / Constants.SecondsPerDay; // mm2/s
                     soilDiffusivity = Dmms;
                     float Dmonth = D * data[m].DaySpan; // m2/month
                     float ks = Dmonth * 1000000F / (data[m].DaySpan * Constants.SecondsPerDay); // mm2/s
@@ -1509,7 +1509,7 @@ namespace Landis.Library.PnETCohorts
                     while (testDepth <= bottomFreezeDepth)
                     {
                         // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
-                        float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); 
+                        float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor);
                         int lagMax = data[m].Month + (3 - maxMonth);
                         int lagMin = data[m].Month + (minMonth - 5);
                         if (minMonth >= 9)
@@ -1816,7 +1816,7 @@ namespace Landis.Library.PnETCohorts
                         if (layerSumCanopyFrac[b] > 1)
                             mainLayerPARweightedSum = 0;
                         List<float> Frac_list = new List<float>();
-                        List<float> frac_List = new List<float>();
+                        List<float> prop_List = new List<float>();
                         List<int> index_List = new List<int>();
                         int index = 0;
                         foreach (Cohort c in AllCohorts)
@@ -1839,20 +1839,16 @@ namespace Landis.Library.PnETCohorts
                                     float PARFracUnderCohort = (float)Math.Exp(-c.PnETSpecies.K * LAISum);
                                     Frac_list.Add(PARFracUnderCohort);
                                     if (CohortStacking)
-                                    {
                                         mainLayerPARweightedSum += PARFracUnderCohort * 1.0f;
-                                    }
                                     else
-                                    {
                                         mainLayerPARweightedSum += PARFracUnderCohort * c.CanopyLayerFrac;
-                                    }                                    
                                 }
                                 if (CohortStacking)
                                 {
                                     c.CanopyLayerFrac = 1.0f;
                                     c.CanopyGrowingSpace = 1.0f;                                    
                                 }
-                                frac_List.Add(c.CanopyLayerFrac);
+                                prop_List.Add(c.CanopyLayerFrac);
                                 c.ANPP = (int)(c.ANPP * c.CanopyLayerFrac);
                             }
                         }
@@ -1860,14 +1856,14 @@ namespace Landis.Library.PnETCohorts
                         {
                             if (Frac_list.Count() > 0)
                             {                                
-                                float cumulativeFracFrac = 1;
+                                float cumulativeFracProp = 1;
                                 for (int i = 0; i < Frac_list.Count(); i++)
                                 {
-                                    float frac = frac_List[i];
+                                    float prop = prop_List[i];
                                     float frac = Frac_list[i];
-                                    cumulativeFracFrac = cumulativeFracFrac * (float)Math.Pow(frac, frac);
+                                    cumulativeFracProp = cumulativeFracProp * (float)Math.Pow(frac, prop);
                                 }
-                                subcanopypar = mainLayerPAR * cumulativeFracFrac;
+                                subcanopypar = mainLayerPAR * cumulativeFracProp;
                             }
                             else
                                 subcanopypar = mainLayerPAR * (mainLayerPARweightedSum + (1 - mainLayerCanopyFrac));

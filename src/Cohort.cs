@@ -953,7 +953,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="o3_month"></param>
         /// <param name="subCanopyIndex"></param>
         /// <param name="layerCount"></param>
-        /// <param name="FOzone"></param>
+        /// <param name="fOzone"></param>
         /// <param name="frostFreeFrac"></param>
         /// <param name="MeltInByCanopyLayer"></param>
         /// <param name="coldKillBoolean"></param>
@@ -964,11 +964,11 @@ namespace Landis.Library.PnETCohorts
         /// <param name="allowMortality"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool CalcPhotosynthesis(float PrecInByCanopyLayer, int precipCount, float leakageFrac, ref Hydrology hydrology, float mainLayerPAR, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float FOzone, float frostFreeFrac, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables, SiteCohorts siteCohort, float sumCanopyFrac, float groundPotentialETbyEvent, bool allowMortality = true)
+        public bool CalcPhotosynthesis(float PrecInByCanopyLayer, int precipCount, float leakageFrac, ref Hydrology hydrology, float mainLayerPAR, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float fOzone, float frostFreeFrac, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables, SiteCohorts siteCohort, float sumCanopyFrac, float groundPotentialETbyEvent, bool allowMortality = true)
         {
             bool success = true;
-            float lastFOzone = FOzone;
-            FOzone = 0;
+            float lastFOzone = fOzone;
+            fOzone = 0;
 
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
@@ -1292,14 +1292,14 @@ namespace Landis.Library.PnETCohorts
                 float cicaRatio = (-0.075f * adjFolN) + 0.875f;
                 float modCiCaRatio = cicaRatio * ciModifier;
                 // Reference co2 ratio
-                float ci350 = 350 * modCiCaRatio;
+                float ci350 = Constants.CO2RefConc * modCiCaRatio;
                 // Elevated leaf internal co2 concentration
                 float ciElev = variables.CO2 * modCiCaRatio;
                 float Ca_Ci = variables.CO2 - ciElev;
                 // Franks method
                 // (Franks,2013, New Phytologist, 197:1077-1094)
                 float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
-                float Ca0 = 350;  // 350
+                float Ca0 = Constants.CO2RefConc;
                 float Ca0_adj = Ca0 * cicaRatio;  // Calculated internal concentration given external 350
                 // Modified Franks method - by M. Kubiske
                 // substitute ciElev for CO2
@@ -1308,10 +1308,10 @@ namespace Landis.Library.PnETCohorts
                     delamaxCi = 0;
                 DelAmax[index] = delamaxCi;  // Modified Franks
                 // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
-                float V = (float)(8314.47 * (variables.Tmin + 273) / 101.3);
+                float V = (float)(Constants.GasConst_JperkmolK * (variables.Tmin + Constants.Tref_K) / Constants.Pref_kPa);
                 float JCO2 = (float)(0.139 * ((variables.CO2 - ciElev) / V) * 0.000001);  // Corrected conversion units 11/29/22
                 float JH2O = variables[species.Name].JH2O / ciModifier;  // Modified from * to / 11.18.2022 [mod1]
-                float wue = JCO2 / JH2O * (44 / 18);  //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
+                float wue = JCO2 / JH2O * Constants.MCO2_MC;
                 float Amax = (float)(delamaxCi * (speciesPnET.AmaxA + variables[species.Name].AmaxB_CO2 * adjFolN)); //nmole CO2/g Fol/s
                 float BaseFoliarRespiration = variables[species.Name].BaseFoliarRespirationFrac * Amax; //nmole CO2/g Fol/s
                 float AmaxAdj = Amax * speciesPnET.AmaxFrac;  //Amax adjustment as applied in PnET
@@ -1366,7 +1366,7 @@ namespace Landis.Library.PnETCohorts
                 // Substitute 24 hours in place of DayLength because foliar respiration does occur at night.  BaseFoliarRespiration and RespirationFQ10 use Tavg temps reflecting both day and night temperatures.
                 float RefFoliarRespiration = BaseFoliarRespiration * variables[species.Name].RespirationFQ10 * variables.DaySpan * Constants.SecondsPerDay * Constants.MC / Constants.billion; // gC/g Fol/month
                 // Actual foliage respiration (growth respiration) 
-                FoliarRespiration[index] = RefFoliarRespiration * Fol / (float)Globals.IMAX; // gC/m2 ground/mo
+                FoliarRespiration[index] = RefFoliarRespiration * Fol / Globals.IMAX; // gC/m2 ground/mo
                 // NetPsn psn depends on gross psn and foliage respiration
                 float nonOzoneNetPsn = GrossPsn[index] - FoliarRespiration[index];
                 // Convert Psn gC/m2 ground/mo to umolCO2/m2 fol/s
@@ -1385,12 +1385,10 @@ namespace Landis.Library.PnETCohorts
                 if (o3_month > 0)
                 {
                     float o3Coeff = speciesPnET.O3GrowthSens;
-                    FOzone = CalcFOzone(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, Fol, lastFOzone, gwv, LAI[index], o3Coeff);
+                    fOzone = CalcFOzone(o3_month, subCanopyIndex, layerCount, Fol, lastFOzone, gwv, o3Coeff);
                 }
-                else
-                    FOzone = 0;
                 //Apply reduction factor for Ozone
-                FOzone[index] = 1 - FOzone;
+                FOzone[index] = 1 - fOzone;
                 NetPsn[index] = nonOzoneNetPsn * FOzone[index];
                 // Add net psn to non soluble carbons
                 data.NSC += NetPsn[index]; //gC
@@ -1408,21 +1406,34 @@ namespace Landis.Library.PnETCohorts
                 FOzone[index] = 1;
             }
             index++;
-
             return success;
+        }
+
+        /// <summary>
+        /// Calculate water use efficiency using photosynthesis,
+        /// canopy layer fraction, and transpiration  
+        /// </summary>
+        /// <param name="grossPsn"></param>
+        /// <param name="canopyLayerFrac"></param>
+        /// <param name="transpiration"></param>
+        /// <returns></returns>
+        public static float CalcWUE(float grossPsn, float canopyLayerFrac, float transpiration)
+        {
+            float JCO2_JH2O = 0;
+            if (transpiration > 0)
+                JCO2_JH2O = (float)(0.0015f * grossPsn * canopyLayerFrac / transpiration);
+            float WUE = JCO2_JH2O * Constants.MCO2_MC;
+            return WUE;
         }
 
         // LightEffect equation from PnET
         // Used in official releases >= 5.0
         public static float CalcFRad(float Radiation, float HalfSat)
         {
-            float fRad = 0.0f;
             if (HalfSat > 0)
-                fRad = (float)(1.0 - Math.Exp(-1.0 * Radiation * Math.Log(2.0) / HalfSat));
+                return (float)(1.0 - Math.Exp(-1.0 * Radiation * Math.Log(2.0) / HalfSat));
             else
                 throw new Exception("HalfSat <= 0. Cannot calculate fRad.");
-
-            return fRad;
         }
 
         public static float CalcFWater(float H1, float H2, float H3, float H4, float pressurehead)
@@ -1443,18 +1454,16 @@ namespace Landis.Library.PnETCohorts
                 return 1;
         }
 
-        public static float CalcFOzone(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastFOzone, float gwv, float layerLAI, float o3Coeff)
+        public static float CalcFOzone(float o3, int Layer, int nLayers, float FolMass, float lastFOzone, float gwv, float o3Coeff)
         {
-            float currentFOzone = 1.0F;
             float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
             float kO3Eff = 0.0026F * o3Coeff;  // Scaled by species using input parameters
             float O3Prof = (float)(0.6163 + (0.00105 * FolMass));
             float RelLayer = (float)Layer / (float)nLayers;
             float relO3 = Math.Min(1, 1 - RelLayer * O3Prof * (RelLayer * O3Prof) * (RelLayer * O3Prof));
             // Kubiske method (using gwv in place of conductance
-            currentFOzone = (float)Math.Min(1, (lastFOzone * droughtO3Frac) + (kO3Eff * gwv * o3 * relO3));
-
-            return currentFOzone;
+            float FOzone = (float)Math.Min(1, (lastFOzone * droughtO3Frac) + (kO3Eff * gwv * o3 * relO3));
+            return FOzone;
         }
 
         public int CalcNonWoodBiomass(ActiveSite site)
@@ -1527,10 +1536,7 @@ namespace Landis.Library.PnETCohorts
             float netPsnSum = NetPsn.Sum();
             float grossPsnSum = GrossPsn.Sum();
             float transpirationSum = Transpiration.Sum();
-            float JCO2_JH2O = 0;
-            if (transpirationSum > 0)
-                JCO2_JH2O = (float)(0.0015f * grossPsnSum * CanopyLayerFrac / transpirationSum);
-            float WUE = JCO2_JH2O * ((float)44 / (float)18); //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
+            float WUE = CalcWUE(grossPsnSum, CanopyLayerFrac, transpirationSum);
             // determine the limiting factor 
             float fWaterAvg = FWater.Average();
             float PressHeadAvg = PressHead.Average();
@@ -1667,7 +1673,6 @@ namespace Landis.Library.PnETCohorts
             if (NSCfrac <= 0.01F)
                 Litter = Fol;
             Fol -= Litter;
-
             return Litter;
         }
 
@@ -1678,7 +1683,6 @@ namespace Landis.Library.PnETCohorts
             data.AGBiomass = (1 - speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
-
             return senescence;
         }
 
@@ -1730,7 +1734,6 @@ namespace Landis.Library.PnETCohorts
             }
             else
                 LAIlayer = (float)Math.Min(LAIlayerMax, LAIlayer);
-
             return LAIlayer;
         }
 
@@ -1748,7 +1751,6 @@ namespace Landis.Library.PnETCohorts
             }
             else
                 LAIlayer = (float)Math.Min(LAIlayerMax, LAIlayer);
-
             return LAIlayer;
         }
 

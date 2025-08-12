@@ -39,22 +39,6 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public const int billion = 1000000000;
 
-        public enum Months : int
-        {
-            January = 1,
-            February = 2,
-            March = 3,
-            April = 4,
-            May = 5,
-            June = 6,
-            July = 7,
-            August = 8,
-            September = 9,
-            October = 10,
-            November = 11,
-            December = 12
-        }
-
         // Joules <--> calorie conversion
         public const float Jpercal = 4.184F;
         public const float CalperJ = 1F / Jpercal;

@@ -262,7 +262,7 @@ namespace Landis.Library.PnETCohorts
         {
             // convert PAR (umol/m2.s) to total solar radiation (W/m2) (Reis and Ribeiro, 2019, eq. 39)  
             // convert Rs_W (W/m2) to Rs (MJ/m2.d) (Reis and Ribeiro, 2019, eq. 13)
-            float Rs = (float)par / 2.02F * 0.0864F;
+            float Rs = (float)par / 2.02F * Constants.SecondsPerDay / 1000000F;
             // get slope of vapor pressure curve at Tair
             float VPSlope = CalcVaporPressureCurveSlope((float)tair);
             // calculate potential evaporation (Stewart & Rouse, 1976, eq. 11)
@@ -318,7 +318,7 @@ namespace Landis.Library.PnETCohorts
             float alpha = 1.0f;
             float VPSlope = CalcVaporPressureCurveSlope((float)T);
             // conversion W/m2 to MJ/m2.d
-            float PotentialET_ground = alpha * (VPSlope / (VPSlope + Constants.PsychrometricCoeff)) / Constants.LatentHeatVaporWater * subCanopyNetRad * 0.0864F; // m/day
+            float PotentialET_ground = alpha * (VPSlope / (VPSlope + Constants.PsychrometricCoeff)) / Constants.LatentHeatVaporWater * subCanopyNetRad * Constants.SecondsPerDay / 1000000F; // m/day
             return PotentialET_ground * 1000 * daySpan; //mm/month
         }
 

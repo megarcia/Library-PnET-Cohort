@@ -27,13 +27,13 @@ namespace Landis.Library.PnETCohorts
             _monthlyClimateRecord = monthlyClimateRecord;
             _date = date;
             speciesVariables = new Dictionary<string, PnETSpeciesVariables>();
-            _tavg = Weather.CalcTavg(monthlyClimateRecord.Tmin, monthlyClimateRecord.Tmax);
+            _tavg = Weather.CalcTavg((float)monthlyClimateRecord.Tmin, (float)monthlyClimateRecord.Tmax);
             _dayspan = Calendar.CalcDaySpan(date.Month);
             float hr = Calendar.CalcDaylightHrs(date.DayOfYear, latitude);
             _dayLength = Calendar.CalcDayLength(hr);
             float nightLength = Calendar.CalcNightLength(hr);
-            _tday = Weather.CalcTavg(_tavg, monthlyClimateRecord.Tmax);
-            _vpd = EcoregionPnETVariables.CalcVPD(Tday, (float)monthlyClimateRecord.Tmin);
+            _tday = Weather.CalcTavg(_tavg, (float)monthlyClimateRecord.Tmax);
+            _vpd = Weather.CalcVPD(Tday, (float)monthlyClimateRecord.Tmin);
             foreach (IPnETSpecies spc in Species)
             {
                 PnETSpeciesVariables speciespnetvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, dayLength, nightLength, spc);
@@ -68,8 +68,8 @@ namespace Landis.Library.PnETCohorts
             // Class that contains species specific PnET variables for a certain month
             PnETSpeciesVariables speciespnetvars = new PnETSpeciesVariables();
             speciespnetvars.DVPD = Photosynthesis.CalcDVPD(VPD, spc.DVPD1, spc.DVPD2);
-            speciespnetvars.JH2O = Photosynthesis.CalcJH2O(monthlyClimateRecord.Tmin, VPD);
-            speciespnetvars.AmaxB_CO2 = Photosynthesis.CalcAmaxB_CO2(monthlyClimateRecord.CO2, spc.AmaxB, spc.CO2AMaxBEff);
+            speciespnetvars.JH2O = Photosynthesis.CalcJH2O((float)monthlyClimateRecord.Tmin, VPD);
+            speciespnetvars.AmaxB_CO2 = Photosynthesis.CalcAmaxB_CO2((float)monthlyClimateRecord.CO2, spc.AmaxB, spc.CO2AMaxBEff);
             if (dTemp)
                 speciespnetvars.PsnFTemp = Photosynthesis.DTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax);
             else
@@ -84,8 +84,6 @@ namespace Landis.Library.PnETCohorts
             // the static vegetation parameter, then recalculates BaseFoliarRespiration based on the adjusted
             // BaseFoliarRespirationFrac
             //
-            // Base foliar respiration 
-            float BaseFoliarRespirationFrac;
             // Base parameter in Q10 temperature dependency calculation
             float Q10base;
             if (wythers)
@@ -101,7 +99,7 @@ namespace Landis.Library.PnETCohorts
             // Respiration Q10 factor
             speciespnetvars.RespirationFQ10 = Respiration.CalcFQ10(Q10base, Tavg, spc.PsnTopt);
             // Respiration adjustment for temperature
-            float RespFTemp = Respiration.CalcFTemp(Q10base, Tday, Tmin, spc.PsnTopt, dayLength, nightLength)
+            float RespFTemp = Respiration.CalcFTemp(Q10base, Tday, Tmin, spc.PsnTopt, dayLength, nightLength);
             speciespnetvars.RespirationFTemp = RespFTemp;
             // Scaling factor of respiration given day and night temperature and day and night length
             speciespnetvars.MaintenanceRespirationFTemp = spc.MaintResp * RespFTemp;

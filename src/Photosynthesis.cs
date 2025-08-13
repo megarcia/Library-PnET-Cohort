@@ -48,6 +48,32 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
+        /// Calculate DVPD, gradient of effect of vapor pressure deficit 
+        /// on growth
+        /// </summary>
+        /// <param name="VPD"></param>
+        /// <param name="DVPD1"></param>
+        /// <param name="DVPD2"></param>
+        /// <returns></returns>
+        public static float CalcDVPD(float VPD, float DVPD1, float DVPD2)
+        {
+            float DVPD = Math.Max(0, 1.0F - DVPD1 * (float)Math.Pow(VPD, DVPD2));
+            return DVPD;
+        }
+
+        /// <summary>
+        /// Calculate JH20
+        /// </summary>
+        /// <param name="Tmin"></param>
+        /// <param name="VPD"></param>
+        /// <returns></returns>
+        public static float CalcJH2O(float Tmin, float VPD)
+        {
+            float JH2O = (float)(Constants.CalperJ * (VPD / (Constants.GasConst_JperkmolK * (Tmin + Constants.Tref_K))));
+            return JH2O;
+        }
+
+        /// <summary>
         /// Modify AmaxB based on CO2 level using linear interpolation
         /// uses 2 known points: (350, AmaxB) and (550, AmaxB * CO2AmaxBEff)
         /// </summary>

@@ -184,16 +184,9 @@ namespace Landis.Library.PnETCohorts
         {
             // Class that contains species specific PnET variables for a certain month
             PnETSpeciesVariables speciespnetvars = new PnETSpeciesVariables();
-            // Gradient of effect of vapour pressure deficit on growth. 
-            speciespnetvars.DVPD = Math.Max(0, 1.0f - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
-            // ** CO2 effect on growth **
-            // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
-            float JH2O = (float)(Constants.CalperJ * (VPD / (Constants.GasConst_JperkmolK * (climate_dataset.Tmin + Constants.Tref_K))));
-            speciespnetvars.JH2O = JH2O;
-            // GROSSPsn gross photosynthesis
+            speciespnetvars.DVPD = Photosynthesis.CalcDVPD(VPD, spc.DVPD1, spc.DVPD2);
+            speciespnetvars.JH2O = Photosynthesis.CalcJH2O(climate_dataset.Tmin, VPD);
             speciespnetvars.AmaxB_CO2 = Photosynthesis.CalcAmaxB_CO2(climate_dataset.CO2, spc.AmaxB, spc.CO2AMaxBEff);
-
-            // PsnFTemp (public for output file)
             if (DTemp)
                 speciespnetvars.PsnFTemp = Photosynthesis.DTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax);
             else

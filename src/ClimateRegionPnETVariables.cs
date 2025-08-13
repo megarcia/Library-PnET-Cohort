@@ -27,12 +27,12 @@ namespace Landis.Library.PnETCohorts
             _monthlyClimateRecord = monthlyClimateRecord;
             _date = date;
             speciesVariables = new Dictionary<string, PnETSpeciesVariables>();
-            _tavg = (float)(0.5 * (monthlyClimateRecord.Tmin + monthlyClimateRecord.Tmax));
+            _tavg = Weather.CalcTavg(monthlyClimateRecord.Tmin, monthlyClimateRecord.Tmax);
             _dayspan = Calendar.CalcDaySpan(date.Month);
             float hr = Calendar.CalcDaylightHrs(date.DayOfYear, latitude);
             _dayLength = Calendar.CalcDayLength(hr);
             float nightLength = Calendar.CalcNightLength(hr);
-            _tday = (float)(0.5 * (monthlyClimateRecord.Tmax + _tavg));
+            _tday = Weather.CalcTavg(_tavg, monthlyClimateRecord.Tmax);
             _vpd = EcoregionPnETVariables.CalcVPD(Tday, (float)monthlyClimateRecord.Tmin);
             foreach (IPnETSpecies spc in Species)
             {

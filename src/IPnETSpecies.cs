@@ -7,6 +7,11 @@ namespace Landis.Library.PnETCohorts
     public interface IPnETSpecies : Landis.Core.ISpecies
     {
         /// <summary>
+        /// Species name 
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
         /// Carbon fraction in biomass 
         /// </summary>
         float CFracBiomass { get; }

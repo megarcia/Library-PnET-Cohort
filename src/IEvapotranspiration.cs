@@ -7,8 +7,8 @@ namespace Landis.Library.PnETCohorts
         /// Calculate reference ET
         /// </summary>
         /// <param name="T"></param>
-        /// <param name="dayLength"></param>
+        /// <param name="DayLength"></param>
         /// <returns></returns>
-        float CalcReferenceET_Hamon(float T, float dayLength);
+        float CalcReferenceET_Hamon(float T, float DayLength);
     }
 }

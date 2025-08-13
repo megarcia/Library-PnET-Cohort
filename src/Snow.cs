@@ -7,24 +7,24 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Calculate snow density (kg/m3, function of daysOfWinter) 
         /// </summary>
-        /// <param name="daysOfWinter"></param>
+        /// <param name="DaysOfWinter"></param>
         /// <returns></returns>
-        public static float CalcDensity(int daysOfWinter)
+        public static float CalcDensity(int DaysOfWinter)
         {
-            float densitySnow_kg_m3 = Constants.DensitySnow_intercept + (Constants.DensitySnow_slope * daysOfWinter);
-            return densitySnow_kg_m3;
+            float DensitySnow_kg_m3 = Constants.DensitySnow_intercept + (Constants.DensitySnow_slope * DaysOfWinter);
+            return DensitySnow_kg_m3;
         }
 
         /// <summary>
         /// Calculate snow depth (m)
         /// </summary>
-        /// <param name="daysOfWinter"></param>
-        /// <param name="snowpack"></param>
+        /// <param name="DaysOfWinter"></param>
+        /// <param name="Snowpack"></param>
         /// <returns></returns>
-        public static float CalcDepth(float densitySnow_kg_m3, float snowpack)
+        public static float CalcDepth(float DensitySnow_kg_m3, float Snowpack)
         {
-            float depthSnow = Constants.DensityWater * snowpack / densitySnow_kg_m3 / 1000;
-            return depthSnow;
+            float DepthSnow = Constants.DensityWater * Snowpack / DensitySnow_kg_m3 / 1000;
+            return DepthSnow;
         }
 
         /// <summary>
@@ -33,12 +33,12 @@ namespace Landis.Library.PnETCohorts
         /// based on CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
         /// Eq. 85 in Jordan (1991)
         /// </summary>
-        /// <param name="densitySnow_kg_m3"></param>
+        /// <param name="DensitySnow_kg_m3"></param>
         /// <returns></returns>
-        public static float CalcThermalConductivity(float densitySnow_kg_m3)
+        public static float CalcThermalConductivity(float DensitySnow_kg_m3)
         {
-            float thermalConductivity = (float)(Constants.ThermalConductivityAir_Watts + ((0.0000775 * densitySnow_kg_m3) + (0.000001105 * Math.Pow(densitySnow_kg_m3, 2))) * (Constants.ThermalConductivityIce_Watts - Constants.ThermalConductivityAir_Watts)) * 3.6F * 24F;
-            return thermalConductivity;
+            float ThermalConductivity = (float)(Constants.ThermalConductivityAir_Watts + ((0.0000775 * DensitySnow_kg_m3) + (0.000001105 * Math.Pow(DensitySnow_kg_m3, 2))) * (Constants.ThermalConductivityIce_Watts - Constants.ThermalConductivityAir_Watts)) * 3.6F * 24F;
+            return ThermalConductivity;
         }
 
         /// <summary>
@@ -46,27 +46,27 @@ namespace Landis.Library.PnETCohorts
         /// based on CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
         /// Eq. 85 in Jordan (1991)
         /// </summary>
-        /// <param name="thermalConductivity_Snow"></param>
+        /// <param name="ThermalConductivity_Snow"></param>
         /// <returns></returns>
-        public static float CalcThermalDamping(float thermalConductivity_Snow)
+        public static float CalcThermalDamping(float ThermalConductivity_Snow)
         {
-            float thermalDamping = (float)Math.Sqrt(Constants.omega / (2.0F * thermalConductivity_Snow));
-            return thermalDamping;
+            float ThermalDamping = (float)Math.Sqrt(Constants.omega / (2.0F * ThermalConductivity_Snow));
+            return ThermalDamping;
         }
 
         /// <summary>
-        /// Damping ratio for snow
+        /// Thermal damping ratio for snow
         /// adapted from Kang et al. (2000) and Liang et al. (2014)
         /// based on CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
         /// Eq. 85 in Jordan (1991)
         /// </summary>
-        /// <param name="snowDepth"></param>
-        /// <param name="thermalDamping"></param>
+        /// <param name="SnowDepth"></param>
+        /// <param name="ThermalDamping"></param>
         /// <returns></returns>
-        public static float CalcDampingRatio(float snowDepth, float thermalDamping)
+        public static float CalcDampingRatio(float SnowDepth, float ThermalDamping)
         {
-            float dampingRatio = (float)Math.Exp(-1.0F * snowDepth * thermalDamping);
-            return dampingRatio;
+            float DampingRatio = (float)Math.Exp(-1.0F * SnowDepth * ThermalDamping);
+            return DampingRatio;
         }
     }
 }

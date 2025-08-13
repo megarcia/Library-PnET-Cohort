@@ -2,31 +2,31 @@ namespace Landis.Library.PnETCohorts
 {
     public class Photosynthesis
     {
-        public static float CurvilinearPsnTempResponse(float tday, float psnTopt, float psnTmin, float psnTmax)
+        public static float CurvilinearPsnTempResponse(float Tday, float PsnTopt, float PsnTmin, float PsnTmax)
         {
-            if (tday < psnTmin)
+            if (Tday < PsnTmin)
                 return 0F;
-            else if (tday > psnTopt)
+            else if (Tday > PsnTopt)
                 return 1F;
             else
-                return (psnTmax - tday) * (tday - psnTmin) / (float)Math.Pow((psnTmax - psnTmin) / 2F, 2);
+                return (PsnTmax - Tday) * (Tday - PsnTmin) / (float)Math.Pow((PsnTmax - PsnTmin) / 2F, 2);
         }
 
-        public static float DTempResponse(float tday, float psnTopt, float psnTmin, float psnTmax)
+        public static float DTempResponse(float Tday, float PsnTopt, float PsnTmin, float PsnTmax)
         {
-            if (tday < psnTmin || tday > psnTmax)
+            if (Tday < PsnTmin || Tday > PsnTmax)
                 return 0F;
             else
             {
-                if (tday <= psnTopt)
+                if (Tday <= PsnTopt)
                 {
-                    float psnTmaxestimate = psnTopt + (psnTopt - psnTmin);
-                    return (float)Math.Max(0.0, (psnTmaxestimate - tday) * (tday - psnTmin) / (float)Math.Pow((psnTmaxestimate - psnTmin) / 2F, 2));
+                    float PsnTmaxEst = PsnTopt + (PsnTopt - PsnTmin);
+                    return (float)Math.Max(0.0, (PsnTmaxEst - Tday) * (Tday - PsnTmin) / (float)Math.Pow((PsnTmaxEst - PsnTmin) / 2F, 2));
                 }
                 else
                 {
-                    float psnTminestimate = psnTopt + (psnTopt - psnTmax);
-                    return (float)Math.Max(0.0, (psnTmax - tday) * (tday - psnTminestimate) / (float)Math.Pow((psnTmax - psnTminestimate) / 2F, 2));
+                    float PsnTminEst = PsnTopt + (PsnTopt - PsnTmax);
+                    return (float)Math.Max(0.0, (PsnTmax - Tday) * (Tday - PsnTminEst) / (float)Math.Pow((PsnTmax - PsnTminEst) / 2F, 2));
                 }
             }
         }

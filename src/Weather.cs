@@ -51,8 +51,8 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         private static float CalcVaporPressureCurveSlope(float T)
         {
-            float slope = 4098F * CalcVaporPressure(T) / (float)Math.Pow(T + 237.3, 2);
-            return slope;
+            float Slope = 4098F * CalcVaporPressure(T) / (float)Math.Pow(T + 237.3, 2);
+            return Slope;
         }
 
         /// <summary>

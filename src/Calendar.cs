@@ -42,21 +42,21 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Nightlength in seconds
         /// </summary>
-        /// <param name="hr"></param>
+        /// <param name="Hrs"></param>
         /// <returns></returns>
-        public static float CalcNightLength(float hr)
+        public static float CalcNightLength(float Hrs)
         {
-            return 60 * 60 * (24 - hr);
+            return 60 * 60 * (24 - Hrs);
         }
 
         /// <summary>
         /// DayLength in seconds
         /// </summary>
-        /// <param name="hr"></param>
+        /// <param name="Hrs"></param>
         /// <returns></returns>
-        public static float CalcDayLength(float hr)
+        public static float CalcDayLength(float Hrs)
         {
-            return 60 * 60 * hr;
+            return 60 * 60 * Hrs;
         }
 
         /// <summary>

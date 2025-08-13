@@ -1,3 +1,4 @@
+using System;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -24,7 +25,7 @@ namespace Landis.Library.PnETCohorts
         {
             // Midpoint between Tavg and optimal T for photosynthesis
             float Tmid = (Tavg + PsnTopt) / 2F;
-            float Q10 = 3.22F - 0.046F * Tmidpoint;
+            float Q10 = 3.22F - 0.046F * Tmid;
             return Q10;
         }
 

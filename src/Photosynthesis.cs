@@ -1,3 +1,5 @@
+using System;
+
 namespace Landis.Library.PnETCohorts
 {
     public class Photosynthesis

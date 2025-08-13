@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -201,8 +200,6 @@ namespace Landis.Library.PnETCohorts
             // the static vegetation parameter, then recalculates BaseFoliarRespiration based on the adjusted
             // BaseFoliarRespirationFrac
             //
-            // Base foliar respiration 
-            float BaseFoliarRespirationFrac;
             // Base parameter in Q10 temperature dependency calculation
             float Q10base;
             if (Wythers)
@@ -218,7 +215,7 @@ namespace Landis.Library.PnETCohorts
             // Respiration Q10 factor
             speciespnetvars.RespirationFQ10 = Respiration.CalcFQ10(Q10base, Tavg, spc.PsnTopt);
             // Respiration adjustment for temperature
-            float RespFTemp = Respiration.CalcFTemp(Q10base, Tday, Tmin, spc.PsnTopt, dayLength, nightLength)
+            float RespFTemp = Respiration.CalcFTemp(Q10base, Tday, Tmin, spc.PsnTopt, dayLength, nightLength);
             speciespnetvars.RespirationFTemp = RespFTemp;
             // Scaling factor of respiration given day and night temperature and day and night length
             speciespnetvars.MaintenanceRespirationFTemp = spc.MaintResp * RespFTemp;

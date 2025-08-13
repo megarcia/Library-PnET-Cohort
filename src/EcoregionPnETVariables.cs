@@ -191,12 +191,8 @@ namespace Landis.Library.PnETCohorts
             float JH2O = (float)(Constants.CalperJ * (VPD / (Constants.GasConst_JperkmolK * (climate_dataset.Tmin + Constants.Tref_K))));
             speciespnetvars.JH2O = JH2O;
             // GROSSPsn gross photosynthesis
-            // Modify AmaxB based on CO2 level
-            // Equations solved from 2 known points: (350, AmaxB) and (550, AmaxB * CO2AmaxBEff)
-            float AmaxB_slope = (float)((spc.CO2AMaxBEff - 1.0) * spc.AmaxB / 200.0);  // Derived from m = [(AmaxB*CO2AMaxBEff) - AmaxB]/[550 - 350]
-            float AmaxB_int = (float)(-1.0 * (((spc.CO2AMaxBEff - 1.0) * 1.75) - 1.0) * spc.AmaxB);  // Derived from b = AmaxB - (AmaxB_slope * 350)
-            float AmaxB_CO2 = AmaxB_slope * climate_dataset.CO2 + AmaxB_int;
-            speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
+            speciespnetvars.AmaxB_CO2 = Photosynthesis.CalcAmaxB_CO2(climate_dataset.CO2, spc.AmaxB, spc.CO2AMaxBEff);
+
             // PsnFTemp (public for output file)
             if (DTemp)
                 speciespnetvars.PsnFTemp = Photosynthesis.DTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax);

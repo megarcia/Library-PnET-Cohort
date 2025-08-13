@@ -74,12 +74,7 @@ namespace Landis.Library.PnETCohorts
             float JH2O = (float)(Constants.CalperJ * (VPD / (Constants.GasConst_JperkmolK * (monthlyClimateRecord.Tmin + Constants.Tref_K))));
             speciespnetvars.JH2O = JH2O;
             // NETPsn net photosynthesis
-            // Modify AmaxB based on CO2 level
-            // Equations solved from 2 known points: (350, AmaxB) and (550, AmaxB * CO2AmaxBEff)
-            float AmaxB_slope = (float)((spc.CO2AMaxBEff - 1.0) * spc.AmaxB / 200.0);  // Derived from m = [(AmaxB*CO2AMaxBEff) - AmaxB]/[550 - 350]
-            float AmaxB_int = (float)(-1.0 * (((spc.CO2AMaxBEff - 1.0) * 1.75) - 1.0) * spc.AmaxB);  // Derived from b = AmaxB - (AmaxB_slope * 350)
-            float AmaxB_CO2 = (float)(AmaxB_slope * monthlyClimateRecord.CO2 + AmaxB_int);
-            speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
+            speciespnetvars.AmaxB_CO2 = Photosynthesis.CalcAmaxB_CO2(monthlyClimateRecord.CO2, spc.AmaxB, spc.CO2AMaxBEff);
             // PsnFTemp: reduction factor due to temperature (public for output file)
             if (dTemp)
                 speciespnetvars.PsnFTemp = Photosynthesis.DTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax);
@@ -100,16 +95,16 @@ namespace Landis.Library.PnETCohorts
             float Q10base;
             if (wythers == true)
             {
-                //Calculate Base foliar respiration based on temp; this is species-level, so you can compute outside this IF block and use for all cohorts of a species
+                // Calculate Base foliar respiration based on temp; this is species-level, so you can compute outside this IF block and use for all cohorts of a species
                 BaseFoliarRespirationFrac = 0.138071F - 0.0024519F * Tavg;
-                //Midpoint between Tavg and Optimal Temp; this is also species-level
+                // Midpoint between Tavg and Optimal Temp; this is also species-level
                 float Tmidpoint = (Tavg + spc.PsnTopt) / 2F;
                 // Base parameter in Q10 temperature dependency calculation in current temperature
                 Q10base = 3.22F - 0.046F * Tmidpoint;
             }
             else
             {
-                // The default PnET setting is that these 
+                // The default PnET setting
                 BaseFoliarRespirationFrac = spc.BaseFoliarRespiration;
                 Q10base = spc.Q10;
             }

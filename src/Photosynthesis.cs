@@ -2,6 +2,14 @@ namespace Landis.Library.PnETCohorts
 {
     public class Photosynthesis
     {
+        /// <summary>
+        /// Curvilinear response of photosynthesis to temperature
+        /// </summary>
+        /// <param name="Tday"></param>
+        /// <param name="PsnTopt"></param>
+        /// <param name="PsnTmin"></param>
+        /// <param name="PsnTmax"></param>
+        /// <returns></returns>
         public static float CurvilinearPsnTempResponse(float Tday, float PsnTopt, float PsnTmin, float PsnTmax)
         {
             if (Tday < PsnTmin)
@@ -12,6 +20,14 @@ namespace Landis.Library.PnETCohorts
                 return (PsnTmax - Tday) * (Tday - PsnTmin) / (float)Math.Pow((PsnTmax - PsnTmin) / 2F, 2);
         }
 
+        /// <summary>
+        /// Alternate response of photosynthesis to temperature
+        /// </summary>
+        /// <param name="Tday"></param>
+        /// <param name="PsnTopt"></param>
+        /// <param name="PsnTmin"></param>
+        /// <param name="PsnTmax"></param>
+        /// <returns></returns>
         public static float DTempResponse(float Tday, float PsnTopt, float PsnTmin, float PsnTmax)
         {
             if (Tday < PsnTmin || Tday > PsnTmax)
@@ -29,6 +45,24 @@ namespace Landis.Library.PnETCohorts
                     return (float)Math.Max(0.0, (PsnTmax - Tday) * (Tday - PsnTminEst) / (float)Math.Pow((PsnTmax - PsnTminEst) / 2F, 2));
                 }
             }
+        }
+
+        /// <summary>
+        /// Modify AmaxB based on CO2 level using linear interpolation
+        /// uses 2 known points: (350, AmaxB) and (550, AmaxB * CO2AmaxBEff)
+        /// </summary>
+        /// <param name="CO2"></param>
+        /// <param name="AmaxB"></param>
+        /// <param name="CO2AMaxBEff"></param>
+        /// <returns></returns>
+        public static float CalcAmaxB_CO2(float CO2, float AmaxB, float CO2AMaxBEff)
+        {
+            // AmaxB_slope = [(AmaxB * CO2AMaxBEff) - AmaxB] / [550 - 350]
+            float AmaxB_slope = (float)((CO2AMaxBEff - 1.0) * AmaxB / 200.0F);
+            // AmaxB_intercept = AmaxB - (AmaxB_slope * 350)
+            float AmaxB_intercept = (float)(-1.0 * (((CO2AMaxBEff - 1.0) * 1.75) - 1.0) * AmaxB);
+            float AmaxB_CO2 = (float)(AmaxB_slope * CO2 + AmaxB_intercept);
+            return AmaxB_CO2;
         }
     }
 }

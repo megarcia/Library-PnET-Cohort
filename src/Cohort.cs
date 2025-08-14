@@ -737,7 +737,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Increments the cohort's age by one year.
+        /// Increment the cohort age by one year.
         /// </summary>
         public void IncrementAge()
         {
@@ -745,7 +745,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Changes the cohort's biomass.
+        /// Change the cohort biomass.
         /// </summary>
         public void ChangeBiomass(int delta)
         {
@@ -757,14 +757,22 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Changes the cohort's ANPP.
+        /// Change the cohort ANPP.
         /// </summary>
         public void ChangeANPP(double delta)
         {
             data.UniversalData.ANPP = data.UniversalData.ANPP + delta;
         }
 
-        // Constructor
+        /// <summary>
+        /// Constructor #1
+        /// </summary>
+        /// <param name="species"></param>
+        /// <param name="speciesPnET"></param>
+        /// <param name="year_of_birth"></param>
+        /// <param name="SiteName"></param>
+        /// <param name="fracBiomass"></param>
+        /// <param name="cohortStacking"></param>
         public Cohort(ISpecies species, IPnETSpecies speciesPnET, ushort year_of_birth, string SiteName, double fracBiomass, bool cohortStacking) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
         {
             this.species = species;
@@ -778,10 +786,8 @@ namespace Landis.Library.PnETCohorts
             data.BiomassMax = data.TotalBiomass;
             float cohortLAI = 0;
             float cohortIdealFol = speciesPnET.FracFol * FActiveBiom * data.TotalBiomass;
-
             for (int i = 0; i < Globals.IMAX; i++)
                 cohortLAI += CalcLAI(PnETSpecies, cohortIdealFol, i, cohortLAI);
-
             data.LastLAI = cohortLAI;
             data.LastAGBio = data.AGBiomass;
             data.CanopyLayerFrac = data.LastLAI / speciesPnET.MaxLAI;
@@ -790,13 +796,18 @@ namespace Landis.Library.PnETCohorts
             data.CanopyGrowingSpace = 1.0f;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
             data.UniversalData.ANPP = data.UniversalData.Biomass;
-            // Then overwrite them if you need stuff for outputs
+            // Then overwrite them if needed for output
             if (SiteName != null)
                 InitializeOutput(SiteName, year_of_birth);
             data.LastSeasonFRad = new List<float>();
             firstYear = true;
         }
 
+        /// <summary>
+        /// Cohort constructor #2
+        /// </summary>
+        /// <param name="species"></param>
+        /// <param name="cohortData"></param>
         public Cohort(ISpecies species, CohortData cohortData)
         {
             this.species = species;
@@ -804,6 +815,10 @@ namespace Landis.Library.PnETCohorts
             data = cohortData;
         }
 
+        /// <summary>
+        /// Cohort constructor #3 (cloning an existing cohort)
+        /// </summary>
+        /// <param name="cohort"></param>
         public Cohort(Cohort cohort)
         {
             species = cohort.Species;
@@ -821,6 +836,12 @@ namespace Landis.Library.PnETCohorts
             data.UniversalData.ANPP = cohort.ANPP;
         }
 
+        /// <summary>
+        /// Cohort constructor #4
+        /// </summary>
+        /// <param name="cohort"></param>
+        /// <param name="firstYear"></param>
+        /// <param name="SiteName"></param>
         public Cohort(Cohort cohort, ushort firstYear, string SiteName)
         {
             species = cohort.Species;
@@ -840,6 +861,15 @@ namespace Landis.Library.PnETCohorts
                 InitializeOutput(SiteName, firstYear);
         }
 
+        /// <summary>
+        /// Cohort constructor #5
+        /// </summary>
+        /// <param name="speciesPnET"></param>
+        /// <param name="age"></param>
+        /// <param name="woodBiomass"></param>
+        /// <param name="SiteName"></param>
+        /// <param name="firstYear"></param>
+        /// <param name="cohortStacking"></param>
         public Cohort(IPnETSpecies speciesPnET, ushort age, int woodBiomass, string SiteName, ushort firstYear, bool cohortStacking)
         {
             InitializeSubLayers();
@@ -855,7 +885,6 @@ namespace Landis.Library.PnETCohorts
             data.ColdKill = int.MaxValue;
             float cohortLAI = 0;
             float cohortIdealFol = speciesPnET.MaxFracFol * FActiveBiom * data.TotalBiomass;
-
             for (int i = 0; i < Globals.IMAX; i++)
             {
                 float subLayerLAI = CalcLAI(PnETSpecies, cohortIdealFol, i);
@@ -863,7 +892,6 @@ namespace Landis.Library.PnETCohorts
                 if (IsLeafOn)
                     LAI[index] = subLayerLAI;
             }
-
             if (IsLeafOn)
             {
                 data.Fol = cohortIdealFol;
@@ -882,6 +910,18 @@ namespace Landis.Library.PnETCohorts
                 InitializeOutput(SiteName, firstYear);
         }
 
+        /// <summary>
+        /// Cohort constructor #6
+        /// </summary>
+        /// <param name="speciesPnET"></param>
+        /// <param name="age"></param>
+        /// <param name="woodBiomass"></param>
+        /// <param name="maxBiomass"></param>
+        /// <param name="canopyGrowingSpace"></param>
+        /// <param name="SiteName"></param>
+        /// <param name="firstYear"></param>
+        /// <param name="cohortStacking"></param>
+        /// <param name="lastSeasonAvgFRad"></param>
         public Cohort(IPnETSpecies speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear, bool cohortStacking, float lastSeasonAvgFRad)
         {
             InitializeSubLayers();
@@ -898,7 +938,6 @@ namespace Landis.Library.PnETCohorts
             data.ColdKill = int.MaxValue;
             float cohortLAI = 0;
             float cohortIdealFol = adjFracFol * FActiveBiom * data.TotalBiomass;
-
             for (int i = 0; i < Globals.IMAX; i++)
             {
                 float subLayerLAI = CalcLAI(PnETSpecies, cohortIdealFol, i);
@@ -906,7 +945,6 @@ namespace Landis.Library.PnETCohorts
                 if (IsLeafOn)
                     LAI[index] = subLayerLAI;
             }
-
             if (IsLeafOn)
             {
                 data.Fol = cohortIdealFol;

@@ -127,5 +127,38 @@ namespace Landis.Library.PnETCohorts
             float Egp = CropCoeff * ReferenceET * (float)Math.Exp(-k * LAI); // mm/day
             return Egp * DaySpan; // mm/month
         }
+
+        /// <summary>
+        /// Calculate water vapor conductance
+        /// </summary>
+        /// <param name="CO2"></param>
+        /// <param name="Tavg"></param>
+        /// <param name="CiElev"></param>
+        /// <param name="netPsn"></param>
+        /// <returns></returns>
+        public static float CalcWVConductance(float CO2, float Tavg, float CiElev, float netPsn)
+        {
+            float Ca_Ci = CO2 - CiElev;
+            float conductance_mol = (float)(netPsn / Ca_Ci * 1.6 * 1000);
+            float conductance = (float)(conductance_mol / (444.5 - 1.3667 * Tavg) * 10);
+            return conductance;
+        }
+
+        /// <summary>
+        /// Calculate water use efficiency using photosynthesis,
+        /// canopy layer fraction, and transpiration  
+        /// </summary>
+        /// <param name="grossPsn"></param>
+        /// <param name="canopyLayerFrac"></param>
+        /// <param name="transpiration"></param>
+        /// <returns></returns>
+        public static float CalcWUE(float grossPsn, float canopyLayerFrac, float transpiration)
+        {
+            float JCO2_JH2O = 0;
+            if (transpiration > 0)
+                JCO2_JH2O = (float)(0.0015f * grossPsn * canopyLayerFrac / transpiration);
+            float WUE = JCO2_JH2O * Constants.MCO2_MC;
+            return WUE;
+        }
     }
 }

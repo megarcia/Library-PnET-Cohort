@@ -1251,7 +1251,7 @@ namespace Landis.Library.PnETCohorts
             data.AdjHalfSat = speciesPnET.CO2HalfSatEff * variables.CO2 + halfSatIntercept;
             // Reduction factor for radiation on photosynthesis
             float LayerPAR = (float)(mainLayerPAR * Math.Exp(-speciesPnET.K * (LAI.Sum() - LAI[index])));
-            FRad[index] = CalcFRad(LayerPAR, AdjHalfSat);
+            FRad[index] = Photosynthesis.CalcFRad(LayerPAR, AdjHalfSat);
             // Get pressure head given ecoregion and soil water content (latter in hydrology)
             float PressureHead = hydrology.PressureHeadTable.CalcSoilWaterPressureHead(hydrology.SoilWaterContent, siteCohort.Ecoregion.SoilType);
             // Reduction water for sub or supra optimal soil water content
@@ -1261,20 +1261,20 @@ namespace Landis.Library.PnETCohorts
             NumEvents[index] = precipCount;
             if (Globals.ModelCore.CurrentTime > 0)
             {
-                FWater[index] = CalcFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
-                fWaterOzone = CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
+                FWater[index] = Photosynthesis.CalcFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
+                fWaterOzone = Photosynthesis.CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
             }
             else // Spinup
             {
                 if (((Parameter<string>)Names.GetParameter(Names.SpinUpWaterStress)).Value == "true"
                     || ((Parameter<string>)Names.GetParameter(Names.SpinUpWaterStress)).Value == "yes")
                 {
-                    FWater[index] = CalcFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
-                    fWaterOzone = CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
+                    FWater[index] = Photosynthesis.CalcFWater(speciesPnET.H1, speciesPnET.H2, speciesPnET.H3, speciesPnET.H4, PressureHead);
+                    fWaterOzone = Photosynthesis.CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
                 }
                 else // Ignore H1 and H2 parameters during spinup
                 {
-                    FWater[index] = CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead);
+                    FWater[index] = Photosynthesis.CalcFWater(-1, -1, speciesPnET.H3, speciesPnET.H4, PressureHead);
                     fWaterOzone = FWater[index];
                 }
             }
@@ -1291,7 +1291,7 @@ namespace Landis.Library.PnETCohorts
             data.adjFolN = speciesPnET.FolN + ((maxFolN - speciesPnET.FolN) * (float)Math.Pow(FRad[index], folN_shape)); 
             AdjFolN[index] = adjFolN;  // Stored for output
             AdjFracFol[index] = adjFracFol; //Stored for output
-            float ciModifier = CalcCiModifier(o3_cum, speciesPnET.O3StomataSens, fWaterOzone);
+            float ciModifier = Photosynthesis.CalcCiModifier(o3_cum, speciesPnET.O3StomataSens, fWaterOzone);
             CiModifier[index] = ciModifier;  // Stored for output
             // If trees are physiologically active
             if (IsLeafOn)
@@ -1374,7 +1374,7 @@ namespace Landis.Library.PnETCohorts
                 float RefFoliarRespiration = BaseFoliarRespiration * variables[species.Name].RespirationFQ10 * variables.DaySpan * Constants.SecondsPerDay * Constants.MC / Constants.billion; // gC/g Fol/month
                 // Actual foliage respiration (growth respiration) 
                 FoliarRespiration[index] = RefFoliarRespiration * Fol / Globals.IMAX; // gC/m2 ground/mo
-                // NetPsn psn depends on gross psn and foliage respiration
+                // NetPsn depends on gross psn and foliage respiration
                 float nonOzoneNetPsn = GrossPsn[index] - FoliarRespiration[index];
                 // Convert Psn gC/m2 ground/mo to umolCO2/m2 fol/s
                 float netPsn_ground = nonOzoneNetPsn * 1000000F * (1F / 12F) * (1F / (variables.DayLength * variables.DaySpan));
@@ -1388,9 +1388,9 @@ namespace Landis.Library.PnETCohorts
                 // Reduction factor for ozone on photosynthesis
                 if (o3_month > 0)
                 {
-                    float wvConductance = CalcWVConductance(variables.CO2, variables.Tavg, ciElev, netPsn_leaf_s);
+                    float wvConductance = Evapotranspiration.CalcWVConductance(variables.CO2, variables.Tavg, ciElev, netPsn_leaf_s);
                     float o3Coeff = speciesPnET.O3GrowthSens;
-                    fOzone = CalcFOzone(o3_month, subCanopyIndex, layerCount, Fol, lastFOzone, wvConductance, o3Coeff);
+                    fOzone = Photosynthesis.CalcFOzone(o3_month, subCanopyIndex, layerCount, Fol, lastFOzone, wvConductance, o3Coeff);
                 }
                 //Apply reduction factor for Ozone
                 FOzone[index] = 1 - fOzone;
@@ -1412,133 +1412,6 @@ namespace Landis.Library.PnETCohorts
             }
             index++;
             return success;
-        }
-
-        /// <summary>
-        /// calculate water vapor conductance
-        /// </summary>
-        /// <param name="CO2"></param>
-        /// <param name="Tavg"></param>
-        /// <param name="CiElev"></param>
-        /// <param name="netPsn"></param>
-        /// <returns></returns>
-        public static float CalcWVConductance(float CO2, float Tavg, float CiElev, float netPsn)
-        {
-            float Ca_Ci = CO2 - CiElev;
-            float conductance_mol = (float)(netPsn / Ca_Ci * 1.6 * 1000);
-            float conductance = (float)(conductance_mol / (444.5 - 1.3667 * Tavg) * 10);
-            return conductance;
-        }
-
-        /// <summary>
-        /// calculate CiModifier as a function of leaf O3 tolerance
-        /// Regression coefs estimated from New 3 algorithm for Ozone drought.xlsx
-        /// https://usfs.box.com/s/eksrr4d7fli8kr9r4knfr7byfy9r5z0i
-        /// Uses data provided by Yasutomo Hoshika and Elena Paoletti
-        /// </summary>
-        /// <param name="CumulativeO3"></param>
-        /// <param name="O3StomataSens"></param>
-        /// <param name="FWaterOzone"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public static float CalcCiModifier(float CumulativeO3, string StomataO3Sens, float FWaterOzone)
-        {
-            float CiModifier = 1.0f; // if no ozone, ciModifier defaults to 1
-            if (CumulativeO3 > 0)
-            {
-                if (StomataO3Sens == "Sensitive" || StomataO3Sens == "Sens")
-                    CiModifier = (float)(FWaterOzone + (-0.0176 * FWaterOzone + 0.0118) * CumulativeO3);
-                else if (StomataO3Sens == "Intermediate" || StomataO3Sens == "Int")
-                    CiModifier = (float)(FWaterOzone + (-0.0148 * FWaterOzone + 0.0062) * CumulativeO3);
-                else if (StomataO3Sens == "Tolerant" || StomataO3Sens == "Tol")
-                    CiModifier = (float)(FWaterOzone + (-0.021 * FWaterOzone + 0.0087) * CumulativeO3);
-                else
-                    throw new Exception("O3 data provided, but species O3StomataSens is not set to Sensitive, Intermediate, or Tolerant");
-            }
-            CiModifier = Math.Max(0.00001F, Math.Min(CiModifier, 1.0F));
-            return CiModifier;
-        }
-
-        /// <summary>
-        /// Calculate water use efficiency using photosynthesis,
-        /// canopy layer fraction, and transpiration  
-        /// </summary>
-        /// <param name="grossPsn"></param>
-        /// <param name="canopyLayerFrac"></param>
-        /// <param name="transpiration"></param>
-        /// <returns></returns>
-        public static float CalcWUE(float grossPsn, float canopyLayerFrac, float transpiration)
-        {
-            float JCO2_JH2O = 0;
-            if (transpiration > 0)
-                JCO2_JH2O = (float)(0.0015f * grossPsn * canopyLayerFrac / transpiration);
-            float WUE = JCO2_JH2O * Constants.MCO2_MC;
-            return WUE;
-        }
-
-        /// <summary>
-        /// Radiative (light) effect on photosynthesis
-        /// </summary>
-        /// <param name="Radiation"></param>
-        /// <param name="HalfSat"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public static float CalcFRad(float Radiation, float HalfSat)
-        {
-            if (HalfSat > 0)
-                return (float)(1.0 - Math.Exp(-1.0 * Radiation * Math.Log(2.0) / HalfSat));
-            else
-                throw new Exception("HalfSat <= 0. Cannot calculate fRad.");
-        }
-
-        /// <summary>
-        /// Soil water effect on photosynthesis
-        /// </summary>
-        /// <param name="H1"></param>
-        /// <param name="H2"></param>
-        /// <param name="H3"></param>
-        /// <param name="H4"></param>
-        /// <param name="pressureHead"></param>
-        /// <returns></returns>
-        public static float CalcFWater(float H1, float H2, float H3, float H4, float pressureHead)
-        {
-            float minThreshold = H1;
-            if (H2 <= H1)
-                minThreshold = H2;
-            // Calculate water stress
-            if (pressureHead <= H1)
-                return 0F;
-            else if (pressureHead < minThreshold || pressureHead >= H4)
-                return 0F;
-            else if (pressureHead > H3)
-                return 1F - ((pressureHead - H3) / (H4 - H3));
-            else if (pressureHead < H2)
-                return 1F / (H2 - H1) * pressureHead - (H1 / (H2 - H1));
-            else
-                return 1F;
-        }
-
-        /// <summary>
-        /// O3 effect on photosynthesis
-        /// </summary>
-        /// <param name="o3"></param>
-        /// <param name="Layer"></param>
-        /// <param name="nLayers"></param>
-        /// <param name="FolMass"></param>
-        /// <param name="lastFOzone"></param>
-        /// <param name="wvConductance"></param>
-        /// <param name="o3Coeff"></param>
-        /// <returns></returns>
-        public static float CalcFOzone(float o3, int Layer, int nLayers, float FolMass, float lastFOzone, float wvConductance, float o3Coeff)
-        {
-            float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
-            float kO3Eff = 0.0026F * o3Coeff;  // Scaled by species using input parameters
-            float O3Prof = (float)(0.6163 + (0.00105 * FolMass));
-            float RelLayer = Layer / (float)nLayers;
-            float relO3 = Math.Min(1, 1 - RelLayer * O3Prof * (RelLayer * O3Prof) * (RelLayer * O3Prof));
-            // Kubiske method (using water vapor conductance in place of conductance
-            float FOzone = (float)Math.Min(1, (lastFOzone * droughtO3Frac) + (kO3Eff * wvConductance * o3 * relO3));
-            return FOzone;
         }
 
         public int CalcNonWoodBiomass(ActiveSite site)
@@ -1611,7 +1484,7 @@ namespace Landis.Library.PnETCohorts
             float netPsnSum = NetPsn.Sum();
             float grossPsnSum = GrossPsn.Sum();
             float transpirationSum = Transpiration.Sum();
-            float WUE = CalcWUE(grossPsnSum, CanopyLayerFrac, transpirationSum);
+            float WUE = Evapotranspiration.CalcWUE(grossPsnSum, CanopyLayerFrac, transpirationSum);
             // determine the limiting factor 
             float fWaterAvg = FWater.Average();
             float PressHeadAvg = PressHead.Average();

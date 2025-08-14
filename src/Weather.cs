@@ -32,7 +32,7 @@ namespace Landis.Library.PnETCohorts
         ///     see https://en.wikipedia.org/wiki/Tetens_equation
         /// </summary>
         /// <param name="T">Air temperature (°C)</param>
-        private static float CalcVaporPressure(float T)
+        public static float CalcVaporPressure(float T)
         {
             float es;
             if (T >= 0f)
@@ -50,7 +50,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         /// <param name="T">Temperature (C)</param>
         /// <returns></returns>
-        private static float CalcVaporPressureCurveSlope(float T)
+        public static float CalcVaporPressureCurveSlope(float T)
         {
             float Slope = 4098F * CalcVaporPressure(T) / (float)Math.Pow(T + 237.3, 2);
             return Slope;

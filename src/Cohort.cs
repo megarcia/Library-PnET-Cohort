@@ -1291,30 +1291,7 @@ namespace Landis.Library.PnETCohorts
             data.adjFolN = speciesPnET.FolN + ((maxFolN - speciesPnET.FolN) * (float)Math.Pow(FRad[index], folN_shape)); 
             AdjFolN[index] = adjFolN;  // Stored for output
             AdjFracFol[index] = adjFracFol; //Stored for output
-            float ciModifier = 1.0f; // if no ozone, ciModifier defaults to 1
-            if (o3_cum > 0)
-            {
-                // Regression coefs estimated from New 3 algorithm for Ozone drought.xlsx
-                // https://usfs.box.com/s/eksrr4d7fli8kr9r4knfr7byfy9r5z0i
-                // Uses data provided by Yasutomo Hoshika and Elena Paoletti
-                float ciMod_tol = (float)(fWaterOzone + (-0.021 * fWaterOzone + 0.0087) * o3_cum);
-                ciMod_tol = Math.Min(ciMod_tol, 1.0f);
-                float ciMod_int = (float)(fWaterOzone + (-0.0148 * fWaterOzone + 0.0062) * o3_cum);
-                ciMod_int = Math.Min(ciMod_int, 1.0f);
-                float ciMod_sens = (float)(fWaterOzone + (-0.0176 * fWaterOzone + 0.0118) * o3_cum);
-                ciMod_sens = Math.Min(ciMod_sens, 1.0f);
-                if ((speciesPnET.O3StomataSens == "Sensitive") || (speciesPnET.O3StomataSens == "Sens"))
-                    ciModifier = ciMod_sens;
-                else if ((speciesPnET.O3StomataSens == "Tolerant") || (speciesPnET.O3StomataSens == "Tol"))
-                    ciModifier = ciMod_tol;
-                else if ((speciesPnET.O3StomataSens == "Intermediate") || (speciesPnET.O3StomataSens == "Int"))
-                    ciModifier = ciMod_int;
-                else
-                    throw new Exception("Ozone data provided, but species O3StomataSens is not set to Sensitive, Tolerant or Intermediate");
-            }
-            // FIXME temporary fix
-            if (ciModifier <= 0)
-                ciModifier = 0.00001f;
+            float ciModifier = CalcCiModifier(o3_cum, speciesPnET.O3StomataSens, fWaterOzone);
             CiModifier[index] = ciModifier;  // Stored for output
             // If trees are physiologically active
             if (IsLeafOn)
@@ -1438,6 +1415,35 @@ namespace Landis.Library.PnETCohorts
             }
             index++;
             return success;
+        }
+
+        /// <summary>
+        /// calculate ciModifier as a function of leaf O3 tolerance
+        /// Regression coefs estimated from New 3 algorithm for Ozone drought.xlsx
+        /// https://usfs.box.com/s/eksrr4d7fli8kr9r4knfr7byfy9r5z0i
+        /// Uses data provided by Yasutomo Hoshika and Elena Paoletti
+        /// </summary>
+        /// <param name="CumulativeO3"></param>
+        /// <param name="O3StomataSens"></param>
+        /// <param name="FWaterOzone"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static float CalcCiModifier(float CumulativeO3, string StomataO3Sens, float FWaterOzone)
+        {
+            float CiModifier = 1.0f; // if no ozone, ciModifier defaults to 1
+            if (CumulativeO3 > 0)
+            {
+                if (StomataO3Sens == "Sensitive" || StomataO3Sens == "Sens")
+                    CiModifier = (float)(FWaterOzone + (-0.0176 * FWaterOzone + 0.0118) * CumulativeO3);
+                else if (StomataO3Sens == "Intermediate" || StomataO3Sens == "Int")
+                    CiModifier = (float)(FWaterOzone + (-0.0148 * FWaterOzone + 0.0062) * CumulativeO3);
+                else if (StomataO3Sens == "Tolerant" || StomataO3Sens == "Tol")
+                    CiModifier = (float)(FWaterOzone + (-0.021 * FWaterOzone + 0.0087) * CumulativeO3);
+                else
+                    throw new Exception("O3 data provided, but species O3StomataSens is not set to Sensitive, Intermediate, or Tolerant");
+            }
+            CiModifier = Math.Max(0.00001F, Math.Min(CiModifier, 1.0F));
+            return CiModifier;
         }
 
         /// <summary>

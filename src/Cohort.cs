@@ -5,6 +5,7 @@ using Landis.Library.UniversalCohorts;
 using Landis.SpatialModeling;
 using Landis.Utilities;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -82,28 +83,20 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 float albedo = 0;
-                if ((!string.IsNullOrEmpty(PnETSpecies.Lifeform))
-                        && (PnETSpecies.Lifeform.ToLower().Contains("ground")
-                            || PnETSpecies.Lifeform.ToLower().Contains("open")
-                            || SumLAI == 0))
-                {
+                bool lifeform = !string.IsNullOrEmpty(PnETSpecies.Lifeform);
+                bool ground = PnETSpecies.Lifeform.ToLower().Contains("ground");
+                bool open = PnETSpecies.Lifeform.ToLower().Contains("open");
+                bool dark = PnETSpecies.Lifeform.ToLower().Contains("dark");
+                bool light = PnETSpecies.Lifeform.ToLower().Contains("light");
+                bool deciduous = PnETSpecies.Lifeform.ToLower().Contains("decid");
+                if (lifeform && (ground || open || SumLAI == 0))
                     albedo = 0.20F;
-                }
-                else if ((!string.IsNullOrEmpty(PnETSpecies.Lifeform))
-                    && PnETSpecies.Lifeform.ToLower().Contains("dark"))
-                {
+                else if (lifeform && dark)
                     albedo = (float)((-0.067 * Math.Log(SumLAI < 0.7 ? 0.7 : SumLAI)) + 0.2095);
-                }
-                else if ((!string.IsNullOrEmpty(PnETSpecies.Lifeform))
-                        && PnETSpecies.Lifeform.ToLower().Contains("light"))
-                {
+                else if (lifeform && light)
                     albedo = (float)((-0.054 * Math.Log(SumLAI < 0.7 ? 0.7 : SumLAI)) + 0.2082);
-                }
-                else if ((!string.IsNullOrEmpty(PnETSpecies.Lifeform))
-                        && PnETSpecies.Lifeform.ToLower().Contains("decid"))
-                {
+                else if (lifeform && deciduous)
                     albedo = (float)((-0.0073 * SumLAI) + 0.231);
-                }
                 // Do not allow albedo to be negative
                 return albedo > 0 ? albedo : 0;
             }
@@ -1216,7 +1209,7 @@ namespace Landis.Library.PnETCohorts
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             data.LAI[index] = CalcLAI(speciesPnET, Fol, index);
             // Adjust HalfSat for CO2 effect
-            float halfSatIntercept = speciesPnET.HalfSat - 350 * speciesPnET.CO2HalfSatEff;
+            float halfSatIntercept = speciesPnET.HalfSat - Constants.CO2RefConc * speciesPnET.CO2HalfSatEff;
             data.AdjHalfSat = speciesPnET.CO2HalfSatEff * variables.CO2 + halfSatIntercept;
             // Reduction factor for radiation on photosynthesis
             float LayerPAR = (float)(mainLayerPAR * Math.Exp(-speciesPnET.K * (LAI.Sum() - LAI[index])));

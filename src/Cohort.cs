@@ -1457,8 +1457,13 @@ namespace Landis.Library.PnETCohorts
             return WUE;
         }
 
-        // LightEffect equation from PnET
-        // Used in official releases >= 5.0
+        /// <summary>
+        /// Radiative (light) effect on photosynthesis
+        /// </summary>
+        /// <param name="Radiation"></param>
+        /// <param name="HalfSat"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static float CalcFRad(float Radiation, float HalfSat)
         {
             if (HalfSat > 0)
@@ -1467,30 +1472,50 @@ namespace Landis.Library.PnETCohorts
                 throw new Exception("HalfSat <= 0. Cannot calculate fRad.");
         }
 
-        public static float CalcFWater(float H1, float H2, float H3, float H4, float pressurehead)
+        /// <summary>
+        /// Soil water effect on photosynthesis
+        /// </summary>
+        /// <param name="H1"></param>
+        /// <param name="H2"></param>
+        /// <param name="H3"></param>
+        /// <param name="H4"></param>
+        /// <param name="pressureHead"></param>
+        /// <returns></returns>
+        public static float CalcFWater(float H1, float H2, float H3, float H4, float pressureHead)
         {
             float minThreshold = H1;
             if (H2 <= H1)
                 minThreshold = H2;
             // Calculate water stress
-            if (pressurehead <= H1)
-                return 0;
-            else if (pressurehead < minThreshold || pressurehead >= H4)
-                return 0;
-            else if (pressurehead > H3)
-                return 1 - ((pressurehead - H3) / (H4 - H3));
-            else if (pressurehead < H2)
-                return 1.0F / (H2 - H1) * pressurehead - (H1 / (H2 - H1));
+            if (pressureHead <= H1)
+                return 0F;
+            else if (pressureHead < minThreshold || pressureHead >= H4)
+                return 0F;
+            else if (pressureHead > H3)
+                return 1F - ((pressureHead - H3) / (H4 - H3));
+            else if (pressureHead < H2)
+                return 1F / (H2 - H1) * pressureHead - (H1 / (H2 - H1));
             else
-                return 1;
+                return 1F;
         }
 
+        /// <summary>
+        /// O3 effect on photosynthesis
+        /// </summary>
+        /// <param name="o3"></param>
+        /// <param name="Layer"></param>
+        /// <param name="nLayers"></param>
+        /// <param name="FolMass"></param>
+        /// <param name="lastFOzone"></param>
+        /// <param name="gwv"></param>
+        /// <param name="o3Coeff"></param>
+        /// <returns></returns>
         public static float CalcFOzone(float o3, int Layer, int nLayers, float FolMass, float lastFOzone, float gwv, float o3Coeff)
         {
             float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
             float kO3Eff = 0.0026F * o3Coeff;  // Scaled by species using input parameters
             float O3Prof = (float)(0.6163 + (0.00105 * FolMass));
-            float RelLayer = (float)Layer / (float)nLayers;
+            float RelLayer = Layer / (float)nLayers;
             float relO3 = Math.Min(1, 1 - RelLayer * O3Prof * (RelLayer * O3Prof) * (RelLayer * O3Prof));
             // Kubiske method (using gwv in place of conductance
             float FOzone = (float)Math.Min(1, (lastFOzone * droughtO3Frac) + (kO3Eff * gwv * o3 * relO3));

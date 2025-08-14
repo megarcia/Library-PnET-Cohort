@@ -77,6 +77,11 @@ namespace Landis.Library.PnETCohorts
         float KWdLit { get; }
 
         /// <summary>
+        /// Species longevity (yr)
+        /// </summary>
+        int Longevity { get; }
+
+        /// <summary>
         /// Growth reduction parameter with age
         /// </summary>
         float PsnAgeRed { get; }

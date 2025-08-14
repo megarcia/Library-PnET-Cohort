@@ -1300,18 +1300,17 @@ namespace Landis.Library.PnETCohorts
                 float cicaRatio = (-0.075f * adjFolN) + 0.875f;
                 float modCiCaRatio = cicaRatio * ciModifier;
                 // Reference co2 ratio
-                float ci350 = Constants.CO2RefConc * modCiCaRatio;
+                // float ci350 = Constants.CO2RefConc * modCiCaRatio;
                 // Elevated leaf internal co2 concentration
                 float ciElev = variables.CO2 * modCiCaRatio;
-                float Ca_Ci = variables.CO2 - ciElev;
                 // Franks method
                 // (Franks,2013, New Phytologist, 197:1077-1094)
                 float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
-                float Ca0 = Constants.CO2RefConc;
-                float Ca0_adj = Ca0 * cicaRatio;  // Calculated internal concentration given external 350
+                // float Ca0 = Constants.CO2RefConc;
+                float Ca0_adj = Constants.CO2RefConc * cicaRatio;  // Calculated internal concentration given external 350
                 // Modified Franks method - by M. Kubiske
                 // substitute ciElev for CO2
-                float delamaxCi = (ciElev - Gamma) / (ciElev + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);
+                float delamaxCi = (ciElev - Gamma) / (ciElev + 2 * Gamma) * (Constants.CO2RefConc + 2 * Gamma) / (Constants.CO2RefConc - Gamma);
                 if (delamaxCi < 0)
                     delamaxCi = 0;
                 DelAmax[index] = delamaxCi;  // Modified Franks
@@ -1386,14 +1385,12 @@ namespace Landis.Library.PnETCohorts
                     if (float.IsInfinity(netPsn_leaf_s))
                         netPsn_leaf_s = 0;
                 }
-                //Calculate water vapor conductance (gwv) from Psn and Ci; Kubiske Conductance_5.xlsx
-                float gwv_mol = (float)(netPsn_leaf_s / Ca_Ci * 1.6 * 1000);
-                float gwv = (float)(gwv_mol / (444.5 - 1.3667 * variables.Tavg) * 10);
                 // Reduction factor for ozone on photosynthesis
                 if (o3_month > 0)
                 {
+                    float wvConductance = CalcWVConductance(variables.CO2, variables.Tavg, ciElev, netPsn_leaf_s);
                     float o3Coeff = speciesPnET.O3GrowthSens;
-                    fOzone = CalcFOzone(o3_month, subCanopyIndex, layerCount, Fol, lastFOzone, gwv, o3Coeff);
+                    fOzone = CalcFOzone(o3_month, subCanopyIndex, layerCount, Fol, lastFOzone, wvConductance, o3Coeff);
                 }
                 //Apply reduction factor for Ozone
                 FOzone[index] = 1 - fOzone;
@@ -1418,7 +1415,23 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// calculate ciModifier as a function of leaf O3 tolerance
+        /// calculate water vapor conductance
+        /// </summary>
+        /// <param name="CO2"></param>
+        /// <param name="Tavg"></param>
+        /// <param name="CiElev"></param>
+        /// <param name="netPsn"></param>
+        /// <returns></returns>
+        public static float CalcWVConductance(float CO2, float Tavg, float CiElev, float netPsn)
+        {
+            float Ca_Ci = CO2 - CiElev;
+            float conductance_mol = (float)(netPsn / Ca_Ci * 1.6 * 1000);
+            float conductance = (float)(conductance_mol / (444.5 - 1.3667 * Tavg) * 10);
+            return conductance;
+        }
+
+        /// <summary>
+        /// calculate CiModifier as a function of leaf O3 tolerance
         /// Regression coefs estimated from New 3 algorithm for Ozone drought.xlsx
         /// https://usfs.box.com/s/eksrr4d7fli8kr9r4knfr7byfy9r5z0i
         /// Uses data provided by Yasutomo Hoshika and Elena Paoletti
@@ -1513,18 +1526,18 @@ namespace Landis.Library.PnETCohorts
         /// <param name="nLayers"></param>
         /// <param name="FolMass"></param>
         /// <param name="lastFOzone"></param>
-        /// <param name="gwv"></param>
+        /// <param name="wvConductance"></param>
         /// <param name="o3Coeff"></param>
         /// <returns></returns>
-        public static float CalcFOzone(float o3, int Layer, int nLayers, float FolMass, float lastFOzone, float gwv, float o3Coeff)
+        public static float CalcFOzone(float o3, int Layer, int nLayers, float FolMass, float lastFOzone, float wvConductance, float o3Coeff)
         {
             float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
             float kO3Eff = 0.0026F * o3Coeff;  // Scaled by species using input parameters
             float O3Prof = (float)(0.6163 + (0.00105 * FolMass));
             float RelLayer = Layer / (float)nLayers;
             float relO3 = Math.Min(1, 1 - RelLayer * O3Prof * (RelLayer * O3Prof) * (RelLayer * O3Prof));
-            // Kubiske method (using gwv in place of conductance
-            float FOzone = (float)Math.Min(1, (lastFOzone * droughtO3Frac) + (kO3Eff * gwv * o3 * relO3));
+            // Kubiske method (using water vapor conductance in place of conductance
+            float FOzone = (float)Math.Min(1, (lastFOzone * droughtO3Frac) + (kO3Eff * wvConductance * o3 * relO3));
             return FOzone;
         }
 

@@ -77,8 +77,8 @@ namespace Landis.Library.PnETCohorts
             float rootAdded = (float)((1 - prootlost) * cohort.Root * frac);
             float folAdded = (float)((1 - pfollost) * cohort.Fol * frac);
             // Using Canopy fractioning
-            ((SiteCohorts)sitecohorts).AddWoodDebris(woodAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies.KWdLit);
-            ((SiteCohorts)sitecohorts).AddWoodDebris(rootAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies.KWdLit);
+            ((SiteCohorts)sitecohorts).AddWoodDebris(woodAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies.WoodLitterDecompRate);
+            ((SiteCohorts)sitecohorts).AddWoodDebris(rootAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies.WoodLitterDecompRate);
             ((SiteCohorts)sitecohorts).AddLitter(folAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies);
             cohort.AccumulateWoodSenescence((int)((woodAdded + rootAdded) * cohort.CanopyLayerFrac));
             cohort.AccumulateFoliageSenescence((int)((folAdded) * cohort.CanopyLayerFrac));

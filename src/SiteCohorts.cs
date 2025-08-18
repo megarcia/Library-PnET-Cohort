@@ -3416,11 +3416,11 @@ namespace Landis.Library.PnETCohorts
             return spc;
         }
 
-        public void AddWoodDebris(float Litter, float KWdLit)
+        public void AddWoodDebris(float Litter, float WoodLitterDecompRate)
         {
             lock (Globals.CWDThreadLock)
             {
-                SiteVars.WoodDebris[Site].AddMass(Litter, KWdLit);
+                SiteVars.WoodDebris[Site].AddMass(Litter, WoodLitterDecompRate);
             }
         }
 

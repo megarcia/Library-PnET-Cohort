@@ -37,22 +37,22 @@ namespace Landis.Library.PnETCohorts
         float FrActWd { get; }
 
         /// <summary>
-        /// Water stress parameter for excess water: pressurehead below which growth halts
+        /// Water stress parameter for excess water: pressure head below which growth halts
         /// </summary>
         float H1 { get; }
 
         /// <summary>
-        /// Water stress parameter for excess water: pressurehead below which growth declines
+        /// Water stress parameter for excess water: pressure head below which growth declines
         /// </summary>
         float H2 { get; }
 
         /// <summary>
-        /// Water stress parameter for water shortage: pressurehead above which growth declines
+        /// Water stress parameter for water shortage: pressure head above which growth declines
         /// </summary>
         float H3 { get; }
 
         /// <summary>
-        /// Water stress parameter: pressurehead above growth halts (= wilting point)
+        /// Water stress parameter for water shortage: pressure head above growth halts (= wilting point)
         /// </summary>
         float H4 { get; }
 
@@ -72,9 +72,9 @@ namespace Landis.Library.PnETCohorts
         float K { get; }
 
         /// <summary>
-        /// Decompostiaion constant of wood litter (yr-1)
+        /// Decomposition constant of wood litter (yr-1)
         /// </summary>
-        float KWdLit { get; }
+        float WoodLitterDecompRate { get; }
 
         /// <summary>
         /// Species longevity (yr)

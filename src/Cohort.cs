@@ -1284,7 +1284,7 @@ namespace Landis.Library.PnETCohorts
                 fWaterOzone = 0;
             }
             // FoliarN adjusted based on canopy position (FRad)
-            float folN_shape = speciesPnET.FolNShape; // Slope for linear FolN relationship
+            float folN_shape = speciesPnET.FolN_slope; // Slope for linear FolN relationship
             float maxFolN = speciesPnET.MaxFolN; // Intercept for linear FolN relationship
             // Non-Linear reduction in FolN with canopy depth (FRad)
             // slope is shape parm; FolN is minFolN; intcpt is max FolN. EJG-7-24-18

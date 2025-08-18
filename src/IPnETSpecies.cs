@@ -214,7 +214,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Slope for linear FolN relationship
         /// </summary>
-        float FolNShape { get; }
+        float FolN_slope { get; }
 
         /// <summary>
         /// Intercept for linear FolN relationship

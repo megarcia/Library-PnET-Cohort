@@ -1616,12 +1616,12 @@ namespace Landis.Library.PnETCohorts
         public float FolSenescence()
         {
             // If it is fall 
-            float Litter = speciesPnET.FolTurnoverRate * Fol;
+            float LeafLitter = speciesPnET.FolTurnoverRate * Fol;
             // If cohort is dead, then all foliage is lost
             if (NSCfrac <= 0.01F)
-                Litter = Fol;
-            Fol -= Litter;
-            return Litter;
+                LeafLitter = Fol;
+            Fol -= LeafLitter;
+            return LeafLitter;
         }
 
         public float WoodSenescence()

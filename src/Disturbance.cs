@@ -12,7 +12,7 @@ namespace Landis.Library.PnETCohorts
     {
         // These labels are used as input parameters in the input txt file
         private static readonly List<string> Disturbances = new List<string>() { "fire", "wind", "bda", "harvest" };
-        private static readonly List<string> Reductions = new List<string>() { "WoodReduction", "FolReduction", "RootReduction", "WoodDebrisReduction", "LitterReduction" };
+        private static readonly List<string> Reductions = new List<string>() { "WoodReduction", "FolReduction", "RootReduction", "WoodDebrisReduction", "LeafLitterReduction" };
 
         public static void Initialize(string fn, SortedDictionary<string, Parameter<string>> parameters)
         {
@@ -38,18 +38,18 @@ namespace Landis.Library.PnETCohorts
             if (sitecohorts == null)
                 throw new System.Exception("sitecohorts should not be null");
             float pwooddebrislost = 0;
-            float plitterlost = 0;
+            float pleaflitterlost = 0;
             Parameter<string> parameter;
             if (disturbanceType != null && Names.TryGetParameter(disturbanceType.Name, out parameter))
             {
                 // If parameters are available, then set the loss fractions here.
                 if (parameter.ContainsKey("WoodDebrisReduction"))
                     pwooddebrislost = float.Parse(parameter["WoodDebrisReduction"]);
-                if (parameter.ContainsKey("LitterReduction"))
-                    plitterlost = float.Parse(parameter["LitterReduction"]);
+                if (parameter.ContainsKey("LeafLitterReduction"))
+                    pleaflitterlost = float.Parse(parameter["LeafLitterReduction"]);
             }
             ((SiteCohorts)sitecohorts).RemoveWoodDebris(pwooddebrislost);
-            ((SiteCohorts)sitecohorts).RemoveLitter(plitterlost);
+            ((SiteCohorts)sitecohorts).RemoveLeafLitter(pleaflitterlost);
         }
 
         public static void AllocateDeadBiomass(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double frac)

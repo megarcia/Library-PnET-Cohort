@@ -50,7 +50,7 @@ namespace Landis.Library.PnETCohorts
         public const string FolSite = "SiteFol(gDW)"; 
         public const string NSC = "NSC(gC)";                            
         public const string HeteroResp = "HeteroResp(gC_mo)";                         
-        public const string Litter = "Litter(gDW_m2)";
+        public const string LeafLitter = "LeafLitter(gDW_m2)";
         public const string CWD = "CWD(gDW_m2)";
         public const string Age = "Age(yr)"; 
         public const string Layer = "TopLayer(-)"; 

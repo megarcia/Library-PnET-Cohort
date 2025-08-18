@@ -32,7 +32,7 @@ namespace Landis.Library.PnETCohorts
         private float _halfsat;
         private float _initialnsc;
         private float _k;
-        private float _towood;
+        private float _woodturnoverrate;
         private float _estrad;
         private float _estmoist;
         private float _maxPest;
@@ -102,7 +102,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> rootturnoverrate;
         private static Landis.Library.Parameters.Species.AuxParm<float> initialnsc;
         private static Landis.Library.Parameters.Species.AuxParm<float> k;
-        private static Landis.Library.Parameters.Species.AuxParm<float> towood;
+        private static Landis.Library.Parameters.Species.AuxParm<float> woodturnoverrate;
         private static Landis.Library.Parameters.Species.AuxParm<float> estrad;
         private static Landis.Library.Parameters.Species.AuxParm<float> estmoist;
         private static Landis.Library.Parameters.Species.AuxParm<float> maxPest;
@@ -163,7 +163,7 @@ namespace Landis.Library.PnETCohorts
             rootturnoverrate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("rootturnoverrate");
             initialnsc = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("initialnsc"); ;
             k = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("k"); ;
-            towood = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("towood"); ;
+            woodturnoverrate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("woodturnoverrate"); ;
             estrad = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("estrad"); ;
             estmoist = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("estmoist");
             maxPest = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxPest");
@@ -254,7 +254,7 @@ namespace Landis.Library.PnETCohorts
                     float photosynthesisfage, float h1, float h2, float h3,
                     float h4, float slwdel, float slwmax, float folturnoverrate,
                     float rootturnoverrate, float halfsat, float initialnsc,
-                    float k, float towood, float estrad, float estmoist,
+                    float k, float woodturnoverrate, float estrad, float estmoist,
                     float maxPest, float follignin, bool preventestablishment,
                     float psntopt, float q10, float psntmin, float psntmax,
                     float dvpd1, float dvpd2, float foln, float amaxa,
@@ -290,7 +290,7 @@ namespace Landis.Library.PnETCohorts
             this._halfsat = halfsat;
             this._initialnsc = initialnsc;
             this._k = k;
-            this._towood = towood;
+            this._woodturnoverrate = woodturnoverrate;
             this._estrad = estrad;
             this._estmoist = estmoist;
             this._maxPest = maxPest;
@@ -330,7 +330,7 @@ namespace Landis.Library.PnETCohorts
             this._o3Coeff = o3Coeff;
             this._leafOnMinT = leafOnMinT;
             uint initBiomass = (uint)(initialnsc / (dnsc * cfracbiomass));
-            this._initBiomass = (int)(initBiomass - ((uint)(bgbiomassfrac * initBiomass)) * rootturnoverrate - ((uint)((1 - bgbiomassfrac) * initBiomass) * towood));
+            this._initBiomass = (int)(initBiomass - ((uint)(bgbiomassfrac * initBiomass)) * rootturnoverrate - ((uint)((1 - bgbiomassfrac) * initBiomass) * woodturnoverrate));
             this._NSCreserve = NSCreserve;
             this._lifeform = lifeForm;
             this._refoliationMinimumTrigger = refoliationMinimumTrigger;
@@ -343,7 +343,7 @@ namespace Landis.Library.PnETCohorts
         private PnETSpecies(ISpecies species)
         {
             uint initBiomass = (uint)(initialnsc[species] / (dnsc[species] * cfracbiomass[species]));
-            _initBiomass = (int)(initBiomass - ((uint)(bgbiomassfrac[species] * initBiomass)) * rootturnoverrate[species] - ((uint)((1 - bgbiomassfrac[species]) * initBiomass) * towood[species]));
+            _initBiomass = (int)(initBiomass - ((uint)(bgbiomassfrac[species] * initBiomass)) * rootturnoverrate[species] - ((uint)((1 - bgbiomassfrac[species]) * initBiomass) * woodturnoverrate[species]));
             _dnsc = dnsc[species];
             _cfracbiomass = cfracbiomass[species];
             _woodlitterdecomprate = woodlitterdecomprate[species];
@@ -362,7 +362,7 @@ namespace Landis.Library.PnETCohorts
             _halfsat = halfsat[species];
             _initialnsc = initialnsc[species];
             _k = k[species];
-            _towood = towood[species];
+            _woodturnoverrate = woodturnoverrate[species];
             _estrad = estrad[species];
             _estmoist = estmoist[species];
             _maxPest = maxPest[species];
@@ -599,11 +599,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float TOwood
+        public float WoodTurnoverRate
         {
             get
             {
-                return _towood;
+                return _woodturnoverrate;
             }
         }
 

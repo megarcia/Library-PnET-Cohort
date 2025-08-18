@@ -109,7 +109,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Wood turnover (g/g/y)
         /// </summary>
-        float TOwood { get; }
+        float WoodTurnoverRate { get; }
 
         /// <summary>
         /// Establishment factor related to light - fRad value that equates to optimal light for establishment

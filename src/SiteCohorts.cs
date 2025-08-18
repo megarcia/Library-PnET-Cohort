@@ -1085,7 +1085,7 @@ namespace Landis.Library.PnETCohorts
                         cohortLastLAI.Add(lastLAI);
                         float lastWoodSenes = cohort.LastWoodSenescence;
                         cohortLastWoodSenescence.Add(lastWoodSenes);
-                        float lastFolSenes = cohort.LastFoliageSenescence;
+                        float lastFolSenes = cohort.LastFolSenescence;
                         cohortLastFolSenescence.Add(lastFolSenes);
                     }
                 }
@@ -1097,7 +1097,7 @@ namespace Landis.Library.PnETCohorts
                     cohort.CanopyGrowingSpace = cohortCanopyGrowingSpace[index];
                     cohort.LastLAI = cohortLastLAI[index];
                     cohort.LastWoodSenescence = cohortLastWoodSenescence[index];
-                    cohort.LastFoliageSenescence = cohortLastFolSenescence[index];
+                    cohort.LastFolSenescence = cohortLastFolSenescence[index];
                     index++;
                 }
                 SiteVars.MonthlySoilTemp[site] = new SortedList<float, float>[SiteVars.MonthlyPressureHead[site].Count()];
@@ -2917,7 +2917,7 @@ namespace Landis.Library.PnETCohorts
                 Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    FoliageSenescencePerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LastFoliageSenescence * o.CanopyLayerFrac));
+                    FoliageSenescencePerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LastFolSenescence * o.CanopyLayerFrac));
                 }
                 return FoliageSenescencePerSpecies;
             }
@@ -2986,7 +2986,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return AllCohorts.Sum(o => o.LastFoliageSenescence * o.CanopyLayerFrac);
+                return AllCohorts.Sum(o => o.LastFolSenescence * o.CanopyLayerFrac);
             }
         }
 
@@ -3555,7 +3555,7 @@ namespace Landis.Library.PnETCohorts
                        SiteVars.Litter[Site].Mass + "," +
                        SiteVars.WoodDebris[Site].Mass + "," +
                        cohorts.Values.Sum(o => o.Sum(x => x.LastWoodSenescence * x.CanopyLayerFrac)) + "," +
-                       cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence * x.CanopyLayerFrac)) + "," +
+                       cohorts.Values.Sum(o => o.Sum(x => x.LastFolSenescence * x.CanopyLayerFrac)) + "," +
                        subcanopypar + "," +
                        soilDiffusivity + "," +
                        activeLayerDepth[monthdata.Month - 1] * 1000 + "," +

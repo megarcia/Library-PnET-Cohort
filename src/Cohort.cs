@@ -224,7 +224,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="senescence"></param>
         public void AccumulateFolSenescence(int senescence)
         {
-            data.LastFoliageSenescence += senescence;
+            data.LastFolSenescence += senescence;
         }
 
         /// <summary>
@@ -304,15 +304,15 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Annual Foliage Senescence (g/m2)
         /// </summary>
-        public float LastFoliageSenescence
+        public float LastFolSenescence
         {
             get
             {
-                return data.LastFoliageSenescence;
+                return data.LastFolSenescence;
             }
             set
             {
-                data.LastFoliageSenescence = value;
+                data.LastFolSenescence = value;
             }
         }
 
@@ -1109,7 +1109,7 @@ namespace Landis.Library.PnETCohorts
                             data.IsLeafOn = false;
                             data.NSC = 0.0F;
                             float foliageSenescence = FoliageSenescence();
-                            data.LastFoliageSenescence = foliageSenescence;
+                            data.LastFolSenescence = foliageSenescence;
                             siteCohort.AddFolLitter(foliageSenescence * data.CanopyLayerFrac, PnETSpecies);// Using Canopy fractioning
                         }
                     }
@@ -1140,7 +1140,7 @@ namespace Landis.Library.PnETCohorts
                     data.IsLeafOn = false;
                     data.NSC = 0.0F;
                     float foliageSenescence = FoliageSenescence();
-                    data.LastFoliageSenescence = foliageSenescence;
+                    data.LastFolSenescence = foliageSenescence;
                     siteCohort.AddFolLitter(foliageSenescence * data.CanopyLayerFrac, PnETSpecies); // Using Canopy fractioning
                 }
                 else
@@ -1152,7 +1152,7 @@ namespace Landis.Library.PnETCohorts
                         {
                             data.IsLeafOn = false;
                             float foliageSenescence = FoliageSenescence();
-                            data.LastFoliageSenescence = foliageSenescence;
+                            data.LastFolSenescence = foliageSenescence;
                             siteCohort.AddFolLitter(foliageSenescence * data.CanopyLayerFrac, PnETSpecies); // Using Canopy fractioning
                         }
                         growMonth = -1;

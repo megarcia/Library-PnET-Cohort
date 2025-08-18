@@ -73,7 +73,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Annual Foliage Senescence (g/m2)
         /// </summary>
-        public float LastFoliageSenescence;
+        public float LastFolSenescence;
 
         /// <summary>
         /// Last Average FRad
@@ -256,7 +256,7 @@ namespace Landis.Library.PnETCohorts
             this.Interception = cohort.Interception;
             this.LAI = cohort.LAI;
             this.LastLAI = cohort.LastLAI;
-            this.LastFoliageSenescence = cohort.LastFoliageSenescence;
+            this.LastFolSenescence = cohort.LastFolSenescence;
             this.LastFRad = cohort.LastFRad;
             this.LastSeasonFRad = cohort.LastSeasonFRad;
             this.LastWoodSenescence = cohort.LastWoodSenescence;
@@ -312,7 +312,7 @@ namespace Landis.Library.PnETCohorts
             this.GrossPsn = new float[Globals.IMAX];
             this.Interception = new float[Globals.IMAX];
             this.LAI = new float[Globals.IMAX];
-            this.LastFoliageSenescence = 0;
+            this.LastFolSenescence = 0;
             this.LastFRad = 0;
             this.LastSeasonFRad = new List<float>();
             this.LastWoodSenescence = 0;

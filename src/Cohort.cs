@@ -222,7 +222,7 @@ namespace Landis.Library.PnETCohorts
         /// Add dead foliage to last senescence
         /// </summary>
         /// <param name="senescence"></param>
-        public void AccumulateFoliageSenescence(int senescence)
+        public void AccumulateFolSenescence(int senescence)
         {
             data.LastFoliageSenescence += senescence;
         }

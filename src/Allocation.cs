@@ -52,7 +52,7 @@ namespace Landis.Library.PnETCohorts
             ((SiteCohorts)sitecohorts).RemoveLitter(plitterlost);
         }
 
-        public static void Allocate(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double frac)
+        public static void AllocateDeadBiomass(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double frac)
         {
             if (sitecohorts == null)
                 throw new System.Exception("sitecohorts should not be null");

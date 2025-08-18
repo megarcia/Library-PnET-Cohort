@@ -3364,7 +3364,7 @@ namespace Landis.Library.PnETCohorts
                 Disturbance.ReduceDeadBiomass(this, disturbanceType); // Reduce dead pools before adding through Disturbance
                 DisturbanceTypesReduced.Add(disturbanceType);
             }
-            Disturbance.Allocate(this, cohort, disturbanceType, 1.0);  // Disturbance fraction is 1.0 for complete removals
+            Disturbance.AllocateDeadBiomass(this, cohort, disturbanceType, 1.0);  // Disturbance fraction is 1.0 for complete removals
         }
 
         public bool IsMaturePresent(ISpecies species)

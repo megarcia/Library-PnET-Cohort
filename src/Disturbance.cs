@@ -4,9 +4,9 @@ using System.Linq;
 namespace Landis.Library.PnETCohorts
 {
     /// <summary>
-    /// Disturbance effects on litter pools.
+    /// Disturbance effects on wood debris and leaf litter pools.
     /// Input parameters are fractions of biomass that are 
-    /// allocated to different pools
+    /// allocated to the different pools.
     /// </summary>
     public class Disturbance
     {
@@ -37,44 +37,42 @@ namespace Landis.Library.PnETCohorts
         {
             if (sitecohorts == null)
                 throw new System.Exception("sitecohorts should not be null");
-            float pwooddebrislost = 0;
-            float pleaflitterlost = 0;
-            Parameter<string> parameter;
-            if (disturbanceType != null && Names.TryGetParameter(disturbanceType.Name, out parameter))
+            float WoodDebrisReductionFrac = 0;
+            float LeafLitterReductionFrac = 0;
+            if (disturbanceType != null && Names.TryGetParameter(disturbanceType.Name, out Parameter<string> parameter))
             {
                 // If parameters are available, then set the loss fractions here.
                 if (parameter.ContainsKey("WoodDebrisReduction"))
-                    pwooddebrislost = float.Parse(parameter["WoodDebrisReduction"]);
+                WoodDebrisReductionFrac = float.Parse(parameter["WoodDebrisReduction"]);
                 if (parameter.ContainsKey("LeafLitterReduction"))
-                    pleaflitterlost = float.Parse(parameter["LeafLitterReduction"]);
+                LeafLitterReductionFrac = float.Parse(parameter["LeafLitterReduction"]);
             }
-            ((SiteCohorts)sitecohorts).RemoveWoodDebris(pwooddebrislost);
-            ((SiteCohorts)sitecohorts).RemoveLeafLitter(pleaflitterlost);
+            ((SiteCohorts)sitecohorts).RemoveWoodDebris(WoodDebrisReductionFrac);
+            ((SiteCohorts)sitecohorts).RemoveLeafLitter(LeafLitterReductionFrac);
         }
 
         public static void AllocateDeadBiomass(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double frac)
         {
             if (sitecohorts == null)
                 throw new System.Exception("sitecohorts should not be null");
-            // By default, all material is allocated to the wood debris or the litter pool
-            float pwoodlost = 0;
-            float prootlost = 0;
-            float pfollost = 0;
-            Parameter<string> parameter;
-            if (disturbanceType != null && Names.TryGetParameter(disturbanceType.Name, out parameter))
+            // By default, all material is allocated to the wood debris or the leaf litter pool
+            float WoodReductionFrac = 0;
+            float RootReductionFrac = 0;
+            float FolReductionFrac = 0;
+            if (disturbanceType != null && Names.TryGetParameter(disturbanceType.Name, out Parameter<string> parameter))
             {
                 // If parameters are available, then set the loss fractions here.
                 if (parameter.ContainsKey("WoodReduction"))
-                    pwoodlost = float.Parse(parameter["WoodReduction"]);
+                    WoodReductionFrac = float.Parse(parameter["WoodReduction"]);
                 if (parameter.ContainsKey("RootReduction"))
-                    prootlost = float.Parse(parameter["RootReduction"]);
+                    RootReductionFrac = float.Parse(parameter["RootReduction"]);
                 if (parameter.ContainsKey("FolReduction"))
-                    pfollost = float.Parse(parameter["FolReduction"]);
+                    FolReductionFrac = float.Parse(parameter["FolReduction"]);
             }            
-            // Add new dead wood and litter
-            float woodAdded = (float)((1 - pwoodlost) * cohort.Wood * frac);
-            float rootAdded = (float)((1 - prootlost) * cohort.Root * frac);
-            float folAdded = (float)((1 - pfollost) * cohort.Fol * frac);
+            // Add new dead wood and leaf litter
+            float woodAdded = (float)((1 - WoodReductionFrac) * cohort.Wood * frac);
+            float rootAdded = (float)((1 - RootReductionFrac) * cohort.Root * frac);
+            float folAdded = (float)((1 - FolReductionFrac) * cohort.Fol * frac);
             // Using Canopy fractioning
             ((SiteCohorts)sitecohorts).AddWoodDebris(woodAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies.WoodDebrisDecompRate);
             ((SiteCohorts)sitecohorts).AddWoodDebris(rootAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies.WoodDebrisDecompRate);

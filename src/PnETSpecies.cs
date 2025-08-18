@@ -56,12 +56,12 @@ namespace Landis.Library.PnETCohorts
         private int _initBiomass;
         private string name;
         private int index;        
-        private int  maxSproutAge;
+        private int maxSproutAge;
         private int minSproutAge;
         private Landis.Core.PostFireRegeneration postfireregeneration;
         private int maxSeedDist;
         private int effectiveSeedDist;
-        private float  vegReprodProb;
+        private float vegReprodProb;
         private byte fireTolerance;
         private byte shadeTolerance;
         int maturity;

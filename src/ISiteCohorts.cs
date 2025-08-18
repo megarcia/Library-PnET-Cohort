@@ -6,8 +6,8 @@ namespace Landis.Library.PnETCohorts
     public interface ISiteCohorts : Landis.Library.UniversalCohorts.ISiteCohorts
     {
         float[] NetPsn { get; }
-        float[] MaintResp{ get; }
-        float[] GrossPsn{ get; }
+        float[] MaintResp { get; }
+        float[] GrossPsn { get; }
         float[] FoliarRespiration { get; }
         float[] AverageAlbedo { get; }
         float[] ActiveLayerDepth { get; }
@@ -23,7 +23,7 @@ namespace Landis.Library.PnETCohorts
         float[] MonthlyActualET { get; }
         float[] MonthlyPotentialEvap { get; }
         float[] MonthlyPotentialTrans { get; }
-        float CanopyLAImax{ get; }
+        float CanopyLAImax { get; }
         float SiteMossDepth { get; }
         int AverageAge { get; }
         Landis.Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies { get; }
@@ -48,7 +48,7 @@ namespace Landis.Library.PnETCohorts
         int CohortCount { get; }
         float JulySubCanopyPar { get; }
         float SubCanopyParMAX { get; }
-        double LeafLitter{ get; }
+        double LeafLitter { get; }
         double WoodDebris { get; }
         int AgeMax { get; }
         float AvgSoilWaterContent { get; }

@@ -58,29 +58,29 @@ namespace Landis.Library.PnETCohorts
         public Dictionary<IPnETSpecies,float> CalcProbEstablishmentForMonth(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat, bool invertProbEstablishment, float fracRootAboveFrost)
         {
             Dictionary<IPnETSpecies, float> speciesProbEstablishment = new Dictionary<IPnETSpecies, float>();
-            float halfSatRange = maxHalfSat - minHalfSat;
+            float rangeHalfSat = maxHalfSat - minHalfSat;
             foreach (IPnETSpecies species in SpeciesParameters.PnETSpecies.AllSpecies)
             {
                 if (pnetvars.Tmin > species.PsnTmin && pnetvars.Tmax < species.PsnTmax && fracRootAboveFrost > 0)
                 {
                     // Adjust HalfSat for CO2 effect
-                    float halfSatIntercept = species.HalfSat - Constants.CO2RefConc * species.HalfSatFCO2;
-                    float adjHalfSat = species.HalfSatFCO2 * pnetvars.CO2 + halfSatIntercept;
-                    float fRad = (float)Math.Min(1.0, Math.Pow(Photosynthesis.CalcFRad(PAR, adjHalfSat), 2) * (1 / Math.Pow(species.EstablishmentFRad, 2)));
+                    float halfSat_intercept = species.HalfSat - Constants.CO2RefConc * species.HalfSatFCO2;
+                    float halfSat_adj = species.HalfSatFCO2 * pnetvars.CO2 + halfSat_intercept;
+                    float fRad = (float)Math.Min(1.0, Math.Pow(Photosynthesis.CalcFRad(PAR, halfSat_adj), 2) * (1 / Math.Pow(species.EstablishmentFRad, 2)));
                     float fRad_adj = fRad;
                     // Optional adjustment to invert ProbEstablishment based on relative halfSat
-                    if (invertProbEstablishment && halfSatRange > 0)
+                    if (invertProbEstablishment && rangeHalfSat > 0)
                     {
-                        float fRad_adj_intercept = (species.HalfSat - minHalfSat) / halfSatRange;
+                        float fRad_adj_intercept = (species.HalfSat - minHalfSat) / rangeHalfSat;
                         float fRad_adj_slope = (fRad_adj_intercept * 2) - 1;
                         fRad_adj = 1 - fRad_adj_intercept + fRad * fRad_adj_slope;
                     }
+                    speciesFRad[species] = fRad_adj;
                     float soilWaterPressureHead = hydrology.PressureHeadTable.CalcSoilWaterContent(hydrology.SoilWaterContent, ecoregion.SoilType);
                     float fWater = (float)Math.Min(1.0, Math.Pow(Photosynthesis.CalcFWater(species.H1, species.H2, species.H3, species.H4, soilWaterPressureHead), 2) * (1 / Math.Pow(species.EstablishmentFWater, 2)));
-                    float probEstablishment = (float) Math.Min(1.0, fRad_adj * fWater);
-                    speciesProbEstablishment[species] = probEstablishment;
                     speciesFWater[species] = fWater;
-                    speciesFRad[species] = fRad_adj;
+                    float probEstablishment = (float)Math.Min(1.0, fRad_adj * fWater);
+                    speciesProbEstablishment[species] = probEstablishment;
                 }                
             }
             return speciesProbEstablishment;
@@ -100,7 +100,7 @@ namespace Landis.Library.PnETCohorts
         {
             if (established)
             {
-                if (! IsEstablishedSpecies(species))
+                if (!IsEstablishedSpecies(species))
                     establishedSpecies.Add(species);
             }
             if (probEstablishmentSiteOutput != null)

@@ -405,7 +405,7 @@ namespace Landis.Library.PnETCohorts
                             // TODO: Add warning if biomass is 0
                             bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.PnETSpecies[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking));
                             CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
-                            CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
+                            CohortMaxBiomassList.Add(AllCohorts.Last().MaxBiomass);
                         }
                     }
                 }
@@ -431,14 +431,14 @@ namespace Landis.Library.PnETCohorts
                             }
                             else
                             {
-                                float[] values = new float[] { (int)cohort.BiomassMax, cohort.Biomass, lastSeasonAvgFRad };
+                                float[] values = new float[] { (int)cohort.MaxBiomass, cohort.Biomass, lastSeasonAvgFRad };
                                 cohortDictionary[spp].Add(age, values);
                             }
                         }
                         else
                         {
                             Dictionary<int, float[]> ageDictionary = new Dictionary<int, float[]>();
-                            float[] values = new float[] { (int)cohort.BiomassMax, cohort.Biomass, lastSeasonAvgFRad };
+                            float[] values = new float[] { (int)cohort.MaxBiomass, cohort.Biomass, lastSeasonAvgFRad };
                             ageDictionary.Add(age, values);
                             cohortDictionary.Add(spp, ageDictionary);
                         }
@@ -461,7 +461,7 @@ namespace Landis.Library.PnETCohorts
                             float cohortCanopyGrowingSpace = 1f;
                             bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.PnETSpecies[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking, lastSeasonAvgFRad));
                             CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
-                            CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
+                            CohortMaxBiomassList.Add(AllCohorts.Last().MaxBiomass);
                         }
                     }
                 }
@@ -486,7 +486,7 @@ namespace Landis.Library.PnETCohorts
                         int layerIndex = 0;
                         foreach (List<double> layerBiomassList in cohortBins)
                         {
-                            if (layerBiomassList.Contains(cohort.BiomassMax))
+                            if (layerBiomassList.Contains(cohort.MaxBiomass))
                             {
                                 cohort.Layer = (byte)layerIndex;
                                 // if "ground" then ensure cohort.Layer = 0
@@ -575,7 +575,7 @@ namespace Landis.Library.PnETCohorts
                         CanopyLAISum[layer] += cohort.LAI.Sum() * cohort.CanopyLayerFrac;
                         LayerBiomass[layer] += cohort.CanopyLayerFrac * cohort.TotalBiomass;
                         index++;
-                        NewCohortMaxBiomassList.Add(cohort.BiomassMax);
+                        NewCohortMaxBiomassList.Add(cohort.MaxBiomass);
                     }
                     //Re-sort layers
                     cohortBins = GetBinsByCohort(NewCohortMaxBiomassList);
@@ -587,7 +587,7 @@ namespace Landis.Library.PnETCohorts
                         int layerIndex = 0;
                         foreach (List<double> layerBiomassList in cohortBins)
                         {
-                            if (layerBiomassList.Contains(cohort.BiomassMax))
+                            if (layerBiomassList.Contains(cohort.MaxBiomass))
                             {
                                 cohort.Layer = (byte)layerIndex;
                                 // if "ground" then ensure cohort.Layer = 0
@@ -707,7 +707,7 @@ namespace Landis.Library.PnETCohorts
                         cohort.Fol = cohortFoliage * (1 - cohort.PnETSpecies.FolTurnoverRate);
                         cohort.NSC = cohort.PnETSpecies.NSCFrac * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.PnETSpecies.CFracBiomass;
                         cohortIndex++;
-                        FinalCohortMaxBiomassList.Add(cohort.BiomassMax);
+                        FinalCohortMaxBiomassList.Add(cohort.MaxBiomass);
                     }
                     //Re-sort layers
                     cohortBins = GetBinsByCohort(FinalCohortMaxBiomassList);
@@ -717,7 +717,7 @@ namespace Landis.Library.PnETCohorts
                         int layerIndex = 0;
                         foreach (List<double> layerBiomassList in cohortBins)
                         {
-                            if (layerBiomassList.Contains(cohort.BiomassMax))
+                            if (layerBiomassList.Contains(cohort.MaxBiomass))
                             {
                                 cohort.Layer = (byte)layerIndex;
                                 // if "ground" then ensure cohort.Layer = 0
@@ -769,7 +769,7 @@ namespace Landis.Library.PnETCohorts
                         float newWoodBiomass = targetBiomass / canopyLayerFrac;
                         float newTotalBiomass = newWoodBiomass / (1 - cohort.PnETSpecies.BGBiomassFrac);
                         float changeAmount = newTotalBiomass - cohort.TotalBiomass;
-                        float tempMaxBio = Math.Max(cohort.BiomassMax, newTotalBiomass);
+                        float tempMaxBio = Math.Max(cohort.MaxBiomass, newTotalBiomass);
                         float tempFActiveBiom = (float)Math.Exp(-cohort.PnETSpecies.LiveWoodBiomassFrac * tempMaxBio);
                         float cohortTempFoliage = cohort.adjFolBiomassFrac * tempFActiveBiom * newTotalBiomass;
                         float cohortTempLAI = 0;
@@ -806,7 +806,7 @@ namespace Landis.Library.PnETCohorts
                             else
                                 newTotalBiomass = Math.Max(newTotalBiomass + multiplier, 1);
                             changeAmount = newTotalBiomass - cohort.TotalBiomass;
-                            tempMaxBio = Math.Max(cohort.BiomassMax, newTotalBiomass);
+                            tempMaxBio = Math.Max(cohort.MaxBiomass, newTotalBiomass);
                             tempFActiveBiom = (float)Math.Exp(-cohort.PnETSpecies.LiveWoodBiomassFrac * tempMaxBio);
                             cohortTempFoliage = cohort.adjFolBiomassFrac * tempFActiveBiom * newTotalBiomass;
                             cohortTempLAI = 0;
@@ -891,14 +891,14 @@ namespace Landis.Library.PnETCohorts
                                     }
                                     else
                                     {
-                                        float[] values = new float[] { (int)cohort.BiomassMax, cohort.Biomass, lastSeasonAvgFRad };
+                                        float[] values = new float[] { (int)cohort.MaxBiomass, cohort.Biomass, lastSeasonAvgFRad };
                                         cohortDictionary[spp].Add(age, values);
                                     }
                                 }
                                 else
                                 {
                                     Dictionary<int, float[]> ageDictionary = new Dictionary<int, float[]>();
-                                    float[] values = new float[] { (int)cohort.BiomassMax, cohort.Biomass, lastSeasonAvgFRad };
+                                    float[] values = new float[] { (int)cohort.MaxBiomass, cohort.Biomass, lastSeasonAvgFRad };
                                     ageDictionary.Add(age, values);
                                     cohortDictionary.Add(spp, ageDictionary);
                                 }
@@ -921,7 +921,7 @@ namespace Landis.Library.PnETCohorts
                                     float cohortCanopyGrowingSpace = 1f;
                                     bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.PnETSpecies[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking, lastSeasonAvgFRad));
                                     CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
-                                    CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
+                                    CohortMaxBiomassList.Add(AllCohorts.Last().MaxBiomass);
                                     AllCohorts.Last().SetAvgFRad(lastSeasonAvgFRad);
                                 }
                             }
@@ -948,14 +948,14 @@ namespace Landis.Library.PnETCohorts
                                     }
                                     else
                                     {
-                                        float[] values = new float[] { (int)cohort.BiomassMax, cohort.Biomass, lastSeasonAvgFRad };
+                                        float[] values = new float[] { (int)cohort.MaxBiomass, cohort.Biomass, lastSeasonAvgFRad };
                                         cohortDictionary[spp].Add(age, values);
                                     }
                                 }
                                 else
                                 {
                                     Dictionary<int, float[]> ageDictionary = new Dictionary<int, float[]>();
-                                    float[] values = new float[] { (int)cohort.BiomassMax, cohort.Biomass, lastSeasonAvgFRad };
+                                    float[] values = new float[] { (int)cohort.MaxBiomass, cohort.Biomass, lastSeasonAvgFRad };
                                     ageDictionary.Add(age, values);
                                     cohortDictionary.Add(spp, ageDictionary);
                                 }
@@ -978,7 +978,7 @@ namespace Landis.Library.PnETCohorts
                                     float cohortCanopyGrowingSpace = 1f;
                                     bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.PnETSpecies[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking, lastSeasonAvgFRad));
                                     CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
-                                    CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
+                                    CohortMaxBiomassList.Add(AllCohorts.Last().MaxBiomass);
                                     AllCohorts.Last().SetAvgFRad(lastSeasonAvgFRad);
                                 }
                             }
@@ -1001,7 +1001,7 @@ namespace Landis.Library.PnETCohorts
                                     // TODO: Add warning if biomass is 0
                                     bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.PnETSpecies[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking));
                                     CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
-                                    CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
+                                    CohortMaxBiomassList.Add(AllCohorts.Last().MaxBiomass);
                                 }
                             }
                         }
@@ -1237,7 +1237,7 @@ namespace Landis.Library.PnETCohorts
                 if (Globals.ModelCore.CurrentTime > 0)
                     AllCohorts[cohort].CalcDefoliationFrac(Site, SiteAboveGroundBiomass);
                 CohortBiomassList.Add(AllCohorts[cohort].TotalBiomass);
-                CohortMaxBiomassList.Add(AllCohorts[cohort].BiomassMax);
+                CohortMaxBiomassList.Add(AllCohorts[cohort].MaxBiomass);
             }
             ratioAbove10.Clear();
             List<List<double>> cohortBins = GetBinsByCohort(CohortMaxBiomassList);
@@ -1254,7 +1254,7 @@ namespace Landis.Library.PnETCohorts
                 {
                     for (int j = 0; j < cohortBins.Count(); j++)
                     {
-                        if (cohortBins[j].Contains(AllCohorts[cohort].BiomassMax))
+                        if (cohortBins[j].Contains(AllCohorts[cohort].MaxBiomass))
                             cohortLayer = j;
                     }
                     if (AllCohorts[cohort].Layer > MaxLayer)
@@ -3061,7 +3061,7 @@ namespace Landis.Library.PnETCohorts
             {
                 for (int i = 0; i < Globals.IMAX; i++)
                 {
-                    int[] subcanopylayer = new int[] { (ushort)((i + 1) / (float)Globals.IMAX * cohort.BiomassMax) };
+                    int[] subcanopylayer = new int[] { (ushort)((i + 1) / (float)Globals.IMAX * cohort.MaxBiomass) };
                     subcanopylayers.Add(subcanopylayer, cohort);
                 }
             }

@@ -190,11 +190,11 @@ namespace Landis.Library.PnETCohorts
         /// it prevents that a cohort could descent in the canopy when 
         /// it declines (g/m2)
         /// </summary>
-        public float BiomassMax
+        public float MaxBiomass
         {
             get
             {
-                return data.BiomassMax;
+                return data.MaxBiomass;
             }
         }
 
@@ -551,7 +551,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return (float)Math.Exp(-speciesPnET.LiveWoodBiomassFrac * data.BiomassMax);
+                return (float)Math.Exp(-speciesPnET.LiveWoodBiomassFrac * data.MaxBiomass);
             }
         }
 
@@ -728,7 +728,7 @@ namespace Landis.Library.PnETCohorts
         public void Accumulate(Cohort c)
         {
             data.TotalBiomass += c.TotalBiomass;
-            data.BiomassMax = Math.Max(BiomassMax, data.TotalBiomass);
+            data.MaxBiomass = Math.Max(MaxBiomass, data.TotalBiomass);
             data.Fol += c.Fol;
             data.MaxFolYear = Math.Max(MaxFolYear, data.Fol);
             data.AGBiomass = (1 - c.PnETSpecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
@@ -753,7 +753,7 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass = Math.Max(0, newTotalBiomass);
             data.AGBiomass = (1 - PnETSpecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
-            data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
+            data.MaxBiomass = Math.Max(data.MaxBiomass, data.TotalBiomass);
         }
 
         /// <summary>
@@ -783,7 +783,7 @@ namespace Landis.Library.PnETCohorts
             // Initialize biomass assuming fixed concentration of NSC, convert gC to gDW
             data.TotalBiomass = (uint)Math.Max(1.0, NSC / (speciesPnET.NSCFrac * speciesPnET.CFracBiomass) * fracBiomass);
             data.AGBiomass = (1 - speciesPnET.BGBiomassFrac) * data.TotalBiomass + data.Fol;
-            data.BiomassMax = data.TotalBiomass;
+            data.MaxBiomass = data.TotalBiomass;
             float cohortLAI = 0;
             float cohortIdealFol = speciesPnET.FolBiomassFrac * FActiveBiom * data.TotalBiomass;
             for (int i = 0; i < Globals.IMAX; i++)
@@ -828,7 +828,7 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass = cohort.TotalBiomass;
             data.AGBiomass = (1 - cohort.PnETSpecies.BGBiomassFrac) * cohort.TotalBiomass + cohort.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * cohort.CanopyLayerFrac);
-            data.BiomassMax = cohort.BiomassMax;
+            data.MaxBiomass = cohort.MaxBiomass;
             data.Fol = cohort.Fol;
             data.MaxFolYear = cohort.MaxFolYear;
             data.LastSeasonFRad = cohort.data.LastSeasonFRad;
@@ -851,7 +851,7 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass = cohort.TotalBiomass;
             data.AGBiomass = (1 - cohort.PnETSpecies.BGBiomassFrac) * cohort.TotalBiomass + cohort.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * cohort.CanopyLayerFrac);
-            data.BiomassMax = cohort.BiomassMax;
+            data.MaxBiomass = cohort.MaxBiomass;
             data.Fol = cohort.Fol;
             data.MaxFolYear = cohort.MaxFolYear;
             data.LastSeasonFRad = cohort.data.LastSeasonFRad;
@@ -879,7 +879,7 @@ namespace Landis.Library.PnETCohorts
             // incoming biomass is aboveground wood, calculate total biomass
             float biomass = woodBiomass / (1 - speciesPnET.BGBiomassFrac);
             data.TotalBiomass = biomass;
-            data.BiomassMax = biomass;
+            data.MaxBiomass = biomass;
             data.LastSeasonFRad = new List<float>();
             data.adjFolBiomassFrac = speciesPnET.FolBiomassFrac_intercept;
             data.ColdKill = int.MaxValue;
@@ -931,7 +931,7 @@ namespace Landis.Library.PnETCohorts
             // incoming biomass is aboveground wood, calculate total biomass
             float biomass = woodBiomass / (1 - speciesPnET.BGBiomassFrac);
             data.TotalBiomass = biomass;
-            data.BiomassMax = Math.Max(biomass, maxBiomass);
+            data.MaxBiomass = Math.Max(biomass, maxBiomass);
             data.LastSeasonFRad = new List<float>();
             data.LastSeasonFRad.Add(lastSeasonAvgFRad);
             CalcAdjFolBiomassFrac();
@@ -1123,7 +1123,7 @@ namespace Landis.Library.PnETCohorts
                     data.TotalBiomass += NSCallocation / speciesPnET.CFracBiomass;  // convert gC to gDW
                     data.AGBiomass = (1 - speciesPnET.BGBiomassFrac) * data.TotalBiomass + data.Fol;
                     data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
-                    data.BiomassMax = Math.Max(BiomassMax, data.TotalBiomass);
+                    data.MaxBiomass = Math.Max(MaxBiomass, data.TotalBiomass);
                     data.NSC -= NSCallocation;
                     if (data.NSC < 0)
                         data.NSC = 0f;
@@ -1630,7 +1630,7 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass -= senescence;
             data.AGBiomass = (1 - speciesPnET.BGBiomassFrac) * data.TotalBiomass + data.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
-            data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
+            data.MaxBiomass = Math.Max(data.MaxBiomass, data.TotalBiomass);
             return senescence;
         }
 
@@ -1656,7 +1656,7 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass *= (float)(1.0 - frac);
             data.AGBiomass = (1 - speciesPnET.BGBiomassFrac) * data.TotalBiomass + data.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
-            data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
+            data.MaxBiomass = Math.Max(data.MaxBiomass, data.TotalBiomass);
             Fol *= (float)(1.0 - frac);
             data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
         }

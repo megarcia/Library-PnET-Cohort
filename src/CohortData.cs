@@ -43,7 +43,7 @@ namespace Landis.Library.PnETCohorts
         /// it prevents that a cohort could descent in the canopy when 
         /// it declines (g/m2)
         /// </summary>
-        public float BiomassMax;
+        public float MaxBiomass;
 
         /// <summary>
         /// Foliage (g/m2)
@@ -241,7 +241,7 @@ namespace Landis.Library.PnETCohorts
             this.AGBiomass = (1 - cohort.PnETSpecies.BGBiomassFrac) * cohort.TotalBiomass + cohort.Fol;
             this.UniversalData.Biomass = (int)(this.AGBiomass * cohort.CanopyLayerFrac);
             this.TotalBiomass = cohort.TotalBiomass;
-            this.BiomassMax = cohort.BiomassMax;
+            this.MaxBiomass = cohort.MaxBiomass;
             this.CiModifier = cohort.CiModifier;
             this.ColdKill = cohort.ColdKill;
             this.DefoliationFrac = cohort.DefoliationFrac;
@@ -298,7 +298,7 @@ namespace Landis.Library.PnETCohorts
             this.AGBiomass = (1- spc.BGBiomassFrac) * totalBiomass;
             this.UniversalData.Biomass = (int)this.AGBiomass;
             this.TotalBiomass = totalBiomass;
-            this.BiomassMax = totalBiomass;
+            this.MaxBiomass = totalBiomass;
             this.CiModifier = new float[Globals.IMAX];
             this.ColdKill = int.MaxValue;
             this.DefoliationFrac = 0;
@@ -329,7 +329,7 @@ namespace Landis.Library.PnETCohorts
             this.SoilWaterContent = new float[Globals.IMAX];
             this.BiomassLayerFrac = 1.0f;
             float cohortLAI = 0;
-            float cohortIdealFol = spc.FolBiomassFrac * (float)Math.Exp(-spc.LiveWoodBiomassFrac * this.BiomassMax) * this.TotalBiomass;
+            float cohortIdealFol = spc.FolBiomassFrac * (float)Math.Exp(-spc.LiveWoodBiomassFrac * this.MaxBiomass) * this.TotalBiomass;
             for (int i = 0; i < Globals.IMAX; i++)
                 cohortLAI += Cohort.CalcLAI(spc, cohortIdealFol, i, cohortLAI);
             this.LastLAI = cohortLAI;

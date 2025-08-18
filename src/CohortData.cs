@@ -88,7 +88,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Adjusted Fraction of Foliage
         /// </summary>
-        public float adjFracFol;
+        public float adjFolBiomassFrac;
 
         /// <summary>
         /// Adjusted Half Sat
@@ -196,9 +196,9 @@ namespace Landis.Library.PnETCohorts
         public float[] AdjFolN;
 
         /// <summary>
-        /// Adjustment fracFol based on fRad
+        /// Adjustment folBiomassFrac based on fRad
         /// </summary>
-        public float[] AdjFracFol;
+        public float[] AdjFolBiomassFrac;
 
         /// <summary>
         /// Modifier of CiCa ratio based on fWater and Ozone
@@ -234,8 +234,8 @@ namespace Landis.Library.PnETCohorts
         {
             this.AdjFolN = cohort.AdjFolN;
             this.adjFolN = cohort.adjFolN;
-            this.AdjFracFol = cohort.AdjFracFol;
-            this.adjFracFol = cohort.adjFracFol;
+            this.AdjFolBiomassFrac = cohort.AdjFolBiomassFrac;
+            this.adjFolBiomassFrac = cohort.adjFolBiomassFrac;
             this.AdjHalfSat = cohort.AdjHalfSat;
             this.UniversalData.Age = cohort.Age;
             this.AGBiomass = (1 - cohort.PnETSpecies.BGBiomassFrac) * cohort.TotalBiomass + cohort.Fol;
@@ -289,8 +289,8 @@ namespace Landis.Library.PnETCohorts
         {            
             this.AdjFolN = new float[Globals.IMAX];
             this.adjFolN = 0; ;
-            this.AdjFracFol = new float[Globals.IMAX];
-            this.adjFracFol = 0;
+            this.AdjFolBiomassFrac = new float[Globals.IMAX];
+            this.adjFolBiomassFrac = 0;
             this.AdjHalfSat = 0;
             this.UniversalData.Age = age;
             IPnETSpecies spc = SpeciesParameters.PnETSpecies.AllSpecies[species.Index];
@@ -329,7 +329,7 @@ namespace Landis.Library.PnETCohorts
             this.SoilWaterContent = new float[Globals.IMAX];
             this.BiomassLayerFrac = 1.0f;
             float cohortLAI = 0;
-            float cohortIdealFol = spc.FracFol * (float)Math.Exp(-spc.FrActWd * this.BiomassMax) * this.TotalBiomass;
+            float cohortIdealFol = spc.FolBiomassFrac * (float)Math.Exp(-spc.FrActWd * this.BiomassMax) * this.TotalBiomass;
             for (int i = 0; i < Globals.IMAX; i++)
                 cohortLAI += Cohort.CalcLAI(spc, cohortIdealFol, i, cohortLAI);
             this.LastLAI = cohortLAI;

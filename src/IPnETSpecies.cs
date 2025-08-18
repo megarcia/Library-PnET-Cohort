@@ -27,12 +27,12 @@ namespace Landis.Library.PnETCohorts
         float BGBiomassFrac { get; }
 
         /// <summary>
-        /// Fraction foliage to active biomass
+        /// Fraction foliage biomass of active biomass
         /// </summary>
-        float FracFol { get; }
+        float FolBiomassFrac { get; }
 
         /// <summary>
-        /// Fraction active biomass to total biomass 
+        /// Fraction active wood biomass of total biomass 
         /// </summary>
         float FrActWd { get; }
 
@@ -222,14 +222,14 @@ namespace Landis.Library.PnETCohorts
         float MaxFolN { get; }
 
         /// <summary>
-        /// Slope for linear FracFol relationship
+        /// Slope for linear FolBiomassFrac relationship
         /// </summary>
-        float FracFolShape { get; }
+        float FolBiomassFracShape { get; }
 
         /// <summary>
-        /// Intercept for linear FracFol relationship
+        /// Intercept for linear FolBiomassFrac relationship
         /// </summary>
-        float MaxFracFol { get; }
+        float MaxFolBiomassFrac { get; }
 
         /// <summary>
         /// Slope coefficient for FOzone

@@ -20,7 +20,7 @@ namespace Landis.Library.PnETCohorts
         float LastFoliageSenescence { get; }
         float LastFRad { get; }
         List<float> LastSeasonFRad { get; }
-        float adjFracFol { get; }
+        float adjFolBiomassFrac { get; }
         float AdjHalfSat { get; }
         float adjFolN { get; }
         int ColdKill { get; }
@@ -42,7 +42,7 @@ namespace Landis.Library.PnETCohorts
         float[] FOzone { get; }
         float[] Interception { get; }
         float[] AdjFolN { get; }
-        float[] AdjFracFol { get; }
+        float[] AdjFolBiomassFrac { get; }
         float[] CiModifier { get; }
         float[] DelAmax { get; }
         float BiomassLayerFrac { get; }

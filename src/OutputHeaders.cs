@@ -82,7 +82,7 @@ namespace Landis.Library.PnETCohorts
         public const string DelAMax = "DelAMax(-)";
         public const string AdjHalfSat = "AdjHalfSat";
         public const string AdjFolN = "AdjFolN(gN_gC)";
-        public const string AdjFracFol = "AdjFracFol(-)";
+        public const string AdjFolBiomassFrac = "AdjFolBiomassFrac(-)";
         public const string CiModifier = "CiModifier(-)";
         public const string SubCanopyPAR = "SubCanopyPAR";
         public const string LimitingFactor = "LimitingFactor";

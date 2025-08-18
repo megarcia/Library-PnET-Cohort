@@ -71,8 +71,8 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public const string FolNShape = "FolNShape";
         public const string MaxFolN = "MaxFolN";
-        public const string FracFolShape = "FracFolShape";
-        public const string MaxFracFol = "MaxFracFol";
+        public const string FolBiomassFracShape = "FolBiomassFracShape";
+        public const string MaxFolBiomassFrac = "MaxFolBiomassFrac";
         public const string O3Coeff = "O3GrowthSens";
         public static readonly string[] MutuallyExclusiveCanopyTypes = new string[] { "dark", "light", "decid", "ground", "open" };
         public const string LeafOnMinT = "LeafOnMinT"; // Optional

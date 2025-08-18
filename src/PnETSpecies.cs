@@ -18,7 +18,7 @@ namespace Landis.Library.PnETCohorts
         private float _woodlitterdecomprate;
         private float _dnsc;
         private float _bgbiomassfrac;
-        private float _fracfol;
+        private float _folbiomassfrac;
         private float _fractWd;
         private float _psnagered;
         private float _h1;
@@ -68,8 +68,8 @@ namespace Landis.Library.PnETCohorts
         int longevity;
         private float _folNShape;
         private float _maxFolN;
-        private float _fracFolShape;
-        private float _maxFracFol;
+        private float _folBiomassFracShape;
+        private float _maxFolBiomassFrac;
         private float _o3Coeff;
         private float _leafOnMinT;
         private float _NSCreserve;
@@ -88,7 +88,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
         private static Landis.Library.Parameters.Species.AuxParm<float> woodlitterdecomprate;
         private static Landis.Library.Parameters.Species.AuxParm<float> bgbiomassfrac;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fracfol;
+        private static Landis.Library.Parameters.Species.AuxParm<float> folbiomassfrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> fractWd;
         private static Landis.Library.Parameters.Species.AuxParm<float> psnagered;
         private static Landis.Library.Parameters.Species.AuxParm<float> h1;
@@ -125,8 +125,8 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
         private static Landis.Library.Parameters.Species.AuxParm<float> folNShape;
         private static Landis.Library.Parameters.Species.AuxParm<float> maxFolN;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fracFolShape;
-        private static Landis.Library.Parameters.Species.AuxParm<float> maxFracFol;
+        private static Landis.Library.Parameters.Species.AuxParm<float> folBiomassFracShape;
+        private static Landis.Library.Parameters.Species.AuxParm<float> maxFolBiomassFrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
         private static Landis.Library.Parameters.Species.AuxParm<float> leafOnMinT;
         private static Landis.Library.Parameters.Species.AuxParm<float> NSCreserve;
@@ -149,7 +149,7 @@ namespace Landis.Library.PnETCohorts
             cfracbiomass = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CFracBiomass");
             woodlitterdecomprate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("woodlitterdecomprate");
             bgbiomassfrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("bgbiomassfrac");
-            fracfol = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("fracfol");
+            folbiomassfrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("folbiomassfrac");
             fractWd = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("fractWd");
             psnagered = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psnagered");
             h1 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h1");
@@ -188,11 +188,11 @@ namespace Landis.Library.PnETCohorts
             // If MaxFolN is not provided, then set to foln
             if (maxFolN[this] == -9999F)
                 maxFolN = foln;
-            fracFolShape = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FracFolShape");
-            maxFracFol = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxFracFol"); //Optional
-            // If MaxFracFol is not provided, then set to fracfol
-            if (maxFracFol[this] == -9999F)
-                maxFracFol = fracfol;
+            folBiomassFracShape = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolBiomassFracShape");
+            maxFolBiomassFrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxFolBiomassFrac"); //Optional
+            // If MaxFolBiomassFrac is not provided, then set to folbiomassfrac
+            if (maxFolBiomassFrac[this] == -9999F)
+                maxFolBiomassFrac = folbiomassfrac;
             o3Coeff = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("O3GrowthSens");
             coldTol = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("ColdTol");
             leafOnMinT = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeafOnMinT"); //Optional
@@ -213,7 +213,7 @@ namespace Landis.Library.PnETCohorts
                 {
                     // Calculate MaxLAI
                     float peakBiomass = 1f / fractWd[species];
-                    float peakFoliage = peakBiomass * fracfol[species] * (float)Math.Exp(-1f * fractWd[species] * peakBiomass);
+                    float peakFoliage = peakBiomass * folbiomassfrac[species] * (float)Math.Exp(-1f * fractWd[species] * peakBiomass);
                     float tempLAI = 0;
                     for (int i = 0; i < Globals.IMAX; i++)
                     {
@@ -250,7 +250,7 @@ namespace Landis.Library.PnETCohorts
 
         PnETSpecies(PostFireRegeneration postFireGeneration,
                     float dnsc, float cfracbiomass, float woodlitterdecomprate,
-                    float bgbiomassfrac, float fracfol, float fractWd,
+                    float bgbiomassfrac, float folbiomassfrac, float fractWd,
                     float psnagered, float h1, float h2, float h3,
                     float h4, float slwdel, float slwmax, float tofol,
                     float toroot, float halfsat, float initialnsc,
@@ -265,7 +265,7 @@ namespace Landis.Library.PnETCohorts
                     int effectiveSeedDist, float vegReprodProb,
                     byte fireTolerance, byte shadeTolerance, int maturity,
                     int longevity, float folNShape, float maxFolN,
-                    float fracFolShape, float maxFracFol, float o3Coeff,
+                    float folBiomassFracShape, float maxFolBiomassFrac, float o3Coeff,
                     float leafOnMinT, float NSCreserve, string lifeForm,
                     float refoliationMinimumTrigger, float refoliationMaximum,
                     float refoliationCost, float nonRefoliationCost,
@@ -276,7 +276,7 @@ namespace Landis.Library.PnETCohorts
             this._cfracbiomass = cfracbiomass;
             this._woodlitterdecomprate = woodlitterdecomprate;
             this._bgbiomassfrac = bgbiomassfrac;
-            this._fracfol = fracfol;
+            this._folbiomassfrac = folbiomassfrac;
             this._fractWd = fractWd;
             this._psnagered = psnagered;
             this._h1 = h1;
@@ -325,8 +325,8 @@ namespace Landis.Library.PnETCohorts
             this.longevity = longevity;
             this._folNShape = folNShape;
             this._maxFolN = maxFolN;
-            this._fracFolShape = fracFolShape;
-            this._maxFracFol = maxFracFol;
+            this._folBiomassFracShape = folBiomassFracShape;
+            this._maxFolBiomassFrac = maxFolBiomassFrac;
             this._o3Coeff = o3Coeff;
             this._leafOnMinT = leafOnMinT;
             uint initBiomass = (uint)(initialnsc / (dnsc * cfracbiomass));
@@ -348,7 +348,7 @@ namespace Landis.Library.PnETCohorts
             _cfracbiomass = cfracbiomass[species];
             _woodlitterdecomprate = woodlitterdecomprate[species];
             _bgbiomassfrac = bgbiomassfrac[species];
-            _fracfol = fracfol[species];
+            _folbiomassfrac = folbiomassfrac[species];
             _fractWd = fractWd[species];
             _psnagered = psnagered[species];
             _h1 = h1[species];
@@ -404,8 +404,8 @@ namespace Landis.Library.PnETCohorts
             longevity = species.Longevity;
             _folNShape = folNShape[species];
             _maxFolN = maxFolN[species];
-            _fracFolShape = fracFolShape[species];
-            _maxFracFol = maxFracFol[species];
+            _folBiomassFracShape = folBiomassFracShape[species];
+            _maxFolBiomassFrac = maxFolBiomassFrac[species];
             _o3Coeff = o3Coeff[species];
             _leafOnMinT = leafOnMinT[species];
         }
@@ -719,11 +719,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float FracFol
+        public float FolBiomassFrac
         {
             get
             {
-                return _fracfol;
+                return _folbiomassfrac;
             }
         }
 
@@ -878,19 +878,19 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float FracFolShape
+        public float FolBiomassFracShape
         {
             get
             {
-                return _fracFolShape;
+                return _folBiomassFracShape;
             }
         }
 
-        public float MaxFracFol
+        public float MaxFolBiomassFrac
         {
             get
             {
-                return _maxFracFol;
+                return _maxFolBiomassFrac;
             }
         }
 

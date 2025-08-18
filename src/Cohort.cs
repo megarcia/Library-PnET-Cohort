@@ -1113,7 +1113,7 @@ namespace Landis.Library.PnETCohorts
                             siteCohort.AddFolLitter(folSenescence * data.CanopyLayerFrac, PnETSpecies);// Using Canopy fractioning
                         }
                     }
-                    float woodSenescence = Senescence();
+                    float woodSenescence = WoodSenescence();
                     data.LastWoodSenescence = woodSenescence;
                     siteCohort.AddWoodDebris(woodSenescence * data.CanopyLayerFrac, speciesPnET.WoodLitterDecompRate); // Using Canopy fractioning
 
@@ -1624,7 +1624,7 @@ namespace Landis.Library.PnETCohorts
             return Litter;
         }
 
-        public float Senescence()
+        public float WoodSenescence()
         {
             float senescence = (Root * speciesPnET.RootTurnoverRate) + Wood * speciesPnET.WoodTurnoverRate;
             data.TotalBiomass -= senescence;

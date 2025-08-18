@@ -84,10 +84,10 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Growth reduction parameter with age
         /// </summary>
-        float PsnAgeRed { get; }
+        float PhotosynthesisFAge { get; }
 
         /// <summary>
-        /// Reduction of specific leaf weight throught the canopy (g/m2/g)
+        /// Reduction of specific leaf weight throughout the canopy (g/m2/g)
         /// </summary>
         float SLWDel { get; }
 

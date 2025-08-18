@@ -234,7 +234,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return Math.Max(0, 1 - (float)Math.Pow(Age / (float)speciesPnET.Longevity, speciesPnET.PsnAgeRed));
+                return Math.Max(0, 1 - (float)Math.Pow(Age / (float)speciesPnET.Longevity, speciesPnET.PhotosynthesisFAge));
             }
         }
 

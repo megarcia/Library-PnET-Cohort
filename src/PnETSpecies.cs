@@ -20,7 +20,7 @@ namespace Landis.Library.PnETCohorts
         private float _bgbiomassfrac;
         private float _folbiomassfrac;
         private float _liveWoodBiomassFrac;
-        private float _psnagered;
+        private float _photosynthesisfage;
         private float _h1;
         private float _h2;
         private float _h3;
@@ -90,7 +90,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> bgbiomassfrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> folbiomassfrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> liveWoodBiomassFrac;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psnagered;
+        private static Landis.Library.Parameters.Species.AuxParm<float> photosynthesisfage;
         private static Landis.Library.Parameters.Species.AuxParm<float> h1;
         private static Landis.Library.Parameters.Species.AuxParm<float> h2;
         private static Landis.Library.Parameters.Species.AuxParm<float> h3;
@@ -151,7 +151,7 @@ namespace Landis.Library.PnETCohorts
             bgbiomassfrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("bgbiomassfrac");
             folbiomassfrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("folbiomassfrac");
             liveWoodBiomassFrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("liveWoodBiomassFrac");
-            psnagered = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psnagered");
+            photosynthesisfage = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("photosynthesisfage");
             h1 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h1");
             h2 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h2");
             h3 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h3");
@@ -251,7 +251,7 @@ namespace Landis.Library.PnETCohorts
         PnETSpecies(PostFireRegeneration postFireGeneration,
                     float dnsc, float cfracbiomass, float woodlitterdecomprate,
                     float bgbiomassfrac, float folbiomassfrac, float liveWoodBiomassFrac,
-                    float psnagered, float h1, float h2, float h3,
+                    float photosynthesisfage, float h1, float h2, float h3,
                     float h4, float slwdel, float slwmax, float tofol,
                     float toroot, float halfsat, float initialnsc,
                     float k, float towood, float estrad, float estmoist,
@@ -278,7 +278,7 @@ namespace Landis.Library.PnETCohorts
             this._bgbiomassfrac = bgbiomassfrac;
             this._folbiomassfrac = folbiomassfrac;
             this._liveWoodBiomassFrac = liveWoodBiomassFrac;
-            this._psnagered = psnagered;
+            this._photosynthesisfage = photosynthesisfage;
             this._h1 = h1;
             this._h2 = h2;
             this._h3 = h3;
@@ -350,7 +350,7 @@ namespace Landis.Library.PnETCohorts
             _bgbiomassfrac = bgbiomassfrac[species];
             _folbiomassfrac = folbiomassfrac[species];
             _liveWoodBiomassFrac = liveWoodBiomassFrac[species];
-            _psnagered = psnagered[species];
+            _photosynthesisfage = photosynthesisfage[species];
             _h1 = h1[species];
             _h2 = h2[species];
             _h3 = h3[species];
@@ -695,11 +695,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float PsnAgeRed
+        public float PhotosynthesisFAge
         {
             get
             {
-                return _psnagered;
+                return _photosynthesisfage;
             }
         }
 

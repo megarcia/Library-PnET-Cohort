@@ -53,7 +53,7 @@ namespace Landis.Library.PnETCohorts
         int AgeMax { get; }
         float AvgSoilWaterContent { get; }
         float BGBiomassSum { get; }
-        float FoliageSum { get; }
+        float FolBiomassSum { get; }
         float NSCSum { get; }
         float ActualETSum { get; } //mm
         float NetPsnSum { get; }

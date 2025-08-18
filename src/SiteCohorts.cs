@@ -2863,7 +2863,7 @@ namespace Landis.Library.PnETCohorts
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     // Edited according to Brian Miranda's advice (https://github.com/LANDIS-II-Foundation/Extension-Output-Biomass-PnET/issues/11#issuecomment-2400646970_
-                    // to correct how the variable is computed, to make it similar to FoliageSum.
+                    // to correct how the variable is computed, to make it similar to FolBiomassSum.
                     MaxFoliageYearPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.MaxFolYear * o.CanopyLayerFrac));
                 }
                 return MaxFoliageYearPerSpecies;
@@ -2999,7 +2999,7 @@ namespace Landis.Library.PnETCohorts
         }
 
 
-        public float FoliageSum
+        public float FolBiomassSum
         {
             get
             {

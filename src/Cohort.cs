@@ -1321,7 +1321,7 @@ namespace Landis.Library.PnETCohorts
                 float wue = JCO2 / JH2O * Constants.MCO2_MC;
                 float Amax = (float)(delamaxCi * (speciesPnET.AmaxA + variables[species.Name].AmaxB_CO2 * adjFolN)); //nmole CO2/g Fol/s
                 float BaseFoliarRespiration = variables[species.Name].BaseFoliarRespirationFrac * Amax; //nmole CO2/g Fol/s
-                float AmaxAdj = Amax * speciesPnET.AmaxFrac;  //Amax adjustment as applied in PnET
+                float AmaxAdj = Amax * speciesPnET.AmaxAmod;  //Amax adjustment as applied in PnET
                 float GrossAmax = AmaxAdj + BaseFoliarRespiration; //nmole CO2/g Fol/s
                 //Reference gross Psn (lab conditions) in gC/g Fol/month
                 float RefGrossPsn = variables.DaySpan * (GrossAmax * variables[species.Name].DVPD * variables.DayLength * Constants.MC) / Constants.billion;

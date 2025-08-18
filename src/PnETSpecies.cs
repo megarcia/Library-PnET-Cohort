@@ -47,7 +47,7 @@ namespace Landis.Library.PnETCohorts
         private float _dvpd2;
         private float _amaxa;
         private float _amaxb;
-        private float _amaxfrac;
+        private float _amaxamod;
         private float _co2AMaxBEff;
         private float _maintresp;
         private float _baseFoliarRespiration;
@@ -117,7 +117,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> foln;
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
-        private static Landis.Library.Parameters.Species.AuxParm<float> amaxfrac;
+        private static Landis.Library.Parameters.Species.AuxParm<float> amaxamod;
         private static Landis.Library.Parameters.Species.AuxParm<float> co2AMaxBEff;
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> baseFoliarRespiration;
@@ -178,7 +178,7 @@ namespace Landis.Library.PnETCohorts
             foln = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("foln");
             amaxa = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("amaxa");
             amaxb = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("amaxb");
-            amaxfrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("AmaxFrac");
+            amaxamod = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("AmaxAmod");
             co2AMaxBEff = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CO2AMaxBEff");
             maintresp = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("maintresp");
             baseFoliarRespiration = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("baseFoliarRespiration");
@@ -258,7 +258,7 @@ namespace Landis.Library.PnETCohorts
                     float maxPest, float follignin, bool preventestablishment,
                     float psntopt, float q10, float psntmin, float psntmax,
                     float dvpd1, float dvpd2, float foln, float amaxa,
-                    float amaxb, float amaxfrac, float co2AMaxBEff,
+                    float amaxb, float amaxamod, float co2AMaxBEff,
                     float maintresp, float baseFoliarRespiration, float coldTol,
                     string ozoneSens, int Index, string name,
                     int maxSproutAge, int minSproutAge, int maxSeedDist,
@@ -305,7 +305,7 @@ namespace Landis.Library.PnETCohorts
             this._dvpd2 = dvpd2;
             this._amaxa = amaxa;
             this._amaxb = amaxb;
-            this._amaxfrac = amaxfrac;
+            this._amaxamod = amaxamod;
             this._co2AMaxBEff = co2AMaxBEff;
             this._maintresp = maintresp;
             this._baseFoliarRespiration = baseFoliarRespiration;
@@ -377,7 +377,7 @@ namespace Landis.Library.PnETCohorts
             _dvpd2 = dvpd2[species];
             _amaxa = amaxa[species];
             _amaxb = amaxb[species];
-            _amaxfrac = amaxfrac[species];
+            _amaxamod = amaxamod[species];
             _co2AMaxBEff = co2AMaxBEff[species];
             _maintresp = maintresp[species];
             _baseFoliarRespiration = baseFoliarRespiration[species];
@@ -475,11 +475,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float AmaxFrac
+        public float AmaxAmod
         {
             get
             {
-                return _amaxfrac;
+                return _amaxamod;
             }
         }
 

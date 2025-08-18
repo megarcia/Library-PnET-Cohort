@@ -162,7 +162,7 @@ namespace Landis.Library.PnETCohorts
         float PsnTmax { get; }
 
         /// <summary>
-        /// Foliar nitrogen (gN/gC)
+        /// Foliar ratio of nitrogen to carbon  (gN/gC)
         /// </summary>
         float FolN { get; }
 
@@ -189,7 +189,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Modifier of AmaxA due to averaging non-linear Amax data
         /// </summary>
-        float AmaxFrac { get; }
+        float AmaxAmod { get; }
 
         /// <summary>
         /// Referece maintenance respiration 

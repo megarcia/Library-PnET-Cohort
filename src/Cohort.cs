@@ -686,7 +686,7 @@ namespace Landis.Library.PnETCohorts
             if (data.LastSeasonFRad.Count() > 0)
             {
                 float lastSeasonAvgFRad = data.LastSeasonFRad.ToArray().Average();
-                float folBiomassFrac_slope = speciesPnET.FolBiomassFracShape;
+                float folBiomassFrac_slope = speciesPnET.FolBiomassFrac_slope;
                 float folBiomassFrac_int = speciesPnET.MaxFolBiomassFrac;
                 //slope is shape parm; folBiomassFrac is minFolBiomassFrac; int is maxFolBiomassFrac. EJG-7-24-18
                 data.adjFolBiomassFrac = speciesPnET.FolBiomassFrac + ((folBiomassFrac_int - speciesPnET.FolBiomassFrac) * (float)Math.Pow(lastSeasonAvgFRad, folBiomassFrac_slope)); 

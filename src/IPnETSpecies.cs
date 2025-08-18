@@ -224,7 +224,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Slope for linear FolBiomassFrac relationship
         /// </summary>
-        float FolBiomassFracShape { get; }
+        float FolBiomassFrac_slope { get; }
 
         /// <summary>
         /// Intercept for linear FolBiomassFrac relationship

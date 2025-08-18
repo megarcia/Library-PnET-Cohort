@@ -68,7 +68,7 @@ namespace Landis.Library.PnETCohorts
         int longevity;
         private float _folN_slope;
         private float _folN_intercept;
-        private float _folBiomassFracShape;
+        private float _folBiomassFrac_slope;
         private float _maxFolBiomassFrac;
         private float _o3Coeff;
         private float _leafOnMinT;
@@ -125,7 +125,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
         private static Landis.Library.Parameters.Species.AuxParm<float> folN_slope;
         private static Landis.Library.Parameters.Species.AuxParm<float> folN_intercept;
-        private static Landis.Library.Parameters.Species.AuxParm<float> folBiomassFracShape;
+        private static Landis.Library.Parameters.Species.AuxParm<float> folBiomassFrac_slope;
         private static Landis.Library.Parameters.Species.AuxParm<float> maxFolBiomassFrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
         private static Landis.Library.Parameters.Species.AuxParm<float> leafOnMinT;
@@ -188,7 +188,7 @@ namespace Landis.Library.PnETCohorts
             // If FolN_intercept is not provided, then set to foln
             if (folN_intercept[this] == -9999F)
                 folN_intercept = foln;
-            folBiomassFracShape = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolBiomassFracShape");
+            folBiomassFrac_slope = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolBiomassFrac_slope");
             maxFolBiomassFrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxFolBiomassFrac"); //Optional
             // If MaxFolBiomassFrac is not provided, then set to folbiomassfrac
             if (maxFolBiomassFrac[this] == -9999F)
@@ -265,7 +265,7 @@ namespace Landis.Library.PnETCohorts
                     int effectiveSeedDist, float vegReprodProb,
                     byte fireTolerance, byte shadeTolerance, int maturity,
                     int longevity, float folN_slope, float folN_intercept,
-                    float folBiomassFracShape, float maxFolBiomassFrac, float o3Coeff,
+                    float folBiomassFrac_slope, float maxFolBiomassFrac, float o3Coeff,
                     float leafOnMinT, float NSCreserve, string lifeForm,
                     float refoliationMinimumTrigger, float refoliationMaximum,
                     float refoliationCost, float nonRefoliationCost,
@@ -325,7 +325,7 @@ namespace Landis.Library.PnETCohorts
             this.longevity = longevity;
             this._folN_slope = folN_slope;
             this._folN_intercept = folN_intercept;
-            this._folBiomassFracShape = folBiomassFracShape;
+            this._folBiomassFrac_slope = folBiomassFrac_slope;
             this._maxFolBiomassFrac = maxFolBiomassFrac;
             this._o3Coeff = o3Coeff;
             this._leafOnMinT = leafOnMinT;
@@ -404,7 +404,7 @@ namespace Landis.Library.PnETCohorts
             longevity = species.Longevity;
             _folN_slope = folN_slope[species];
             _folN_intercept = folN_intercept[species];
-            _folBiomassFracShape = folBiomassFracShape[species];
+            _folBiomassFrac_slope = folBiomassFrac_slope[species];
             _maxFolBiomassFrac = maxFolBiomassFrac[species];
             _o3Coeff = o3Coeff[species];
             _leafOnMinT = leafOnMinT[species];
@@ -878,11 +878,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float FolBiomassFracShape
+        public float FolBiomassFrac_slope
         {
             get
             {
-                return _folBiomassFracShape;
+                return _folBiomassFrac_slope;
             }
         }
 

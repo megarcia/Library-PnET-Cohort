@@ -34,7 +34,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Fraction active wood biomass of total biomass 
         /// </summary>
-        float FrActWd { get; }
+        float LiveWoodBiomassFrac { get; }
 
         /// <summary>
         /// Water stress parameter for excess water: pressure head below which growth halts

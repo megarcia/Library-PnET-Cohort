@@ -551,7 +551,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return (float)Math.Exp(-speciesPnET.FrActWd * data.BiomassMax);
+                return (float)Math.Exp(-speciesPnET.LiveWoodBiomassFrac * data.BiomassMax);
             }
         }
 

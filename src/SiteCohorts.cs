@@ -499,8 +499,8 @@ namespace Landis.Library.PnETCohorts
                         int layer = cohort.Layer;
                         int layerCount = cohortBins[layer].Count();
                         // Estimate new wood biomass from BGBiomassFrac and FrActWs (see Estimate_WoodBio.xlsx)
-                        float estSlope = -8.236285f + 27.768424f * cohort.PnETSpecies.BGBiomassFrac + 191053.281571f * cohort.PnETSpecies.FrActWd + 312.812679f * cohort.PnETSpecies.FolBiomassFrac + -594492.216284f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FrActWd + -941.447695f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FolBiomassFrac + -6490254.134756f * cohort.PnETSpecies.FrActWd * cohort.PnETSpecies.FolBiomassFrac + 19879995.810771f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FrActWd * cohort.PnETSpecies.FolBiomassFrac;
-                        float estInt = 1735.179f + 2994.393f * cohort.PnETSpecies.BGBiomassFrac + 10167232.544f * cohort.PnETSpecies.FrActWd + 53598.871f * cohort.PnETSpecies.FolBiomassFrac + -92028081.987f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FrActWd + -168141.498f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FolBiomassFrac + -1104139533.563f * cohort.PnETSpecies.FrActWd * cohort.PnETSpecies.FolBiomassFrac + 3507005746.011f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FrActWd * cohort.PnETSpecies.FolBiomassFrac;
+                        float estSlope = -8.236285f + 27.768424f * cohort.PnETSpecies.BGBiomassFrac + 191053.281571f * cohort.PnETSpecies.LiveWoodBiomassFrac + 312.812679f * cohort.PnETSpecies.FolBiomassFrac + -594492.216284f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.LiveWoodBiomassFrac + -941.447695f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FolBiomassFrac + -6490254.134756f * cohort.PnETSpecies.LiveWoodBiomassFrac * cohort.PnETSpecies.FolBiomassFrac + 19879995.810771f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.LiveWoodBiomassFrac * cohort.PnETSpecies.FolBiomassFrac;
+                        float estInt = 1735.179f + 2994.393f * cohort.PnETSpecies.BGBiomassFrac + 10167232.544f * cohort.PnETSpecies.LiveWoodBiomassFrac + 53598.871f * cohort.PnETSpecies.FolBiomassFrac + -92028081.987f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.LiveWoodBiomassFrac + -168141.498f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FolBiomassFrac + -1104139533.563f * cohort.PnETSpecies.LiveWoodBiomassFrac * cohort.PnETSpecies.FolBiomassFrac + 3507005746.011f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.LiveWoodBiomassFrac * cohort.PnETSpecies.FolBiomassFrac;
                         float newWoodBiomass = estInt + estSlope * cohort.AGBiomass * layerCount; // Inflate AGBiomass by # of cohorts in layer, assuming equal space among them
                         float newTotalBiomass = newWoodBiomass / (1 - cohort.PnETSpecies.BGBiomassFrac);
                         cohort.CanopyLayerFrac = 1f / layerCount;
@@ -641,7 +641,7 @@ namespace Landis.Library.PnETCohorts
                         float newWoodBiomass = targetBiomass / canopyLayerFrac;
                         float newTotalBiomass = newWoodBiomass / (1 - cohort.PnETSpecies.BGBiomassFrac);
                         float changeAmount = newTotalBiomass - cohort.TotalBiomass;
-                        float tempFActiveBiom = (float)Math.Exp(-cohort.PnETSpecies.FrActWd * newTotalBiomass);
+                        float tempFActiveBiom = (float)Math.Exp(-cohort.PnETSpecies.LiveWoodBiomassFrac * newTotalBiomass);
                         float cohortTempFoliage = cohort.adjFolBiomassFrac * tempFActiveBiom * newTotalBiomass;
                         float cohortTempLAI = 0;
                         for (int i = 0; i < Globals.IMAX; i++)
@@ -673,7 +673,7 @@ namespace Landis.Library.PnETCohorts
                             else
                                 newTotalBiomass = Math.Max(newTotalBiomass + multiplier, 1);
                             changeAmount = newTotalBiomass - cohort.TotalBiomass;
-                            tempFActiveBiom = (float)Math.Exp(-cohort.PnETSpecies.FrActWd * newTotalBiomass);
+                            tempFActiveBiom = (float)Math.Exp(-cohort.PnETSpecies.LiveWoodBiomassFrac * newTotalBiomass);
                             cohortTempFoliage = cohort.adjFolBiomassFrac * tempFActiveBiom * newTotalBiomass;
                             cohortTempLAI = 0;
                             for (int i = 0; i < Globals.IMAX; i++)
@@ -770,7 +770,7 @@ namespace Landis.Library.PnETCohorts
                         float newTotalBiomass = newWoodBiomass / (1 - cohort.PnETSpecies.BGBiomassFrac);
                         float changeAmount = newTotalBiomass - cohort.TotalBiomass;
                         float tempMaxBio = Math.Max(cohort.BiomassMax, newTotalBiomass);
-                        float tempFActiveBiom = (float)Math.Exp(-cohort.PnETSpecies.FrActWd * tempMaxBio);
+                        float tempFActiveBiom = (float)Math.Exp(-cohort.PnETSpecies.LiveWoodBiomassFrac * tempMaxBio);
                         float cohortTempFoliage = cohort.adjFolBiomassFrac * tempFActiveBiom * newTotalBiomass;
                         float cohortTempLAI = 0;
                         for (int i = 0; i < Globals.IMAX; i++)
@@ -807,7 +807,7 @@ namespace Landis.Library.PnETCohorts
                                 newTotalBiomass = Math.Max(newTotalBiomass + multiplier, 1);
                             changeAmount = newTotalBiomass - cohort.TotalBiomass;
                             tempMaxBio = Math.Max(cohort.BiomassMax, newTotalBiomass);
-                            tempFActiveBiom = (float)Math.Exp(-cohort.PnETSpecies.FrActWd * tempMaxBio);
+                            tempFActiveBiom = (float)Math.Exp(-cohort.PnETSpecies.LiveWoodBiomassFrac * tempMaxBio);
                             cohortTempFoliage = cohort.adjFolBiomassFrac * tempFActiveBiom * newTotalBiomass;
                             cohortTempLAI = 0;
                             for (int i = 0; i < Globals.IMAX; i++)

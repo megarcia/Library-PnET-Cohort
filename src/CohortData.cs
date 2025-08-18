@@ -329,7 +329,7 @@ namespace Landis.Library.PnETCohorts
             this.SoilWaterContent = new float[Globals.IMAX];
             this.BiomassLayerFrac = 1.0f;
             float cohortLAI = 0;
-            float cohortIdealFol = spc.FolBiomassFrac * (float)Math.Exp(-spc.FrActWd * this.BiomassMax) * this.TotalBiomass;
+            float cohortIdealFol = spc.FolBiomassFrac * (float)Math.Exp(-spc.LiveWoodBiomassFrac * this.BiomassMax) * this.TotalBiomass;
             for (int i = 0; i < Globals.IMAX; i++)
                 cohortLAI += Cohort.CalcLAI(spc, cohortIdealFol, i, cohortLAI);
             this.LastLAI = cohortLAI;

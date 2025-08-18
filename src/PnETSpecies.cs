@@ -193,7 +193,7 @@ namespace Landis.Library.PnETCohorts
             // If FolBiomassFrac_intercept is not provided, then set to folbiomassfrac
             if (folBiomassFrac_intercept[this] == -9999F)
                 folBiomassFrac_intercept = folbiomassfrac;
-            o3Coeff = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("O3GrowthSens");
+            o3Coeff = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FOzone_slope");
             coldTol = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("ColdTol");
             leafOnMinT = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeafOnMinT"); //Optional
             // If LeafOnMinT is not provided, then set to PsnMinT
@@ -894,7 +894,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float O3GrowthSens
+        public float FOzone_slope
         {
             get
             {

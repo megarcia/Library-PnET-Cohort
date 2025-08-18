@@ -1389,7 +1389,7 @@ namespace Landis.Library.PnETCohorts
                 if (o3_month > 0)
                 {
                     float wvConductance = Evapotranspiration.CalcWVConductance(variables.CO2, variables.Tavg, ciElev, netPsn_leaf_s);
-                    float o3Coeff = speciesPnET.O3GrowthSens;
+                    float o3Coeff = speciesPnET.FOzone_slope;
                     fOzone = Photosynthesis.CalcFOzone(o3_month, subCanopyIndex, layerCount, Fol, lastFOzone, wvConductance, o3Coeff);
                 }
                 //Apply reduction factor for Ozone

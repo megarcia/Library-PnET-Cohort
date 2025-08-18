@@ -234,7 +234,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Slope coefficient for FOzone
         /// </summary>
-        float O3GrowthSens { get; }
+        float FOzone_slope { get; }
 
         /// <summary>
         /// Cold tolerance

@@ -3416,11 +3416,11 @@ namespace Landis.Library.PnETCohorts
             return spc;
         }
 
-        public void AddWoodDebris(float Litter, float WoodDebrisDecompRate)
+        public void AddWoodDebris(float NewWoodDebris, float WoodDebrisDecompRate)
         {
             lock (Globals.WoodDebrisThreadLock)
             {
-                SiteVars.WoodDebris[Site].AddMass(Litter, WoodDebrisDecompRate);
+                SiteVars.WoodDebris[Site].AddMass(NewWoodDebris, WoodDebrisDecompRate);
             }
         }
 
@@ -3432,12 +3432,12 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public void AddLeafLitter(float AddLeafLitter, IPnETSpecies spc)
+        public void AddLeafLitter(float NewLeafLitter, IPnETSpecies spc)
         {
             lock (Globals.LeafLitterThreadLock)
             {
                 double KNwdLitter = Math.Max(0.3, -0.5365 + (0.00241 * ActualET.Sum()) - (-0.01586 + (0.000056 * ActualET.Sum())) * spc.FolLignin * 100);
-                SiteVars.Litter[Site].AddMass(AddLeafLitter, KNwdLitter);
+                SiteVars.LeafLitter[Site].AddMass(NewLeafLitter, KNwdLitter);
             }
         }
 
@@ -3480,7 +3480,7 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.SoilWaterContent + "," +
                        OutputHeaders.PressureHead + "," + 
                        OutputHeaders.SurfaceWater + "," +
-                       OutputHeaders.availableWater + "," +
+                       OutputHeaders.AvailableWater + "," +
                        OutputHeaders.Snowpack + "," +
                        OutputHeaders.LAI + "," + 
                        OutputHeaders.VPD + "," + 

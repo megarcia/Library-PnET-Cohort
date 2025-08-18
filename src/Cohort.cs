@@ -1100,17 +1100,18 @@ namespace Landis.Library.PnETCohorts
                 {
                     if (allowMortality)
                     {
-                        //Check if nscfrac is below threshold to determine if cohort is alive
+                        // Check if nscfrac is below threshold to determine if cohort is alive
+                        // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
                         if (!IsAlive)
-                            data.NSC = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
-                        else if (Globals.ModelCore.CurrentTime > 0 && TotalBiomass < (uint)speciesPnET.InitBiomass)  //Check if biomass < Initial Biomass -> cohort dies
+                            data.NSC = 0.0F;
+                        else if (Globals.ModelCore.CurrentTime > 0 && TotalBiomass < (uint)speciesPnET.InitBiomass)  // Check if biomass < Initial Biomass -> cohort dies
                         {
-                            data.NSC = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
+                            data.NSC = 0.0F;
                             data.IsLeafOn = false;
                             data.NSC = 0.0F;
                             float folSenescence = FolSenescence();
                             data.LastFolSenescence = folSenescence;
-                            siteCohort.AddLeafLitter(folSenescence * data.CanopyLayerFrac, PnETSpecies);// Using Canopy fractioning
+                            siteCohort.AddLeafLitter(folSenescence * data.CanopyLayerFrac, PnETSpecies); // Using Canopy fractioning
                         }
                     }
                     float woodSenescence = WoodSenescence();

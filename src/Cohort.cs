@@ -965,7 +965,7 @@ namespace Landis.Library.PnETCohorts
 
         public void CalcDefoliationFrac(ActiveSite site, int SiteAboveGroundBiomass)
         {
-            lock (Globals.distributionThreadLock)
+            lock (Globals.DistributionThreadLock)
             {
                 data.DefoliationFrac = (float)Library.UniversalCohorts.CohortDefoliation.Compute(site, this, 0, SiteAboveGroundBiomass);
             }

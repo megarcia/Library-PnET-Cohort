@@ -14,7 +14,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static int DiscreteUniformRandom(int min, int max)
         {
-            lock (Globals.distributionThreadLock)
+            lock (Globals.DistributionThreadLock)
             {
                 Globals.ModelCore.ContinuousUniformDistribution.Alpha = 0;
                 Globals.ModelCore.ContinuousUniformDistribution.Beta = max + 1;
@@ -28,7 +28,7 @@ namespace Landis.Library.PnETCohorts
 
         public static double ContinuousUniformRandom(double min = 0, double max = 1)
         {
-            lock (Globals.distributionThreadLock)
+            lock (Globals.DistributionThreadLock)
             {
                 Globals.ModelCore.ContinuousUniformDistribution.Alpha = 0;
                 Globals.ModelCore.ContinuousUniformDistribution.Beta = max;

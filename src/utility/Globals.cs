@@ -20,7 +20,7 @@ namespace Landis.Library.PnETCohorts
         public static int MaxFutureClimateIndex {  get; private set; }
         public static readonly object WoodDebrisThreadLock = new object();
         public static readonly object LeafLitterThreadLock = new object();
-        public static readonly object distributionThreadLock = new object();
+        public static readonly object DistributionThreadLock = new object();
         public static readonly object ecoregionDataThreadLock = new object();
         public static readonly object initialSitesThreadLock = new object();
 

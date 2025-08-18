@@ -114,7 +114,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Establishment factor related to light - fRad value that equates to optimal light for establishment
         /// </summary>
-        float EstRad { get; }
+        float EstablishmentFRad { get; }
 
         /// <summary>
         /// Establishment factor related to moisture - fWater value that equates to optimal water for establishment
@@ -207,7 +207,7 @@ namespace Landis.Library.PnETCohorts
         float HalfSatFCO2 { get; }
 
         /// <summary>
-        /// Ozone stomatal sensitivity class (Sensitive, Intermediate, Tolerant)
+        /// Stomatal ozone sensitivity class (Sensitive, Intermediate, Tolerant)
         /// </summary>
         string StomataO3Sensitivity { get; }
 

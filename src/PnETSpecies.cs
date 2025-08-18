@@ -33,7 +33,7 @@ namespace Landis.Library.PnETCohorts
         private float _initialnsc;
         private float _k;
         private float _woodturnoverrate;
-        private float _estrad;
+        private float _establishmentfrad;
         private float _estmoist;
         private float _maxPest;
         private float _follignin;
@@ -103,7 +103,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> initialnsc;
         private static Landis.Library.Parameters.Species.AuxParm<float> k;
         private static Landis.Library.Parameters.Species.AuxParm<float> woodturnoverrate;
-        private static Landis.Library.Parameters.Species.AuxParm<float> estrad;
+        private static Landis.Library.Parameters.Species.AuxParm<float> establishmentfrad;
         private static Landis.Library.Parameters.Species.AuxParm<float> estmoist;
         private static Landis.Library.Parameters.Species.AuxParm<float> maxPest;
         private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
@@ -164,7 +164,7 @@ namespace Landis.Library.PnETCohorts
             initialnsc = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("initialnsc"); ;
             k = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("k"); ;
             woodturnoverrate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("woodturnoverrate"); ;
-            estrad = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("estrad"); ;
+            establishmentfrad = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("establishmentfrad"); ;
             estmoist = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("estmoist");
             maxPest = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxPest");
             follignin = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("follignin");
@@ -254,7 +254,7 @@ namespace Landis.Library.PnETCohorts
                     float photosynthesisfage, float h1, float h2, float h3,
                     float h4, float slwdel, float slwmax, float folturnoverrate,
                     float rootturnoverrate, float halfsat, float initialnsc,
-                    float k, float woodturnoverrate, float estrad, float estmoist,
+                    float k, float woodturnoverrate, float establishmentfrad, float estmoist,
                     float maxPest, float follignin, bool preventestablishment,
                     float psntopt, float q10, float psntmin, float psntmax,
                     float dvpd1, float dvpd2, float foln, float amaxa,
@@ -291,7 +291,7 @@ namespace Landis.Library.PnETCohorts
             this._initialnsc = initialnsc;
             this._k = k;
             this._woodturnoverrate = woodturnoverrate;
-            this._estrad = estrad;
+            this._establishmentfrad = establishmentfrad;
             this._estmoist = estmoist;
             this._maxPest = maxPest;
             this._follignin = follignin;
@@ -363,7 +363,7 @@ namespace Landis.Library.PnETCohorts
             _initialnsc = initialnsc[species];
             _k = k[species];
             _woodturnoverrate = woodturnoverrate[species];
-            _estrad = estrad[species];
+            _establishmentfrad = establishmentfrad[species];
             _estmoist = estmoist[species];
             _maxPest = maxPest[species];
             _follignin = follignin[species];
@@ -559,11 +559,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float EstRad
+        public float EstablishmentFRad
         {
             get
             {
-                return _estrad;
+                return _establishmentfrad;
             }
         }
 

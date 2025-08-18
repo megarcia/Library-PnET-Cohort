@@ -16,8 +16,8 @@ namespace Landis.Library.PnETCohorts
 
         public static void Initialize(string fn, SortedDictionary<string, Parameter<string>> parameters)
         {
-            Dictionary<string, Parameter<string>> DisturbanceReductionParameters = Names.LoadTable(Names.DisturbanceReductions, Reductions, Disturbances);
-            foreach (KeyValuePair<string, Parameter<string>> parameter in DisturbanceReductionParameters)
+            Dictionary<string, Parameter<string>> BiomassReductionParameters = Names.LoadTable(Names.DisturbanceReductions, Reductions, Disturbances);
+            foreach (KeyValuePair<string, Parameter<string>> parameter in BiomassReductionParameters)
             {
                 if (parameters.ContainsKey(parameter.Key))
                     throw new System.Exception("Parameter " + parameter.Key + " was provided twice");
@@ -30,7 +30,7 @@ namespace Landis.Library.PnETCohorts
                         throw new System.Exception("Expecting value for " + parameter.Key + " between 0.0 and 1.0. Found " + v);
                 }
             }
-            DisturbanceReductionParameters.ToList().ForEach(x => parameters.Add("disturbance:"+x.Key, x.Value));
+            BiomassReductionParameters.ToList().ForEach(x => parameters.Add("disturbance:"+x.Key, x.Value));
         }
 
         public static void ReduceDeadPools(object sitecohorts, ExtensionType disturbanceType)

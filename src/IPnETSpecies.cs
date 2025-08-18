@@ -19,7 +19,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Fraction of non-soluble carbon to active biomass
         /// </summary>
-        float DNSC { get; }
+        float NSCFrac { get; }
 
         /// <summary>
         /// Fraction biomass below-ground

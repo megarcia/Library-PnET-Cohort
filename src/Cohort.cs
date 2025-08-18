@@ -773,7 +773,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="SiteName"></param>
         /// <param name="fracBiomass"></param>
         /// <param name="cohortStacking"></param>
-        public Cohort(ISpecies species, IPnETSpecies speciesPnET, ushort year_of_birth, string SiteName, double fracBiomass, bool cohortStacking) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
+        public Cohort(ISpecies species, IPnETSpecies speciesPnET, ushort year_of_birth, string SiteName, double fracBiomass, bool cohortStacking) // : base(species, 0, (int)(1F / species.NSCFrac * (ushort)species.InitialNSC))
         {
             this.species = species;
             this.speciesPnET = speciesPnET;
@@ -781,7 +781,7 @@ namespace Landis.Library.PnETCohorts
             data.ColdKill = int.MaxValue;
             data.NSC = (ushort)speciesPnET.InitialNSC;
             // Initialize biomass assuming fixed concentration of NSC, convert gC to gDW
-            data.TotalBiomass = (uint)Math.Max(1.0, NSC / (speciesPnET.DNSC * speciesPnET.CFracBiomass) * fracBiomass);
+            data.TotalBiomass = (uint)Math.Max(1.0, NSC / (speciesPnET.NSCFrac * speciesPnET.CFracBiomass) * fracBiomass);
             data.AGBiomass = (1 - speciesPnET.BGBiomassFrac) * data.TotalBiomass + data.Fol;
             data.BiomassMax = data.TotalBiomass;
             float cohortLAI = 0;
@@ -905,7 +905,7 @@ namespace Landis.Library.PnETCohorts
             data.AGBiomass = (1 - this.speciesPnET.BGBiomassFrac) * data.TotalBiomass + data.Fol;
             data.LastAGBio = data.AGBiomass;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
-            data.NSC = this.speciesPnET.DNSC * FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
+            data.NSC = this.speciesPnET.NSCFrac * FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
             if (SiteName != null)
                 InitializeOutput(SiteName, firstYear);
         }
@@ -958,7 +958,7 @@ namespace Landis.Library.PnETCohorts
             data.AGBiomass = (1 - this.speciesPnET.BGBiomassFrac) * data.TotalBiomass + data.Fol;
             data.LastAGBio = data.AGBiomass;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
-            data.NSC = this.speciesPnET.DNSC * FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
+            data.NSC = this.speciesPnET.NSCFrac * FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
             if (SiteName != null)
                 InitializeOutput(SiteName, firstYear);
         }
@@ -1119,7 +1119,7 @@ namespace Landis.Library.PnETCohorts
 
                     // Release of NSC, will be added to biomass components next year
                     // Assumed that NSC will have a minimum concentration, excess is allocated to biomass
-                    float NSCallocation = Math.Max(NSC - (speciesPnET.DNSC * FActiveBiom * data.TotalBiomass * speciesPnET.CFracBiomass), 0);
+                    float NSCallocation = Math.Max(NSC - (speciesPnET.NSCFrac * FActiveBiom * data.TotalBiomass * speciesPnET.CFracBiomass), 0);
                     data.TotalBiomass += NSCallocation / speciesPnET.CFracBiomass;  // convert gC to gDW
                     data.AGBiomass = (1 - speciesPnET.BGBiomassFrac) * data.TotalBiomass + data.Fol;
                     data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);

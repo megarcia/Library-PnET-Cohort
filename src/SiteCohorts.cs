@@ -517,7 +517,7 @@ namespace Landis.Library.PnETCohorts
                         if (CohortStacking)
                             cohortLAIRatio = 1.0f;
                         canopyFracs.Add(cohort, cohortLAIRatio);
-                        cohort.NSC = cohort.PnETSpecies.DNSC * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.PnETSpecies.CFracBiomass;
+                        cohort.NSC = cohort.PnETSpecies.NSCFrac * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.PnETSpecies.CFracBiomass;
                         cohort.Fol = cohortFol * (1 - cohort.PnETSpecies.FolTurnoverRate);
                         if (LayerFoliagePotentialValues[layer] == null)
                             LayerFoliagePotentialValues[layer] = new List<float>();
@@ -569,7 +569,7 @@ namespace Landis.Library.PnETCohorts
                         }
                         float cohortFol = cohort.adjFolBiomassFrac * cohort.FActiveBiom * cohort.TotalBiomass;
                         cohort.Fol = cohortFol * (1 - cohort.PnETSpecies.FolTurnoverRate);
-                        cohort.NSC = cohort.PnETSpecies.DNSC * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.PnETSpecies.CFracBiomass;
+                        cohort.NSC = cohort.PnETSpecies.NSCFrac * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.PnETSpecies.CFracBiomass;
                         // Check cohort.Biomass
                         LayerFoliagePotentialAdj[layer] += cohort.CanopyLayerFrac;
                         CanopyLAISum[layer] += cohort.LAI.Sum() * cohort.CanopyLayerFrac;
@@ -705,7 +705,7 @@ namespace Landis.Library.PnETCohorts
                             cohort.CanopyLayerFrac = 1.0f;
                         CanopyLayerSum[layer] += cohort.CanopyLayerFrac;
                         cohort.Fol = cohortFoliage * (1 - cohort.PnETSpecies.FolTurnoverRate);
-                        cohort.NSC = cohort.PnETSpecies.DNSC * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.PnETSpecies.CFracBiomass;
+                        cohort.NSC = cohort.PnETSpecies.NSCFrac * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.PnETSpecies.CFracBiomass;
                         cohortIndex++;
                         FinalCohortMaxBiomassList.Add(cohort.BiomassMax);
                     }
@@ -853,7 +853,7 @@ namespace Landis.Library.PnETCohorts
                             cohort.CanopyLayerFrac = 1.0f;
                         CanopyLayerSum[layer] += cohort.CanopyLayerFrac;
                         cohort.Fol = cohort.Fol * (1 - cohort.PnETSpecies.FolTurnoverRate);
-                        cohort.NSC = cohort.PnETSpecies.DNSC * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.PnETSpecies.CFracBiomass;
+                        cohort.NSC = cohort.PnETSpecies.NSCFrac * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.PnETSpecies.CFracBiomass;
                         float fol_total_ratio = cohort.Fol / (cohort.Fol + cohort.Wood);
                         // Calculate minimum foliage/total biomass ratios from Jenkins (reduced by MinFolRatioFactor to be not so strict)
                         float ratioLimit = 0;

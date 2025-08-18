@@ -17,7 +17,7 @@ namespace Landis.Library.PnETCohorts
         private float _cfracbiomass;
         private float _woodlitterdecomprate;
         private float _dnsc;
-        private float _fracbelowg;
+        private float _bgbiomassfrac;
         private float _fracfol;
         private float _fractWd;
         private float _psnagered;
@@ -87,7 +87,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
         private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
         private static Landis.Library.Parameters.Species.AuxParm<float> woodlitterdecomprate;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fracbelowg;
+        private static Landis.Library.Parameters.Species.AuxParm<float> bgbiomassfrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> fracfol;
         private static Landis.Library.Parameters.Species.AuxParm<float> fractWd;
         private static Landis.Library.Parameters.Species.AuxParm<float> psnagered;
@@ -148,7 +148,7 @@ namespace Landis.Library.PnETCohorts
             dnsc = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("DNSC");
             cfracbiomass = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CFracBiomass");
             woodlitterdecomprate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("woodlitterdecomprate");
-            fracbelowg = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("fracbelowg");
+            bgbiomassfrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("bgbiomassfrac");
             fracfol = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("fracfol");
             fractWd = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("fractWd");
             psnagered = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psnagered");
@@ -250,7 +250,7 @@ namespace Landis.Library.PnETCohorts
 
         PnETSpecies(PostFireRegeneration postFireGeneration,
                     float dnsc, float cfracbiomass, float woodlitterdecomprate,
-                    float fracbelowg, float fracfol, float fractWd,
+                    float bgbiomassfrac, float fracfol, float fractWd,
                     float psnagered, float h1, float h2, float h3,
                     float h4, float slwdel, float slwmax, float tofol,
                     float toroot, float halfsat, float initialnsc,
@@ -275,7 +275,7 @@ namespace Landis.Library.PnETCohorts
             this._dnsc = dnsc;
             this._cfracbiomass = cfracbiomass;
             this._woodlitterdecomprate = woodlitterdecomprate;
-            this._fracbelowg = fracbelowg;
+            this._bgbiomassfrac = bgbiomassfrac;
             this._fracfol = fracfol;
             this._fractWd = fractWd;
             this._psnagered = psnagered;
@@ -330,7 +330,7 @@ namespace Landis.Library.PnETCohorts
             this._o3Coeff = o3Coeff;
             this._leafOnMinT = leafOnMinT;
             uint initBiomass = (uint)(initialnsc / (dnsc * cfracbiomass));
-            this._initBiomass = (int)(initBiomass - ((uint)(fracbelowg * initBiomass)) * toroot - ((uint)((1 - fracbelowg) * initBiomass) * towood));
+            this._initBiomass = (int)(initBiomass - ((uint)(bgbiomassfrac * initBiomass)) * toroot - ((uint)((1 - bgbiomassfrac) * initBiomass) * towood));
             this._NSCreserve = NSCreserve;
             this._lifeform = lifeForm;
             this._refoliationMinimumTrigger = refoliationMinimumTrigger;
@@ -343,11 +343,11 @@ namespace Landis.Library.PnETCohorts
         private PnETSpecies(ISpecies species)
         {
             uint initBiomass = (uint)(initialnsc[species] / (dnsc[species] * cfracbiomass[species]));
-            _initBiomass = (int)(initBiomass - ((uint)(fracbelowg[species] * initBiomass)) * toroot[species] - ((uint)((1 - fracbelowg[species]) * initBiomass) * towood[species]));
+            _initBiomass = (int)(initBiomass - ((uint)(bgbiomassfrac[species] * initBiomass)) * toroot[species] - ((uint)((1 - bgbiomassfrac[species]) * initBiomass) * towood[species]));
             _dnsc = dnsc[species];
             _cfracbiomass = cfracbiomass[species];
             _woodlitterdecomprate = woodlitterdecomprate[species];
-            _fracbelowg = fracbelowg[species];
+            _bgbiomassfrac = bgbiomassfrac[species];
             _fracfol = fracfol[species];
             _fractWd = fractWd[species];
             _psnagered = psnagered[species];
@@ -727,11 +727,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float FracBelowG
+        public float BGBiomassFrac
         {
             get
             {
-                return _fracbelowg;
+                return _bgbiomassfrac;
             }
         }
 

@@ -24,7 +24,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Fraction biomass below-ground
         /// </summary>
-        float FracBelowG { get; }
+        float BGBiomassFrac { get; }
 
         /// <summary>
         /// Fraction foliage to active biomass

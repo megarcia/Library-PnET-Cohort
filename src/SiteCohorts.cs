@@ -498,11 +498,11 @@ namespace Landis.Library.PnETCohorts
                         }
                         int layer = cohort.Layer;
                         int layerCount = cohortBins[layer].Count();
-                        // Estimate new wood biomass from FracBelowG and FrActWs (see Estimate_WoodBio.xlsx)
-                        float estSlope = -8.236285f + 27.768424f * cohort.PnETSpecies.FracBelowG + 191053.281571f * cohort.PnETSpecies.FrActWd + 312.812679f * cohort.PnETSpecies.FracFol + -594492.216284f * cohort.PnETSpecies.FracBelowG * cohort.PnETSpecies.FrActWd + -941.447695f * cohort.PnETSpecies.FracBelowG * cohort.PnETSpecies.FracFol + -6490254.134756f * cohort.PnETSpecies.FrActWd * cohort.PnETSpecies.FracFol + 19879995.810771f * cohort.PnETSpecies.FracBelowG * cohort.PnETSpecies.FrActWd * cohort.PnETSpecies.FracFol;
-                        float estInt = 1735.179f + 2994.393f * cohort.PnETSpecies.FracBelowG + 10167232.544f * cohort.PnETSpecies.FrActWd + 53598.871f * cohort.PnETSpecies.FracFol + -92028081.987f * cohort.PnETSpecies.FracBelowG * cohort.PnETSpecies.FrActWd + -168141.498f * cohort.PnETSpecies.FracBelowG * cohort.PnETSpecies.FracFol + -1104139533.563f * cohort.PnETSpecies.FrActWd * cohort.PnETSpecies.FracFol + 3507005746.011f * cohort.PnETSpecies.FracBelowG * cohort.PnETSpecies.FrActWd * cohort.PnETSpecies.FracFol;
+                        // Estimate new wood biomass from BGBiomassFrac and FrActWs (see Estimate_WoodBio.xlsx)
+                        float estSlope = -8.236285f + 27.768424f * cohort.PnETSpecies.BGBiomassFrac + 191053.281571f * cohort.PnETSpecies.FrActWd + 312.812679f * cohort.PnETSpecies.FracFol + -594492.216284f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FrActWd + -941.447695f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FracFol + -6490254.134756f * cohort.PnETSpecies.FrActWd * cohort.PnETSpecies.FracFol + 19879995.810771f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FrActWd * cohort.PnETSpecies.FracFol;
+                        float estInt = 1735.179f + 2994.393f * cohort.PnETSpecies.BGBiomassFrac + 10167232.544f * cohort.PnETSpecies.FrActWd + 53598.871f * cohort.PnETSpecies.FracFol + -92028081.987f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FrActWd + -168141.498f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FracFol + -1104139533.563f * cohort.PnETSpecies.FrActWd * cohort.PnETSpecies.FracFol + 3507005746.011f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FrActWd * cohort.PnETSpecies.FracFol;
                         float newWoodBiomass = estInt + estSlope * cohort.AGBiomass * layerCount; // Inflate AGBiomass by # of cohorts in layer, assuming equal space among them
-                        float newTotalBiomass = newWoodBiomass / (1 - cohort.PnETSpecies.FracBelowG);
+                        float newTotalBiomass = newWoodBiomass / (1 - cohort.PnETSpecies.BGBiomassFrac);
                         cohort.CanopyLayerFrac = 1f / layerCount;
                         if (CohortStacking)
                             cohort.CanopyLayerFrac = 1.0f;
@@ -551,7 +551,7 @@ namespace Landis.Library.PnETCohorts
                         }
                         float targetBiomass = (float)CohortBiomassList[index];
                         float newWoodBiomass = targetBiomass / cohort.CanopyLayerFrac;
-                        float newTotalBiomass = newWoodBiomass / (1 - cohort.PnETSpecies.FracBelowG);
+                        float newTotalBiomass = newWoodBiomass / (1 - cohort.PnETSpecies.BGBiomassFrac);
                         cohort.ChangeBiomass((int)Math.Round((newTotalBiomass - cohort.TotalBiomass) / 2f));
                         float cohortFoliage = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
                         float cohortLAI = 0;
@@ -639,7 +639,7 @@ namespace Landis.Library.PnETCohorts
                             cohort.CanopyGrowingSpace = 1.0f;
                         }
                         float newWoodBiomass = targetBiomass / canopyLayerFrac;
-                        float newTotalBiomass = newWoodBiomass / (1 - cohort.PnETSpecies.FracBelowG);
+                        float newTotalBiomass = newWoodBiomass / (1 - cohort.PnETSpecies.BGBiomassFrac);
                         float changeAmount = newTotalBiomass - cohort.TotalBiomass;
                         float tempFActiveBiom = (float)Math.Exp(-cohort.PnETSpecies.FrActWd * newTotalBiomass);
                         float cohortTempFoliage = cohort.adjFracFol * tempFActiveBiom * newTotalBiomass;
@@ -647,9 +647,9 @@ namespace Landis.Library.PnETCohorts
                         for (int i = 0; i < Globals.IMAX; i++)
                             cohortTempLAI += cohort.CalcLAI(cohort.PnETSpecies, cohortTempFoliage, i, cohortTempLAI);
                         cohortTempLAI = Math.Min(cohortTempLAI, cohort.PnETSpecies.MaxLAI);
-                        float tempBiomass = newTotalBiomass * (1 - cohort.PnETSpecies.FracBelowG) * Math.Min(cohortTempLAI / cohort.PnETSpecies.MaxLAI, canopyLayerFrac);
+                        float tempBiomass = newTotalBiomass * (1 - cohort.PnETSpecies.BGBiomassFrac) * Math.Min(cohortTempLAI / cohort.PnETSpecies.MaxLAI, canopyLayerFrac);
                         if (CohortStacking)
-                            tempBiomass = newTotalBiomass * (1.0f - cohort.PnETSpecies.FracBelowG) * 1.0f;
+                            tempBiomass = newTotalBiomass * (1.0f - cohort.PnETSpecies.BGBiomassFrac) * 1.0f;
                         float diff = tempBiomass - targetBiomass;
                         float lastDiff = diff;
                         bool match = Math.Abs(tempBiomass - targetBiomass) < 2;
@@ -680,9 +680,9 @@ namespace Landis.Library.PnETCohorts
                                 cohortTempLAI += cohort.CalcLAI(cohort.PnETSpecies, cohortTempFoliage, i, cohortTempLAI);
                             cohortTempLAI = Math.Min(cohortTempLAI, cohort.PnETSpecies.MaxLAI);
                             if (CohortStacking)
-                                tempBiomass = newTotalBiomass * (1.0f - cohort.PnETSpecies.FracBelowG) * 1.0f;
+                                tempBiomass = newTotalBiomass * (1.0f - cohort.PnETSpecies.BGBiomassFrac) * 1.0f;
                             else
-                                tempBiomass = newTotalBiomass * (1 - cohort.PnETSpecies.FracBelowG) * Math.Min(cohortTempLAI / cohort.PnETSpecies.MaxLAI, canopyLayerFrac);
+                                tempBiomass = newTotalBiomass * (1 - cohort.PnETSpecies.BGBiomassFrac) * Math.Min(cohortTempLAI / cohort.PnETSpecies.MaxLAI, canopyLayerFrac);
                             diff = tempBiomass - targetBiomass;
                             if (Math.Abs(diff) > Math.Abs(lastDiff))
                                 break;
@@ -767,7 +767,7 @@ namespace Landis.Library.PnETCohorts
                             cohort.CanopyGrowingSpace = 1.0f;
                         }
                         float newWoodBiomass = targetBiomass / canopyLayerFrac;
-                        float newTotalBiomass = newWoodBiomass / (1 - cohort.PnETSpecies.FracBelowG);
+                        float newTotalBiomass = newWoodBiomass / (1 - cohort.PnETSpecies.BGBiomassFrac);
                         float changeAmount = newTotalBiomass - cohort.TotalBiomass;
                         float tempMaxBio = Math.Max(cohort.BiomassMax, newTotalBiomass);
                         float tempFActiveBiom = (float)Math.Exp(-cohort.PnETSpecies.FrActWd * tempMaxBio);
@@ -776,9 +776,9 @@ namespace Landis.Library.PnETCohorts
                         for (int i = 0; i < Globals.IMAX; i++)
                             cohortTempLAI += cohort.CalcLAI(cohort.PnETSpecies, cohortTempFoliage, i, cohortTempLAI);
                         cohortTempLAI = Math.Min(cohortTempLAI, cohort.PnETSpecies.MaxLAI);
-                        float tempBiomass = (newTotalBiomass * (1 - cohort.PnETSpecies.FracBelowG) + cohortTempFoliage) * Math.Min(cohortTempLAI / cohort.PnETSpecies.MaxLAI, cohort.CanopyGrowingSpace);
+                        float tempBiomass = (newTotalBiomass * (1 - cohort.PnETSpecies.BGBiomassFrac) + cohortTempFoliage) * Math.Min(cohortTempLAI / cohort.PnETSpecies.MaxLAI, cohort.CanopyGrowingSpace);
                         if (CohortStacking)
-                            tempBiomass = (newTotalBiomass * (1 - cohort.PnETSpecies.FracBelowG) + cohortTempFoliage) * 1.0f;
+                            tempBiomass = (newTotalBiomass * (1 - cohort.PnETSpecies.BGBiomassFrac) + cohortTempFoliage) * 1.0f;
                         if ((attempts < 3) && ((tempBiomass <= 0) || float.IsNaN(tempBiomass)))
                         {
                             badSpinup = true;
@@ -813,9 +813,9 @@ namespace Landis.Library.PnETCohorts
                             for (int i = 0; i < Globals.IMAX; i++)
                                 cohortTempLAI += cohort.CalcLAI(cohort.PnETSpecies, cohortTempFoliage, i, cohortTempLAI);
                             cohortTempLAI = Math.Min(cohortTempLAI, cohort.PnETSpecies.MaxLAI);
-                            tempBiomass = (newTotalBiomass * (1 - cohort.PnETSpecies.FracBelowG) + cohortTempFoliage) * Math.Min(cohortTempLAI / cohort.PnETSpecies.MaxLAI, cohort.CanopyGrowingSpace);
+                            tempBiomass = (newTotalBiomass * (1 - cohort.PnETSpecies.BGBiomassFrac) + cohortTempFoliage) * Math.Min(cohortTempLAI / cohort.PnETSpecies.MaxLAI, cohort.CanopyGrowingSpace);
                             if (CohortStacking)
-                                tempBiomass = (newTotalBiomass * (1 - cohort.PnETSpecies.FracBelowG) + cohortTempFoliage) * 1.0f;
+                                tempBiomass = (newTotalBiomass * (1 - cohort.PnETSpecies.BGBiomassFrac) + cohortTempFoliage) * 1.0f;
                             diff = tempBiomass - targetBiomass;
                             if (Math.Abs(diff) > Math.Abs(lastDiff))
                             {
@@ -1989,8 +1989,8 @@ namespace Landis.Library.PnETCohorts
                     int layer = cohort.Layer;
                     if (layer < CanopyLAISum.Length)
                     {
-                        CanopyLAISum[layer] += cohort.LAI.Sum() * ((1 - cohort.PnETSpecies.FracBelowG) * cohort.TotalBiomass + cohort.Fol);
-                        CanopyLAICount[layer] += (1 - cohort.PnETSpecies.FracBelowG) * cohort.TotalBiomass+cohort.Fol;
+                        CanopyLAISum[layer] += cohort.LAI.Sum() * ((1 - cohort.PnETSpecies.BGBiomassFrac) * cohort.TotalBiomass + cohort.Fol);
+                        CanopyLAICount[layer] += (1 - cohort.PnETSpecies.BGBiomassFrac) * cohort.TotalBiomass+cohort.Fol;
                     }
                     else
                         Globals.ModelCore.UI.WriteLine("DEBUG: Cohort count = " + AllCohorts.Count() + "; CanopyLAISum count = " + CanopyLAISum.Count());

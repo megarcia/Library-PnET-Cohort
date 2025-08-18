@@ -185,7 +185,7 @@ namespace Landis.Library.PnETCohorts
             PnETSpeciesVariables speciespnetvars = new PnETSpeciesVariables();
             speciespnetvars.DVPD = Photosynthesis.CalcDVPD(VPD, spc.DVPD1, spc.DVPD2);
             speciespnetvars.JH2O = Photosynthesis.CalcJH2O(climate_dataset.Tmin, VPD);
-            speciespnetvars.AmaxB_CO2 = Photosynthesis.CalcAmaxB_CO2(climate_dataset.CO2, spc.AmaxB, spc.CO2AMaxBEff);
+            speciespnetvars.AmaxB_CO2 = Photosynthesis.CalcAmaxB_CO2(climate_dataset.CO2, spc.AmaxB, spc.AMaxBFCO2);
             if (DTemp)
                 speciespnetvars.PsnFTemp = Photosynthesis.DTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax);
             else

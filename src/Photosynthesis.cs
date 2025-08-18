@@ -77,18 +77,18 @@ namespace Landis.Library.PnETCohorts
 
         /// <summary>
         /// Modify AmaxB based on CO2 level using linear interpolation
-        /// uses 2 known points: (350, AmaxB) and (550, AmaxB * CO2AmaxBEff)
+        /// uses 2 known points: (350, AmaxB) and (550, AmaxB * AMaxBFCO2)
         /// </summary>
         /// <param name="CO2"></param>
         /// <param name="AmaxB"></param>
-        /// <param name="CO2AMaxBEff"></param>
+        /// <param name="AMaxBFCO2"></param>
         /// <returns></returns>
-        public static float CalcAmaxB_CO2(float CO2, float AmaxB, float CO2AMaxBEff)
+        public static float CalcAmaxB_CO2(float CO2, float AmaxB, float AMaxBFCO2)
         {
-            // AmaxB_slope = [(AmaxB * CO2AMaxBEff) - AmaxB] / [550 - 350]
-            float AmaxB_slope = (float)((CO2AMaxBEff - 1.0) * AmaxB / 200.0F);
+            // AmaxB_slope = [(AmaxB * AMaxBFCO2) - AmaxB] / [550 - 350]
+            float AmaxB_slope = (float)((AMaxBFCO2 - 1.0) * AmaxB / 200.0F);
             // AmaxB_intercept = AmaxB - (AmaxB_slope * 350)
-            float AmaxB_intercept = (float)(-1.0 * (((CO2AMaxBEff - 1.0) * 1.75) - 1.0) * AmaxB);
+            float AmaxB_intercept = (float)(-1.0 * (((AMaxBFCO2 - 1.0) * 1.75) - 1.0) * AmaxB);
             float AmaxB_CO2 = (float)(AmaxB_slope * CO2 + AmaxB_intercept);
             return AmaxB_CO2;
         }

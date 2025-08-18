@@ -192,14 +192,14 @@ namespace Landis.Library.PnETCohorts
         float AmaxAmod { get; }
 
         /// <summary>
-        /// Referece maintenance respiration 
+        /// Reference maintenance respiration 
         /// </summary>
         float MaintResp { get; }
 
         /// <summary>
         /// Effect of CO2 on AMaxB (change in AMaxB with increase of 200 ppm CO2)
         /// </summary>
-        float CO2AMaxBEff { get; }
+        float AMaxBFCO2 { get; }
 
         /// <summary>
         /// Effect of CO2 on HalfSat (change in HalfSat with increase of 1 ppm CO2 [slope])

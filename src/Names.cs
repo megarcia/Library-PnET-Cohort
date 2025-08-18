@@ -34,7 +34,7 @@ namespace Landis.Library.PnETCohorts
         public const string PressureHeadCalculationMethod = "PressureHeadCalculationMethod";
         public const string Wythers = "Wythers";
         public const string DTemp = "DTemp";
-        public const string CO2AMaxBEff = "CO2AMaxBEff";
+        public const string AMaxBFCO2 = "AMaxBFCO2";
         public const string SoilIceDepth = "SoilIceDepth";
         public const string LeakageFrostDepth = "LeakageFrostDepth";
         public const string CohortBinSize = "CohortBinSize";

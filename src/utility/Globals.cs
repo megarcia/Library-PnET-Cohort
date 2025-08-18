@@ -21,7 +21,7 @@ namespace Landis.Library.PnETCohorts
         public static readonly object WoodDebrisThreadLock = new object();
         public static readonly object LeafLitterThreadLock = new object();
         public static readonly object DistributionThreadLock = new object();
-        public static readonly object ecoregionDataThreadLock = new object();
+        public static readonly object EcoregionDataThreadLock = new object();
         public static readonly object initialSitesThreadLock = new object();
 
         public static void InitializeCore(ICore mCore, ushort IMAX, DateTime startDate)

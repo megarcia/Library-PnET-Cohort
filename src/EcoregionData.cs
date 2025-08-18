@@ -302,7 +302,7 @@ namespace Landis.Library.PnETCohorts
             DateTime date = new DateTime(start.Ticks);
             var oldYear = -1;
             // Ensure only one thread at a time accesses this shared object
-            lock (Globals.ecoregionDataThreadLock)
+            lock (Globals.EcoregionDataThreadLock)
             {
                 while (end.Ticks > date.Ticks)
                 {
@@ -342,7 +342,7 @@ namespace Landis.Library.PnETCohorts
             // Date: the last date in the collection of running data
             DateTime date = new DateTime(start.Ticks);
             // Ensure only one thread at a time accesses this shared object
-            lock (Globals.ecoregionDataThreadLock)
+            lock (Globals.EcoregionDataThreadLock)
             {
                 while (end.Ticks > date.Ticks)
                 {

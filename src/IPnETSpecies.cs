@@ -239,7 +239,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Cold tolerance
         /// </summary>
-        float ColdTol { get; }
+        float ColdTolerance { get; }
 
         /// <summary>
         /// Mininum Temp for leaf-on (optional)

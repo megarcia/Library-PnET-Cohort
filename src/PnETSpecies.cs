@@ -52,7 +52,7 @@ namespace Landis.Library.PnETCohorts
         private float _maintresp;
         private float _baseFoliarRespiration;
         private string _ozoneSens;
-        private float _coldTol;
+        private float _coldTolerance;
         private int _initBiomass;
         private string name;
         private int index;        
@@ -121,7 +121,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> aMaxBFCO2;
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> baseFoliarRespiration;
-        private static Landis.Library.Parameters.Species.AuxParm<float> coldTol;
+        private static Landis.Library.Parameters.Species.AuxParm<float> coldTolerance;
         private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
         private static Landis.Library.Parameters.Species.AuxParm<float> folN_slope;
         private static Landis.Library.Parameters.Species.AuxParm<float> folN_intercept;
@@ -194,7 +194,7 @@ namespace Landis.Library.PnETCohorts
             if (folBiomassFrac_intercept[this] == -9999F)
                 folBiomassFrac_intercept = folbiomassfrac;
             o3Coeff = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FOzone_slope");
-            coldTol = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("ColdTol");
+            coldTolerance = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("ColdTolerance");
             leafOnMinT = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeafOnMinT"); //Optional
             // If LeafOnMinT is not provided, then set to PsnMinT
             if (leafOnMinT[this] == -9999F)
@@ -259,7 +259,7 @@ namespace Landis.Library.PnETCohorts
                     float psntopt, float q10, float psntmin, float psntmax,
                     float dvpd1, float dvpd2, float foln, float amaxa,
                     float amaxb, float amaxamod, float aMaxBFCO2,
-                    float maintresp, float baseFoliarRespiration, float coldTol,
+                    float maintresp, float baseFoliarRespiration, float coldTolerance,
                     string ozoneSens, int Index, string name,
                     int maxSproutAge, int minSproutAge, int maxSeedDist,
                     int effectiveSeedDist, float vegReprodProb,
@@ -309,7 +309,7 @@ namespace Landis.Library.PnETCohorts
             this._aMaxBFCO2 = aMaxBFCO2;
             this._maintresp = maintresp;
             this._baseFoliarRespiration = baseFoliarRespiration;
-            this._coldTol = coldTol;
+            this._coldTolerance = coldTolerance;
             this._ozoneSens = ozoneSens;
             this.index = Index;
             this.name = name;
@@ -381,7 +381,7 @@ namespace Landis.Library.PnETCohorts
             _aMaxBFCO2 = aMaxBFCO2[species];
             _maintresp = maintresp[species];
             _baseFoliarRespiration = baseFoliarRespiration[species];
-            _coldTol = coldTol[species];
+            _coldTolerance = coldTolerance[species];
             _halfSatFCO2 = halfSatFCO2[species];
             _ozoneSens = ozoneSens[species];
             _NSCreserve = NSCreserve[species];
@@ -451,11 +451,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float ColdTol
+        public float ColdTolerance
         {
             get
             {
-                return _coldTol;
+                return _coldTolerance;
             }
         }
 

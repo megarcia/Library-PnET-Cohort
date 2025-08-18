@@ -1347,7 +1347,7 @@ namespace Landis.Library.PnETCohorts
                 foreach (IPnETSpecies spc in SpeciesParameters.PnETSpecies.AllSpecies)
                 {
                     // Check if low temp kills species
-                    if (extremeMinTemp < spc.ColdTol)
+                    if (extremeMinTemp < spc.ColdTolerance)
                         coldKillMonth[spc] = extremeMonth;
                 }
             }

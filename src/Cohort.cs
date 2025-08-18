@@ -1493,7 +1493,7 @@ namespace Landis.Library.PnETCohorts
             float fTemp = monthdata[Species.Name].PsnFTemp;
             string limitingFactor = "NA";
             if (ColdKill < int.MaxValue)
-                limitingFactor = "ColdTol (" + ColdKill.ToString() + ")";
+                limitingFactor = "ColdTolerance (" + ColdKill.ToString() + ")";
             else
             {
                 List<float> factorList = new List<float>(new float[] { fWaterAvg, fRadAvg, fOzoneAvg, Fage, fTemp });

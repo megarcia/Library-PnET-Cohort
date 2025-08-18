@@ -51,7 +51,7 @@ namespace Landis.Library.PnETCohorts
         public const string NSC = "NSC(gC)";                            
         public const string HeteroResp = "HeteroResp(gC_mo)";                         
         public const string LeafLitter = "LeafLitter(gDW_m2)";
-        public const string CWD = "CWD(gDW_m2)";
+        public const string WoodDebris = "WoodDebris(gDW_m2)";
         public const string Age = "Age(yr)"; 
         public const string Layer = "TopLayer(-)"; 
         public const string ReleasedNSC = "ReleasedNSC(gC_m2_mo)";                  

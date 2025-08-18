@@ -3418,7 +3418,7 @@ namespace Landis.Library.PnETCohorts
 
         public void AddWoodDebris(float Litter, float WoodDebrisDecompRate)
         {
-            lock (Globals.CWDThreadLock)
+            lock (Globals.WoodDebrisThreadLock)
             {
                 SiteVars.WoodDebris[Site].AddMass(Litter, WoodDebrisDecompRate);
             }
@@ -3426,7 +3426,7 @@ namespace Landis.Library.PnETCohorts
 
         public void RemoveWoodDebris(double percentReduction)
         {
-            lock (Globals.CWDThreadLock)
+            lock (Globals.WoodDebrisThreadLock)
             {
                 SiteVars.WoodDebris[Site].ReduceMass(percentReduction);
             }
@@ -3493,7 +3493,7 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.NSC + "," + 
                        OutputHeaders.HeteroResp + "," +
                        OutputHeaders.LeafLitter + "," + 
-                       OutputHeaders.CWD + "," +
+                       OutputHeaders.WoodDebris + "," +
                        OutputHeaders.WoodSenescence + "," + 
                        OutputHeaders.FolSenescence + "," +
                        OutputHeaders.SubCanopyPAR + ","+

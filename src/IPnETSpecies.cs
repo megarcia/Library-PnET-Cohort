@@ -209,7 +209,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Ozone stomatal sensitivity class (Sensitive, Intermediate, Tolerant)
         /// </summary>
-        string O3StomataSens { get; }
+        string StomataO3Sensitivity { get; }
 
         /// <summary>
         /// Slope for linear FolN relationship

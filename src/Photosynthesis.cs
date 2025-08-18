@@ -100,7 +100,7 @@ namespace Landis.Library.PnETCohorts
         /// Uses data provided by Yasutomo Hoshika and Elena Paoletti
         /// </summary>
         /// <param name="CumulativeO3"></param>
-        /// <param name="O3StomataSens"></param>
+        /// <param name="StomataO3Sensitivity"></param>
         /// <param name="FWaterOzone"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
@@ -116,7 +116,7 @@ namespace Landis.Library.PnETCohorts
                 else if (StomataO3Sens == "Tolerant" || StomataO3Sens == "Tol")
                     CiModifier = (float)(FWaterOzone + (-0.021 * FWaterOzone + 0.0087) * CumulativeO3);
                 else
-                    throw new Exception("O3 data provided, but species O3StomataSens is not set to Sensitive, Intermediate, or Tolerant");
+                    throw new Exception("O3 data provided, but species StomataO3Sensitivity is not set to Sensitive, Intermediate, or Tolerant");
             }
             CiModifier = Math.Max(0.00001F, Math.Min(CiModifier, 1.0F));
             return CiModifier;

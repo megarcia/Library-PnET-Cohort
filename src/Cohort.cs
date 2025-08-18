@@ -1291,7 +1291,7 @@ namespace Landis.Library.PnETCohorts
             data.adjFolN = speciesPnET.FolN + ((maxFolN - speciesPnET.FolN) * (float)Math.Pow(FRad[index], folN_shape)); 
             AdjFolN[index] = adjFolN;  // Stored for output
             AdjFolBiomassFrac[index] = adjFolBiomassFrac; //Stored for output
-            float ciModifier = Photosynthesis.CalcCiModifier(o3_cum, speciesPnET.O3StomataSens, fWaterOzone);
+            float ciModifier = Photosynthesis.CalcCiModifier(o3_cum, speciesPnET.StomataO3Sensitivity, fWaterOzone);
             CiModifier[index] = ciModifier;  // Stored for output
             // If trees are physiologically active
             if (IsLeafOn)

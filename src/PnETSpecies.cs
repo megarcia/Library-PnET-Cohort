@@ -182,7 +182,7 @@ namespace Landis.Library.PnETCohorts
             aMaxBFCO2 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("AMaxBFCO2");
             maintresp = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("maintresp");
             baseFoliarRespiration = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("baseFoliarRespiration");
-            ozoneSens = (Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("O3StomataSens");
+            ozoneSens = (Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("StomataO3Sensitivity");
             folNShape = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolNShape");
             maxFolN = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxFolN"); //Optional
             // If MaxFolN is not provided, then set to foln
@@ -854,7 +854,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public string O3StomataSens
+        public string StomataO3Sensitivity
         {
             get
             {

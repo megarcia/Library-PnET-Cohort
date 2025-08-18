@@ -358,7 +358,7 @@ namespace Landis.Library.PnETCohorts
             int tempMaxCanopyLayers = MaxCanopyLayers;
             if (CohortStacking)
                 tempMaxCanopyLayers = initialCommunity.Cohorts.Count();
-            lock (Globals.initialSitesThreadLock)
+            lock (Globals.InitialSitesThreadLock)
             {
                 if (initialSites.ContainsKey(key) == false)
                     initialSites.Add(key, this);

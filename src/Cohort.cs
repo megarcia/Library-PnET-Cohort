@@ -626,7 +626,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// List of DisturbanceTypes that have had ReduceDeadPools applied
+        /// List of DisturbanceTypes that have had ReduceDeadBiomass applied
         /// </summary>
         public List<ExtensionType> ReducedTypes = null;
 
@@ -1649,7 +1649,7 @@ namespace Landis.Library.PnETCohorts
         {
             if (!((SiteCohorts)sitecohorts).DisturbanceTypesReduced.Contains(disturbanceType))
             {
-                Disturbance.ReduceDeadPools(sitecohorts, disturbanceType);  // Reduce dead pools before adding through Disturbance
+                Disturbance.ReduceDeadBiomass(sitecohorts, disturbanceType);  // Reduce dead pools before adding through Disturbance
                 ((SiteCohorts)sitecohorts).DisturbanceTypesReduced.Add(disturbanceType);
             }
             Disturbance.Allocate(sitecohorts, this, disturbanceType, frac);

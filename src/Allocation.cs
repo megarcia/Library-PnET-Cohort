@@ -33,7 +33,7 @@ namespace Landis.Library.PnETCohorts
             BiomassReductionParameters.ToList().ForEach(x => parameters.Add("disturbance:"+x.Key, x.Value));
         }
 
-        public static void ReduceDeadPools(object sitecohorts, ExtensionType disturbanceType)
+        public static void ReduceDeadBiomass(object sitecohorts, ExtensionType disturbanceType)
         {
             if (sitecohorts == null)
                 throw new System.Exception("sitecohorts should not be null");

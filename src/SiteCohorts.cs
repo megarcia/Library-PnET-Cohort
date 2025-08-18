@@ -3361,7 +3361,7 @@ namespace Landis.Library.PnETCohorts
                 cohorts.Remove(cohort.Species);
             if (!DisturbanceTypesReduced.Contains(disturbanceType))
             {
-                Disturbance.ReduceDeadPools(this, disturbanceType); // Reduce dead pools before adding through Disturbance
+                Disturbance.ReduceDeadBiomass(this, disturbanceType); // Reduce dead pools before adding through Disturbance
                 DisturbanceTypesReduced.Add(disturbanceType);
             }
             Disturbance.Allocate(this, cohort, disturbanceType, 1.0);  // Disturbance fraction is 1.0 for complete removals

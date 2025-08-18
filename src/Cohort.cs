@@ -1626,7 +1626,7 @@ namespace Landis.Library.PnETCohorts
 
         public float Senescence()
         {
-            float senescence = (Root * speciesPnET.TOroot) + Wood * speciesPnET.TOwood;
+            float senescence = (Root * speciesPnET.RootTurnoverRate) + Wood * speciesPnET.TOwood;
             data.TotalBiomass -= senescence;
             data.AGBiomass = (1 - speciesPnET.BGBiomassFrac) * data.TotalBiomass + data.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);

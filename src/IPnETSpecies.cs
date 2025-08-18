@@ -104,7 +104,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Root turnover (g/g/y)
         /// </summary>
-        float TOroot { get; }
+        float RootTurnoverRate { get; }
 
         /// <summary>
         /// Wood turnover (g/g/y)

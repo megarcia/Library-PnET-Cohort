@@ -3432,12 +3432,12 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public void AddFolLitter(float AddFolLitter, IPnETSpecies spc)
+        public void AddLeafLitter(float AddLeafLitter, IPnETSpecies spc)
         {
             lock (Globals.leaflitterThreadLock)
             {
                 double KNwdLitter = Math.Max(0.3, -0.5365 + (0.00241 * ActualET.Sum()) - (-0.01586 + (0.000056 * ActualET.Sum())) * spc.FolLignin * 100);
-                SiteVars.Litter[Site].AddMass(AddFolLitter, KNwdLitter);
+                SiteVars.Litter[Site].AddMass(AddLeafLitter, KNwdLitter);
             }
         }
 

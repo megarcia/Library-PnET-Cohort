@@ -1111,7 +1111,7 @@ namespace Landis.Library.PnETCohorts
                             data.NSC = 0.0F;
                             float folSenescence = FolSenescence();
                             data.LastFolSenescence = folSenescence;
-                            siteCohort.AddLeafLitter(folSenescence * data.CanopyLayerFrac, PnETSpecies); // Using Canopy fractioning
+                            siteCohort.AddLeafLitter(folSenescence * data.CanopyLayerFrac, PnETSpecies.FolLignin); // Using Canopy fractioning
                         }
                     }
                     float woodSenescence = WoodSenescence();
@@ -1142,7 +1142,7 @@ namespace Landis.Library.PnETCohorts
                     data.NSC = 0.0F;
                     float folSenescence = FolSenescence();
                     data.LastFolSenescence = folSenescence;
-                    siteCohort.AddLeafLitter(folSenescence * data.CanopyLayerFrac, PnETSpecies); // Using Canopy fractioning
+                    siteCohort.AddLeafLitter(folSenescence * data.CanopyLayerFrac, PnETSpecies.FolLignin); // Using Canopy fractioning
                 }
                 else
                 {
@@ -1154,7 +1154,7 @@ namespace Landis.Library.PnETCohorts
                             data.IsLeafOn = false;
                             float folSenescence = FolSenescence();
                             data.LastFolSenescence = folSenescence;
-                            siteCohort.AddLeafLitter(folSenescence * data.CanopyLayerFrac, PnETSpecies); // Using Canopy fractioning
+                            siteCohort.AddLeafLitter(folSenescence * data.CanopyLayerFrac, PnETSpecies.FolLignin); // Using Canopy fractioning
                         }
                         growMonth = -1;
                     }

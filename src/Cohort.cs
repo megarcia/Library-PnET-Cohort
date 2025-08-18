@@ -1649,10 +1649,10 @@ namespace Landis.Library.PnETCohorts
         {
             if (!((SiteCohorts)sitecohorts).DisturbanceTypesReduced.Contains(disturbanceType))
             {
-                Allocation.ReduceDeadPools(sitecohorts, disturbanceType);  // Reduce dead pools before adding through Allocation
+                Disturbance.ReduceDeadPools(sitecohorts, disturbanceType);  // Reduce dead pools before adding through Disturbance
                 ((SiteCohorts)sitecohorts).DisturbanceTypesReduced.Add(disturbanceType);
             }
-            Allocation.Allocate(sitecohorts, this, disturbanceType, frac);
+            Disturbance.Allocate(sitecohorts, this, disturbanceType, frac);
             data.TotalBiomass *= (float)(1.0 - frac);
             data.AGBiomass = (1 - speciesPnET.BGBiomassFrac) * data.TotalBiomass + data.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);

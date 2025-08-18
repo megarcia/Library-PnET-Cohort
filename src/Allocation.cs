@@ -1,18 +1,17 @@
-﻿using Landis.Core;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Landis.Library.PnETCohorts
 {
     /// <summary>
-    /// Allocates litters that result from disturbances. 
-    /// Input parameters are fractions of litter that are allocated to different pools
+    /// Disturbance effects on litter pools.
+    /// Input parameters are fractions of biomass that are 
+    /// allocated to different pools
     /// </summary>
-    public class Allocation
+    public class Disturbance
     {
         // These labels are used as input parameters in the input txt file
         private static readonly List<string> Disturbances = new List<string>() { "fire", "wind", "bda", "harvest" };
-
         private static readonly List<string> Reductions = new List<string>() { "WoodReduction", "FolReduction", "RootReduction", "DeadWoodReduction", "LitterReduction" };
 
         public static void Initialize(string fn, SortedDictionary<string, Parameter<string>> parameters)
@@ -81,7 +80,7 @@ namespace Landis.Library.PnETCohorts
             ((SiteCohorts)sitecohorts).AddWoodDebris(rootAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies.WoodLitterDecompRate);
             ((SiteCohorts)sitecohorts).AddLitter(folAdded * cohort.CanopyLayerFrac, cohort.PnETSpecies);
             cohort.AccumulateWoodSenescence((int)((woodAdded + rootAdded) * cohort.CanopyLayerFrac));
-            cohort.AccumulateFoliageSenescence((int)((folAdded) * cohort.CanopyLayerFrac));
+            cohort.AccumulateFoliageSenescence((int)(folAdded * cohort.CanopyLayerFrac));
         }
     }
 }

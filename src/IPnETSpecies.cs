@@ -119,7 +119,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Establishment factor related to moisture - fWater value that equates to optimal water for establishment
         /// </summary>
-        float EstMoist { get; }
+        float EstablishmentFWater { get; }
 
         /// <summary>
         /// Mamximum total probability of establishment under optimal conditions

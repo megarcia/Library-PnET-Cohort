@@ -34,7 +34,7 @@ namespace Landis.Library.PnETCohorts
         private float _k;
         private float _woodturnoverrate;
         private float _establishmentfrad;
-        private float _estmoist;
+        private float _establishmentfwater;
         private float _maxPest;
         private float _follignin;
         private bool _preventestablishment;
@@ -104,7 +104,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> k;
         private static Landis.Library.Parameters.Species.AuxParm<float> woodturnoverrate;
         private static Landis.Library.Parameters.Species.AuxParm<float> establishmentfrad;
-        private static Landis.Library.Parameters.Species.AuxParm<float> estmoist;
+        private static Landis.Library.Parameters.Species.AuxParm<float> establishmentfwater;
         private static Landis.Library.Parameters.Species.AuxParm<float> maxPest;
         private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
         private static Landis.Library.Parameters.Species.AuxParm<bool> preventestablishment;
@@ -165,7 +165,7 @@ namespace Landis.Library.PnETCohorts
             k = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("k"); ;
             woodturnoverrate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("woodturnoverrate"); ;
             establishmentfrad = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("establishmentfrad"); ;
-            estmoist = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("estmoist");
+            establishmentfwater = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("establishmentfwater");
             maxPest = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxPest");
             follignin = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("follignin");
             preventestablishment = (Landis.Library.Parameters.Species.AuxParm<bool>)(Parameter<bool>)Names.GetParameter("preventestablishment");
@@ -254,7 +254,7 @@ namespace Landis.Library.PnETCohorts
                     float photosynthesisfage, float h1, float h2, float h3,
                     float h4, float slwdel, float slwmax, float folturnoverrate,
                     float rootturnoverrate, float halfsat, float initialnsc,
-                    float k, float woodturnoverrate, float establishmentfrad, float estmoist,
+                    float k, float woodturnoverrate, float establishmentfrad, float establishmentfwater,
                     float maxPest, float follignin, bool preventestablishment,
                     float psntopt, float q10, float psntmin, float psntmax,
                     float dvpd1, float dvpd2, float foln, float amaxa,
@@ -292,7 +292,7 @@ namespace Landis.Library.PnETCohorts
             this._k = k;
             this._woodturnoverrate = woodturnoverrate;
             this._establishmentfrad = establishmentfrad;
-            this._estmoist = estmoist;
+            this._establishmentfwater = establishmentfwater;
             this._maxPest = maxPest;
             this._follignin = follignin;
             this._preventestablishment = preventestablishment;
@@ -364,7 +364,7 @@ namespace Landis.Library.PnETCohorts
             _k = k[species];
             _woodturnoverrate = woodturnoverrate[species];
             _establishmentfrad = establishmentfrad[species];
-            _estmoist = estmoist[species];
+            _establishmentfwater = establishmentfwater[species];
             _maxPest = maxPest[species];
             _follignin = follignin[species];
             _preventestablishment = preventestablishment[species];
@@ -583,11 +583,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float EstMoist
+        public float EstablishmentFWater
         {
             get
             {
-                return _estmoist;
+                return _establishmentfwater;
             }
         }
 

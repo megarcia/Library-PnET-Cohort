@@ -76,7 +76,7 @@ namespace Landis.Library.PnETCohorts
                         fRad_adj = 1 - fRad_adj_intercept + fRad * fRad_adj_slope;
                     }
                     float soilWaterPressureHead = hydrology.PressureHeadTable.CalcSoilWaterContent(hydrology.SoilWaterContent, ecoregion.SoilType);
-                    float fWater = (float)Math.Min(1.0, Math.Pow(Photosynthesis.CalcFWater(species.H1, species.H2, species.H3, species.H4, soilWaterPressureHead), 2) * (1 / Math.Pow(species.EstMoist, 2)));
+                    float fWater = (float)Math.Min(1.0, Math.Pow(Photosynthesis.CalcFWater(species.H1, species.H2, species.H3, species.H4, soilWaterPressureHead), 2) * (1 / Math.Pow(species.EstablishmentFWater, 2)));
                     float probEstablishment = (float) Math.Min(1.0, fRad_adj * fWater);
                     speciesProbEstablishment[species] = probEstablishment;
                     speciesFWater[species] = fWater;

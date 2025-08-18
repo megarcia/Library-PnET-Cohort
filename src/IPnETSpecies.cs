@@ -204,7 +204,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Effect of CO2 on HalfSat (change in HalfSat with increase of 1 ppm CO2 [slope])
         /// </summary>
-        float CO2HalfSatEff { get; }
+        float HalfSatFCO2 { get; }
 
         /// <summary>
         /// Ozone stomatal sensitivity class (Sensitive, Intermediate, Tolerant)

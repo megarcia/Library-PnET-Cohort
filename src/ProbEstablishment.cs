@@ -64,8 +64,8 @@ namespace Landis.Library.PnETCohorts
                 if (pnetvars.Tmin > species.PsnTmin && pnetvars.Tmax < species.PsnTmax && fracRootAboveFrost > 0)
                 {
                     // Adjust HalfSat for CO2 effect
-                    float halfSatIntercept = species.HalfSat - Constants.CO2RefConc * species.CO2HalfSatEff;
-                    float adjHalfSat = species.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
+                    float halfSatIntercept = species.HalfSat - Constants.CO2RefConc * species.HalfSatFCO2;
+                    float adjHalfSat = species.HalfSatFCO2 * pnetvars.CO2 + halfSatIntercept;
                     float fRad = (float)Math.Min(1.0, Math.Pow(Photosynthesis.CalcFRad(PAR, adjHalfSat), 2) * (1 / Math.Pow(species.EstRad, 2)));
                     float fRad_adj = fRad;
                     // Optional adjustment to invert ProbEstablishment based on relative halfSat

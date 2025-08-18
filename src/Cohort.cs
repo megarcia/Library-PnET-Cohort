@@ -1247,8 +1247,8 @@ namespace Landis.Library.PnETCohorts
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             data.LAI[index] = CalcLAI(speciesPnET, Fol, index);
             // Adjust HalfSat for CO2 effect
-            float halfSatIntercept = speciesPnET.HalfSat - Constants.CO2RefConc * speciesPnET.CO2HalfSatEff;
-            data.AdjHalfSat = speciesPnET.CO2HalfSatEff * variables.CO2 + halfSatIntercept;
+            float halfSatIntercept = speciesPnET.HalfSat - Constants.CO2RefConc * speciesPnET.HalfSatFCO2;
+            data.AdjHalfSat = speciesPnET.HalfSatFCO2 * variables.CO2 + halfSatIntercept;
             // Reduction factor for radiation on photosynthesis
             float LayerPAR = (float)(mainLayerPAR * Math.Exp(-speciesPnET.K * (LAI.Sum() - LAI[index])));
             FRad[index] = Photosynthesis.CalcFRad(LayerPAR, AdjHalfSat);

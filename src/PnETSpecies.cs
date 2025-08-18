@@ -13,7 +13,7 @@ namespace Landis.Library.PnETCohorts
         static List<Tuple<ISpecies, IPnETSpecies>> SpeciesCombinations;
 
         #region private variables
-        private float _co2HalfSatEff;
+        private float _halfSatFCO2;
         private float _cfracbiomass;
         private float _woodlitterdecomprate;
         private float _dnsc;
@@ -83,7 +83,7 @@ namespace Landis.Library.PnETCohorts
         #endregion
 
         #region private static species variables
-        private static Landis.Library.Parameters.Species.AuxParm<float> co2HalfSatEff;
+        private static Landis.Library.Parameters.Species.AuxParm<float> halfSatFCO2;
         private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
         private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
         private static Landis.Library.Parameters.Species.AuxParm<float> woodlitterdecomprate;
@@ -144,7 +144,7 @@ namespace Landis.Library.PnETCohorts
         public PnETSpecies()
         {
             #region initialize private static species variables
-            co2HalfSatEff = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CO2HalfSatEff");
+            halfSatFCO2 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("HalfSatFCO2");
             dnsc = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("DNSC");
             cfracbiomass = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CFracBiomass");
             woodlitterdecomprate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("woodlitterdecomprate");
@@ -382,7 +382,7 @@ namespace Landis.Library.PnETCohorts
             _maintresp = maintresp[species];
             _baseFoliarRespiration = baseFoliarRespiration[species];
             _coldTol = coldTol[species];
-            _co2HalfSatEff = co2HalfSatEff[species];
+            _halfSatFCO2 = halfSatFCO2[species];
             _ozoneSens = ozoneSens[species];
             _NSCreserve = NSCreserve[species];
             _lifeform = lifeForm[species];
@@ -782,11 +782,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float CO2HalfSatEff
+        public float HalfSatFCO2
         {
             get
             {
-                return _co2HalfSatEff;
+                return _halfSatFCO2;
             }
         }
 

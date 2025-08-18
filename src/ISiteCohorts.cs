@@ -33,7 +33,7 @@ namespace Landis.Library.PnETCohorts
         Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<int> WoodBiomassPerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> BelowGroundBiomassPerSpecies { get; }
+        Landis.Library.Parameters.Species.AuxParm<int> BGBiomassPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<int> NSCPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<float> LAIPerSpecies { get; }
@@ -52,7 +52,7 @@ namespace Landis.Library.PnETCohorts
         double WoodDebris { get; }
         int AgeMax { get; }
         float AvgSoilWaterContent { get; }
-        float BelowGroundBiomassSum { get; }
+        float BGBiomassSum { get; }
         float FoliageSum { get; }
         float NSCSum { get; }
         float ActualETSum { get; } //mm

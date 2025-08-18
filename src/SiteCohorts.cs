@@ -2829,16 +2829,16 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> BelowGroundBiomassPerSpecies
+        public Landis.Library.Parameters.Species.AuxParm<int> BGBiomassPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> BelowGroundBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<int> BGBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    BelowGroundBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.Root * o.CanopyLayerFrac));
+                    BGBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.Root * o.CanopyLayerFrac));
                 }
-                return BelowGroundBiomassPerSpecies;
+                return BGBiomassPerSpecies;
             }
         }
 
@@ -2990,7 +2990,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float BelowGroundBiomassSum
+        public float BGBiomassSum
         {
             get
             {

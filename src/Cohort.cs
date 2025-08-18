@@ -963,11 +963,11 @@ namespace Landis.Library.PnETCohorts
                 InitializeOutput(SiteName, firstYear);
         }
 
-        public void CalcDefoliationFrac(ActiveSite site, int SiteAboveGroundBiomass)
+        public void CalcDefoliationFrac(ActiveSite site, int SiteAGBiomass)
         {
             lock (Globals.DistributionThreadLock)
             {
-                data.DefoliationFrac = (float)Library.UniversalCohorts.CohortDefoliation.Compute(site, this, 0, SiteAboveGroundBiomass);
+                data.DefoliationFrac = (float)Library.UniversalCohorts.CohortDefoliation.Compute(site, this, 0, SiteAGBiomass);
             }
         }
 

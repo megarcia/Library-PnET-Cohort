@@ -1230,12 +1230,12 @@ namespace Landis.Library.PnETCohorts
             SortedDictionary<double, Cohort> SubCanopyCohorts = new SortedDictionary<double, Cohort>();
             List<double> CohortBiomassList = new List<double>();
             List<double> CohortMaxBiomassList = new List<double>();
-            int SiteAboveGroundBiomass = AllCohorts.Sum(a => a.AGBiomass);
+            int SiteAGBiomass = AllCohorts.Sum(a => a.AGBiomass);
             MaxLayer = 0;
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
             {
                 if (Globals.ModelCore.CurrentTime > 0)
-                    AllCohorts[cohort].CalcDefoliationFrac(Site, SiteAboveGroundBiomass);
+                    AllCohorts[cohort].CalcDefoliationFrac(Site, SiteAGBiomass);
                 CohortBiomassList.Add(AllCohorts[cohort].TotalBiomass);
                 CohortMaxBiomassList.Add(AllCohorts[cohort].MaxBiomass);
             }
@@ -2803,16 +2803,16 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies
+        public Landis.Library.Parameters.Species.AuxParm<int> AGBiomassPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<int> AGBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    AbovegroundBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.AGBiomass * o.CanopyLayerFrac));
+                    AGBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.AGBiomass * o.CanopyLayerFrac));
                 }
-                return AbovegroundBiomassPerSpecies;
+                return AGBiomassPerSpecies;
             }
         }
 
@@ -2958,7 +2958,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float AbovegroundBiomassSum
+        public float AGBiomassSum
         {
             get
             {

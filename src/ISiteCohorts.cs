@@ -31,7 +31,7 @@ namespace Landis.Library.PnETCohorts
         IProbEstablishment ProbEstablishment { get; }
         Landis.Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies { get; }
+        Landis.Library.Parameters.Species.AuxParm<int> AGBiomassPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<int> WoodBiomassPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<int> BGBiomassPerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies { get; }
@@ -41,7 +41,7 @@ namespace Landis.Library.PnETCohorts
         Landis.Library.Parameters.Species.AuxParm<int> FolSenescencePerSpecies { get; }
         Landis.Library.Parameters.Species.AuxParm<List<ushort>> CohortAges { get; }
         float BiomassSum { get; }
-        float AbovegroundBiomassSum { get; }
+        float AGBiomassSum { get; }
         float WoodBiomassSum { get; }
         float WoodSenescenceSum { get; }
         float FolSenescenceSum { get; }

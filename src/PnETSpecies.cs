@@ -75,7 +75,7 @@ namespace Landis.Library.PnETCohorts
         private float _NSCreserve;
         private string _lifeform;
         private float _refoliationMinimumTrigger;
-        private float _refoliationMaximum;
+        private float _maxRefoliationFrac;
         private float _refoliationCost;
         private float _nonRefoliationCost;
         private float _maxLAI;
@@ -132,7 +132,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> NSCreserve;
         private static Landis.Library.Parameters.Species.AuxParm<string> lifeform;
         private static Landis.Library.Parameters.Species.AuxParm<float> refoliationMinimumTrigger;
-        private static Landis.Library.Parameters.Species.AuxParm<float> refoliationMaximum;
+        private static Landis.Library.Parameters.Species.AuxParm<float> maxRefoliationFrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> refoliationCost;
         private static Landis.Library.Parameters.Species.AuxParm<float> nonRefoliationCost;
         private static Landis.Library.Parameters.Species.AuxParm<float> maxlai;
@@ -201,7 +201,7 @@ namespace Landis.Library.PnETCohorts
                 leafOnMinT = psntmin;
             NSCreserve = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NSCReserve");
             refoliationMinimumTrigger = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolMinimumTrigger");
-            refoliationMaximum = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolMaximum");
+            maxRefoliationFrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolMaximum");
             refoliationCost = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolCost");
             nonRefoliationCost = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NonRefolCost");
             maxlai = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxLAI"); //Optional
@@ -267,7 +267,7 @@ namespace Landis.Library.PnETCohorts
                     int longevity, float folN_slope, float folN_intercept,
                     float folBiomassFrac_slope, float folBiomassFrac_intercept, float o3Coeff,
                     float leafOnMinT, float NSCreserve, string lifeForm,
-                    float refoliationMinimumTrigger, float refoliationMaximum,
+                    float refoliationMinimumTrigger, float maxRefoliationFrac,
                     float refoliationCost, float nonRefoliationCost,
                     float maxLAI)
         {
@@ -334,7 +334,7 @@ namespace Landis.Library.PnETCohorts
             this._NSCreserve = NSCreserve;
             this._lifeform = lifeForm;
             this._refoliationMinimumTrigger = refoliationMinimumTrigger;
-            this._refoliationMaximum = refoliationMaximum;
+            this._maxRefoliationFrac = maxRefoliationFrac;
             this._refoliationCost = refoliationCost;
             this._nonRefoliationCost = nonRefoliationCost;
             this._maxLAI = maxLAI;
@@ -387,7 +387,7 @@ namespace Landis.Library.PnETCohorts
             _NSCreserve = NSCreserve[species];
             _lifeform = lifeForm[species];
             _refoliationMinimumTrigger = refoliationMinimumTrigger[species];
-            _refoliationMaximum = refoliationMaximum[species];
+            _maxRefoliationFrac = maxRefoliationFrac[species];
             _refoliationCost = refoliationCost[species];
             _nonRefoliationCost = nonRefoliationCost[species];
             _maxLAI = maxLAI[species];
@@ -934,11 +934,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float RefoliationMaximum
+        public float MaxRefoliationFrac
         {
             get
             {
-                return _refoliationMaximum;
+                return _maxRefoliationFrac;
             }
         }
 

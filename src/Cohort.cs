@@ -1209,7 +1209,7 @@ namespace Landis.Library.PnETCohorts
                                 {
                                     // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                                     // carbon fraction of biomass to convert C to DW
-                                    float Folalloc = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * ((speciesPnET.RefoliationMaximum * IdealFol) - Fol)));  // variable refoliation
+                                    float Folalloc = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * ((speciesPnET.MaxRefoliationFrac * IdealFol) - Fol)));  // variable refoliation
                                     FolCost = Math.Max(0f, Math.Min(NSClimit, speciesPnET.CFracBiomass * (speciesPnET.RefoliationCost * IdealFol - Fol)));  // cost of refol is the cost of getting to variable propotion of IdealFol
                                     FolTentative = Folalloc / speciesPnET.CFracBiomass;// gDW
                                 }

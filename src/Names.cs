@@ -77,7 +77,7 @@ namespace Landis.Library.PnETCohorts
         public static readonly string[] MutuallyExclusiveCanopyTypes = new string[] { "dark", "light", "decid", "ground", "open" };
         public const string LeafOnMinT = "LeafOnMinT"; // Optional
         public const string RefoliationMinimumTrigger = "RefolMinimumTrigger";
-        public const string RefoliationMaximum = "RefolMaximum";
+        public const string MaxRefoliationFrac = "RefolMaximum";
         public const string RefoliationCost = "RefolCost";
         public const string NonRefoliationCost = "NonRefolCost";
 

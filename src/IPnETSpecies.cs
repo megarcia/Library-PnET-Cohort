@@ -270,7 +270,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Maximum amount of refoliation
         /// </summary>
-        float RefoliationMaximum { get; }
+        float MaxRefoliationFrac { get; }
 
         /// <summary>
         /// Cost of refoliation

@@ -2910,16 +2910,16 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies
+        public Landis.Library.Parameters.Species.AuxParm<int> FolSenescencePerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<int> FolSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    FoliageSenescencePerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LastFolSenescence * o.CanopyLayerFrac));
+                    FolSenescencePerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LastFolSenescence * o.CanopyLayerFrac));
                 }
-                return FoliageSenescencePerSpecies;
+                return FolSenescencePerSpecies;
             }
         }
 
@@ -2982,7 +2982,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float FoliageSenescenceSum
+        public float FolSenescenceSum
         {
             get
             {
@@ -3495,7 +3495,7 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.Litter + "," + 
                        OutputHeaders.CWD + "," +
                        OutputHeaders.WoodSenescence + "," + 
-                       OutputHeaders.FoliageSenescence + "," +
+                       OutputHeaders.FolSenescence + "," +
                        OutputHeaders.SubCanopyPAR + ","+
                        OutputHeaders.SoilDiffusivity + "," +
                        OutputHeaders.ActiveLayerDepth+","+

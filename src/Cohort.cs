@@ -1108,9 +1108,9 @@ namespace Landis.Library.PnETCohorts
                             data.NSC = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
                             data.IsLeafOn = false;
                             data.NSC = 0.0F;
-                            float foliageSenescence = FoliageSenescence();
-                            data.LastFolSenescence = foliageSenescence;
-                            siteCohort.AddFolLitter(foliageSenescence * data.CanopyLayerFrac, PnETSpecies);// Using Canopy fractioning
+                            float folSenescence = FolSenescence();
+                            data.LastFolSenescence = folSenescence;
+                            siteCohort.AddFolLitter(folSenescence * data.CanopyLayerFrac, PnETSpecies);// Using Canopy fractioning
                         }
                     }
                     float woodSenescence = Senescence();
@@ -1139,9 +1139,9 @@ namespace Landis.Library.PnETCohorts
                     data.ColdKill = (int)Math.Floor(variables.Tavg - (3.0 * siteCohort.Ecoregion.WinterSTD));
                     data.IsLeafOn = false;
                     data.NSC = 0.0F;
-                    float foliageSenescence = FoliageSenescence();
-                    data.LastFolSenescence = foliageSenescence;
-                    siteCohort.AddFolLitter(foliageSenescence * data.CanopyLayerFrac, PnETSpecies); // Using Canopy fractioning
+                    float folSenescence = FolSenescence();
+                    data.LastFolSenescence = folSenescence;
+                    siteCohort.AddFolLitter(folSenescence * data.CanopyLayerFrac, PnETSpecies); // Using Canopy fractioning
                 }
                 else
                 {
@@ -1151,9 +1151,9 @@ namespace Landis.Library.PnETCohorts
                         if (data.IsLeafOn == true)
                         {
                             data.IsLeafOn = false;
-                            float foliageSenescence = FoliageSenescence();
-                            data.LastFolSenescence = foliageSenescence;
-                            siteCohort.AddFolLitter(foliageSenescence * data.CanopyLayerFrac, PnETSpecies); // Using Canopy fractioning
+                            float folSenescence = FolSenescence();
+                            data.LastFolSenescence = folSenescence;
+                            siteCohort.AddFolLitter(folSenescence * data.CanopyLayerFrac, PnETSpecies); // Using Canopy fractioning
                         }
                         growMonth = -1;
                     }
@@ -1613,7 +1613,7 @@ namespace Landis.Library.PnETCohorts
             cohortoutput.Write();         
         }
 
-        public float FoliageSenescence()
+        public float FolSenescence()
         {
             // If it is fall 
             float Litter = speciesPnET.FolTurnoverRate * Fol;

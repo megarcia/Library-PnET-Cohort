@@ -15,7 +15,7 @@ namespace Landis.Library.PnETCohorts
         #region private variables
         private float _halfSatFCO2;
         private float _cfracbiomass;
-        private float _woodlitterdecomprate;
+        private float _wooddebrisdecomprate;
         private float _nscfrac;
         private float _bgbiomassfrac;
         private float _folbiomassfrac;
@@ -86,7 +86,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> halfSatFCO2;
         private static Landis.Library.Parameters.Species.AuxParm<float> nscfrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
-        private static Landis.Library.Parameters.Species.AuxParm<float> woodlitterdecomprate;
+        private static Landis.Library.Parameters.Species.AuxParm<float> wooddebrisdecomprate;
         private static Landis.Library.Parameters.Species.AuxParm<float> bgbiomassfrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> folbiomassfrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> liveWoodBiomassFrac;
@@ -147,7 +147,7 @@ namespace Landis.Library.PnETCohorts
             halfSatFCO2 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("HalfSatFCO2");
             nscfrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NSCFrac");
             cfracbiomass = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CFracBiomass");
-            woodlitterdecomprate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("woodlitterdecomprate");
+            wooddebrisdecomprate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("wooddebrisdecomprate");
             bgbiomassfrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("bgbiomassfrac");
             folbiomassfrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("folbiomassfrac");
             liveWoodBiomassFrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("liveWoodBiomassFrac");
@@ -249,7 +249,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         PnETSpecies(PostFireRegeneration postFireGeneration,
-                    float nscfrac, float cfracbiomass, float woodlitterdecomprate,
+                    float nscfrac, float cfracbiomass, float wooddebrisdecomprate,
                     float bgbiomassfrac, float folbiomassfrac, float liveWoodBiomassFrac,
                     float photosynthesisfage, float h1, float h2, float h3,
                     float h4, float slwdel, float slwmax, float folturnoverrate,
@@ -274,7 +274,7 @@ namespace Landis.Library.PnETCohorts
             this.postfireregeneration = postFireGeneration;
             this._nscfrac = nscfrac;
             this._cfracbiomass = cfracbiomass;
-            this._woodlitterdecomprate = woodlitterdecomprate;
+            this._wooddebrisdecomprate = wooddebrisdecomprate;
             this._bgbiomassfrac = bgbiomassfrac;
             this._folbiomassfrac = folbiomassfrac;
             this._liveWoodBiomassFrac = liveWoodBiomassFrac;
@@ -346,7 +346,7 @@ namespace Landis.Library.PnETCohorts
             _initBiomass = (int)(initBiomass - ((uint)(bgbiomassfrac[species] * initBiomass)) * rootturnoverrate[species] - ((uint)((1 - bgbiomassfrac[species]) * initBiomass) * woodturnoverrate[species]));
             _nscfrac = nscfrac[species];
             _cfracbiomass = cfracbiomass[species];
-            _woodlitterdecomprate = woodlitterdecomprate[species];
+            _wooddebrisdecomprate = wooddebrisdecomprate[species];
             _bgbiomassfrac = bgbiomassfrac[species];
             _folbiomassfrac = folbiomassfrac[species];
             _liveWoodBiomassFrac = liveWoodBiomassFrac[species];
@@ -703,11 +703,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float WoodLitterDecompRate
+        public float WoodDebrisDecompRate
         {
             get
             {
-                return _woodlitterdecomprate;
+                return _wooddebrisdecomprate;
             }
         }
 

@@ -74,7 +74,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Decomposition constant of wood litter (yr-1)
         /// </summary>
-        float WoodLitterDecompRate { get; }
+        float WoodDebrisDecompRate { get; }
 
         /// <summary>
         /// Species longevity (yr)

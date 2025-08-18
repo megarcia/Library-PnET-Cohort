@@ -1285,10 +1285,10 @@ namespace Landis.Library.PnETCohorts
             }
             // FoliarN adjusted based on canopy position (FRad)
             float folN_shape = speciesPnET.FolN_slope; // Slope for linear FolN relationship
-            float maxFolN = speciesPnET.MaxFolN; // Intercept for linear FolN relationship
+            float folN_intercept = speciesPnET.FolN_intercept; // Intercept for linear FolN relationship
             // Non-Linear reduction in FolN with canopy depth (FRad)
             // slope is shape parm; FolN is minFolN; intcpt is max FolN. EJG-7-24-18
-            data.adjFolN = speciesPnET.FolN + ((maxFolN - speciesPnET.FolN) * (float)Math.Pow(FRad[index], folN_shape)); 
+            data.adjFolN = speciesPnET.FolN + ((folN_intercept - speciesPnET.FolN) * (float)Math.Pow(FRad[index], folN_shape)); 
             AdjFolN[index] = adjFolN;  // Stored for output
             AdjFolBiomassFrac[index] = adjFolBiomassFrac; //Stored for output
             float ciModifier = Photosynthesis.CalcCiModifier(o3_cum, speciesPnET.StomataO3Sensitivity, fWaterOzone);

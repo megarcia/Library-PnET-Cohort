@@ -219,7 +219,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Intercept for linear FolN relationship
         /// </summary>
-        float MaxFolN { get; }
+        float FolN_intercept { get; }
 
         /// <summary>
         /// Slope for linear FolBiomassFrac relationship

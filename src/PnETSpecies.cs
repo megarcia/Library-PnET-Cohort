@@ -67,7 +67,7 @@ namespace Landis.Library.PnETCohorts
         int maturity;
         int longevity;
         private float _folN_slope;
-        private float _maxFolN;
+        private float _folN_intercept;
         private float _folBiomassFracShape;
         private float _maxFolBiomassFrac;
         private float _o3Coeff;
@@ -124,7 +124,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> coldTol;
         private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
         private static Landis.Library.Parameters.Species.AuxParm<float> folN_slope;
-        private static Landis.Library.Parameters.Species.AuxParm<float> maxFolN;
+        private static Landis.Library.Parameters.Species.AuxParm<float> folN_intercept;
         private static Landis.Library.Parameters.Species.AuxParm<float> folBiomassFracShape;
         private static Landis.Library.Parameters.Species.AuxParm<float> maxFolBiomassFrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
@@ -184,10 +184,10 @@ namespace Landis.Library.PnETCohorts
             baseFoliarRespiration = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("baseFoliarRespiration");
             ozoneSens = (Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("StomataO3Sensitivity");
             folN_slope = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolN_slope");
-            maxFolN = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxFolN"); //Optional
-            // If MaxFolN is not provided, then set to foln
-            if (maxFolN[this] == -9999F)
-                maxFolN = foln;
+            folN_intercept = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolN_intercept"); //Optional
+            // If FolN_intercept is not provided, then set to foln
+            if (folN_intercept[this] == -9999F)
+                folN_intercept = foln;
             folBiomassFracShape = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolBiomassFracShape");
             maxFolBiomassFrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxFolBiomassFrac"); //Optional
             // If MaxFolBiomassFrac is not provided, then set to folbiomassfrac
@@ -264,7 +264,7 @@ namespace Landis.Library.PnETCohorts
                     int maxSproutAge, int minSproutAge, int maxSeedDist,
                     int effectiveSeedDist, float vegReprodProb,
                     byte fireTolerance, byte shadeTolerance, int maturity,
-                    int longevity, float folN_slope, float maxFolN,
+                    int longevity, float folN_slope, float folN_intercept,
                     float folBiomassFracShape, float maxFolBiomassFrac, float o3Coeff,
                     float leafOnMinT, float NSCreserve, string lifeForm,
                     float refoliationMinimumTrigger, float refoliationMaximum,
@@ -324,7 +324,7 @@ namespace Landis.Library.PnETCohorts
             this.maturity = maturity;
             this.longevity = longevity;
             this._folN_slope = folN_slope;
-            this._maxFolN = maxFolN;
+            this._folN_intercept = folN_intercept;
             this._folBiomassFracShape = folBiomassFracShape;
             this._maxFolBiomassFrac = maxFolBiomassFrac;
             this._o3Coeff = o3Coeff;
@@ -403,7 +403,7 @@ namespace Landis.Library.PnETCohorts
             maturity = species.Maturity;
             longevity = species.Longevity;
             _folN_slope = folN_slope[species];
-            _maxFolN = maxFolN[species];
+            _folN_intercept = folN_intercept[species];
             _folBiomassFracShape = folBiomassFracShape[species];
             _maxFolBiomassFrac = maxFolBiomassFrac[species];
             _o3Coeff = o3Coeff[species];
@@ -870,11 +870,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float MaxFolN
+        public float FolN_intercept
         {
             get
             {
-                return _maxFolN;
+                return _folN_intercept;
             }
         }
 

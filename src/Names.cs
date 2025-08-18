@@ -70,7 +70,7 @@ namespace Landis.Library.PnETCohorts
         /// Species parameters
         /// </summary>
         public const string FolN_slope = "FolN_slope";
-        public const string MaxFolN = "MaxFolN";
+        public const string FolN_intercept = "FolN_intercept";
         public const string FolBiomassFracShape = "FolBiomassFracShape";
         public const string MaxFolBiomassFrac = "MaxFolBiomassFrac";
         public const string O3Coeff = "O3GrowthSens";

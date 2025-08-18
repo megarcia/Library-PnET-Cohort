@@ -687,8 +687,8 @@ namespace Landis.Library.PnETCohorts
             {
                 float lastSeasonAvgFRad = data.LastSeasonFRad.ToArray().Average();
                 float folBiomassFrac_slope = speciesPnET.FolBiomassFrac_slope;
-                float folBiomassFrac_int = speciesPnET.MaxFolBiomassFrac;
-                //slope is shape parm; folBiomassFrac is minFolBiomassFrac; int is maxFolBiomassFrac. EJG-7-24-18
+                float folBiomassFrac_int = speciesPnET.FolBiomassFrac_intercept;
+                //slope is shape parm; folBiomassFrac is minFolBiomassFrac; int is folBiomassFrac_intercept. EJG-7-24-18
                 data.adjFolBiomassFrac = speciesPnET.FolBiomassFrac + ((folBiomassFrac_int - speciesPnET.FolBiomassFrac) * (float)Math.Pow(lastSeasonAvgFRad, folBiomassFrac_slope)); 
                 firstYear = false;
             }
@@ -881,10 +881,10 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass = biomass;
             data.BiomassMax = biomass;
             data.LastSeasonFRad = new List<float>();
-            data.adjFolBiomassFrac = speciesPnET.MaxFolBiomassFrac;
+            data.adjFolBiomassFrac = speciesPnET.FolBiomassFrac_intercept;
             data.ColdKill = int.MaxValue;
             float cohortLAI = 0;
-            float cohortIdealFol = speciesPnET.MaxFolBiomassFrac * FActiveBiom * data.TotalBiomass;
+            float cohortIdealFol = speciesPnET.FolBiomassFrac_intercept * FActiveBiom * data.TotalBiomass;
             for (int i = 0; i < Globals.IMAX; i++)
             {
                 float subLayerLAI = CalcLAI(PnETSpecies, cohortIdealFol, i);
@@ -1178,7 +1178,7 @@ namespace Landis.Library.PnETCohorts
                     else
                     {
                         if (firstYear)
-                            data.adjFolBiomassFrac = speciesPnET.MaxFolBiomassFrac;
+                            data.adjFolBiomassFrac = speciesPnET.FolBiomassFrac_intercept;
                         // Foliage linearly increases with active biomass
                         float IdealFol = adjFolBiomassFrac * FActiveBiom * data.TotalBiomass; // Using adjusted FolBiomassFrac
                         float NSClimit = data.NSC;

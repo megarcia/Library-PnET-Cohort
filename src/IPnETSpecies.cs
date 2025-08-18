@@ -229,7 +229,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Intercept for linear FolBiomassFrac relationship
         /// </summary>
-        float MaxFolBiomassFrac { get; }
+        float FolBiomassFrac_intercept { get; }
 
         /// <summary>
         /// Slope coefficient for FOzone

@@ -99,7 +99,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Foliage turnover (g/g/y)
         /// </summary>
-        float TOfol { get; }
+        float FolTurnoverRate { get; }
 
         /// <summary>
         /// Root turnover (g/g/y)

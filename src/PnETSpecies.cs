@@ -27,7 +27,7 @@ namespace Landis.Library.PnETCohorts
         private float _h4;
         private float _slwdel;
         private float _slwmax;
-        private float _tofol;
+        private float _folturnoverrate;
         private float _toroot;
         private float _halfsat;
         private float _initialnsc;
@@ -97,7 +97,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> h4;
         private static Landis.Library.Parameters.Species.AuxParm<float> slwdel;
         private static Landis.Library.Parameters.Species.AuxParm<float> slwmax;    
-        private static Landis.Library.Parameters.Species.AuxParm<float> tofol;
+        private static Landis.Library.Parameters.Species.AuxParm<float> folturnoverrate;
         private static Landis.Library.Parameters.Species.AuxParm<float> halfsat;
         private static Landis.Library.Parameters.Species.AuxParm<float> toroot;
         private static Landis.Library.Parameters.Species.AuxParm<float> initialnsc;
@@ -158,7 +158,7 @@ namespace Landis.Library.PnETCohorts
             h4 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h4");
             slwdel = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("slwdel");
             slwmax = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("slwmax");
-            tofol = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("tofol");
+            folturnoverrate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("folturnoverrate");
             halfsat = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("halfsat");
             toroot = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("toroot");
             initialnsc = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("initialnsc"); ;
@@ -252,7 +252,7 @@ namespace Landis.Library.PnETCohorts
                     float dnsc, float cfracbiomass, float woodlitterdecomprate,
                     float bgbiomassfrac, float folbiomassfrac, float liveWoodBiomassFrac,
                     float photosynthesisfage, float h1, float h2, float h3,
-                    float h4, float slwdel, float slwmax, float tofol,
+                    float h4, float slwdel, float slwmax, float folturnoverrate,
                     float toroot, float halfsat, float initialnsc,
                     float k, float towood, float estrad, float estmoist,
                     float maxPest, float follignin, bool preventestablishment,
@@ -285,7 +285,7 @@ namespace Landis.Library.PnETCohorts
             this._h4 = h4;
             this._slwdel = slwdel;
             this._slwmax = slwmax;
-            this._tofol = tofol;
+            this._folturnoverrate = folturnoverrate;
             this._toroot = toroot;
             this._halfsat = halfsat;
             this._initialnsc = initialnsc;
@@ -357,7 +357,7 @@ namespace Landis.Library.PnETCohorts
             _h4 = h4[species];
             _slwdel = slwdel[species];
             _slwmax = slwmax[species];
-            _tofol = tofol[species];
+            _folturnoverrate = folturnoverrate[species];
             _toroot = toroot[species];
             _halfsat = halfsat[species];
             _initialnsc = initialnsc[species];
@@ -639,11 +639,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float TOfol
+        public float FolTurnoverRate
         {
             get
             {
-                return _tofol;
+                return _folturnoverrate;
             }
         }
 

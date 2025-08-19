@@ -1169,7 +1169,10 @@ namespace Landis.Library.PnETCohorts
                 {
                     // Apply defoliation only in the second growing season month
                     if (growMonth == 2)
-                        ReduceFoliage(data.DefoliationFrac);
+                    {
+                        Fol = Disturbance.ReduceFoliage(Fol, data.DefoliationFrac);
+                        data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
+                    }
                     else
                     {
                         if (firstYear)
@@ -1625,12 +1628,6 @@ namespace Landis.Library.PnETCohorts
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
             data.MaxBiomass = Math.Max(data.MaxBiomass, data.TotalBiomass);
             return senescence;
-        }
-
-        public void ReduceFoliage(double frac)
-        {
-            Fol *= (float)(1.0 - frac);
-            data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
         }
 
         public void ResetFoliageMax()

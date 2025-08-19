@@ -33,6 +33,12 @@ namespace Landis.Library.PnETCohorts
             BiomassReductionParameters.ToList().ForEach(x => parameters.Add("disturbance:"+x.Key, x.Value));
         }
 
+        public static float ReduceFoliage(float FolBiomass, double defoliationFrac)
+        {
+            FolBiomass *= (float)(1.0 - defoliationFrac);
+            return FolBiomass;
+        }
+
         public static void ReduceDeadPools(object sitecohorts, ExtensionType disturbanceType)
         {
             if (sitecohorts == null)
@@ -43,9 +49,9 @@ namespace Landis.Library.PnETCohorts
             {
                 // If parameters are available, then set the loss fractions here.
                 if (parameter.ContainsKey("WoodDebrisReduction"))
-                WoodDebrisReductionFrac = float.Parse(parameter["WoodDebrisReduction"]);
+                    WoodDebrisReductionFrac = float.Parse(parameter["WoodDebrisReduction"]);
                 if (parameter.ContainsKey("LeafLitterReduction"))
-                LeafLitterReductionFrac = float.Parse(parameter["LeafLitterReduction"]);
+                    LeafLitterReductionFrac = float.Parse(parameter["LeafLitterReduction"]);
             }
             ((SiteCohorts)sitecohorts).RemoveWoodDebris(WoodDebrisReductionFrac);
             ((SiteCohorts)sitecohorts).RemoveLeafLitter(LeafLitterReductionFrac);

@@ -150,9 +150,9 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        private Dictionary<string, PnETSpeciesVariables> speciesVariables;
+        private Dictionary<string, PnETSpeciesVars> speciesVariables;
 
-        public PnETSpeciesVariables this[string species]
+        public PnETSpeciesVars this[string species]
         {
             get
             {
@@ -164,7 +164,7 @@ namespace Landis.Library.PnETCohorts
         {
             this._date = Date;
             this.obs_clim = climate_dataset;
-            speciesVariables = new Dictionary<string, PnETSpeciesVariables>();
+            speciesVariables = new Dictionary<string, PnETSpeciesVars>();
             _tavg = Weather.CalcTavg(climate_dataset.Tmin, climate_dataset.Tmax);
             _dayspan = Calendar.CalcDaySpan(Date.Month);
             float hr = Calendar.CalcDaylightHrs(Date.DayOfYear, Latitude); //hours of daylight
@@ -174,15 +174,15 @@ namespace Landis.Library.PnETCohorts
             _vpd = Weather.CalcVPD(Tday, climate_dataset.Tmin);
             foreach (IPnETSpecies spc in Species)
             {
-                PnETSpeciesVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, DayLength, nightLength, spc);
+                PnETSpeciesVars speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, DayLength, nightLength, spc);
                 speciesVariables.Add(spc.Name, speciespnetvars);
             }
         }
 
-        private PnETSpeciesVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, bool DTemp, float dayLength, float nightLength, IPnETSpecies spc)
+        private PnETSpeciesVars GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, bool DTemp, float dayLength, float nightLength, IPnETSpecies spc)
         {
             // Class that contains species specific PnET variables for a certain month
-            PnETSpeciesVariables speciespnetvars = new PnETSpeciesVariables();
+            PnETSpeciesVars speciespnetvars = new PnETSpeciesVars();
             speciespnetvars.DVPD = Photosynthesis.CalcDVPD(VPD, spc.DVPD1, spc.DVPD2);
             speciespnetvars.JH2O = Photosynthesis.CalcJH2O(climate_dataset.Tmin, VPD);
             speciespnetvars.AmaxB_CO2 = Photosynthesis.CalcAmaxB_CO2(climate_dataset.CO2, spc.AmaxB, spc.AMaxBFCO2);

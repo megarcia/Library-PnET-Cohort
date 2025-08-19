@@ -75,6 +75,6 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         float SPEI { get; }  
 
-        PnETSpeciesVariables this[string species] { get; }
+        PnETSpeciesVars this[string species] { get; }
     }
 }

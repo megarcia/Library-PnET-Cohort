@@ -2179,8 +2179,8 @@ namespace Landis.Library.PnETCohorts
                         // Transform cumulative probability of no successful establishments to probability of at least one successful establishment
                         cumulativeFWater[spc] = cumulativeFWater[spc] / monthlyCount[spc];
                         cumulativeFRad[spc] = cumulativeFRad[spc] / monthlyCount[spc];
-                        // Calculate Pest from average FWater, FRad and modified by MaxPest
-                        pest = cumulativeFWater[spc] * cumulativeFRad[spc] * spc.MaxPest;
+                        // Calculate Pest from average FWater, FRad and modified by MaxProbEstablishment
+                        pest = cumulativeFWater[spc] * cumulativeFRad[spc] * spc.MaxProbEstablishment;
                     }                    
                     if (!spc.PreventEstablishment)
                     {

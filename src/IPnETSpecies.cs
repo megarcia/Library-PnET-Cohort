@@ -124,7 +124,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Mamximum total probability of establishment under optimal conditions
         /// </summary>
-        float MaxPest { get; }
+        float MaxProbEstablishment { get; }
 
         /// <summary>
         /// Lignin concentration in foliage

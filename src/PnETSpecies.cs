@@ -35,7 +35,7 @@ namespace Landis.Library.PnETCohorts
         private float _woodturnoverrate;
         private float _establishmentfrad;
         private float _establishmentfwater;
-        private float _maxPest;
+        private float _maxProbEstablishment;
         private float _follignin;
         private bool _preventestablishment;
         private float _psntopt;
@@ -105,7 +105,7 @@ namespace Landis.Library.PnETCohorts
         private static Landis.Library.Parameters.Species.AuxParm<float> woodturnoverrate;
         private static Landis.Library.Parameters.Species.AuxParm<float> establishmentfrad;
         private static Landis.Library.Parameters.Species.AuxParm<float> establishmentfwater;
-        private static Landis.Library.Parameters.Species.AuxParm<float> maxPest;
+        private static Landis.Library.Parameters.Species.AuxParm<float> maxProbEstablishment;
         private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
         private static Landis.Library.Parameters.Species.AuxParm<bool> preventestablishment;
         private static Landis.Library.Parameters.Species.AuxParm<float> psntopt;
@@ -166,7 +166,7 @@ namespace Landis.Library.PnETCohorts
             woodturnoverrate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("woodturnoverrate"); ;
             establishmentfrad = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("establishmentfrad"); ;
             establishmentfwater = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("establishmentfwater");
-            maxPest = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxPest");
+            maxProbEstablishment = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxProbEstablishment");
             follignin = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("follignin");
             preventestablishment = (Landis.Library.Parameters.Species.AuxParm<bool>)(Parameter<bool>)Names.GetParameter("preventestablishment");
             psntopt = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psntopt");
@@ -255,7 +255,7 @@ namespace Landis.Library.PnETCohorts
                     float h4, float slwdel, float slwmax, float folturnoverrate,
                     float rootturnoverrate, float halfsat, float initialnsc,
                     float k, float woodturnoverrate, float establishmentfrad, float establishmentfwater,
-                    float maxPest, float follignin, bool preventestablishment,
+                    float maxprobestablishment, float follignin, bool preventestablishment,
                     float psntopt, float q10, float psntmin, float psntmax,
                     float dvpd1, float dvpd2, float foln, float amaxa,
                     float amaxb, float amaxamod, float aMaxBFCO2,
@@ -293,7 +293,7 @@ namespace Landis.Library.PnETCohorts
             this._woodturnoverrate = woodturnoverrate;
             this._establishmentfrad = establishmentfrad;
             this._establishmentfwater = establishmentfwater;
-            this._maxPest = maxPest;
+            this._maxprobestablishment = maxprobestablishment;
             this._follignin = follignin;
             this._preventestablishment = preventestablishment;
             this._psntopt = psntopt;
@@ -365,7 +365,7 @@ namespace Landis.Library.PnETCohorts
             _woodturnoverrate = woodturnoverrate[species];
             _establishmentfrad = establishmentfrad[species];
             _establishmentfwater = establishmentfwater[species];
-            _maxPest = maxPest[species];
+            _maxProbEstablishment = maxProbEstablishment[species];
             _follignin = follignin[species];
             _preventestablishment = preventestablishment[species];
             _psntopt = psntopt[species];
@@ -591,11 +591,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float MaxPest
+        public float MaxProbEstablishment
         {
             get
             {
-                return _maxPest;
+                return _maxProbEstablishment;
             }
         }
 

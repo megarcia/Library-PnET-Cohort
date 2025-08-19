@@ -1143,7 +1143,7 @@ namespace Landis.Library.PnETCohorts
                 return;
             List<double> CohortMaxBiomassList = new List<double>();
             DateTime date = StartDate.AddYears(-(sortedAgeCohorts[0].Data.Age - 1));
-            Landis.Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>>(Globals.ModelCore.Ecoregions);
+            Landis.Library.Parameters.Ecoregions.AuxParm<List<PnETEcoregionVars>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<PnETEcoregionVars>>(Globals.ModelCore.Ecoregions);
             while (date.CompareTo(StartDate) <= 0)
             {
                 //  Add those cohorts that were born at the current year

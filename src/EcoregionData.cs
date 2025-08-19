@@ -350,7 +350,7 @@ namespace Landis.Library.PnETCohorts
                     {
                         IObservedClimate observedClimate = ObservedClimate.GetData(ecoregion, date);
                         List<IPnETSpecies> species = SpeciesParameters.PnETSpecies.AllSpecies.ToList();
-                        IPnETEcoregionVars ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species, ecoregion.Latitude);
+                        IPnETEcoregionVars ecoregion_variables = new PnETEcoregionVars(observedClimate, date, wythers, dtemp, species, ecoregion.Latitude);
                         try
                         {
                             all_values[ecoregion].Add(date, ecoregion_variables);

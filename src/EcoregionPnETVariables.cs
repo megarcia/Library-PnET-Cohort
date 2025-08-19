@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class EcoregionPnETVariables : IPnETEcoregionVars
+    public class PnETEcoregionVars : IPnETEcoregionVars
     {
         private DateTime _date;
         private IObservedClimate obs_clim;
@@ -160,7 +160,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public EcoregionPnETVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<IPnETSpecies> Species, float Latitude)
+        public PnETEcoregionVars(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<IPnETSpecies> Species, float Latitude)
         {
             this._date = Date;
             this.obs_clim = climate_dataset;

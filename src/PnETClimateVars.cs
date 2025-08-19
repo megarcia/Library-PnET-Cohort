@@ -1,5 +1,5 @@
 ﻿/// <summary>
-/// John McNabb: This is a copy of EcoregionPnETVariables 
+/// John McNabb: This is a copy of PnETEcoregionVars 
 /// substituting MonthlyClimateRecord _monthlyClimateRecord for 
 /// IObservedClimate obs_clim
 /// </summary>

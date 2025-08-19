@@ -4,13 +4,13 @@ namespace Landis.Library.PnETCohorts
     public class OutputHeaders
     {
         public const string PotentialEvaporation = "PotentialEvaporation(mm)";
-        public const string PotentialET = "PotentialEvapotranspiration(mm)";
+        public const string PotentialET = "PotentialET(mm)";
         public const string Time = "Time";
         public const string Year = "Year";
         public const string Month = "Month";
         public const string Ecoregion = "Ecoregion";
         public const string PAR0 = "PAR0";  
-        public const string NrOfCohorts = "NrOfCohorts";
+        public const string nCohorts = "nCohorts";
         public const string MaxLayerRatio = "MaxLayerRatio";
         public const string Layers = "Layers";
         public const string CanopyLayerFrac = "CanopyLayerFrac";
@@ -29,7 +29,7 @@ namespace Landis.Library.PnETCohorts
         public const string SurfaceRunoff = "PrecLoss(mm/mo)"; 
         public const string GrossPsn = "GrossPsn(gC_m2_mo)";
         public const string NetPsn = "NetPsn(gC_m2_mo)";
-        public const string AverageAlbedo = "AverageAlbedo(ratio_W_m2)";
+        public const string AverageAlbedo = "AverageAlbedo(-)";
         public const string ActiveLayerDepth = "ActiveLayerDepth(mm/mo)";
         public const string FrostDepth = "FrostDepth(mm/mo)";
         public const string FoliarRespiration = "FoliarRespiration(gC_m2_mo)";
@@ -39,8 +39,8 @@ namespace Landis.Library.PnETCohorts
         public const string Leakage = "Leakage(mm)";
         public const string PressureHead = "PressureHead(m)";
         public const string Snowpack = "Snowpack(mm)";
-        public const string LAI = "LAI(m2)";
-        public const string LAISite = "SiteLAI(m2)";
+        public const string LAI = "LAI(-)";
+        public const string LAISite = "SiteLAI(-)";
         public const string MaintResp = "MaintenanceRespiration(gC_mo)";                      
         public const string Wood = "Wood(gDW)";                             
         public const string Root = "Root(gDW)";                         
@@ -55,18 +55,18 @@ namespace Landis.Library.PnETCohorts
         public const string Age = "Age(yr)"; 
         public const string Layer = "TopLayer(-)"; 
         public const string ReleasedNSC = "ReleasedNSC(gC_m2_mo)";                  
-        public const string Folalloc = "Folalloc(gC_m2_mo)";                  
+        public const string FolAlloc = "FolAlloc(gC_m2_mo)";                  
         public const string RootAlloc = "RootAlloc(gC_m2_mo)";                       
         public const string WoodAlloc = "WoodAlloc(gC_m2_mo)";                    
         public const string VPD = "VPD(kPa)";         
         public const string WUE = "WUE(g_mm)";             
         public const string NSCfrac = "NSCfrac(-)";            
-        public const string fWater = "fWater(-)";
+        public const string FWater = "FWater(-)";
         public const string Radiation = "Radiation";   
-        public const string fRad = "fRad(-)";          
-        public const string fTemp_psn = "fTemp_psn(-)";              
-        public const string fTemp_resp = "fTemp_resp(-)";                 
-        public const string fAge = "fAge(-)";     
+        public const string FRad = "FRad(-)";          
+        public const string PhotosynthesisFTemp = "PhotosynthesisFTemp(-)";              
+        public const string RespirationFTemp = "RespirationFTemp(-)";                 
+        public const string FAge = "FAge(-)";     
         public const string LeafOn = "LeafOn(-)";          
         public const string FActiveBiom = "FActiveBiom(gDW_gDW)";
         public const string Interception = "Interception(mm)";
@@ -75,7 +75,7 @@ namespace Landis.Library.PnETCohorts
         public const string Transpiration = "Transpiration(mm)";
         public const string DeliveryPotential = "DeliveryPotential(-)";
         public const string SoilType = "SoilType";
-        public const string FOzone = "fOzone(-)";
+        public const string FOzone = "FOzone(-)";
         public const string LeakageFrac = "LeakageFrac(-)";
         public const string WoodSenescence = "WoodSenescence(gDW_m2)";
         public const string FolSenescence = "FolSenescence(gDW_m2)";
@@ -84,7 +84,7 @@ namespace Landis.Library.PnETCohorts
         public const string AdjFolN = "AdjFolN(gN_gC)";
         public const string AdjFolBiomassFrac = "AdjFolBiomassFrac(-)";
         public const string CiModifier = "CiModifier(-)";
-        public const string SubCanopyPAR = "SubCanopyPAR";
+        public const string SubcanopyPAR = "SubcanopyPAR";
         public const string LimitingFactor = "LimitingFactor";
         public const string SoilDiffusivity = "SoilDiffusivity(mm2_s)";
         public const string SPEI = "SPEI";

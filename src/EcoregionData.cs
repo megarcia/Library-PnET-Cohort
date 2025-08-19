@@ -324,7 +324,7 @@ namespace Landis.Library.PnETCohorts
                         }
                         var monthlyData = new MonthlyClimateRecord(ecoregion, date);
                         List<IPnETSpecies> species = SpeciesParameters.PnETSpecies.AllSpecies.ToList();
-                        IEcoregionPnETVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
+                        IEcoregionPnETVariables ecoregion_variables = new PnETClimateVars(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
                         all_values[ecoregion].Add(date, ecoregion_variables);
                     }
                     data.Add(all_values[ecoregion][date]);

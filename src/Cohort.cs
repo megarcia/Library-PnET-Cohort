@@ -626,7 +626,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// List of DisturbanceTypes that have had ReduceDeadBiomass applied
+        /// List of DisturbanceTypes that have had ReduceDeadPools applied
         /// </summary>
         public List<ExtensionType> ReducedTypes = null;
 
@@ -1642,10 +1642,10 @@ namespace Landis.Library.PnETCohorts
         {
             if (!((SiteCohorts)sitecohorts).DisturbanceTypesReduced.Contains(disturbanceType))
             {
-                Disturbance.ReduceDeadBiomass(sitecohorts, disturbanceType);  // Reduce dead pools before adding through Disturbance
+                Disturbance.ReduceDeadPools(sitecohorts, disturbanceType);  // Reduce dead pools before adding through Disturbance
                 ((SiteCohorts)sitecohorts).DisturbanceTypesReduced.Add(disturbanceType);
             }
-            Disturbance.AllocateDeadBiomass(sitecohorts, this, disturbanceType, frac);
+            Disturbance.AllocateDeadPools(sitecohorts, this, disturbanceType, frac);
             data.TotalBiomass *= (float)(1.0 - frac);
             data.AGBiomass = (1 - PnETspecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);

@@ -33,7 +33,7 @@ namespace Landis.Library.PnETCohorts
             BiomassReductionParameters.ToList().ForEach(x => parameters.Add("disturbance:"+x.Key, x.Value));
         }
 
-        public static void ReduceDeadBiomass(object sitecohorts, ExtensionType disturbanceType)
+        public static void ReduceDeadPools(object sitecohorts, ExtensionType disturbanceType)
         {
             if (sitecohorts == null)
                 throw new System.Exception("sitecohorts should not be null");
@@ -51,7 +51,7 @@ namespace Landis.Library.PnETCohorts
             ((SiteCohorts)sitecohorts).RemoveLeafLitter(LeafLitterReductionFrac);
         }
 
-        public static void AllocateDeadBiomass(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double frac)
+        public static void AllocateDeadPools(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double frac)
         {
             if (sitecohorts == null)
                 throw new System.Exception("sitecohorts should not be null");

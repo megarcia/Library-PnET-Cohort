@@ -37,8 +37,8 @@ namespace Landis.Library.PnETCohorts
             _vpd = Weather.CalcVPD(Tday, (float)monthlyClimateRecord.Tmin);
             foreach (IPnETSpecies spc in Species)
             {
-                PnETSpeciesVars speciespnetvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, dayLength, nightLength, spc);
-                speciesVariables.Add(spc.Name, speciespnetvars);
+                PnETSpeciesVars pnetspeciesvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, dayLength, nightLength, spc);
+                speciesVariables.Add(spc.Name, pnetspeciesvars);
             }
         }
         #endregion
@@ -67,14 +67,14 @@ namespace Landis.Library.PnETCohorts
         private PnETSpeciesVars GetSpeciesVariables(MonthlyClimateRecord monthlyClimateRecord, bool wythers, bool dTemp, float dayLength, float nightLength, IPnETSpecies spc)
         {
             // Class that contains species specific PnET variables for a certain month
-            PnETSpeciesVars speciespnetvars = new PnETSpeciesVars();
-            speciespnetvars.DVPD = Photosynthesis.CalcDVPD(VPD, spc.DVPD1, spc.DVPD2);
-            speciespnetvars.JH2O = Photosynthesis.CalcJH2O((float)monthlyClimateRecord.Tmin, VPD);
-            speciespnetvars.AmaxB_CO2 = Photosynthesis.CalcAmaxB_CO2((float)monthlyClimateRecord.CO2, spc.AmaxB, spc.AMaxBFCO2);
+            PnETSpeciesVars pnetspeciesvars = new PnETSpeciesVars();
+            pnetspeciesvars.DVPD = Photosynthesis.CalcDVPD(VPD, spc.DVPD1, spc.DVPD2);
+            pnetspeciesvars.JH2O = Photosynthesis.CalcJH2O((float)monthlyClimateRecord.Tmin, VPD);
+            pnetspeciesvars.AmaxB_CO2 = Photosynthesis.CalcAmaxB_CO2((float)monthlyClimateRecord.CO2, spc.AmaxB, spc.AMaxBFCO2);
             if (dTemp)
-                speciespnetvars.PsnFTemp = Photosynthesis.DTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax);
+                pnetspeciesvars.PsnFTemp = Photosynthesis.DTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax);
             else
-                speciespnetvars.PsnFTemp = Photosynthesis.CurvilinearPsnTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax); // Modified 051216(BRM)
+                pnetspeciesvars.PsnFTemp = Photosynthesis.CurvilinearPsnTempResponse(Tday, spc.PsnTopt, spc.PsnTmin, spc.PsnTmax); // Modified 051216(BRM)
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
             // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
             // Acclimation of respiration to temperature and C02 in seedlings of boreal tree species
@@ -89,22 +89,22 @@ namespace Landis.Library.PnETCohorts
             float Q10base;
             if (wythers)
             {
-                speciespnetvars.BaseFoliarRespirationFrac = Respiration.CalcBaseFolRespFrac_Wythers(Tavg);
+                pnetspeciesvars.BaseFoliarRespirationFrac = Respiration.CalcBaseFolRespFrac_Wythers(Tavg);
                 Q10base = Respiration.CalcQ10_Wythers(Tavg, spc.PsnTopt);
             }
             else
             {
-                speciespnetvars.BaseFoliarRespirationFrac = spc.BaseFoliarRespiration;
+                pnetspeciesvars.BaseFoliarRespirationFrac = spc.BaseFoliarRespiration;
                 Q10base = spc.Q10;
             }
             // Respiration Q10 factor
-            speciespnetvars.RespirationFQ10 = Respiration.CalcFQ10(Q10base, Tavg, spc.PsnTopt);
+            pnetspeciesvars.RespirationFQ10 = Respiration.CalcFQ10(Q10base, Tavg, spc.PsnTopt);
             // Respiration adjustment for temperature
             float RespFTemp = Respiration.CalcFTemp(Q10base, Tday, Tmin, spc.PsnTopt, dayLength, nightLength);
-            speciespnetvars.RespirationFTemp = RespFTemp;
+            pnetspeciesvars.RespirationFTemp = RespFTemp;
             // Scaling factor of respiration given day and night temperature and day and night length
-            speciespnetvars.MaintenanceRespirationFTemp = spc.MaintResp * RespFTemp;
-            return speciespnetvars;
+            pnetspeciesvars.MaintenanceRespirationFTemp = spc.MaintResp * RespFTemp;
+            return pnetspeciesvars;
         }
         #endregion
     }

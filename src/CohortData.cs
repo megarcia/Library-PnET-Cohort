@@ -331,7 +331,7 @@ namespace Landis.Library.PnETCohorts
             float cohortLAI = 0;
             float cohortIdealFol = spc.FolBiomassFrac * (float)Math.Exp(-spc.LiveWoodBiomassFrac * this.MaxBiomass) * this.TotalBiomass;
             for (int i = 0; i < Globals.IMAX; i++)
-                cohortLAI += Cohort.CalcLAI(spc, cohortIdealFol, i, cohortLAI);
+                cohortLAI += Canopy.CalcLAI(spc, cohortIdealFol, i, cohortLAI);
             this.LastLAI = cohortLAI;
             this.CanopyLayerFrac = this.LastLAI / spc.MaxLAI;
             if (cohortStacking)

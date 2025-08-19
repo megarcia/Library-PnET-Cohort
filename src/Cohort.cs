@@ -787,7 +787,7 @@ namespace Landis.Library.PnETCohorts
             float cohortLAI = 0;
             float cohortIdealFol = PnETspecies.FolBiomassFrac * FActiveBiom * data.TotalBiomass;
             for (int i = 0; i < Globals.IMAX; i++)
-                cohortLAI += CalcLAI(PnETSpecies, cohortIdealFol, i, cohortLAI);
+                cohortLAI += Canopy.CalcLAI(PnETSpecies, cohortIdealFol, i, cohortLAI);
             data.LastLAI = cohortLAI;
             data.LastAGBio = data.AGBiomass;
             data.CanopyLayerFrac = data.LastLAI / PnETspecies.MaxLAI;
@@ -887,7 +887,8 @@ namespace Landis.Library.PnETCohorts
             float cohortIdealFol = PnETspecies.FolBiomassFrac_intercept * FActiveBiom * data.TotalBiomass;
             for (int i = 0; i < Globals.IMAX; i++)
             {
-                float subLayerLAI = CalcLAI(PnETSpecies, cohortIdealFol, i);
+                float LAISum = Canopy.CalcLAISum(LAI);
+                float subLayerLAI = Canopy.CalcLAI(PnETSpecies, cohortIdealFol, i, LAISum);
                 cohortLAI += subLayerLAI;
                 if (IsLeafOn)
                     LAI[index] = subLayerLAI;
@@ -940,7 +941,8 @@ namespace Landis.Library.PnETCohorts
             float cohortIdealFol = adjFolBiomassFrac * FActiveBiom * data.TotalBiomass;
             for (int i = 0; i < Globals.IMAX; i++)
             {
-                float subLayerLAI = CalcLAI(PnETSpecies, cohortIdealFol, i);
+                float LAISum = Canopy.CalcLAISum(LAI);
+                float subLayerLAI = Canopy.CalcLAI(PnETSpecies, cohortIdealFol, i, LAISum);
                 cohortLAI += subLayerLAI;
                 if (IsLeafOn)
                     LAI[index] = subLayerLAI;
@@ -1002,7 +1004,8 @@ namespace Landis.Library.PnETCohorts
             fOzone = 0;
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
-            data.LAI[index] = CalcLAI(PnETspecies, data.Fol, index);
+            float LAISum = Canopy.CalcLAISum(LAI);
+            data.LAI[index] = Canopy.CalcLAI(PnETspecies, data.Fol, index, LAISum);
             if (MeltInByCanopyLayer > 0)
             {
                 // Add melted snow water to soil moisture
@@ -1221,7 +1224,7 @@ namespace Landis.Library.PnETCohorts
                             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
                             float tentativeLAI = 0;
                             for (int i = 0; i < Globals.IMAX; i++)
-                                tentativeLAI += CalcLAI(PnETSpecies, Fol + FolTentative, i, tentativeLAI);
+                                tentativeLAI += Canopy.CalcLAI(PnETSpecies, Fol + FolTentative, i, tentativeLAI);
                             float tentativeCanopyFrac = tentativeLAI / PnETspecies.MaxLAI;
                             if (sumCanopyFrac > 1)
                                 tentativeCanopyFrac = tentativeCanopyFrac / sumCanopyFrac;
@@ -1239,7 +1242,7 @@ namespace Landis.Library.PnETCohorts
                 }
             }
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
-            data.LAI[index] = CalcLAI(PnETspecies, Fol, index);
+            data.LAI[index] = Canopy.CalcLAI(PnETspecies, Fol, index, LAI);
             // Adjust HalfSat for CO2 effect
             float halfSatIntercept = PnETspecies.HalfSat - Constants.CO2RefConc * PnETspecies.HalfSatFCO2;
             data.AdjHalfSat = PnETspecies.HalfSatFCO2 * variables.CO2 + halfSatIntercept;

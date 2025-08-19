@@ -293,9 +293,9 @@ namespace Landis.Library.PnETCohorts
             this.adjFolBiomassFrac = 0;
             this.AdjHalfSat = 0;
             this.UniversalData.Age = age;
-            IPnETSpecies spc = SpeciesParameters.PnETSpecies.AllSpecies[species.Index];
-            this.Cohort = new Cohort(species,spc,0,"",1, cohortStacking);
-            this.AGBiomass = (1- spc.BGBiomassFrac) * totalBiomass;
+            IPnETSpecies pnetspecies = SpeciesParameters.PnETSpecies.AllSpecies[species.Index];
+            this.Cohort = new Cohort(species, pnetspecies, 0, "", 1, cohortStacking);
+            this.AGBiomass = (1- pnetspecies.BGBiomassFrac) * totalBiomass;
             this.UniversalData.Biomass = (int)this.AGBiomass;
             this.TotalBiomass = totalBiomass;
             this.MaxBiomass = totalBiomass;
@@ -328,10 +328,10 @@ namespace Landis.Library.PnETCohorts
             this.PotentialTranspiration = new float[Globals.IMAX];
             this.SoilWaterContent = new float[Globals.IMAX];
             this.BiomassLayerFrac = 1.0f;
-            float cohortIdealFol = spc.FolBiomassFrac * (float)Math.Exp(-spc.LiveWoodBiomassFrac * this.MaxBiomass) * this.TotalBiomass;
-            float cohortLAI = Canopy.CalcCohortLAI(spc, cohortIdealFol);
+            float cohortIdealFol = pnetspecies.FolBiomassFrac * (float)Math.Exp(-pnetspecies.LiveWoodBiomassFrac * this.MaxBiomass) * this.TotalBiomass;
+            float cohortLAI = Canopy.CalcCohortLAI(pnetspecies, cohortIdealFol);
             this.LastLAI = cohortLAI;
-            this.CanopyLayerFrac = this.LastLAI / spc.MaxLAI;
+            this.CanopyLayerFrac = this.LastLAI / pnetspecies.MaxLAI;
             if (cohortStacking)
                 this.CanopyLayerFrac = 1.0f;
             this.CanopyGrowingSpace = 1.0f;

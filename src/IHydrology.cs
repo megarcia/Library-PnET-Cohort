@@ -13,7 +13,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         /// <param name="ecoregion"></param>
         /// <returns></returns>
-        float GetPressureHead(IEcoregionPnET ecoregion); 
+        float GetPressureHead(IPnETEcoregionData ecoregion); 
 
         /// <summary>
         /// Add mm water to volumetric soil water content (mm/m) (considering activeSoilDepth - frozen soil cannot accept water)

@@ -40,7 +40,7 @@ namespace Landis.Library.PnETCohorts
             return soilPorosity_OM_comp[soilType];
         }
 
-        public float this[IEcoregionPnET ecoregion, int soilWaterContent]
+        public float this[IPnETEcoregionData ecoregion, int soilWaterContent]
         {
             get
             {
@@ -104,7 +104,7 @@ namespace Landis.Library.PnETCohorts
             PctOM = Names.GetParameter("pctOM");
             DensFactor = Names.GetParameter("densFactor");
             Gravel = Names.GetParameter("gravel");
-            foreach (IEcoregionPnET ecoregion in Globals.ModelCore.Ecoregions)
+            foreach (IPnETEcoregionData ecoregion in Globals.ModelCore.Ecoregions)
             {
                 if (ecoregion.Active)
                 {

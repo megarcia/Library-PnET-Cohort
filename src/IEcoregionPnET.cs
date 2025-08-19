@@ -1,6 +1,6 @@
 ﻿namespace Landis.Library.PnETCohorts
 {
-    public interface IEcoregionPnET : Landis.Core.IEcoregion
+    public interface IPnETEcoregionData : Landis.Core.IEcoregion
     {
         /// <summary>
         /// Ecoregion name

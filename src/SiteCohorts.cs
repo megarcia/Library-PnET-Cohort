@@ -66,7 +66,7 @@ namespace Landis.Library.PnETCohorts
         public List<int> CohortsKilledByWind = null;
         public List<int> CohortsKilledByOther = null;
         public List<ExtensionType> DisturbanceTypesReduced = null;
-        public IEcoregionPnET Ecoregion;
+        public IPnETEcoregionData Ecoregion;
         public LocalOutput siteoutput;
         private float[] ActualET = new float[12]; // mm/mo
         private static IDictionary<uint, SiteCohorts> initialSites;

@@ -11,7 +11,7 @@ namespace Landis.Library.PnETCohorts
     /// <summary>
     /// The information for a tree species (its index and parameters).
     /// </summary>
-    public class EcoregionData : IEcoregionPnET
+    public class EcoregionData : IPnETEcoregionData
     {
         #region private variables
         private Landis.Core.IEcoregion ecoregion;
@@ -40,8 +40,8 @@ namespace Landis.Library.PnETCohorts
         private static bool dtemp;
         private static float etExtCoeff;
         private static float retCropCoeff;
-        private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IPnETEcoregionVars>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IPnETEcoregionVars>>();
-        private static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
+        private static Dictionary<IPnETEcoregionData, Dictionary<DateTime, IPnETEcoregionVars>> all_values = new Dictionary<IPnETEcoregionData, Dictionary<DateTime, IPnETEcoregionVars>>();
+        private static Dictionary<IEcoregion, IPnETEcoregionData> AllEcoregions;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> rootingdepth;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> precintconst;
@@ -60,7 +60,7 @@ namespace Landis.Library.PnETCohorts
         #endregion
 
         #region accessors for private static variables
-        public static List<IEcoregionPnET> Ecoregions
+        public static List<IPnETEcoregionData> Ecoregions
         {
             get 
             {
@@ -72,7 +72,7 @@ namespace Landis.Library.PnETCohorts
         /// Returns the PnET Ecoregion for a given Landis Core Ecoregion
         /// </summary>
         /// <param name="landisCoreEcoregion"></param>
-        public static IEcoregionPnET GetPnETEcoregion(IEcoregion landisCoreEcoregion)
+        public static IPnETEcoregionData GetPnETEcoregion(IEcoregion landisCoreEcoregion)
         {
             return AllEcoregions[landisCoreEcoregion];
         }
@@ -294,7 +294,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public static List<IPnETEcoregionVars> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
+        public static List<IPnETEcoregionVars> GetClimateRegionData(IPnETEcoregionData ecoregion, DateTime start, DateTime end)
         {
             // Monthly simulation data untill but not including end
             List<IPnETEcoregionVars> data = new List<IPnETEcoregionVars>();
@@ -335,7 +335,7 @@ namespace Landis.Library.PnETCohorts
             return data;
         }
 
-        public static List<IPnETEcoregionVars> GetData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
+        public static List<IPnETEcoregionVars> GetData(IPnETEcoregionData ecoregion, DateTime start, DateTime end)
         {
             // Monthly simulation data untill but not including end
             List<IPnETEcoregionVars> data = new List<IPnETEcoregionVars>();
@@ -388,13 +388,13 @@ namespace Landis.Library.PnETCohorts
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeakageFrac", 0, 1);
             runoffcapture = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter(Names.RunoffCapture, 0, 999999);
             frostFactor = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("FrostFactor", 0, 999999);
-            AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
+            AllEcoregions = new Dictionary<IEcoregion, IPnETEcoregionData>();
             foreach (IEcoregion ecoregion in Globals.ModelCore.Ecoregions)
             {
                 AllEcoregions.Add(ecoregion, new EcoregionData(ecoregion));
             }
-            all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IPnETEcoregionVars>>();
-            foreach (IEcoregionPnET ecoregion in EcoregionData.AllEcoregions.Values)
+            all_values = new Dictionary<IPnETEcoregionData, Dictionary<DateTime, IPnETEcoregionVars>>();
+            foreach (IPnETEcoregionData ecoregion in EcoregionData.AllEcoregions.Values)
             {
                 all_values[ecoregion] = new Dictionary<DateTime, IPnETEcoregionVars>();
             }

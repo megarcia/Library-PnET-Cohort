@@ -10,7 +10,7 @@ namespace Landis.Library.PnETCohorts
 
         float GetSpeciesFRad(IPnETSpecies species);
 
-        Dictionary<IPnETSpecies, float> CalcProbEstablishmentForMonth(IPnETEcoregionVars pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology, float minHalfSat, float maxHalfSat, bool invertProbEstablishment, float fracRootAboveFrost);
+        Dictionary<IPnETSpecies, float> CalcProbEstablishmentForMonth(IPnETEcoregionVars pnetvars, IPnETEcoregionData ecoregion, float PAR, IHydrology hydrology, float minHalfSat, float maxHalfSat, bool invertProbEstablishment, float fracRootAboveFrost);
          
         bool IsEstablishedSpecies(IPnETSpecies species);
 

@@ -5,7 +5,7 @@ namespace Landis.Library.PnETCohorts
 {
     public class FrozenSoils
     {
-        public static SortedList<float, float> CalcMonthlySoilTemps(SortedList<float, float> depthTempDict, IEcoregionPnET Ecoregion, int daysOfWinter, float snowpack, IHydrology hydrology, float lastTempBelowSnow)
+        public static SortedList<float, float> CalcMonthlySoilTemps(SortedList<float, float> depthTempDict, IPnETEcoregionData Ecoregion, int daysOfWinter, float snowpack, IHydrology hydrology, float lastTempBelowSnow)
         {
             //
             // Snow calculations, now handled in Snow class

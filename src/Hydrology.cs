@@ -102,7 +102,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         /// <param name="ecoregion"></param>
         /// <returns></returns>
-        public float GetPressureHead(IEcoregionPnET ecoregion)
+        public float GetPressureHead(IPnETEcoregionData ecoregion)
         {
             return pressureHeadTable[ecoregion, (int)Math.Round(soilWaterContent * 100.0)];
         }
@@ -114,7 +114,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="ecoregion"></param>
         /// <param name="_soilWaterContent"></param>
         /// <returns></returns>
-        public float GetPressureHead(IEcoregionPnET ecoregion, float _soilWaterContent)
+        public float GetPressureHead(IPnETEcoregionData ecoregion, float _soilWaterContent)
         {
             return pressureHeadTable[ecoregion, (int)Math.Round(_soilWaterContent * 100.0)];
         }
@@ -207,7 +207,7 @@ namespace Landis.Library.PnETCohorts
                 throw new Exception(msg);
             }
             Globals.ModelCore.UI.WriteLine("Eco\tSoiltype\tWiltingPoint\t\tFieldCapacity\tFC-WP\t\tPorosity");
-            foreach (IEcoregionPnET ecoregion in EcoregionData.Ecoregions) if (ecoregion.Active)
+            foreach (IPnETEcoregionData ecoregion in EcoregionData.Ecoregions) if (ecoregion.Active)
             {
                 // Volumetric soil water content (mm/m) at field capacity
                 ecoregion.FieldCapacity = (float)pressureHeadTable.CalcSoilWaterContent(-Constants.FieldCapacity_kPa, ecoregion.SoilType);

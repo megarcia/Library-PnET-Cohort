@@ -1638,19 +1638,19 @@ namespace Landis.Library.PnETCohorts
             data.MaxFolYear = 0;
         }
 
-        public void ReduceBiomass(object sitecohorts, double frac, ExtensionType disturbanceType)
+        public void ReduceBiomass(object sitecohorts, double reductionFrac, ExtensionType disturbanceType)
         {
             if (!((SiteCohorts)sitecohorts).DisturbanceTypesReduced.Contains(disturbanceType))
             {
                 Disturbance.ReduceDeadPools(sitecohorts, disturbanceType);  // Reduce dead pools before adding through Disturbance
                 ((SiteCohorts)sitecohorts).DisturbanceTypesReduced.Add(disturbanceType);
             }
-            Disturbance.AllocateDeadPools(sitecohorts, this, disturbanceType, frac);
-            data.TotalBiomass *= (float)(1.0 - frac);
+            Disturbance.AllocateDeadPools(sitecohorts, this, disturbanceType, reductionFrac);
+            data.TotalBiomass *= (float)(1.0 - reductionFrac);
             data.AGBiomass = (1 - PnETspecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
             data.MaxBiomass = Math.Max(data.MaxBiomass, data.TotalBiomass);
-            Fol *= (float)(1.0 - frac);
+            Fol *= (float)(1.0 - reductionFrac);
             data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
         }
 
@@ -1683,7 +1683,8 @@ namespace Landis.Library.PnETCohorts
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
             float LAISum = cumulativeLAI;
-            float LAIlayerMax = (float)Math.Max(0.01, 25.0F - LAISum); // Cohort LAI is capped at 25; once LAI reaches 25 subsequent sublayers get LAI of 0.01
+            // Cohort LAI is capped at 25; once LAI reaches 25, subsequent sublayers get LAI of 0.01
+            float LAIlayerMax = (float)Math.Max(0.01, 25.0F - LAISum);
             float LAIlayer = 1 / (float)Globals.IMAX * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)Globals.IMAX) * fol);
             if (fol > 0 && LAIlayer <= 0)
             {

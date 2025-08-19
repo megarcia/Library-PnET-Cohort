@@ -1,7 +1,5 @@
 //  Authors:  Robert M. Scheller, James B. Domingo
 
-using System;
-
 namespace Landis.Library.PnETCohorts
 {
     /// <summary>
@@ -71,7 +69,6 @@ namespace Landis.Library.PnETCohorts
                         youngBiomass += (int)cohort.Data.UniversalData.Biomass;
                 }
             }
-
             return totalBiomass;
         }
 
@@ -91,7 +88,6 @@ namespace Landis.Library.PnETCohorts
                         totalBiomass += (int)cohort.Data.UniversalData.Biomass;
                 }
             }
-
             return totalBiomass;
         }
     }

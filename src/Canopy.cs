@@ -34,5 +34,13 @@ namespace Landis.Library.PnETCohorts
                 LAIlayer = (float)Math.Min(LAIlayerMax, LAIlayer);
             return LAIlayer;
         }
+
+        public static float CalcCohortLAI(IPnETSpecies species, float fol)
+        {
+            float CohortLAI = 0;
+            for (int i = 0; i < Globals.IMAX; i++)
+                CohortLAI += CalcLAI(species, fol, i, CohortLAI);
+            return CohortLAI;
+        }
     }
 }

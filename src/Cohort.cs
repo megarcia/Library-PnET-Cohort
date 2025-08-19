@@ -784,10 +784,8 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass = (uint)Math.Max(1.0, NSC / (PnETspecies.NSCFrac * PnETspecies.CFracBiomass) * fracBiomass);
             data.AGBiomass = (1 - PnETspecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
             data.MaxBiomass = data.TotalBiomass;
-            float cohortLAI = 0;
             float cohortIdealFol = PnETspecies.FolBiomassFrac * FActiveBiom * data.TotalBiomass;
-            for (int i = 0; i < Globals.IMAX; i++)
-                cohortLAI += Canopy.CalcLAI(PnETSpecies, cohortIdealFol, i, cohortLAI);
+            float cohortLAI = Canopy.CalcCohortLAI(PnETSpecies, cohortIdealFol);
             data.LastLAI = cohortLAI;
             data.LastAGBio = data.AGBiomass;
             data.CanopyLayerFrac = data.LastLAI / PnETspecies.MaxLAI;
@@ -883,8 +881,8 @@ namespace Landis.Library.PnETCohorts
             data.LastSeasonFRad = new List<float>();
             data.adjFolBiomassFrac = PnETspecies.FolBiomassFrac_intercept;
             data.ColdKill = int.MaxValue;
-            float cohortLAI = 0;
             float cohortIdealFol = PnETspecies.FolBiomassFrac_intercept * FActiveBiom * data.TotalBiomass;
+            float cohortLAI = 0;
             for (int i = 0; i < Globals.IMAX; i++)
             {
                 float LAISum = Canopy.CalcLAISum(i, LAI);
@@ -937,8 +935,8 @@ namespace Landis.Library.PnETCohorts
             data.LastSeasonFRad.Add(lastSeasonAvgFRad);
             CalcAdjFolBiomassFrac();
             data.ColdKill = int.MaxValue;
-            float cohortLAI = 0;
             float cohortIdealFol = adjFolBiomassFrac * FActiveBiom * data.TotalBiomass;
+            float cohortLAI = 0;
             for (int i = 0; i < Globals.IMAX; i++)
             {
                 float LAISum = Canopy.CalcLAISum(i, LAI);
@@ -1222,12 +1220,10 @@ namespace Landis.Library.PnETCohorts
                         if (FolTentative > 0.01)
                         {
                             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
-                            float tentativeLAI = 0;
-                            for (int i = 0; i < Globals.IMAX; i++)
-                                tentativeLAI += Canopy.CalcLAI(PnETSpecies, Fol + FolTentative, i, tentativeLAI);
+                            float tentativeLAI = Canopy.CalcCohortLAI(PnETSpecies, Fol + FolTentative);
                             float tentativeCanopyFrac = tentativeLAI / PnETspecies.MaxLAI;
                             if (sumCanopyFrac > 1)
-                                tentativeCanopyFrac = tentativeCanopyFrac / sumCanopyFrac;
+                                tentativeCanopyFrac /= sumCanopyFrac;
                             // Downgrade foliage added if canopy is expanding 
                             float actualFol = FolTentative;
                             // Add Foliage

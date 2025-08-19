@@ -11,7 +11,7 @@ namespace Landis.Library.PnETCohorts
     /// <summary>
     /// The information for a tree species (its index and parameters).
     /// </summary>
-    public class EcoregionData : IPnETEcoregionData
+    public class PnETEcoregionData : IPnETEcoregionData
     {
         #region private variables
         private Landis.Core.IEcoregion ecoregion;
@@ -286,7 +286,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                System.Type type = typeof(EcoregionData); // Get type pointer
+                System.Type type = typeof(PnETEcoregionData); // Get type pointer
                 List<string> names = type.GetProperties().Select(x => x.Name).ToList(); // Obtain all fields
                 names.Add("ClimateFileName");
 
@@ -391,16 +391,16 @@ namespace Landis.Library.PnETCohorts
             AllEcoregions = new Dictionary<IEcoregion, IPnETEcoregionData>();
             foreach (IEcoregion ecoregion in Globals.ModelCore.Ecoregions)
             {
-                AllEcoregions.Add(ecoregion, new EcoregionData(ecoregion));
+                AllEcoregions.Add(ecoregion, new PnETEcoregionData(ecoregion));
             }
             all_values = new Dictionary<IPnETEcoregionData, Dictionary<DateTime, IPnETEcoregionVars>>();
-            foreach (IPnETEcoregionData ecoregion in EcoregionData.AllEcoregions.Values)
+            foreach (IPnETEcoregionData ecoregion in PnETEcoregionData.AllEcoregions.Values)
             {
                 all_values[ecoregion] = new Dictionary<DateTime, IPnETEcoregionVars>();
             }
         }
 
-        public EcoregionData(Landis.Core.IEcoregion ecoregion)
+        public PnETEcoregionData(Landis.Core.IEcoregion ecoregion)
         {
             this.ecoregion = ecoregion;
             this._rootingdepth = rootingdepth[ecoregion];

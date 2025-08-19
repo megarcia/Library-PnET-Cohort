@@ -338,7 +338,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="SiteOutputName"></param>
         public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string initialCommunitiesSpinup, float minFolRatioFactor, string SiteOutputName = null)
         {
-            this.Ecoregion = EcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[site]);
+            this.Ecoregion = PnETEcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[site]);
             this.Site = site;
             cohorts = new Dictionary<ISpecies, List<Cohort>>();
             SpeciesEstablishedByPlant = new List<ISpecies>();
@@ -363,7 +363,7 @@ namespace Landis.Library.PnETCohorts
                 if (initialSites.ContainsKey(key) == false)
                     initialSites.Add(key, this);
             }
-            List<IPnETEcoregionVars> ecoregionInitializer = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, StartDate, StartDate.AddMonths(1)) : EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
+            List<IPnETEcoregionVars> ecoregionInitializer = usingClimateLibrary ? PnETEcoregionData.GetClimateRegionData(Ecoregion, StartDate, StartDate.AddMonths(1)) : PnETEcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
             hydrology = new Hydrology(Ecoregion.FieldCapacity);
             avgSoilWaterContent = hydrology.SoilWaterContent;
             subcanopypar = ecoregionInitializer[0].PAR0;
@@ -1026,7 +1026,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="SiteOutputName"></param>
         public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, string SiteOutputName = null)
         {
-            this.Ecoregion = EcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[site]);
+            this.Ecoregion = PnETEcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[site]);
             this.Site = site;
             cohorts = new Dictionary<ISpecies, List<Cohort>>();
             SpeciesEstablishedByPlant = new List<ISpecies>();
@@ -1162,7 +1162,7 @@ namespace Landis.Library.PnETCohorts
                 DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - (sortedAgeCohorts[0].Data.Age - 1)), 1, 15);
                 if (date.CompareTo(StartDate) == 0)
                     break;
-                var climate_vars = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, date, EndDate) : EcoregionData.GetData(Ecoregion, date, EndDate);
+                var climate_vars = usingClimateLibrary ? PnETEcoregionData.GetClimateRegionData(Ecoregion, date, EndDate) : PnETEcoregionData.GetData(Ecoregion, date, EndDate);
                 Grow(climate_vars, AllowMortality,SiteOutputName != null);
                 date = EndDate;
             }
@@ -2263,7 +2263,7 @@ namespace Landis.Library.PnETCohorts
         private float CalcAlbedoWithSnow(Cohort cohort, float albedo, float snowDepth)
         {
             // Inactive sites become large negative values on the map and are not considered in the averages
-            if (!EcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[this.Site]).Active)
+            if (!PnETEcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[this.Site]).Active)
                 return -1;
             float finalAlbedo = 0;
             float snowMultiplier = snowDepth >= Constants.snowReflectanceThreshold ? 1 : snowDepth / Constants.snowReflectanceThreshold;

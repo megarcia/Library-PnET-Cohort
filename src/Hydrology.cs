@@ -207,7 +207,7 @@ namespace Landis.Library.PnETCohorts
                 throw new Exception(msg);
             }
             Globals.ModelCore.UI.WriteLine("Eco\tSoiltype\tWiltingPoint\t\tFieldCapacity\tFC-WP\t\tPorosity");
-            foreach (IPnETEcoregionData ecoregion in EcoregionData.Ecoregions) if (ecoregion.Active)
+            foreach (IPnETEcoregionData ecoregion in PnETEcoregionData.Ecoregions) if (ecoregion.Active)
             {
                 // Volumetric soil water content (mm/m) at field capacity
                 ecoregion.FieldCapacity = (float)pressureHeadTable.CalcSoilWaterContent(-Constants.FieldCapacity_kPa, ecoregion.SoilType);

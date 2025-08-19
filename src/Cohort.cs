@@ -995,7 +995,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="allowMortality"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool CalcPhotosynthesis(float PrecInByCanopyLayer, int precipCount, float leakageFrac, ref Hydrology hydrology, float mainLayerPAR, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float fOzone, float frostFreeFrac, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables, SiteCohorts siteCohort, float sumCanopyFrac, float groundPotentialETbyEvent, bool allowMortality = true)
+        public bool CalcPhotosynthesis(float PrecInByCanopyLayer, int precipCount, float leakageFrac, ref Hydrology hydrology, float mainLayerPAR, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float fOzone, float frostFreeFrac, float MeltInByCanopyLayer, bool coldKillBoolean, IPnETEcoregionVars variables, SiteCohorts siteCohort, float sumCanopyFrac, float groundPotentialETbyEvent, bool allowMortality = true)
         {
             bool success = true;
             float lastFOzone = fOzone;
@@ -1480,7 +1480,7 @@ namespace Landis.Library.PnETCohorts
                 AgeOnlyDeathEvent(sender, new DeathEventArgs(cohort, site, disturbanceType));
         }
 
-        public void UpdateCohortData(IEcoregionPnETVariables monthdata)
+        public void UpdateCohortData(IPnETEcoregionVars monthdata)
         {
             float netPsnSum = NetPsn.Sum();
             float grossPsnSum = GrossPsn.Sum();

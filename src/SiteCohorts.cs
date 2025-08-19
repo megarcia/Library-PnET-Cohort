@@ -363,7 +363,7 @@ namespace Landis.Library.PnETCohorts
                 if (initialSites.ContainsKey(key) == false)
                     initialSites.Add(key, this);
             }
-            List<IEcoregionPnETVariables> ecoregionInitializer = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, StartDate, StartDate.AddMonths(1)) : EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
+            List<IPnETEcoregionVars> ecoregionInitializer = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, StartDate, StartDate.AddMonths(1)) : EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
             hydrology = new Hydrology(Ecoregion.FieldCapacity);
             avgSoilWaterContent = hydrology.SoilWaterContent;
             subcanopypar = ecoregionInitializer[0].PAR0;
@@ -1217,7 +1217,7 @@ namespace Landis.Library.PnETCohorts
             return (float)Math.Max(0.0, Math.Min(1.0, (Tavg - 2) / -7));
         }
 
-        public bool Grow(List<IEcoregionPnETVariables> data, bool AllowMortality = true, bool outputCohortData = true)
+        public bool Grow(List<IPnETEcoregionVars> data, bool AllowMortality = true, bool outputCohortData = true)
         {
             bool success = true;
             float sumPressureHead = 0;
@@ -3509,7 +3509,7 @@ namespace Landis.Library.PnETCohorts
             return s;
         }
 
-        private void AddSiteOutput(IEcoregionPnETVariables monthdata)
+        private void AddSiteOutput(IPnETEcoregionVars monthdata)
         {
             double maxLayerRatio = 0;
             if (layerThreshRatio.Count() > 0)

@@ -85,6 +85,6 @@
         /// </summary>
         float FrostFactor { get; }
 
-        IEcoregionPnETVariables Variables { get; set; }        
+        IPnETEcoregionVars Variables { get; set; }        
     }
 }

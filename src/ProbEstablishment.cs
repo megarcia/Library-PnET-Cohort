@@ -55,7 +55,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Dictionary<IPnETSpecies,float> CalcProbEstablishmentForMonth(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat, bool invertProbEstablishment, float fracRootAboveFrost)
+        public Dictionary<IPnETSpecies,float> CalcProbEstablishmentForMonth(IPnETEcoregionVars pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat, bool invertProbEstablishment, float fracRootAboveFrost)
         {
             Dictionary<IPnETSpecies, float> speciesProbEstablishment = new Dictionary<IPnETSpecies, float>();
             float rangeHalfSat = maxHalfSat - minHalfSat;

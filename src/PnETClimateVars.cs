@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class PnETClimateVars : IEcoregionPnETVariables
+    public class PnETClimateVars : IPnETEcoregionVars
     {
         #region private fields
         private MonthlyClimateRecord _monthlyClimateRecord;

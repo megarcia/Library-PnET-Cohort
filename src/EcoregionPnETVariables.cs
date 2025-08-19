@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class EcoregionPnETVariables : IEcoregionPnETVariables
+    public class EcoregionPnETVariables : IPnETEcoregionVars
     {
         private DateTime _date;
         private IObservedClimate obs_clim;

@@ -1,7 +1,7 @@
 ﻿
 namespace Landis.Library.PnETCohorts
 {
-    public interface IEcoregionPnETVariables
+    public interface IPnETEcoregionVars
     {
         /// <summary>
         /// Photosynthetically active radiation, average daily during the month (umol/m2*s)

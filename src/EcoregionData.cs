@@ -30,7 +30,7 @@ namespace Landis.Library.PnETCohorts
         private float _leakageFrostDepth;
         private float _winterSTD;
         private float _mossDepth;
-        IEcoregionPnETVariables _variables;
+        IPnETEcoregionVars _variables;
         private float _evapDepth;
         private float _frostFactor;
         #endregion
@@ -40,7 +40,7 @@ namespace Landis.Library.PnETCohorts
         private static bool dtemp;
         private static float etExtCoeff;
         private static float retCropCoeff;
-        private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
+        private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IPnETEcoregionVars>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IPnETEcoregionVars>>();
         private static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> rootingdepth;
@@ -79,7 +79,7 @@ namespace Landis.Library.PnETCohorts
         #endregion
 
         #region accessors for private variables
-        public IEcoregionPnETVariables Variables
+        public IPnETEcoregionVars Variables
         {
             get
             {
@@ -294,10 +294,10 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public static List<IEcoregionPnETVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
+        public static List<IPnETEcoregionVars> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
         {
             // Monthly simulation data untill but not including end
-            List<IEcoregionPnETVariables> data = new List<IEcoregionPnETVariables>();
+            List<IPnETEcoregionVars> data = new List<IPnETEcoregionVars>();
             // Date: the last date in the collection of running data
             DateTime date = new DateTime(start.Ticks);
             var oldYear = -1;
@@ -324,7 +324,7 @@ namespace Landis.Library.PnETCohorts
                         }
                         var monthlyData = new MonthlyClimateRecord(ecoregion, date);
                         List<IPnETSpecies> species = SpeciesParameters.PnETSpecies.AllSpecies.ToList();
-                        IEcoregionPnETVariables ecoregion_variables = new PnETClimateVars(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
+                        IPnETEcoregionVars ecoregion_variables = new PnETClimateVars(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
                         all_values[ecoregion].Add(date, ecoregion_variables);
                     }
                     data.Add(all_values[ecoregion][date]);
@@ -335,10 +335,10 @@ namespace Landis.Library.PnETCohorts
             return data;
         }
 
-        public static List<IEcoregionPnETVariables> GetData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
+        public static List<IPnETEcoregionVars> GetData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
         {
             // Monthly simulation data untill but not including end
-            List<IEcoregionPnETVariables> data = new List<IEcoregionPnETVariables>();
+            List<IPnETEcoregionVars> data = new List<IPnETEcoregionVars>();
             // Date: the last date in the collection of running data
             DateTime date = new DateTime(start.Ticks);
             // Ensure only one thread at a time accesses this shared object
@@ -350,7 +350,7 @@ namespace Landis.Library.PnETCohorts
                     {
                         IObservedClimate observedClimate = ObservedClimate.GetData(ecoregion, date);
                         List<IPnETSpecies> species = SpeciesParameters.PnETSpecies.AllSpecies.ToList();
-                        IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species, ecoregion.Latitude);
+                        IPnETEcoregionVars ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species, ecoregion.Latitude);
                         try
                         {
                             all_values[ecoregion].Add(date, ecoregion_variables);
@@ -393,10 +393,10 @@ namespace Landis.Library.PnETCohorts
             {
                 AllEcoregions.Add(ecoregion, new EcoregionData(ecoregion));
             }
-            all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
+            all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IPnETEcoregionVars>>();
             foreach (IEcoregionPnET ecoregion in EcoregionData.AllEcoregions.Values)
             {
-                all_values[ecoregion] = new Dictionary<DateTime, IEcoregionPnETVariables>();
+                all_values[ecoregion] = new Dictionary<DateTime, IPnETEcoregionVars>();
             }
         }
 

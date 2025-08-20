@@ -203,7 +203,8 @@ namespace Landis.Library.PnETCohorts
                 return index;
             }
             cohort.IncrementAge();
-            int biomassChange = (int)Cohorts.BiomassCalculator.CalcChange(cohort, site);
+            // int biomassChange = (int)Cohorts.BiomassCalculator.CalcChange(cohort, site);
+            int biomassChange = cohort.CalcBiomassChange();
             Debug.Assert(-cohort.TotalBiomass <= biomassChange);  // Cohort can't lose more biomass than it has
             cohort.ChangeBiomass(biomassChange);
             if (cohort.TotalBiomass > 0)

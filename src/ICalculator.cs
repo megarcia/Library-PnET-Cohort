@@ -1,4 +1,6 @@
-//  Authors:  Robert M. Scheller, James B. Domingo
+// NOTE by MG on 20250820: with changes to Cohort and SpeciesCohorts
+// classes, neither of the items in this interface are referenced.
+// This interface will be deprecated in next commit.
 
 using Landis.Core;
 using Landis.SpatialModeling;

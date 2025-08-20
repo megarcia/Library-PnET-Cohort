@@ -745,6 +745,15 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
+        /// Calculate the cohort biomass change.
+        /// </summary>
+        public int CalcBiomassChange()
+        {
+            int dBiomass = (int)data.AGBiomass - (int)data.LastAGBio;
+            return dBiomass;
+        }
+
+        /// <summary>
         /// Change the cohort biomass.
         /// </summary>
         public void ChangeBiomass(int dBiomass)
@@ -1526,7 +1535,7 @@ namespace Landis.Library.PnETCohorts
                        GrossPsn.Sum() + "," +
                        FoliarRespiration.Sum() + "," +
                        MaintenanceRespiration.Sum() + "," +
-                       netPsnSum + "," +                  // Sum over canopy layers
+                       netPsnSum + "," + // Sum over canopy layers
                        transpirationSum + "," +
                        WUE.ToString() + "," +
                        Fol + "," +

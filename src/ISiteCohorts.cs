@@ -2,7 +2,7 @@
 
 namespace Landis.Library.PnETCohorts 
 {
-    public interface ISiteCohorts : Landis.Library.UniversalCohorts.ISiteCohorts
+    public interface ISiteCohorts : Library.UniversalCohorts.ISiteCohorts
     {
         float[] NetPsn { get; }
         float[] MaintResp { get; }

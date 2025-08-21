@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class SiteCohorts : Landis.Library.UniversalCohorts.SiteCohorts, ISiteCohorts
+    public class SiteCohorts : Library.UniversalCohorts.SiteCohorts, ISiteCohorts
     {
         private float canopylaimax;
         private float avgSoilWaterContent;
@@ -373,9 +373,9 @@ namespace Landis.Library.PnETCohorts
             else
                 probEstablishment = new ProbEstablishment(null, null);
             bool biomassProvided = false;
-            foreach (Landis.Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+            foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
             {
-                foreach (Landis.Library.UniversalCohorts.ICohort cohort in speciesCohorts)
+                foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
                 {
                     if (cohort.Data.Biomass > 0)  // 0 biomass indicates biomass value was not read in
                     {
@@ -390,9 +390,9 @@ namespace Landis.Library.PnETCohorts
                 List<double> CohortMaxBiomassList = new List<double>();
                 if (initialCommunitiesSpinup.ToLower() == "nospinup")
                 {
-                    foreach (Landis.Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                    foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                     {
-                        foreach (Landis.Library.UniversalCohorts.ICohort cohort in speciesCohorts)
+                        foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
                         {
                             // TODO: Add warning if biomass is 0
                             bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.PnETSpecies[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking, cohort.Data.SuccessionTimestep));
@@ -436,9 +436,9 @@ namespace Landis.Library.PnETCohorts
                         }
                     }
                     ClearAllCohorts();
-                    foreach (Landis.Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                    foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                     {
-                        foreach (Landis.Library.UniversalCohorts.ICohort cohort in speciesCohorts)
+                        foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
                         {
                             // TODO: Add warning if biomass is 0
                             int age = cohort.Data.Age;
@@ -882,9 +882,9 @@ namespace Landis.Library.PnETCohorts
                             ClearAllCohorts();
                             CohortBiomassList = new List<double>();
                             CohortMaxBiomassList = new List<double>();
-                            foreach (Landis.Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                            foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                             {
-                                foreach (Landis.Library.UniversalCohorts.ICohort cohort in speciesCohorts)
+                                foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
                                 {
                                     int age = cohort.Data.Age;
                                     ISpecies spp = cohort.Species;
@@ -940,9 +940,9 @@ namespace Landis.Library.PnETCohorts
                             ClearAllCohorts();
                             CohortBiomassList = new List<double>();
                             CohortMaxBiomassList = new List<double>();
-                            foreach (Landis.Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                            foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                             {
-                                foreach (Landis.Library.UniversalCohorts.ICohort cohort in speciesCohorts)
+                                foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
                                 {
                                     int age = cohort.Data.Age;
                                     ISpecies spp = cohort.Species;
@@ -970,9 +970,9 @@ namespace Landis.Library.PnETCohorts
                             ClearAllCohorts();
                             CohortBiomassList = new List<double>();
                             CohortMaxBiomassList = new List<double>();
-                            foreach (Landis.Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                            foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                             {
-                                foreach (Landis.Library.UniversalCohorts.ICohort cohort in speciesCohorts)
+                                foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
                                 {
                                     // TODO: Add warning if biomass is 0
                                     bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.PnETSpecies[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking, cohort.Data.SuccessionTimestep));
@@ -1106,10 +1106,10 @@ namespace Landis.Library.PnETCohorts
         /// <exception cref="System.Exception"></exception>
         private void SpinUp(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string SiteOutputName = null, bool AllowMortality = true)
         {
-            List<Landis.Library.UniversalCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.UniversalCohorts.ICohort>();
+            List<Library.UniversalCohorts.ICohort> sortedAgeCohorts = new List<Library.UniversalCohorts.ICohort>();
             foreach (var speciesCohorts in initialCommunity.Cohorts)
             {
-                foreach (Landis.Library.UniversalCohorts.ICohort cohort in speciesCohorts)
+                foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
                 {
                     sortedAgeCohorts.Add(cohort);
                 }
@@ -3242,17 +3242,17 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        Landis.Library.UniversalCohorts.ISpeciesCohorts IISiteCohorts<Landis.Library.UniversalCohorts.ISpeciesCohorts>.this[ISpecies species]
+        Library.UniversalCohorts.ISpeciesCohorts IISiteCohorts<Library.UniversalCohorts.ISpeciesCohorts>.this[ISpecies species]
         {
             get
             {
                 if (cohorts.ContainsKey(species))
-                    return (Landis.Library.UniversalCohorts.ISpeciesCohorts)GetSpeciesCohort(cohorts[species]);
+                    return (Library.UniversalCohorts.ISpeciesCohorts)GetSpeciesCohort(cohorts[species]);
                 return null;
             }
         }
 
-        public Landis.Library.UniversalCohorts.ISpeciesCohorts this[ISpecies species]
+        public Library.UniversalCohorts.ISpeciesCohorts this[ISpecies species]
         {
             get
             {
@@ -3262,7 +3262,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public override void RemoveMarkedCohorts(Landis.Library.UniversalCohorts.ICohortDisturbance disturbance)
+        public override void RemoveMarkedCohorts(Library.UniversalCohorts.ICohortDisturbance disturbance)
         {
             base.RemoveMarkedCohorts(disturbance);
             ReduceOrKillCohorts(disturbance);
@@ -3275,7 +3275,7 @@ namespace Landis.Library.PnETCohorts
             base.RemoveMarkedCohorts(disturbance);
             int totalReduction = 0;
             List<Cohort> ToRemove = new List<Cohort>();
-            Library.UniversalCohorts.SpeciesCohortBoolArray isSpeciesCohortDamaged = new Landis.Library.UniversalCohorts.SpeciesCohortBoolArray();
+            Library.UniversalCohorts.SpeciesCohortBoolArray isSpeciesCohortDamaged = new Library.UniversalCohorts.SpeciesCohortBoolArray();
             foreach (ISpecies spc in cohorts.Keys)
             {
                 SpeciesCohorts speciescohort = GetSpeciesCohort(cohorts[spc]);               
@@ -3559,7 +3559,7 @@ namespace Landis.Library.PnETCohorts
             return GetEnumerator();
         }
 
-        IEnumerator<Library.UniversalCohorts.ISpeciesCohorts> IEnumerable<Landis.Library.UniversalCohorts.ISpeciesCohorts>.GetEnumerator()
+        IEnumerator<Library.UniversalCohorts.ISpeciesCohorts> IEnumerable<Library.UniversalCohorts.ISpeciesCohorts>.GetEnumerator()
         {
             foreach (ISpecies species in cohorts.Keys)
             {

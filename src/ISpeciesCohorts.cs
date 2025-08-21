@@ -8,7 +8,7 @@ namespace Landis.Library.PnETCohorts
     /// <summary>
     /// The biomass cohorts for a particular species at a site.
     /// </summary>
-    public interface ISpeciesCohorts : Landis.Library.UniversalCohorts.ISpeciesCohorts
+    public interface ISpeciesCohorts : Library.UniversalCohorts.ISpeciesCohorts
     {
     }
 }

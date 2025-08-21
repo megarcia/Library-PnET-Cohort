@@ -247,7 +247,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        PnETSpecies(PostFireRegeneration postFireGeneration,
+        PnETSpecies(Landis.Core.PostFireRegeneration postFireRegeneration,
                     float nscfrac, float cfracbiomass, float wooddebrisdecomprate,
                     float bgbiomassfrac, float folbiomassfrac, float liveWoodBiomassFrac,
                     float photosynthesisfage, float h1, float h2, float h3,
@@ -270,51 +270,65 @@ namespace Landis.Library.PnETCohorts
                     float refoliationCost, float nonRefoliationCost,
                     float maxLAI)
         {
-            this.postfireregeneration = postFireGeneration;
-            this._nscfrac = nscfrac;
-            this._cfracbiomass = cfracbiomass;
-            this._wooddebrisdecomprate = wooddebrisdecomprate;
-            this._bgbiomassfrac = bgbiomassfrac;
-            this._folbiomassfrac = folbiomassfrac;
-            this._liveWoodBiomassFrac = liveWoodBiomassFrac;
-            this._photosynthesisfage = photosynthesisfage;
-            this._h1 = h1;
-            this._h2 = h2;
-            this._h3 = h3;
-            this._h4 = h4;
-            this._slwdel = slwdel;
-            this._slwmax = slwmax;
-            this._folturnoverrate = folturnoverrate;
-            this._rootturnoverrate = rootturnoverrate;
-            this._halfsat = halfsat;
-            this._initialnsc = initialnsc;
-            this._k = k;
-            this._woodturnoverrate = woodturnoverrate;
-            this._establishmentfrad = establishmentfrad;
-            this._establishmentfwater = establishmentfwater;
-            this._maxProbEstablishment = maxprobestablishment;
-            this._follignin = follignin;
-            this._preventestablishment = preventestablishment;
-            this._psntopt = psntopt;
-            this._q10 = q10;
-            this._psntmin = psntmin;
-            this._psntmax = psntmax;
-            this._dvpd1 = dvpd1;
-            this._foln = foln;
-            this._dvpd2 = dvpd2;
-            this._amaxa = amaxa;
-            this._amaxb = amaxb;
-            this._amaxamod = amaxamod;
-            this._aMaxBFCO2 = aMaxBFCO2;
-            this._maintresp = maintresp;
-            this._baseFoliarRespiration = baseFoliarRespiration;
-            this._coldTolerance = coldTolerance;
-            this._ozoneSens = ozoneSens;
-            this.index = Index;
+            float initBiomass = initialnsc / (nscfrac * cfracbiomass);
+            _initBiomass = (int)(initBiomass * (1F - (bgbiomassfrac * rootturnoverrate) - ((1F - bgbiomassfrac) * woodturnoverrate)));
+            _nscfrac = nscfrac;
+            _cfracbiomass = cfracbiomass;
+            _wooddebrisdecomprate = wooddebrisdecomprate;
+            _bgbiomassfrac = bgbiomassfrac;
+            _folbiomassfrac = folbiomassfrac;
+            _liveWoodBiomassFrac = liveWoodBiomassFrac;
+            _photosynthesisfage = photosynthesisfage;
+            _h1 = h1;
+            _h2 = h2;
+            _h3 = h3;
+            _h4 = h4;
+            _slwdel = slwdel;
+            _slwmax = slwmax;
+            _folturnoverrate = folturnoverrate;
+            _rootturnoverrate = rootturnoverrate;
+            _halfsat = halfsat;
+            _initialnsc = initialnsc;
+            _k = k;
+            _woodturnoverrate = woodturnoverrate;
+            _establishmentfrad = establishmentfrad;
+            _establishmentfwater = establishmentfwater;
+            _maxProbEstablishment = maxprobestablishment;
+            _follignin = follignin;
+            _preventestablishment = preventestablishment;
+            _psntopt = psntopt;
+            _q10 = q10;
+            _psntmin = psntmin;
+            _psntmax = psntmax;
+            _dvpd1 = dvpd1;
+            _foln = foln;
+            _dvpd2 = dvpd2;
+            _amaxa = amaxa;
+            _amaxb = amaxb;
+            _amaxamod = amaxamod;
+            _aMaxBFCO2 = aMaxBFCO2;
+            _maintresp = maintresp;
+            _baseFoliarRespiration = baseFoliarRespiration;
+            _coldTolerance = coldTolerance;
+            _ozoneSens = ozoneSens;
+            _folN_slope = folN_slope;
+            _folN_intercept = folN_intercept;
+            _folBiomassFrac_slope = folBiomassFrac_slope;
+            _folBiomassFrac_intercept = folBiomassFrac_intercept;
+            _o3Coeff = o3Coeff;
+            _leafOnMinT = leafOnMinT;
+            _NSCreserve = NSCreserve;
+            _lifeform = lifeForm;
+            _refoliationMinimumTrigger = refoliationMinimumTrigger;
+            _maxRefoliationFrac = maxRefoliationFrac;
+            _refoliationCost = refoliationCost;
+            _nonRefoliationCost = nonRefoliationCost;
+            _maxLAI = maxLAI;
+            index = Index;
+            postfireregeneration = postFireRegeneration;
             this.name = name;
             this.maxSproutAge = maxSproutAge;
             this.minSproutAge = minSproutAge;
-            this.postfireregeneration = postFireGeneration;
             this.maxSeedDist = maxSeedDist;
             this.effectiveSeedDist = effectiveSeedDist;
             this.vegReprodProb = vegReprodProb;
@@ -322,27 +336,12 @@ namespace Landis.Library.PnETCohorts
             this.shadeTolerance = shadeTolerance;
             this.maturity = maturity;
             this.longevity = longevity;
-            this._folN_slope = folN_slope;
-            this._folN_intercept = folN_intercept;
-            this._folBiomassFrac_slope = folBiomassFrac_slope;
-            this._folBiomassFrac_intercept = folBiomassFrac_intercept;
-            this._o3Coeff = o3Coeff;
-            this._leafOnMinT = leafOnMinT;
-            uint initBiomass = (uint)(initialnsc / (nscfrac * cfracbiomass));
-            this._initBiomass = (int)(initBiomass - ((uint)(bgbiomassfrac * initBiomass)) * rootturnoverrate - ((uint)((1 - bgbiomassfrac) * initBiomass) * woodturnoverrate));
-            this._NSCreserve = NSCreserve;
-            this._lifeform = lifeForm;
-            this._refoliationMinimumTrigger = refoliationMinimumTrigger;
-            this._maxRefoliationFrac = maxRefoliationFrac;
-            this._refoliationCost = refoliationCost;
-            this._nonRefoliationCost = nonRefoliationCost;
-            this._maxLAI = maxLAI;
         }
 
         private PnETSpecies(Landis.Core.ISpecies species)
         {
-            uint initBiomass = (uint)(initialnsc[species] / (nscfrac[species] * cfracbiomass[species]));
-            _initBiomass = (int)(initBiomass - ((uint)(bgbiomassfrac[species] * initBiomass)) * rootturnoverrate[species] - ((uint)((1 - bgbiomassfrac[species]) * initBiomass) * woodturnoverrate[species]));
+            float initBiomass = initialnsc[species] / (nscfrac[species] * cfracbiomass[species]);
+            _initBiomass = (int)(initBiomass * (1F - (bgbiomassfrac[species] * rootturnoverrate[species]) - ((1F - bgbiomassfrac[species]) * woodturnoverrate[species])));
             _nscfrac = nscfrac[species];
             _cfracbiomass = cfracbiomass[species];
             _wooddebrisdecomprate = wooddebrisdecomprate[species];
@@ -390,9 +389,15 @@ namespace Landis.Library.PnETCohorts
             _refoliationCost = refoliationCost[species];
             _nonRefoliationCost = nonRefoliationCost[species];
             _maxLAI = maxLAI[species];
+            _mossScalar = mossScalar[species];
+            _folN_slope = folN_slope[species];
+            _folN_intercept = folN_intercept[species];
+            _folBiomassFrac_slope = folBiomassFrac_slope[species];
+            _folBiomassFrac_intercept = folBiomassFrac_intercept[species];
+            _o3Coeff = o3Coeff[species];
+            _leafOnMinT = leafOnMinT[species];
             index = species.Index;
             name = species.Name;
-            _mossScalar = mossScalar[species];
             maxSproutAge = species.MaxSproutAge;
             minSproutAge = species.MinSproutAge;
             postfireregeneration = species.PostFireRegeneration;
@@ -401,12 +406,6 @@ namespace Landis.Library.PnETCohorts
             vegReprodProb = species.VegReprodProb;
             maturity = species.Maturity;
             longevity = species.Longevity;
-            _folN_slope = folN_slope[species];
-            _folN_intercept = folN_intercept[species];
-            _folBiomassFrac_slope = folBiomassFrac_slope[species];
-            _folBiomassFrac_intercept = folBiomassFrac_intercept[species];
-            _o3Coeff = o3Coeff[species];
-            _leafOnMinT = leafOnMinT[species];
         }
 
         #region Accessors

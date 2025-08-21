@@ -184,7 +184,7 @@ namespace Landis.Library.PnETCohorts
             try
             {
                 Library.Parameters.Species.AuxParm<T> newvalues = new Library.Parameters.Species.AuxParm<T>(Globals.ModelCore.Species);
-                foreach (ISpecies species in Globals.ModelCore.Species)
+                foreach (Landis.Core.ISpecies species in Globals.ModelCore.Species)
                 {
                     speciesname = species.Name;
                     if (m.values.Count == 1) value = m.values.First().Value;

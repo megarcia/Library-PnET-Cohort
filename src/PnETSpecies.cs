@@ -9,7 +9,7 @@ namespace Landis.Library.PnETCohorts
     /// </summary>
     public class PnETSpecies : IPnETSpecies
     {
-        static List<Tuple<ISpecies, IPnETSpecies>> SpeciesCombinations;
+        static List<Tuple<Landis.Core.ISpecies, IPnETSpecies>> SpeciesCombinations;
 
         #region private variables
         private float _halfSatFCO2;
@@ -136,8 +136,8 @@ namespace Landis.Library.PnETCohorts
         private static Library.Parameters.Species.AuxParm<float> nonRefoliationCost;
         private static Library.Parameters.Species.AuxParm<float> maxlai;
         private static Library.Parameters.Species.AuxParm<float> mossScalar;
-        private static Dictionary<ISpecies,float> maxLAI;
-        private static Dictionary<ISpecies, string> lifeForm;
+        private static Dictionary<Landis.Core.ISpecies,float> maxLAI;
+        private static Dictionary<Landis.Core.ISpecies, string> lifeForm;
         #endregion
 
         public PnETSpecies()
@@ -205,8 +205,8 @@ namespace Landis.Library.PnETCohorts
             nonRefoliationCost = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NonRefolCost");
             maxlai = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxLAI"); //Optional
             mossScalar = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MossScalar"); //Optional
-            maxLAI = new Dictionary<ISpecies, float>();
-            foreach (ISpecies species in Globals.ModelCore.Species)
+            maxLAI = new Dictionary<Landis.Core.ISpecies, float>();
+            foreach (Landis.Core.ISpecies species in Globals.ModelCore.Species)
             {
                 if (maxlai[species] == -9999F)
                 {
@@ -224,8 +224,8 @@ namespace Landis.Library.PnETCohorts
                     maxLAI.Add(species, maxlai[species]);
             }
             lifeform = (Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("Lifeform");
-            lifeForm = new Dictionary<ISpecies, string>();
-            foreach (ISpecies species in Globals.ModelCore.Species)
+            lifeForm = new Dictionary<Landis.Core.ISpecies, string>();
+            foreach (Landis.Core.ISpecies species in Globals.ModelCore.Species)
             {
                 if (lifeform != null && lifeform[species] != null && !string.IsNullOrEmpty(lifeform[species]))
                 {
@@ -239,11 +239,11 @@ namespace Landis.Library.PnETCohorts
             }
             #endregion
 
-            SpeciesCombinations = new List<Tuple<ISpecies, IPnETSpecies>>();
-            foreach (ISpecies species in Globals.ModelCore.Species)
+            SpeciesCombinations = new List<Tuple<Landis.Core.ISpecies, IPnETSpecies>>();
+            foreach (Landis.Core.ISpecies species in Globals.ModelCore.Species)
             {
                 PnETSpecies pnetspecies = new PnETSpecies(species);
-                SpeciesCombinations.Add(new Tuple<ISpecies, IPnETSpecies>(species, pnetspecies));
+                SpeciesCombinations.Add(new Tuple<Landis.Core.ISpecies, IPnETSpecies>(species, pnetspecies));
             }
         }
 
@@ -339,7 +339,7 @@ namespace Landis.Library.PnETCohorts
             this._maxLAI = maxLAI;
         }
 
-        private PnETSpecies(ISpecies species)
+        private PnETSpecies(Landis.Core.ISpecies species)
         {
             uint initBiomass = (uint)(initialnsc[species] / (nscfrac[species] * cfracbiomass[species]));
             _initBiomass = (int)(initBiomass - ((uint)(bgbiomassfrac[species] * initBiomass)) * rootturnoverrate[species] - ((uint)((1 - bgbiomassfrac[species]) * initBiomass) * woodturnoverrate[species]));
@@ -426,7 +426,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public ISpecies this[IPnETSpecies species]
+        public Landis.Core.ISpecies this[IPnETSpecies species]
         {
             get
             {

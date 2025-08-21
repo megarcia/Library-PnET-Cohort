@@ -16,7 +16,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<float> SpeciesProbEstablishment = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
-                foreach (ISpecies species in Globals.ModelCore.Species)
+                foreach (Landis.Core.ISpecies species in Globals.ModelCore.Species)
                 {
                     IPnETSpecies pnetspecies = SpeciesParameters.PnETSpecies[species];
                     SpeciesProbEstablishment[species] = speciesProbEstablishment[pnetspecies];

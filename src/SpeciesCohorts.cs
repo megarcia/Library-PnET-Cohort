@@ -14,7 +14,7 @@ namespace Landis.Library.PnETCohorts
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly bool isDebugEnabled = log.IsDebugEnabled;
-        private ISpecies species;
+        private Landis.Core.ISpecies species;
         private bool isMaturePresent;
         private List<CohortData> cohortData; // List of cohorts is ordered oldest to youngest.
         private static SpeciesCohortBoolArray isSpeciesCohortDamaged;
@@ -92,7 +92,7 @@ namespace Landis.Library.PnETCohorts
         /// <remarks>
         /// Private constructor used by Clone method.
         /// </remarks>
-        private SpeciesCohorts(ISpecies species)
+        private SpeciesCohorts(Landis.Core.ISpecies species)
         {
             this.species = species;
         }
@@ -301,7 +301,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns>
         /// The total biomass of all the cohorts damaged by the disturbance.
         /// </returns>
-        public int MarkCohorts(ISpeciesCohortsDisturbance disturbance)
+        public int MarkCohorts(Landis.Core.ISpeciesCohortsDisturbance disturbance)
         {
             isSpeciesCohortDamaged.SetAllFalse(Count);
             disturbance.MarkCohortsForDeath(this, isSpeciesCohortDamaged);

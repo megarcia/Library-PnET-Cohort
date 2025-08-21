@@ -11,7 +11,7 @@ namespace Landis.Library.PnETCohorts
     { 
         public delegate void SubtractTranspiration(float transpiration, IPnETSpecies Species);
         public ushort index;
-        private ISpecies species;
+        private Landis.Core.ISpecies species;
         private IPnETSpecies PnETspecies;
         private CohortData data;
         private bool firstYear;
@@ -787,7 +787,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="SiteName"></param>
         /// <param name="fracBiomass"></param>
         /// <param name="cohortStacking"></param>
-        public Cohort(ISpecies species, IPnETSpecies PnETspecies, ushort establishmentYear, string SiteName, double fracBiomass, bool cohortStacking, ushort successionTimestep)
+        public Cohort(Landis.Core.ISpecies species, IPnETSpecies PnETspecies, ushort establishmentYear, string SiteName, double fracBiomass, bool cohortStacking, ushort successionTimestep)
         {
             this.species = species;
             this.PnETspecies = PnETspecies;
@@ -821,7 +821,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         /// <param name="species"></param>
         /// <param name="cohortData"></param>
-        public Cohort(ISpecies species, CohortData cohortData)
+        public Cohort(Landis.Core.ISpecies species, CohortData cohortData)
         {
             this.species = species;
             PnETspecies = SpeciesParameters.PnETSpecies.AllSpecies[species.Index];
@@ -888,7 +888,7 @@ namespace Landis.Library.PnETCohorts
         public Cohort(IPnETSpecies PnETspecies, ushort age, int woodBiomass, string SiteName, ushort establishmentYear, bool cohortStacking, ushort successionTimestep)
         {
             InitializeSubLayers();
-            species = (ISpecies)PnETspecies;
+            species = (Landis.Core.ISpecies)PnETspecies;
             this.PnETspecies = PnETspecies;
             data.SuccessionTimestep = successionTimestep;
             data.UniversalData.Age = age;
@@ -942,7 +942,7 @@ namespace Landis.Library.PnETCohorts
         public Cohort(IPnETSpecies PnETspecies, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort establishmentYear, bool cohortStacking, ushort successionTimestep, float lastSeasonAvgFRad)
         {
             InitializeSubLayers();
-            species = (ISpecies)PnETspecies;
+            species = (Landis.Core.ISpecies)PnETspecies;
             this.PnETspecies = PnETspecies;
             data.SuccessionTimestep = successionTimestep;
             data.UniversalData.Age = age;

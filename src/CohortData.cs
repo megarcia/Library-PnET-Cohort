@@ -289,7 +289,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="totalANPP"></param>
         /// <param name="species"></param>
         /// <param name="cohortStacking"></param>
-        public CohortData(ushort age, ushort successionTimestep, float totalBiomass, double totalANPP, ISpecies species, bool cohortStacking)
+        public CohortData(ushort age, ushort successionTimestep, float totalBiomass, double totalANPP, Landis.Core.ISpecies species, bool cohortStacking)
         {
             this.SuccessionTimestep = successionTimestep;
             this.AdjFolN = new float[Globals.IMAX];

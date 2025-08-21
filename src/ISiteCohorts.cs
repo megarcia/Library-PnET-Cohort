@@ -58,10 +58,10 @@ namespace Landis.Library.PnETCohorts
         float NetPsnSum { get; }
         float PotentialET { get; }
 
-        List<ISpecies> SpeciesByPlant { get; set; }
-        List<ISpecies> SpeciesBySerotiny { get; set; }
-        List<ISpecies> SpeciesByResprout { get; set; }
-        List<ISpecies> SpeciesBySeed { get; set; }
+        List<Landis.Core.ISpecies> SpeciesByPlant { get; set; }
+        List<Landis.Core.ISpecies> SpeciesBySerotiny { get; set; }
+        List<Landis.Core.ISpecies> SpeciesByResprout { get; set; }
+        List<Landis.Core.ISpecies> SpeciesBySeed { get; set; }
         List<int> CohortsBySuccession { get; set; }
         List<int> CohortsByCold { get; set; }
         List<int> CohortsByHarvest { get; set; }

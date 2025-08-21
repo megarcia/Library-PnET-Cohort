@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -231,7 +231,7 @@ namespace Landis.Library.PnETCohorts
                 {
                     string[] matches = new string[2];
                     if (Names.HasMultipleMatches(lifeform[species], ref matches))
-                        throw new System.Exception("LifeForm parameter " + lifeForm + " contains mutually exclusive terms: " + matches[0] + " and " + matches[1] + ".");
+                        throw new Exception("LifeForm parameter " + lifeForm + " contains mutually exclusive terms: " + matches[0] + " and " + matches[1] + ".");
                     lifeForm.Add(species, lifeform[species]);
                 }
                 else

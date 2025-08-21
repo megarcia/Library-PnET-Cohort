@@ -1,3 +1,4 @@
+using System;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -35,7 +36,7 @@ namespace Landis.Library.PnETCohorts
                 case 10: return 31;
                 case 11: return 30;
                 case 12: return 31;
-                default: throw new System.Exception("Month " + Month + " is not an integer between 1-12. Error assigning DaySpan");
+                default: throw new Exception("Month " + Month + " is not an integer between 1-12. Error assigning DaySpan");
             };
         }
 

@@ -299,7 +299,7 @@ namespace Landis.Library.PnETCohorts
             if (Names.TryGetParameter(Names.CohortBinSize, out CohortBinSizeParm))
             {
                 if (!Int32.TryParse(CohortBinSizeParm.Value, out CohortBinSize))
-                    throw new System.Exception("CohortBinSize is not an integer value.");
+                    throw new Exception("CohortBinSize is not an integer value.");
             }
             else
                 CohortBinSize = Timestep;
@@ -1143,7 +1143,7 @@ namespace Landis.Library.PnETCohorts
                 date = EndDate;
             }
             if (sortedAgeCohorts.Count > 0)
-                throw new System.Exception("Not all cohorts in the initial communities file were initialized.");
+                throw new Exception("Not all cohorts in the initial communities file were initialized.");
         }
 
         List<List<int>> GetRandomRange(List<List<int>> bins)
@@ -1375,14 +1375,14 @@ namespace Landis.Library.PnETCohorts
                 // Melt snow
                 float snowmelt = Math.Min(snowpack, CalcMaxSnowMelt(data[m].Tavg, data[m].DaySpan)); // mm
                 if (snowmelt < 0)
-                    throw new System.Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                    throw new Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 float newSnow = CalcSnowFrac(data[m].Tavg) * data[m].Prec;
                 float newSnowDepth = newSnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
                 if (newSnowDepth < 0 || newSnowDepth > data[m].Prec)
-                    throw new System.Exception("Error, newSnowDepth = " + newSnowDepth + " availablePrecipitation = " + data[m].Prec);
+                    throw new Exception("Error, newSnowDepth = " + newSnowDepth + " availablePrecipitation = " + data[m].Prec);
                 snowpack += newSnowDepth - snowmelt;
                 if (snowpack < 0)
-                    throw new System.Exception("Error, snowpack = " + snowpack + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                    throw new Exception("Error, snowpack = " + snowpack + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 fracRootAboveFrost = 1;
                 leakageFrac = Ecoregion.LeakageFrac;
                 float fracThawed = 0;
@@ -1593,7 +1593,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
                 if (data[m].Prec < 0)
-                    throw new System.Exception("Error, this.data[m].Prec = " + data[m].Prec + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                    throw new Exception("Error, this.data[m].Prec = " + data[m].Prec + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 // Calculate above-canopy reference daily ET
                 float ReferenceET = Evapotranspiration.CalcReferenceET_Hamon(data[m].Tavg, data[m].DayLength); //mm/day
                 float newrain = data[m].Prec - newSnow;
@@ -1606,13 +1606,13 @@ namespace Landis.Library.PnETCohorts
                 precLoss = surfaceRain * Ecoregion.PrecLossFrac;
                 float precin = surfaceRain - precLoss;
                 if (precin < 0)
-                    throw new System.Exception("Error, precin = " + precin + " newSnow = " + newSnow + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                    throw new Exception("Error, precin = " + precin + " newSnow = " + newSnow + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 // maximum number of precipitation events per month
                 int numEvents = Ecoregion.PrecipEvents;
                 // Divide precip into discrete events within the month
                 float PrecInByEvent = precin / numEvents;
                 if (PrecInByEvent < 0)
-                    throw new System.Exception("Error, PrecInByEvent = " + PrecInByEvent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                    throw new Exception("Error, PrecInByEvent = " + PrecInByEvent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 if (fracRootAboveFrost >= 1)
                 {
                     bool successpct = hydrology.SetFrozenSoilWaterContent(0F);

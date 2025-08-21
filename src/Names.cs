@@ -118,7 +118,7 @@ namespace Landis.Library.PnETCohorts
         {
             string filename = GetParameter(label).Value;
             if (System.IO.File.Exists(filename) == false)
-                throw new System.Exception("File not found " + filename);
+                throw new Exception("File not found " + filename);
             ParameterTableParser parser = new ParameterTableParser(filename, label, RowLabels, Columnheaders, transposed);
             Dictionary<string, Parameter<string>> parameters = Landis.Data.Load<Dictionary<string, Parameter<string>>>(filename, parser);
 
@@ -128,7 +128,7 @@ namespace Landis.Library.PnETCohorts
         public static Parameter<string> GetParameter(string label)
         {
             if (parameters.ContainsKey(label) == false)
-                throw new System.Exception("No value provided for parameter " + label);
+                throw new Exception("No value provided for parameter " + label);
 
             return parameters[label];
         }
@@ -136,15 +136,15 @@ namespace Landis.Library.PnETCohorts
         public static Parameter<string> GetParameter(string label, float min, float max)
         {
             if (parameters.ContainsKey(label) == false)
-                throw new System.Exception("No value provided for parameter " + label);
+                throw new Exception("No value provided for parameter " + label);
             Parameter<string> p = parameters[label];
             foreach (KeyValuePair<string, string> value in p)
             {
                 float f;
                 if (float.TryParse(value.Value, out f) == false)
-                    throw new System.Exception("Unable to parse value " + value.Value + " for parameter " + label + " unexpected format.");
+                    throw new Exception("Unable to parse value " + value.Value + " for parameter " + label + " unexpected format.");
                 if (f > max || f < min)
-                    throw new System.Exception("Parameter value " + value.Value + " for parameter " + label + " is out of range. [" + min + "," + max + "]");
+                    throw new Exception("Parameter value " + value.Value + " for parameter " + label + " is out of range. [" + min + "," + max + "]");
             }
 
             return p;

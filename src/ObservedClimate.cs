@@ -140,7 +140,7 @@ namespace Landis.Library.PnETCohorts
             }
             catch
             {
-                throw new System.Exception("Can't get climate data for ecoregion " + ecoregion.Name + " and date " + date.ToString());
+                throw new Exception("Can't get climate data for ecoregion " + ecoregion.Name + " and date " + date.ToString());
             }
         }
 
@@ -167,7 +167,7 @@ namespace Landis.Library.PnETCohorts
                         return d;
                 }
             }
-            throw new System.Exception("No climate entry for ecoregion date " + date);
+            throw new Exception("No climate entry for ecoregion date " + date);
         }
 
         public struct ColumnNumbers
@@ -223,9 +223,9 @@ namespace Landis.Library.PnETCohorts
            where T : System.IComparable<T>
         {
             if (Library.Parameters.InputValue_ExtensionMethods.GreaterThan<T>(value, max))
-                throw new System.Exception(label + " is out of range " + min + " " + max);
+                throw new Exception(label + " is out of range " + min + " " + max);
             if (Library.Parameters.InputValue_ExtensionMethods.LessThan<T>(value, min))
-                throw new System.Exception(label + " is out of range " + min + " " + max);
+                throw new Exception(label + " is out of range " + min + " " + max);
 
             return value;
         }

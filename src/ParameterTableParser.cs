@@ -52,7 +52,7 @@ namespace Landis.Library.PnETCohorts
             }
             List<string> Terms = new List<string>(headerline.Trim().Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries));
             if (Terms.Count != ReadHeaderLabelsCount)
-                throw new System.Exception("Headers/column numbers unequal");
+                throw new Exception("Headers/column numbers unequal");
         }
 
         protected override Dictionary<string, Parameter<string>> Parse()
@@ -71,7 +71,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 List<string> ReadHeaderLabels = new List<string>(line.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries));
                 if (line.ToLower().Contains(KeyWord.ToLower()) == false)
-                    throw new System.Exception("Expecting keyword " + KeyWord + " in headerline");
+                    throw new Exception("Expecting keyword " + KeyWord + " in headerline");
                 if (ExpectedColumnHeaders != null)
                 {
                     ExpectedColumnHeaders.Add(KeyWord);
@@ -119,7 +119,7 @@ namespace Landis.Library.PnETCohorts
                         }
                         if (parameter.ContainsKey(valuekey))
                         {
-                            throw new System.Exception("Duplicate parameter label [" + var.Value + "] for parameter " + parameterlabel);
+                            throw new Exception("Duplicate parameter label [" + var.Value + "] for parameter " + parameterlabel);
                         }
                         parameter.Add(valuekey, var.Value);
                     }
@@ -133,7 +133,7 @@ namespace Landis.Library.PnETCohorts
                     throw e;
                 else
                 {
-                    throw new System.Exception("Unexpected file format (dir,file) (" +
+                    throw new Exception("Unexpected file format (dir,file) (" +
                         System.IO.Directory.GetCurrentDirectory() + "," +
                         this.FileName + ")" +
                         " " + e.Message + "\n\nNOTE header line is mandatory");

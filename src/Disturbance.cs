@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Landis.Library.PnETCohorts
@@ -20,14 +21,14 @@ namespace Landis.Library.PnETCohorts
             foreach (KeyValuePair<string, Parameter<string>> parameter in BiomassReductionParameters)
             {
                 if (parameters.ContainsKey(parameter.Key))
-                    throw new System.Exception("Parameter " + parameter.Key + " was provided twice");
+                    throw new Exception("Parameter " + parameter.Key + " was provided twice");
                 foreach (string value in parameter.Value.Values)
                 {
                     double v;
                     if (double.TryParse(value, out v) == false)
-                        throw new System.Exception("Expecting digit value for " + parameter.Key);
+                        throw new Exception("Expecting digit value for " + parameter.Key);
                     if (v > 1 || v < 0)
-                        throw new System.Exception("Expecting value for " + parameter.Key + " between 0.0 and 1.0. Found " + v);
+                        throw new Exception("Expecting value for " + parameter.Key + " between 0.0 and 1.0. Found " + v);
                 }
             }
             BiomassReductionParameters.ToList().ForEach(x => parameters.Add("disturbance:"+x.Key, x.Value));
@@ -42,7 +43,7 @@ namespace Landis.Library.PnETCohorts
         public static void ReduceDeadPools(object sitecohorts, ExtensionType disturbanceType)
         {
             if (sitecohorts == null)
-                throw new System.Exception("sitecohorts should not be null");
+                throw new Exception("sitecohorts should not be null");
             float WoodDebrisReductionFrac = 0;
             float LeafLitterReductionFrac = 0;
             if (disturbanceType != null && Names.TryGetParameter(disturbanceType.Name, out Parameter<string> parameter))
@@ -60,7 +61,7 @@ namespace Landis.Library.PnETCohorts
         public static void AllocateDeadPools(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double frac)
         {
             if (sitecohorts == null)
-                throw new System.Exception("sitecohorts should not be null");
+                throw new Exception("sitecohorts should not be null");
             // By default, all material is allocated to the wood debris or the leaf litter pool
             float WoodReductionFrac = 0;
             float RootReductionFrac = 0;

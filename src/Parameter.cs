@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Landis.Library.PnETCohorts
@@ -31,7 +32,8 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (values.Count() != 1) throw new System.Exception(p_label + " is a multiple value parameter, but expecting a single value");
+                if (values.Count() != 1)
+                    throw new Exception(p_label + " is a multiple value parameter, but expecting a single value");
                 return values.First().Value;
             }
         }
@@ -50,7 +52,7 @@ namespace Landis.Library.PnETCohorts
                     string msg = "No value for " + label;
                     if (p_label != null)
                         msg = "Parameter " + p_label + " has no value for " + label;
-                    throw new System.Exception(msg);
+                    throw new Exception(msg);
                 }
                 return values[label];
             }
@@ -78,7 +80,7 @@ namespace Landis.Library.PnETCohorts
             }
             catch (System.Exception e)
             {
-                throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
+                throw new Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
 
@@ -95,7 +97,7 @@ namespace Landis.Library.PnETCohorts
             }
             catch (System.Exception e)
             {
-                throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
+                throw new Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
 
@@ -112,7 +114,7 @@ namespace Landis.Library.PnETCohorts
             }
             catch (System.Exception e)
             {
-                throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
+                throw new Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
 
@@ -129,7 +131,7 @@ namespace Landis.Library.PnETCohorts
             }
             catch (System.Exception e)
             {
-                throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
+                throw new Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
 
@@ -146,7 +148,7 @@ namespace Landis.Library.PnETCohorts
             }
             catch (System.Exception e)
             {
-                throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
+                throw new Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
 
@@ -169,9 +171,9 @@ namespace Landis.Library.PnETCohorts
             catch (System.Exception e)
             {
                 if (e.GetType() == typeof(System.Collections.Generic.KeyNotFoundException))
-                    throw new System.Exception("Error parsing parameter " + m.p_label + " for species " + ecoregionname + " missing value");
+                    throw new Exception("Error parsing parameter " + m.p_label + " for species " + ecoregionname + " missing value");
                 else
-                    throw new System.Exception("Error parsing parameter " + m.p_label + " for species " + ecoregionname + e.Message);
+                    throw new Exception("Error parsing parameter " + m.p_label + " for species " + ecoregionname + e.Message);
             }
         }
 
@@ -194,9 +196,9 @@ namespace Landis.Library.PnETCohorts
             catch (System.Exception e)
             {
                 if (e.GetType() == typeof(System.Collections.Generic.KeyNotFoundException))
-                    throw new System.Exception("Error parsing parameter " + m.p_label + " for species " + speciesname + " missing value");
+                    throw new Exception("Error parsing parameter " + m.p_label + " for species " + speciesname + " missing value");
                 else
-                    throw new System.Exception("Error parsing parameter " + m.p_label + " for species " + speciesname + e.Message);
+                    throw new Exception("Error parsing parameter " + m.p_label + " for species " + speciesname + e.Message);
             }
         }
 

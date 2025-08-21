@@ -1,4 +1,9 @@
-//  Authors:  Robert M. Scheller, James B. Domingo
+// Authors:  Robert M. Scheller, James B. Domingo
+// NOTE by MG on 20250820: BiomassCalculator was previously 
+// deprecated and ICalculator interface was removed; 
+// SuccessionTimeStep is now moved to CohortData struct and 
+// Cohort class with ICohort interface. This Cohorts class is 
+// thus deprecated and will be removed.
 
 namespace Landis.Library.PnETCohorts
 {
@@ -51,7 +56,7 @@ namespace Landis.Library.PnETCohorts
         {
             return CalcBiomass(siteCohorts, out int youngBiomass);
         }
-        
+
         /// <summary>
         /// Calculates the total aboveground live biomass for all the cohorts at a site, and the
         /// total aboveground live biomass for all the young cohorts.

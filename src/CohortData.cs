@@ -22,6 +22,11 @@ namespace Landis.Library.PnETCohorts
         public Library.UniversalCohorts.CohortData UniversalData;
 
         /// <summary>
+        /// Succession timestep used by Biomass cohorts (yrs)
+        /// </summary>
+        public ushort SuccessionTimestep;
+
+        /// <summary>
         /// The cohort's live aboveground biomass (g/m2).
         /// </summary>
         public float AGBiomass;
@@ -226,12 +231,12 @@ namespace Landis.Library.PnETCohorts
         public float CanopyGrowingSpace;
 
         /// <summary>
-        /// Initializes a new instance.
+        /// CohortData constructor #1
         /// </summary>
-        /// <param name="cohort">
-        /// The cohort we are extracting data from.
+        /// <param name="cohort"></param>
         public CohortData(Cohort cohort)
         {
+            this.SuccessionTimestep = cohort.SuccessionTimestep;
             this.AdjFolN = cohort.AdjFolN;
             this.adjFolN = cohort.adjFolN;
             this.AdjFolBiomassFrac = cohort.AdjFolBiomassFrac;
@@ -279,14 +284,17 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Initializes a new instance.
+        /// CohortData constructor #2
         /// </summary>
-        /// <param name="age">
-        /// The age of the cohort.
-        /// <param name="totalBioamss">
-        /// The biomamss of the cohort
-        public CohortData(ushort age, float totalBiomass, double totalANPP, ISpecies species, bool cohortStacking)
-        {            
+        /// <param name="age"></param>
+        /// <param name="successionTimestep"></param>
+        /// <param name="totalBiomass"></param>
+        /// <param name="totalANPP"></param>
+        /// <param name="species"></param>
+        /// <param name="cohortStacking"></param>
+        public CohortData(ushort age, ushort successionTimestep, float totalBiomass, double totalANPP, ISpecies species, bool cohortStacking)
+        {
+            this.SuccessionTimestep = successionTimestep;
             this.AdjFolN = new float[Globals.IMAX];
             this.adjFolN = 0; ;
             this.AdjFolBiomassFrac = new float[Globals.IMAX];
@@ -294,8 +302,8 @@ namespace Landis.Library.PnETCohorts
             this.AdjHalfSat = 0;
             this.UniversalData.Age = age;
             IPnETSpecies pnetspecies = SpeciesParameters.PnETSpecies.AllSpecies[species.Index];
-            this.Cohort = new Cohort(species, pnetspecies, 0, "", 1, cohortStacking);
-            this.AGBiomass = (1- pnetspecies.BGBiomassFrac) * totalBiomass;
+            this.Cohort = new Cohort(species, pnetspecies, 0, "", 1, cohortStacking, successionTimestep);
+            this.AGBiomass = (1 - pnetspecies.BGBiomassFrac) * totalBiomass;
             this.UniversalData.Biomass = (int)this.AGBiomass;
             this.TotalBiomass = totalBiomass;
             this.MaxBiomass = totalBiomass;

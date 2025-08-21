@@ -16,13 +16,13 @@ namespace Landis.Library.PnETCohorts
     /// <summary>
     /// The cohorts for a particular species at a site.
     /// </summary>
-    public class SpeciesCohorts : PnETCohorts.ISpeciesCohorts
+    public class SpeciesCohorts : ISpeciesCohorts
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly bool isDebugEnabled = log.IsDebugEnabled;
         private ISpecies species;
         private bool isMaturePresent;
-        private List<CohortData> cohortData; // Cohort data is in oldest to youngest order.
+        private List<CohortData> cohortData; // List of cohorts is ordered oldest to youngest.
         private static SpeciesCohortBoolArray isSpeciesCohortDamaged;
         private ushort age_key;
         private int initialWoodBiomass;
@@ -106,16 +106,14 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Adds a new cohort.
         /// </summary>
-        public void AddNewCohort(Cohort c)
+        public void AddNewCohort(Cohort cohort)
         {
-            this.cohortData.Add(new CohortData(c));
+            this.cohortData.Add(new CohortData(cohort));
         }
 
         /// <summary>
         /// Gets the age of a cohort at a specific index.
         /// </summary>
-        /// <exception cref="System.IndexOutOfRangeException">
-        /// </exception>
         public int GetAge(int index)
         {
             return cohortData[index].UniversalData.Age;
@@ -146,7 +144,7 @@ namespace Landis.Library.PnETCohorts
             for (int i = cohortData.Count - 1; i >= 0; i--)
             {
                 CohortData data = cohortData[i];
-                if (data.UniversalData.Age <= Cohorts.SuccessionTimeStep)
+                if (data.UniversalData.Age <= data.SuccessionTimestep)
                 {
                     youngCount++;
                     totalBiomass += data.TotalBiomass;
@@ -159,7 +157,8 @@ namespace Landis.Library.PnETCohorts
             {
                 cohortData.RemoveRange(cohortData.Count - youngCount, youngCount);
                 bool cohortStacking = ((Parameter<bool>)Names.GetParameter(Names.CohortStacking)).Value;
-                cohortData.Add(new CohortData((ushort)(Cohorts.SuccessionTimeStep - 1), totalBiomass, totalANPP, this.Species, cohortStacking));
+                ushort successionTimestep = cohortData[cohortData.Count - 1].SuccessionTimestep;
+                cohortData.Add(new CohortData((ushort)(successionTimestep - 1), successionTimestep, totalBiomass, totalANPP, this.Species, cohortStacking));
             }
         }
 
@@ -203,7 +202,6 @@ namespace Landis.Library.PnETCohorts
                 return index;
             }
             cohort.IncrementAge();
-            // int biomassChange = (int)Cohorts.BiomassCalculator.CalcChange(cohort, site);
             int biomassChange = cohort.CalcBiomassChange();
             Debug.Assert(-cohort.TotalBiomass <= biomassChange);  // Cohort can't lose more biomass than it has
             cohort.ChangeBiomass(biomassChange);

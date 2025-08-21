@@ -24,13 +24,24 @@ namespace Landis.Library.PnETCohorts
         private LocalOutput cohortoutput;
 
         /// <summary>
-        /// Age (years)
+        /// Age (y)
         /// </summary>
         public ushort Age
         {
             get
             {
                 return data.UniversalData.Age;
+            }
+        }
+
+        /// <summary>
+        /// Succession timestep used by biomass cohorts (yrs)
+        /// </summary>
+        public ushort SuccessionTimestep
+        {
+            get
+            {
+                return data.SuccessionTimestep;
             }
         }
 
@@ -782,10 +793,11 @@ namespace Landis.Library.PnETCohorts
         /// <param name="SiteName"></param>
         /// <param name="fracBiomass"></param>
         /// <param name="cohortStacking"></param>
-        public Cohort(ISpecies species, IPnETSpecies PnETspecies, ushort establishmentYear, string SiteName, double fracBiomass, bool cohortStacking) // : base(species, 0, (int)(1F / species.NSCFrac * (ushort)species.InitialNSC))
+        public Cohort(ISpecies species, IPnETSpecies PnETspecies, ushort establishmentYear, string SiteName, double fracBiomass, bool cohortStacking, ushort successionTimestep)
         {
             this.species = species;
             this.PnETspecies = PnETspecies;
+            data.SuccessionTimestep = successionTimestep;
             data.UniversalData.Age = 1;
             data.ColdKill = int.MaxValue;
             data.NSC = (ushort)PnETspecies.InitialNSC;
@@ -830,6 +842,7 @@ namespace Landis.Library.PnETCohorts
         {
             species = cohort.Species;
             PnETspecies = cohort.PnETspecies;
+            data.SuccessionTimestep = cohort.SuccessionTimestep;
             data.UniversalData.Age = cohort.Age;
             data.NSC = cohort.NSC;
             data.TotalBiomass = cohort.TotalBiomass;
@@ -853,6 +866,7 @@ namespace Landis.Library.PnETCohorts
         {
             species = cohort.Species;
             PnETspecies = cohort.PnETspecies;
+            data.SuccessionTimestep = cohort.SuccessionTimestep;
             data.UniversalData.Age = cohort.Age;
             data.NSC = cohort.NSC;
             data.TotalBiomass = cohort.TotalBiomass;
@@ -877,11 +891,12 @@ namespace Landis.Library.PnETCohorts
         /// <param name="SiteName"></param>
         /// <param name="establishmentYear"></param>
         /// <param name="cohortStacking"></param>
-        public Cohort(IPnETSpecies PnETspecies, ushort age, int woodBiomass, string SiteName, ushort establishmentYear, bool cohortStacking)
+        public Cohort(IPnETSpecies PnETspecies, ushort age, int woodBiomass, string SiteName, ushort establishmentYear, bool cohortStacking, ushort successionTimestep)
         {
             InitializeSubLayers();
             species = (ISpecies)PnETspecies;
             this.PnETspecies = PnETspecies;
+            data.SuccessionTimestep = successionTimestep;
             data.UniversalData.Age = age;
             // incoming biomass is aboveground wood, calculate total biomass
             float biomass = woodBiomass / (1 - PnETspecies.BGBiomassFrac);
@@ -930,11 +945,12 @@ namespace Landis.Library.PnETCohorts
         /// <param name="establishmentYear"></param>
         /// <param name="cohortStacking"></param>
         /// <param name="lastSeasonAvgFRad"></param>
-        public Cohort(IPnETSpecies PnETspecies, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort establishmentYear, bool cohortStacking, float lastSeasonAvgFRad)
+        public Cohort(IPnETSpecies PnETspecies, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort establishmentYear, bool cohortStacking, ushort successionTimestep, float lastSeasonAvgFRad)
         {
             InitializeSubLayers();
             species = (ISpecies)PnETspecies;
             this.PnETspecies = PnETspecies;
+            data.SuccessionTimestep = successionTimestep;
             data.UniversalData.Age = age;
             // incoming biomass is aboveground wood, calculate total biomass
             float biomass = woodBiomass / (1 - PnETspecies.BGBiomassFrac);

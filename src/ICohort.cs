@@ -8,6 +8,7 @@ namespace Landis.Library.PnETCohorts
     public interface ICohort : Library.UniversalCohorts.ICohort
     {
         new CohortData Data { get; }
+        ushort SuccessionTimestep { get; }
         int AGBiomass { get; }
         int TotalBiomass { get; }
         bool IsLeafOn { get; }

@@ -292,7 +292,7 @@ namespace Landis.Library.PnETCohorts
             this._woodturnoverrate = woodturnoverrate;
             this._establishmentfrad = establishmentfrad;
             this._establishmentfwater = establishmentfwater;
-            this._maxprobestablishment = maxprobestablishment;
+            this._maxProbEstablishment = maxprobestablishment;
             this._follignin = follignin;
             this._preventestablishment = preventestablishment;
             this._psntopt = psntopt;

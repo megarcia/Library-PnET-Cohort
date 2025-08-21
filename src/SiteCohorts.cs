@@ -1,18 +1,10 @@
 ﻿//  Copyright ...
 //  Authors:  Arjan de Bruijn
 
-using Landis.Utilities;
-using Landis.Core;
-using Landis.Library.Climate;
-using Landis.Library.InitialCommunities.Universal;
-using Landis.Library.UniversalCohorts;
-using Landis.SpatialModeling;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -3213,16 +3205,16 @@ namespace Landis.Library.PnETCohorts
             cohorts.Clear();
         }
 
-        public override int ReduceOrKillCohorts(Landis.Library.UniversalCohorts.IDisturbance disturbance)
+        public override int ReduceOrKillCohorts(Library.UniversalCohorts.IDisturbance disturbance)
         {
             List<int> reduction = new List<int>();
             List<Cohort> ToRemove = new List<Cohort>();
             foreach (List<Cohort> species_cohort in cohorts.Values)
             {
-                Landis.Library.PnETCohorts.SpeciesCohorts species_cohorts = GetSpeciesCohort(cohorts[species_cohort[0].Species]);
+                SpeciesCohorts species_cohorts = GetSpeciesCohort(cohorts[species_cohort[0].Species]);
                 for (int c = 0; c < species_cohort.Count(); c++)
                 {
-                    Landis.Library.PnETCohorts.ICohort cohort = species_cohort[c];
+                    ICohort cohort = species_cohort[c];
                     // Disturbances return reduction in aboveground biomass
                     int _reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
                     reduction.Add(_reduction);

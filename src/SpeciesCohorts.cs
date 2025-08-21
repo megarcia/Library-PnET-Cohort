@@ -1,15 +1,9 @@
 //  Authors:  Robert M. Scheller, James B. Domingo
 
-using Landis.Core;
-using Landis.SpatialModeling;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using Landis.Library.UniversalCohorts;
-using log4net;
-using System.Linq;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -331,7 +325,7 @@ namespace Landis.Library.PnETCohorts
             return totalReduction;
         }
 
-        IEnumerator<Landis.Library.PnETCohorts.ICohort> GetEnumerator()
+        IEnumerator<ICohort> GetEnumerator()
         {
             foreach (CohortData data in cohortData)
                 yield return new Cohort(species, data);
@@ -342,11 +336,11 @@ namespace Landis.Library.PnETCohorts
             return ((IEnumerable<ICohort>)this).GetEnumerator();
         }
 
-        IEnumerator<Landis.Library.UniversalCohorts.ICohort> IEnumerable<Landis.Library.UniversalCohorts.ICohort>.GetEnumerator()
+        IEnumerator<Library.UniversalCohorts.ICohort> IEnumerable<Library.UniversalCohorts.ICohort>.GetEnumerator()
         {
             foreach (CohortData data in cohortData)
             {
-                yield return new Landis.Library.UniversalCohorts.Cohort(species, data.UniversalData.Age, data.UniversalData.Biomass, new System.Dynamic.ExpandoObject());
+                yield return new Library.UniversalCohorts.Cohort(species, data.UniversalData.Age, data.UniversalData.Biomass, new System.Dynamic.ExpandoObject());
             }
         }
     }

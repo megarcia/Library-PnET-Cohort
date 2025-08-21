@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Landis.Core;
-using Landis.Library.UniversalCohorts;
-using Landis.SpatialModeling;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -18,8 +14,8 @@ namespace Landis.Library.PnETCohorts
         public static ISiteVar<double> ClimaticWaterDeficit;
         public static ISiteVar<double> SmolderConsumption;
         public static ISiteVar<double> FlamingConsumption;
-        public static ISiteVar<Landis.Library.PnETCohorts.SiteCohorts> SiteCohorts;
-        public static ISiteVar<Landis.Library.UniversalCohorts.SiteCohorts> UniversalCohorts;
+        public static ISiteVar<SiteCohorts> SiteCohorts;
+        public static ISiteVar<Library.UniversalCohorts.SiteCohorts> UniversalCohorts;
         public static ISiteVar<float[]> MonthlyPressureHead;
         public static ISiteVar<SortedList<float, float>[]> MonthlySoilTemp;
         public static ISiteVar<float> FieldCapacity;
@@ -30,7 +26,7 @@ namespace Landis.Library.PnETCohorts
             LeafLitter = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             FineFuels = Globals.ModelCore.Landscape.NewSiteVar<Double>();
             SiteCohorts = Globals.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
-            UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<Landis.Library.UniversalCohorts.SiteCohorts>();
+            UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<Library.UniversalCohorts.SiteCohorts>();
             PressureHead = Globals.ModelCore.Landscape.NewSiteVar<float>();
             ExtremeMinTemp = Globals.ModelCore.Landscape.NewSiteVar<float>();
             AnnualPotentialEvaporation = Globals.ModelCore.Landscape.NewSiteVar<Double>();

@@ -1,15 +1,9 @@
 // uses dominance to allocate psn and subtract transpiration from soil water, average cohort vars over layer
 
-using Landis.Core;
-using Landis.Library.UniversalCohorts;
-using Landis.SpatialModeling;
-using Landis.Utilities;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Landis.Library.PnETCohorts
 {

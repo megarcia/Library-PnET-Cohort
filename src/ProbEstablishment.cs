@@ -1,5 +1,4 @@
-﻿using Landis.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Landis.Library.PnETCohorts

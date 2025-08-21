@@ -1,8 +1,5 @@
 //  Authors:  Robert M. Scheller, James B. Domingo
 
-using Landis.Core;
-using Landis.SpatialModeling;
-
 namespace Landis.Library.PnETCohorts
 {
     /// <summary>

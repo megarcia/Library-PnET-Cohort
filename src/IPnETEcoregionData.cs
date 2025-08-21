@@ -1,4 +1,5 @@
-﻿namespace Landis.Library.PnETCohorts
+﻿
+namespace Landis.Library.PnETCohorts
 {
     public interface IPnETEcoregionData : Landis.Core.IEcoregion
     {
@@ -15,7 +16,7 @@
         /// <summary>
         /// Fraction of water above field capacity that drains out of the soil rooting zone immediately after entering the soil (fast leakage)
         /// </summary>
-        float LeakageFrac{ get; }
+        float LeakageFrac { get; }
 
         /// <summary>
         /// Depth of surface water (mm) that can be held on site instead of running off
@@ -25,7 +26,7 @@
         /// <summary>
         /// Fraction of incoming precipitation that does not enter the soil - surface runoff due to impermeability, slope, etc.
         /// </summary>
-        float PrecLossFrac { get; } 
+        float PrecLossFrac { get; }
 
         /// <summary>
         /// Ecoregion soil type descriptor 
@@ -69,7 +70,7 @@
         /// <summary>
         /// Ecoregion latitude
         /// </summary>
-        float Latitude { get; } 
+        float Latitude { get; }
 
         float WinterSTD { get; }
 
@@ -85,6 +86,6 @@
         /// </summary>
         float FrostFactor { get; }
 
-        IPnETEcoregionVars Variables { get; set; }        
+        IPnETEcoregionVars Variables { get; set; }
     }
 }

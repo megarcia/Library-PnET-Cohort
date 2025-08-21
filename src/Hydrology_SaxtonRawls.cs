@@ -1,10 +1,10 @@
-﻿using Landis.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 namespace Landis.Library.PnETCohorts
 {
-    public class Hydrology_SaxtonRawls  
+    public class Hydrology_SaxtonRawls
     {
         public const string SaxtonAndRawlsParameters = "SaxtonAndRawlsParameters";
 

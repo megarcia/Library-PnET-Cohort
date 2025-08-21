@@ -1,7 +1,7 @@
+using System.Collections.Generic;
+
 namespace Landis.Library.PnETCohorts
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// PnET's Cohort Interface
     /// </summary>

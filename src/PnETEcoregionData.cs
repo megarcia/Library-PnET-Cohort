@@ -1,10 +1,6 @@
-
-using Landis.Core;
-using Landis.Library.Climate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Landis.Library.PnETCohorts
 {

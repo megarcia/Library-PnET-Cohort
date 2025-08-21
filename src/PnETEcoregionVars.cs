@@ -172,10 +172,10 @@ namespace Landis.Library.PnETCohorts
             float nightLength = Calendar.CalcNightLength(hr);
             _tday = Weather.CalcTday(Tavg, climate_dataset.Tmax);
             _vpd = Weather.CalcVPD(Tday, climate_dataset.Tmin);
-            foreach (IPnETSpecies spc in Species)
+            foreach (IPnETSpecies pnetspecies in Species)
             {
-                PnETSpeciesVars pnetspeciesvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, DayLength, nightLength, spc);
-                speciesVariables.Add(spc.Name, pnetspeciesvars);
+                PnETSpeciesVars pnetspeciesvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, DayLength, nightLength, pnetspecies);
+                speciesVariables.Add(pnetspecies.Name, pnetspeciesvars);
             }
         }
 

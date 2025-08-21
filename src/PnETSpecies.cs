@@ -240,10 +240,10 @@ namespace Landis.Library.PnETCohorts
             #endregion
 
             SpeciesCombinations = new List<Tuple<ISpecies, IPnETSpecies>>();
-            foreach (ISpecies spc in Globals.ModelCore.Species)
+            foreach (ISpecies species in Globals.ModelCore.Species)
             {
-                PnETSpecies species = new PnETSpecies(spc);
-                SpeciesCombinations.Add(new Tuple<ISpecies, IPnETSpecies>(spc, species));
+                PnETSpecies pnetspecies = new PnETSpecies(species);
+                SpeciesCombinations.Add(new Tuple<ISpecies, IPnETSpecies>(species, pnetspecies));
             }
         }
 

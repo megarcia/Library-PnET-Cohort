@@ -4,9 +4,9 @@ using System.Linq;
 namespace Landis.Library.PnETCohorts
 {
     /// <summary>
-    /// Disturbance effects on wood debris and leaf litter pools.
-    /// Input parameters are fractions of biomass that are 
-    /// allocated to the different pools.
+    /// Disturbance effects on canopy foliage, wood debris,
+    /// and leaf litter pools. Input parameters are fractions
+    /// of biomass that are allocated to the different pools.
     /// </summary>
     public class Disturbance
     {

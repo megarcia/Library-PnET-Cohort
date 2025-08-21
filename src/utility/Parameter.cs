@@ -151,13 +151,13 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public static explicit operator Landis.Library.Parameters.Ecoregions.AuxParm<T>(Parameter<T> m)
+        public static explicit operator Library.Parameters.Ecoregions.AuxParm<T>(Parameter<T> m)
         {
             string ecoregionname = null;
             T value;
             try
             {
-                Landis.Library.Parameters.Ecoregions.AuxParm<T> newvalues = new Landis.Library.Parameters.Ecoregions.AuxParm<T>(Globals.ModelCore.Ecoregions);
+                Library.Parameters.Ecoregions.AuxParm<T> newvalues = new Library.Parameters.Ecoregions.AuxParm<T>(Globals.ModelCore.Ecoregions);
                 foreach (IEcoregion eco in Globals.ModelCore.Ecoregions) if (eco.Active)
                     {
                         ecoregionname = eco.Name;
@@ -176,13 +176,13 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public static explicit operator Landis.Library.Parameters.Species.AuxParm<T>(Parameter<T> m)
+        public static explicit operator Library.Parameters.Species.AuxParm<T>(Parameter<T> m)
         {
             T value;
             string speciesname = null;
             try
             {
-                Landis.Library.Parameters.Species.AuxParm<T> newvalues = new Library.Parameters.Species.AuxParm<T>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<T> newvalues = new Library.Parameters.Species.AuxParm<T>(Globals.ModelCore.Species);
                 foreach (ISpecies species in Globals.ModelCore.Species)
                 {
                     speciesname = species.Name;

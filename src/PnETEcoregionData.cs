@@ -42,21 +42,21 @@ namespace Landis.Library.PnETCohorts
         private static float retCropCoeff;
         private static Dictionary<IPnETEcoregionData, Dictionary<DateTime, IPnETEcoregionVars>> all_values = new Dictionary<IPnETEcoregionData, Dictionary<DateTime, IPnETEcoregionVars>>();
         private static Dictionary<IEcoregion, IPnETEcoregionData> AllEcoregions;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> rootingdepth;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> precintconst;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> preclossfrac;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakagefrac;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> runoffcapture;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> snowsublimfrac;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> latitude;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<int> precipEvents;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakageFrostDepth;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> winterSTD;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> mossDepth;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> evapDepth;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> frostFactor;
+        private static Library.Parameters.Ecoregions.AuxParm<string> soiltype;
+        private static Library.Parameters.Ecoregions.AuxParm<float> rootingdepth;
+        private static Library.Parameters.Ecoregions.AuxParm<float> precintconst;
+        private static Library.Parameters.Ecoregions.AuxParm<float> preclossfrac;
+        private static Library.Parameters.Ecoregions.AuxParm<float> leakagefrac;
+        private static Library.Parameters.Ecoregions.AuxParm<float> runoffcapture;
+        private static Library.Parameters.Ecoregions.AuxParm<float> snowsublimfrac;
+        private static Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
+        private static Library.Parameters.Ecoregions.AuxParm<float> latitude;
+        private static Library.Parameters.Ecoregions.AuxParm<int> precipEvents;
+        private static Library.Parameters.Ecoregions.AuxParm<float> leakageFrostDepth;
+        private static Library.Parameters.Ecoregions.AuxParm<float> winterSTD;
+        private static Library.Parameters.Ecoregions.AuxParm<float> mossDepth;
+        private static Library.Parameters.Ecoregions.AuxParm<float> evapDepth;
+        private static Library.Parameters.Ecoregions.AuxParm<float> frostFactor;
         #endregion
 
         #region accessors for private static variables
@@ -370,24 +370,24 @@ namespace Landis.Library.PnETCohorts
 
         public static void Initialize()
         {
-            soiltype = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)Names.GetParameter("SoilType");
-            rootingdepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("RootingDepth", 0, 1000);
-            precintconst = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("PrecIntConst", 0, 1);
-            preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("PrecLossFrac", 0, 1);
-            snowsublimfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("SnowSublimFrac", 0, 1);
-            latitude = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("Latitude", 0, 90);
-            leakageFrostDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeakageFrostDepth", 0, 999999);
-            precipEvents = (Landis.Library.Parameters.Ecoregions.AuxParm<int>)(Parameter<int>)Names.GetParameter("PrecipEvents", 1, 100);
-            winterSTD = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("WinterSTD", 0, 100);
-            mossDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("MossDepth", 0, 1000);
-            evapDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("EvapDepth", 0, 9999999);
+            soiltype = (Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)Names.GetParameter("SoilType");
+            rootingdepth = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("RootingDepth", 0, 1000);
+            precintconst = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("PrecIntConst", 0, 1);
+            preclossfrac = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("PrecLossFrac", 0, 1);
+            snowsublimfrac = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("SnowSublimFrac", 0, 1);
+            latitude = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("Latitude", 0, 90);
+            leakageFrostDepth = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeakageFrostDepth", 0, 999999);
+            precipEvents = (Library.Parameters.Ecoregions.AuxParm<int>)(Parameter<int>)Names.GetParameter("PrecipEvents", 1, 100);
+            winterSTD = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("WinterSTD", 0, 100);
+            mossDepth = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("MossDepth", 0, 1000);
+            evapDepth = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("EvapDepth", 0, 9999999);
             wythers = ((Parameter<bool>)Names.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)Names.GetParameter("DTemp")).Value;
             etExtCoeff = ((Parameter<float>)Names.GetParameter("ETExtCoeff")).Value;
             retCropCoeff = ((Parameter<float>)Names.GetParameter("ReferenceETCropCoeff")).Value;
-            leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeakageFrac", 0, 1);
-            runoffcapture = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter(Names.RunoffCapture, 0, 999999);
-            frostFactor = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("FrostFactor", 0, 999999);
+            leakagefrac = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeakageFrac", 0, 1);
+            runoffcapture = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter(Names.RunoffCapture, 0, 999999);
+            frostFactor = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter("FrostFactor", 0, 999999);
             AllEcoregions = new Dictionary<IEcoregion, IPnETEcoregionData>();
             foreach (IEcoregion ecoregion in Globals.ModelCore.Ecoregions)
             {

@@ -1119,7 +1119,7 @@ namespace Landis.Library.PnETCohorts
                 return;
             List<double> CohortMaxBiomassList = new List<double>();
             DateTime date = StartDate.AddYears(-(sortedAgeCohorts[0].Data.Age - 1));
-            Landis.Library.Parameters.Ecoregions.AuxParm<List<PnETEcoregionVars>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<PnETEcoregionVars>>(Globals.ModelCore.Ecoregions);
+            Library.Parameters.Ecoregions.AuxParm<List<PnETEcoregionVars>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<PnETEcoregionVars>>(Globals.ModelCore.Ecoregions);
             while (date.CompareTo(StartDate) <= 0)
             {
                 //  Add those cohorts that were born at the current year
@@ -2753,11 +2753,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
        
-        public  Landis.Library.Parameters.Species.AuxParm<bool> SpeciesPresent
+        public  Library.Parameters.Species.AuxParm<bool> SpeciesPresent
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<bool> SpeciesPresent = new Library.Parameters.Species.AuxParm<bool>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<bool> SpeciesPresent = new Library.Parameters.Species.AuxParm<bool>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     SpeciesPresent[spc] = true;
@@ -2766,11 +2766,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies 
+        public Library.Parameters.Species.AuxParm<int> BiomassPerSpecies 
         { 
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<int> BiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     BiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.TotalBiomass * o.CanopyLayerFrac));
@@ -2779,11 +2779,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> AGBiomassPerSpecies
+        public Library.Parameters.Species.AuxParm<int> AGBiomassPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> AGBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<int> AGBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     AGBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.AGBiomass * o.CanopyLayerFrac));
@@ -2792,11 +2792,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> WoodBiomassPerSpecies
+        public Library.Parameters.Species.AuxParm<int> WoodBiomassPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> WoodBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<int> WoodBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     WoodBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.Wood * o.CanopyLayerFrac));
@@ -2805,11 +2805,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> BGBiomassPerSpecies
+        public Library.Parameters.Species.AuxParm<int> BGBiomassPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> BGBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<int> BGBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     BGBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.Root * o.CanopyLayerFrac));
@@ -2818,11 +2818,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies
+        public Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     FoliageBiomassPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.Fol * o.CanopyLayerFrac));
@@ -2831,11 +2831,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies
+        public Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     // Edited according to Brian Miranda's advice (https://github.com/LANDIS-II-Foundation/Extension-Output-Biomass-PnET/issues/11#issuecomment-2400646970_
@@ -2846,11 +2846,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> NSCPerSpecies
+        public Library.Parameters.Species.AuxParm<int> NSCPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> NSCPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<int> NSCPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     NSCPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.NSC * o.CanopyLayerFrac));
@@ -2859,11 +2859,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<float> LAIPerSpecies
+        public Library.Parameters.Species.AuxParm<float> LAIPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<float> LAIPerSpecies = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<float> LAIPerSpecies = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     //LAIPerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LAI != null ? o.LAI.Sum() * o.CanopyLayerFrac : 0));
@@ -2873,11 +2873,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> WoodSenescencePerSpecies
+        public Library.Parameters.Species.AuxParm<int> WoodSenescencePerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> WoodSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<int> WoodSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     WoodSenescencePerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LastWoodSenescence * o.CanopyLayerFrac));
@@ -2886,11 +2886,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> FolSenescencePerSpecies
+        public Library.Parameters.Species.AuxParm<int> FolSenescencePerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> FolSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<int> FolSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     FolSenescencePerSpecies[spc] = cohorts[spc].Sum(o => (int)(o.LastFolSenescence * o.CanopyLayerFrac));
@@ -2899,11 +2899,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies
+        public Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     CohortCountPerSpecies[spc] = cohorts[spc].Count();
@@ -2913,11 +2913,11 @@ namespace Landis.Library.PnETCohorts
         }
 
 
-        public Landis.Library.Parameters.Species.AuxParm<List<ushort>> CohortAges
+        public Library.Parameters.Species.AuxParm<List<ushort>> CohortAges
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<List<ushort>> CohortAges = new Library.Parameters.Species.AuxParm<List<ushort>>(Globals.ModelCore.Species);
+                Library.Parameters.Species.AuxParm<List<ushort>> CohortAges = new Library.Parameters.Species.AuxParm<List<ushort>>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     CohortAges[spc] = new List<ushort>(cohorts[spc].Select(o => o.Age));

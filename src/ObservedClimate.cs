@@ -9,7 +9,7 @@ namespace Landis.Library.PnETCohorts
     {
         #region private variables
         private static Dictionary<string, IObservedClimate> ClimateData = new Dictionary<string, IObservedClimate>(); 
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> ClimateFileName; 
+        private static Library.Parameters.Ecoregions.AuxParm<string> ClimateFileName; 
         private string year;
         private string month;
         private float par0;
@@ -98,7 +98,7 @@ namespace Landis.Library.PnETCohorts
 
         public static void Initialize()
         {
-            ClimateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)Names.GetParameter("climateFileName");
+            ClimateFileName = (Library.Parameters.Ecoregions.AuxParm<string>)Names.GetParameter("climateFileName");
             Dictionary<IEcoregion, IObservedClimate> dict = new Dictionary<IEcoregion, IObservedClimate>();
             foreach(IEcoregion ecoregion in Globals.ModelCore.Ecoregions)
             {
@@ -223,9 +223,9 @@ namespace Landis.Library.PnETCohorts
         private static T CheckInRange<T>(T value, T min, T max, string label)
            where T : System.IComparable<T>
         {
-            if (Landis.Library.Parameters.InputValue_ExtensionMethods.GreaterThan<T>(value, max))
+            if (Library.Parameters.InputValue_ExtensionMethods.GreaterThan<T>(value, max))
                 throw new System.Exception(label + " is out of range " + min + " " + max);
-            if (Landis.Library.Parameters.InputValue_ExtensionMethods.LessThan<T>(value, min))
+            if (Library.Parameters.InputValue_ExtensionMethods.LessThan<T>(value, min))
                 throw new System.Exception(label + " is out of range " + min + " " + max);
 
             return value;

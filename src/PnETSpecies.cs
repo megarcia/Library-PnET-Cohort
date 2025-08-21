@@ -83,60 +83,60 @@ namespace Landis.Library.PnETCohorts
         #endregion
 
         #region private static species variables
-        private static Landis.Library.Parameters.Species.AuxParm<float> halfSatFCO2;
-        private static Landis.Library.Parameters.Species.AuxParm<float> nscfrac;
-        private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
-        private static Landis.Library.Parameters.Species.AuxParm<float> wooddebrisdecomprate;
-        private static Landis.Library.Parameters.Species.AuxParm<float> bgbiomassfrac;
-        private static Landis.Library.Parameters.Species.AuxParm<float> folbiomassfrac;
-        private static Landis.Library.Parameters.Species.AuxParm<float> liveWoodBiomassFrac;
-        private static Landis.Library.Parameters.Species.AuxParm<float> photosynthesisfage;
-        private static Landis.Library.Parameters.Species.AuxParm<float> h1;
-        private static Landis.Library.Parameters.Species.AuxParm<float> h2;
-        private static Landis.Library.Parameters.Species.AuxParm<float> h3;
-        private static Landis.Library.Parameters.Species.AuxParm<float> h4;
-        private static Landis.Library.Parameters.Species.AuxParm<float> slwdel;
-        private static Landis.Library.Parameters.Species.AuxParm<float> slwmax;    
-        private static Landis.Library.Parameters.Species.AuxParm<float> folturnoverrate;
-        private static Landis.Library.Parameters.Species.AuxParm<float> halfsat;
-        private static Landis.Library.Parameters.Species.AuxParm<float> rootturnoverrate;
-        private static Landis.Library.Parameters.Species.AuxParm<float> initialnsc;
-        private static Landis.Library.Parameters.Species.AuxParm<float> k;
-        private static Landis.Library.Parameters.Species.AuxParm<float> woodturnoverrate;
-        private static Landis.Library.Parameters.Species.AuxParm<float> establishmentfrad;
-        private static Landis.Library.Parameters.Species.AuxParm<float> establishmentfwater;
-        private static Landis.Library.Parameters.Species.AuxParm<float> maxProbEstablishment;
-        private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
-        private static Landis.Library.Parameters.Species.AuxParm<bool> preventestablishment;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psntopt;
-        private static Landis.Library.Parameters.Species.AuxParm<float> q10;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psntmin;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psntmax;
-        private static Landis.Library.Parameters.Species.AuxParm<float> dvpd1;
-        private static Landis.Library.Parameters.Species.AuxParm<float> dvpd2;
-        private static Landis.Library.Parameters.Species.AuxParm<float> foln;
-        private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
-        private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
-        private static Landis.Library.Parameters.Species.AuxParm<float> amaxamod;
-        private static Landis.Library.Parameters.Species.AuxParm<float> aMaxBFCO2;
-        private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
-        private static Landis.Library.Parameters.Species.AuxParm<float> baseFoliarRespiration;
-        private static Landis.Library.Parameters.Species.AuxParm<float> coldTolerance;
-        private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
-        private static Landis.Library.Parameters.Species.AuxParm<float> folN_slope;
-        private static Landis.Library.Parameters.Species.AuxParm<float> folN_intercept;
-        private static Landis.Library.Parameters.Species.AuxParm<float> folBiomassFrac_slope;
-        private static Landis.Library.Parameters.Species.AuxParm<float> folBiomassFrac_intercept;
-        private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
-        private static Landis.Library.Parameters.Species.AuxParm<float> leafOnMinT;
-        private static Landis.Library.Parameters.Species.AuxParm<float> NSCreserve;
-        private static Landis.Library.Parameters.Species.AuxParm<string> lifeform;
-        private static Landis.Library.Parameters.Species.AuxParm<float> refoliationMinimumTrigger;
-        private static Landis.Library.Parameters.Species.AuxParm<float> maxRefoliationFrac;
-        private static Landis.Library.Parameters.Species.AuxParm<float> refoliationCost;
-        private static Landis.Library.Parameters.Species.AuxParm<float> nonRefoliationCost;
-        private static Landis.Library.Parameters.Species.AuxParm<float> maxlai;
-        private static Landis.Library.Parameters.Species.AuxParm<float> mossScalar;
+        private static Library.Parameters.Species.AuxParm<float> halfSatFCO2;
+        private static Library.Parameters.Species.AuxParm<float> nscfrac;
+        private static Library.Parameters.Species.AuxParm<float> cfracbiomass;
+        private static Library.Parameters.Species.AuxParm<float> wooddebrisdecomprate;
+        private static Library.Parameters.Species.AuxParm<float> bgbiomassfrac;
+        private static Library.Parameters.Species.AuxParm<float> folbiomassfrac;
+        private static Library.Parameters.Species.AuxParm<float> liveWoodBiomassFrac;
+        private static Library.Parameters.Species.AuxParm<float> photosynthesisfage;
+        private static Library.Parameters.Species.AuxParm<float> h1;
+        private static Library.Parameters.Species.AuxParm<float> h2;
+        private static Library.Parameters.Species.AuxParm<float> h3;
+        private static Library.Parameters.Species.AuxParm<float> h4;
+        private static Library.Parameters.Species.AuxParm<float> slwdel;
+        private static Library.Parameters.Species.AuxParm<float> slwmax;    
+        private static Library.Parameters.Species.AuxParm<float> folturnoverrate;
+        private static Library.Parameters.Species.AuxParm<float> halfsat;
+        private static Library.Parameters.Species.AuxParm<float> rootturnoverrate;
+        private static Library.Parameters.Species.AuxParm<float> initialnsc;
+        private static Library.Parameters.Species.AuxParm<float> k;
+        private static Library.Parameters.Species.AuxParm<float> woodturnoverrate;
+        private static Library.Parameters.Species.AuxParm<float> establishmentfrad;
+        private static Library.Parameters.Species.AuxParm<float> establishmentfwater;
+        private static Library.Parameters.Species.AuxParm<float> maxProbEstablishment;
+        private static Library.Parameters.Species.AuxParm<float> follignin;
+        private static Library.Parameters.Species.AuxParm<bool> preventestablishment;
+        private static Library.Parameters.Species.AuxParm<float> psntopt;
+        private static Library.Parameters.Species.AuxParm<float> q10;
+        private static Library.Parameters.Species.AuxParm<float> psntmin;
+        private static Library.Parameters.Species.AuxParm<float> psntmax;
+        private static Library.Parameters.Species.AuxParm<float> dvpd1;
+        private static Library.Parameters.Species.AuxParm<float> dvpd2;
+        private static Library.Parameters.Species.AuxParm<float> foln;
+        private static Library.Parameters.Species.AuxParm<float> amaxa;
+        private static Library.Parameters.Species.AuxParm<float> amaxb;
+        private static Library.Parameters.Species.AuxParm<float> amaxamod;
+        private static Library.Parameters.Species.AuxParm<float> aMaxBFCO2;
+        private static Library.Parameters.Species.AuxParm<float> maintresp;
+        private static Library.Parameters.Species.AuxParm<float> baseFoliarRespiration;
+        private static Library.Parameters.Species.AuxParm<float> coldTolerance;
+        private static Library.Parameters.Species.AuxParm<string> ozoneSens;
+        private static Library.Parameters.Species.AuxParm<float> folN_slope;
+        private static Library.Parameters.Species.AuxParm<float> folN_intercept;
+        private static Library.Parameters.Species.AuxParm<float> folBiomassFrac_slope;
+        private static Library.Parameters.Species.AuxParm<float> folBiomassFrac_intercept;
+        private static Library.Parameters.Species.AuxParm<float> o3Coeff;
+        private static Library.Parameters.Species.AuxParm<float> leafOnMinT;
+        private static Library.Parameters.Species.AuxParm<float> NSCreserve;
+        private static Library.Parameters.Species.AuxParm<string> lifeform;
+        private static Library.Parameters.Species.AuxParm<float> refoliationMinimumTrigger;
+        private static Library.Parameters.Species.AuxParm<float> maxRefoliationFrac;
+        private static Library.Parameters.Species.AuxParm<float> refoliationCost;
+        private static Library.Parameters.Species.AuxParm<float> nonRefoliationCost;
+        private static Library.Parameters.Species.AuxParm<float> maxlai;
+        private static Library.Parameters.Species.AuxParm<float> mossScalar;
         private static Dictionary<ISpecies,float> maxLAI;
         private static Dictionary<ISpecies, string> lifeForm;
         #endregion
@@ -144,68 +144,68 @@ namespace Landis.Library.PnETCohorts
         public PnETSpecies()
         {
             #region initialize private static species variables
-            halfSatFCO2 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("HalfSatFCO2");
-            nscfrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NSCFrac");
-            cfracbiomass = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CFracBiomass");
-            wooddebrisdecomprate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("wooddebrisdecomprate");
-            bgbiomassfrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("bgbiomassfrac");
-            folbiomassfrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("folbiomassfrac");
-            liveWoodBiomassFrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("liveWoodBiomassFrac");
-            photosynthesisfage = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("photosynthesisfage");
-            h1 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h1");
-            h2 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h2");
-            h3 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h3");
-            h4 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h4");
-            slwdel = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("slwdel");
-            slwmax = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("slwmax");
-            folturnoverrate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("folturnoverrate");
-            halfsat = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("halfsat");
-            rootturnoverrate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("rootturnoverrate");
-            initialnsc = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("initialnsc"); ;
-            k = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("k"); ;
-            woodturnoverrate = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("woodturnoverrate"); ;
-            establishmentfrad = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("establishmentfrad"); ;
-            establishmentfwater = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("establishmentfwater");
-            maxProbEstablishment = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxProbEstablishment");
-            follignin = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("follignin");
-            preventestablishment = (Landis.Library.Parameters.Species.AuxParm<bool>)(Parameter<bool>)Names.GetParameter("preventestablishment");
-            psntopt = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psntopt");
-            q10 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("q10");
-            psntmin = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psntmin");
-            psntmax = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psntmax");
-            dvpd1 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("dvpd1");
-            dvpd2 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("dvpd2");
-            foln = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("foln");
-            amaxa = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("amaxa");
-            amaxb = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("amaxb");
-            amaxamod = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("AmaxAmod");
-            aMaxBFCO2 = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("AMaxBFCO2");
-            maintresp = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("maintresp");
-            baseFoliarRespiration = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("baseFoliarRespiration");
-            ozoneSens = (Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("StomataO3Sensitivity");
-            folN_slope = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolN_slope");
-            folN_intercept = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolN_intercept"); //Optional
+            halfSatFCO2 = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("HalfSatFCO2");
+            nscfrac = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NSCFrac");
+            cfracbiomass = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CFracBiomass");
+            wooddebrisdecomprate = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("wooddebrisdecomprate");
+            bgbiomassfrac = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("bgbiomassfrac");
+            folbiomassfrac = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("folbiomassfrac");
+            liveWoodBiomassFrac = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("liveWoodBiomassFrac");
+            photosynthesisfage = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("photosynthesisfage");
+            h1 = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h1");
+            h2 = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h2");
+            h3 = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h3");
+            h4 = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("h4");
+            slwdel = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("slwdel");
+            slwmax = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("slwmax");
+            folturnoverrate = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("folturnoverrate");
+            halfsat = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("halfsat");
+            rootturnoverrate = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("rootturnoverrate");
+            initialnsc = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("initialnsc"); ;
+            k = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("k"); ;
+            woodturnoverrate = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("woodturnoverrate"); ;
+            establishmentfrad = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("establishmentfrad"); ;
+            establishmentfwater = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("establishmentfwater");
+            maxProbEstablishment = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxProbEstablishment");
+            follignin = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("follignin");
+            preventestablishment = (Library.Parameters.Species.AuxParm<bool>)(Parameter<bool>)Names.GetParameter("preventestablishment");
+            psntopt = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psntopt");
+            q10 = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("q10");
+            psntmin = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psntmin");
+            psntmax = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("psntmax");
+            dvpd1 = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("dvpd1");
+            dvpd2 = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("dvpd2");
+            foln = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("foln");
+            amaxa = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("amaxa");
+            amaxb = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("amaxb");
+            amaxamod = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("AmaxAmod");
+            aMaxBFCO2 = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("AMaxBFCO2");
+            maintresp = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("maintresp");
+            baseFoliarRespiration = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("baseFoliarRespiration");
+            ozoneSens = (Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("StomataO3Sensitivity");
+            folN_slope = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolN_slope");
+            folN_intercept = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolN_intercept"); //Optional
             // If FolN_intercept is not provided, then set to foln
             if (folN_intercept[this] == -9999F)
                 folN_intercept = foln;
-            folBiomassFrac_slope = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolBiomassFrac_slope");
-            folBiomassFrac_intercept = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolBiomassFrac_intercept"); //Optional
+            folBiomassFrac_slope = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolBiomassFrac_slope");
+            folBiomassFrac_intercept = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FolBiomassFrac_intercept"); //Optional
             // If FolBiomassFrac_intercept is not provided, then set to folbiomassfrac
             if (folBiomassFrac_intercept[this] == -9999F)
                 folBiomassFrac_intercept = folbiomassfrac;
-            o3Coeff = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FOzone_slope");
-            coldTolerance = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("ColdTolerance");
-            leafOnMinT = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeafOnMinT"); //Optional
+            o3Coeff = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("FOzone_slope");
+            coldTolerance = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("ColdTolerance");
+            leafOnMinT = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("LeafOnMinT"); //Optional
             // If LeafOnMinT is not provided, then set to PsnMinT
             if (leafOnMinT[this] == -9999F)
                 leafOnMinT = psntmin;
-            NSCreserve = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NSCReserve");
-            refoliationMinimumTrigger = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolMinimumTrigger");
-            maxRefoliationFrac = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolMaximum");
-            refoliationCost = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolCost");
-            nonRefoliationCost = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NonRefolCost");
-            maxlai = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxLAI"); //Optional
-            mossScalar = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MossScalar"); //Optional
+            NSCreserve = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NSCReserve");
+            refoliationMinimumTrigger = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolMinimumTrigger");
+            maxRefoliationFrac = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolMaximum");
+            refoliationCost = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("RefolCost");
+            nonRefoliationCost = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NonRefolCost");
+            maxlai = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxLAI"); //Optional
+            mossScalar = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MossScalar"); //Optional
             maxLAI = new Dictionary<ISpecies, float>();
             foreach (ISpecies species in Globals.ModelCore.Species)
             {
@@ -224,7 +224,7 @@ namespace Landis.Library.PnETCohorts
                 else
                     maxLAI.Add(species, maxlai[species]);
             }
-            lifeform = (Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("Lifeform");
+            lifeform = (Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("Lifeform");
             lifeForm = new Dictionary<ISpecies, string>();
             foreach (ISpecies species in Globals.ModelCore.Species)
             {

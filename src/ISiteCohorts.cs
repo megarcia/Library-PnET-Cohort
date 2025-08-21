@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Landis.Core;
 
 namespace Landis.Library.PnETCohorts 
 {
@@ -26,20 +25,20 @@ namespace Landis.Library.PnETCohorts
         float CanopyLAImax { get; }
         float SiteMossDepth { get; }
         int AverageAge { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<bool> SpeciesPresent { get; }
+        Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<bool> SpeciesPresent { get; }
         IProbEstablishment ProbEstablishment { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> AGBiomassPerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> WoodBiomassPerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> BGBiomassPerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> NSCPerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<float> LAIPerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> WoodSenescencePerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<int> FolSenescencePerSpecies { get; }
-        Landis.Library.Parameters.Species.AuxParm<List<ushort>> CohortAges { get; }
+        Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> AGBiomassPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> WoodBiomassPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> BGBiomassPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> NSCPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<float> LAIPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> WoodSenescencePerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> FolSenescencePerSpecies { get; }
+        Library.Parameters.Species.AuxParm<List<ushort>> CohortAges { get; }
         float BiomassSum { get; }
         float AGBiomassSum { get; }
         float WoodBiomassSum { get; }

@@ -259,7 +259,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns>
         /// The total of all the cohorts' biomass reductions.
         /// </returns>
-        public int MarkCohorts(IDisturbance disturbance)
+        public int MarkCohorts(Library.UniversalCohorts.IDisturbance disturbance)
         {
             //  Go backwards through list of cohort data, so the removal of an
             //  item doesn't mess up the loop.
@@ -339,9 +339,7 @@ namespace Landis.Library.PnETCohorts
         IEnumerator<Library.UniversalCohorts.ICohort> IEnumerable<Library.UniversalCohorts.ICohort>.GetEnumerator()
         {
             foreach (CohortData data in cohortData)
-            {
                 yield return new Library.UniversalCohorts.Cohort(species, data.UniversalData.Age, data.UniversalData.Biomass, new System.Dynamic.ExpandoObject());
-            }
         }
     }
 }

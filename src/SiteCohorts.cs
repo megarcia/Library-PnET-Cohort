@@ -410,21 +410,21 @@ namespace Landis.Library.PnETCohorts
                     Dictionary<Landis.Core.ISpecies, Dictionary<int, float[]>> cohortDictionary = new Dictionary<Landis.Core.ISpecies, Dictionary<int, float[]>>();
                     foreach (Cohort cohort in AllCohorts)
                     {
-                        Landis.Core.ISpecies spp = cohort.Species;
+                        Landis.Core.ISpecies species = cohort.Species;
                         int age = cohort.Age;
                         float lastSeasonAvgFRad = 0F;
                         if (cohort.LastSeasonFRad.Count() > 0)
                             lastSeasonAvgFRad = cohort.LastSeasonFRad.ToArray().Average();
-                        if (cohortDictionary.ContainsKey(spp))
+                        if (cohortDictionary.ContainsKey(species))
                         {
-                            if (cohortDictionary[spp].ContainsKey(age))
+                            if (cohortDictionary[species].ContainsKey(age))
                             {
-                                // message duplicate species and age
+                                // TODO: message duplicate species and age
                             }
                             else
                             {
                                 float[] values = new float[] { (int)cohort.MaxBiomass, cohort.Biomass, lastSeasonAvgFRad };
-                                cohortDictionary[spp].Add(age, values);
+                                cohortDictionary[species].Add(age, values);
                             }
                         }
                         else
@@ -432,7 +432,7 @@ namespace Landis.Library.PnETCohorts
                             Dictionary<int, float[]> ageDictionary = new Dictionary<int, float[]>();
                             float[] values = new float[] { (int)cohort.MaxBiomass, cohort.Biomass, lastSeasonAvgFRad };
                             ageDictionary.Add(age, values);
-                            cohortDictionary.Add(spp, ageDictionary);
+                            cohortDictionary.Add(species, ageDictionary);
                         }
                     }
                     ClearAllCohorts();
@@ -442,8 +442,8 @@ namespace Landis.Library.PnETCohorts
                         {
                             // TODO: Add warning if biomass is 0
                             int age = cohort.Data.Age;
-                            Landis.Core.ISpecies spp = cohort.Species;
-                            float[] values = cohortDictionary[spp][age];
+                            Landis.Core.ISpecies species = cohort.Species;
+                            float[] values = cohortDictionary[species][age];
                             int cohortMaxBiomass = (int)values[0];
                             float cohortSpinupBiomass = values[1];
                             float lastSeasonAvgFRad = values[2];
@@ -562,7 +562,7 @@ namespace Landis.Library.PnETCohorts
                         index++;
                         NewCohortMaxBiomassList.Add(cohort.MaxBiomass);
                     }
-                    //Re-sort layers
+                    // Re-sort layers
                     cohortBins = GetBinsByCohort(NewCohortMaxBiomassList);
                     float[] CanopyLayerSum = new float[tempMaxCanopyLayers];
                     List<double> FinalCohortMaxBiomassList = new List<double>();
@@ -2286,7 +2286,6 @@ namespace Landis.Library.PnETCohorts
             else if ((!string.IsNullOrEmpty(cohort.PnETSpecies.Lifeform))
                     && cohort.PnETSpecies.Lifeform.ToLower().Contains("decid"))
                 finalAlbedo = (float)(albedo + (albedo * (0.35 * snowMultiplier)));
-
             return finalAlbedo;
         }
 

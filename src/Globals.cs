@@ -20,11 +20,11 @@ namespace Landis.Library.PnETCohorts
         public static readonly object EcoregionDataThreadLock = new object();
         public static readonly object InitialSitesThreadLock = new object();
 
-        public static void InitializeCore(ICore mCore, ushort IMAX, DateTime startDate)
+        public static void InitializeCore(ICore mCore, ushort iMAX, DateTime startDate)
         {
-            Globals.StartDate = startDate;
+            StartDate = startDate;
             ModelCore = mCore;
-            Globals.IMAX = IMAX;
+            IMAX = iMAX;
         }
 
         public static void SetMinMaxClimateYears()

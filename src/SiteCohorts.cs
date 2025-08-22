@@ -490,10 +490,7 @@ namespace Landis.Library.PnETCohorts
                         }
                         int layer = cohort.Layer;
                         int layerCount = cohortBins[layer].Count();
-                        // Estimate new wood biomass from BGBiomassFrac and FrActWs (see Estimate_WoodBio.xlsx)
-                        float estSlope = -8.236285f + 27.768424f * cohort.PnETSpecies.BGBiomassFrac + 191053.281571f * cohort.PnETSpecies.LiveWoodBiomassFrac + 312.812679f * cohort.PnETSpecies.FolBiomassFrac + -594492.216284f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.LiveWoodBiomassFrac + -941.447695f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FolBiomassFrac + -6490254.134756f * cohort.PnETSpecies.LiveWoodBiomassFrac * cohort.PnETSpecies.FolBiomassFrac + 19879995.810771f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.LiveWoodBiomassFrac * cohort.PnETSpecies.FolBiomassFrac;
-                        float estInt = 1735.179f + 2994.393f * cohort.PnETSpecies.BGBiomassFrac + 10167232.544f * cohort.PnETSpecies.LiveWoodBiomassFrac + 53598.871f * cohort.PnETSpecies.FolBiomassFrac + -92028081.987f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.LiveWoodBiomassFrac + -168141.498f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.FolBiomassFrac + -1104139533.563f * cohort.PnETSpecies.LiveWoodBiomassFrac * cohort.PnETSpecies.FolBiomassFrac + 3507005746.011f * cohort.PnETSpecies.BGBiomassFrac * cohort.PnETSpecies.LiveWoodBiomassFrac * cohort.PnETSpecies.FolBiomassFrac;
-                        float newWoodBiomass = estInt + estSlope * cohort.AGBiomass * layerCount; // Inflate AGBiomass by # of cohorts in layer, assuming equal space among them
+                        float newWoodBiomass = CalcNewWoodBiomass(cohort.PnETSpecies.BGBiomassFrac, cohort.PnETSpecies.LiveWoodBiomassFrac, cohort.PnETSpecies.FolBiomassFrac, cohort.AGBiomass, layerCount);
                         float newTotalBiomass = newWoodBiomass / cohort.PnETSpecies.AGBiomassFrac;
                         cohort.CanopyLayerFrac = 1f / layerCount;
                         if (CohortStacking)
@@ -991,6 +988,40 @@ namespace Landis.Library.PnETCohorts
             }
             else
                 SpinUp(StartDate, site, initialCommunity, usingClimateLibrary, SiteOutputName);
+        }
+
+        /// <summary>
+        /// Estimate new wood biomass from BGBiomassFrac, 
+        /// LiveWoodBiomassFrac, FolBiomassFrac, total AGBiomass,
+        /// and number of cohorts occupying a given canopy layer. 
+        /// </summary>
+        /// <param name="BGBiomassFrac"></param>
+        /// <param name="LiveWoodBiomassFrac"></param>
+        /// <param name="FolBiomassFrac"></param>
+        /// <param name="AGBiomass"></param>
+        /// <param name="LayerCount"></param>
+        /// <returns></returns>
+        public static float CalcNewWoodBiomass(float BGBiomassFrac, float LiveWoodBiomassFrac, float FolBiomassFrac, float AGBiomass, int LayerCount)
+        {
+            float estimate_slope = -8.236285f +
+                                   27.768424f * BGBiomassFrac +
+                                   191053.281571f * LiveWoodBiomassFrac +
+                                   312.812679f * FolBiomassFrac +
+                                   -594492.216284f * BGBiomassFrac * LiveWoodBiomassFrac +
+                                   -941.447695f * BGBiomassFrac * FolBiomassFrac +
+                                   -6490254.134756f * LiveWoodBiomassFrac * FolBiomassFrac +
+                                   19879995.810771f * BGBiomassFrac * LiveWoodBiomassFrac * FolBiomassFrac;
+            float estimate_intercept = 1735.179f +
+                                       2994.393f * BGBiomassFrac +
+                                       10167232.544f * LiveWoodBiomassFrac +
+                                       53598.871f * FolBiomassFrac +
+                                       -92028081.987f * BGBiomassFrac * LiveWoodBiomassFrac +
+                                       -168141.498f * BGBiomassFrac * FolBiomassFrac +
+                                       -1104139533.563f * LiveWoodBiomassFrac * FolBiomassFrac +
+                                       3507005746.011f * BGBiomassFrac * LiveWoodBiomassFrac * FolBiomassFrac;
+            // Inflate AGBiomass by # of cohorts in layer, assuming equal space among them
+            float newWoodBiomass = estimate_intercept + estimate_slope * AGBiomass * LayerCount;
+            return newWoodBiomass;
         }
 
         /// <summary>

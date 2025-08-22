@@ -22,9 +22,14 @@ namespace Landis.Library.PnETCohorts
         float NSCFrac { get; }
 
         /// <summary>
-        /// Fraction biomass below-ground
+        /// Fraction of species biomass that is below ground
         /// </summary>
         float BGBiomassFrac { get; }
+
+        /// <summary>
+        /// Fraction of species biomass that is above ground
+        /// </summary>
+        float AGBiomassFrac { get; }
 
         /// <summary>
         /// Fraction foliage biomass of active biomass

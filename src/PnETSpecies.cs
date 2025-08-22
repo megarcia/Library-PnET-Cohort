@@ -17,6 +17,7 @@ namespace Landis.Library.PnETCohorts
         private float _wooddebrisdecomprate;
         private float _nscfrac;
         private float _bgbiomassfrac;
+        private float _agbiomassfrac;
         private float _folbiomassfrac;
         private float _liveWoodBiomassFrac;
         private float _photosynthesisfage;
@@ -87,6 +88,7 @@ namespace Landis.Library.PnETCohorts
         private static Library.Parameters.Species.AuxParm<float> cfracbiomass;
         private static Library.Parameters.Species.AuxParm<float> wooddebrisdecomprate;
         private static Library.Parameters.Species.AuxParm<float> bgbiomassfrac;
+        private static Library.Parameters.Species.AuxParm<float> agbiomassfrac;
         private static Library.Parameters.Species.AuxParm<float> folbiomassfrac;
         private static Library.Parameters.Species.AuxParm<float> liveWoodBiomassFrac;
         private static Library.Parameters.Species.AuxParm<float> photosynthesisfage;
@@ -148,6 +150,7 @@ namespace Landis.Library.PnETCohorts
             cfracbiomass = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CFracBiomass");
             wooddebrisdecomprate = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("wooddebrisdecomprate");
             bgbiomassfrac = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("bgbiomassfrac");
+            agbiomassfrac = 1F - bgbiomassfrac;
             folbiomassfrac = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("folbiomassfrac");
             liveWoodBiomassFrac = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("liveWoodBiomassFrac");
             photosynthesisfage = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("photosynthesisfage");
@@ -271,11 +274,12 @@ namespace Landis.Library.PnETCohorts
                     float maxLAI)
         {
             float initBiomass = initialnsc / (nscfrac * cfracbiomass);
-            _initBiomass = (int)(initBiomass * (1F - (bgbiomassfrac * rootturnoverrate) - ((1F - bgbiomassfrac) * woodturnoverrate)));
+            _bgbiomassfrac = bgbiomassfrac;
+            _agbiomassfrac = 1F - agbiomassfrac;
+            _initBiomass = (int)(initBiomass * (1F - (bgbiomassfrac * rootturnoverrate) - (agbiomassfrac * woodturnoverrate)));
             _nscfrac = nscfrac;
             _cfracbiomass = cfracbiomass;
             _wooddebrisdecomprate = wooddebrisdecomprate;
-            _bgbiomassfrac = bgbiomassfrac;
             _folbiomassfrac = folbiomassfrac;
             _liveWoodBiomassFrac = liveWoodBiomassFrac;
             _photosynthesisfage = photosynthesisfage;
@@ -341,11 +345,12 @@ namespace Landis.Library.PnETCohorts
         private PnETSpecies(Landis.Core.ISpecies species)
         {
             float initBiomass = initialnsc[species] / (nscfrac[species] * cfracbiomass[species]);
-            _initBiomass = (int)(initBiomass * (1F - (bgbiomassfrac[species] * rootturnoverrate[species]) - ((1F - bgbiomassfrac[species]) * woodturnoverrate[species])));
+            _bgbiomassfrac = bgbiomassfrac[species];
+            _agbiomassfrac = (float)(1F - agbiomassfrac[species]);
+            _initBiomass = (int)(initBiomass * (1F - (bgbiomassfrac[species] * rootturnoverrate[species]) - (agbiomassfrac[species] * woodturnoverrate[species])));
             _nscfrac = nscfrac[species];
             _cfracbiomass = cfracbiomass[species];
             _wooddebrisdecomprate = wooddebrisdecomprate[species];
-            _bgbiomassfrac = bgbiomassfrac[species];
             _folbiomassfrac = folbiomassfrac[species];
             _liveWoodBiomassFrac = liveWoodBiomassFrac[species];
             _photosynthesisfage = photosynthesisfage[species];
@@ -730,6 +735,14 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 return _bgbiomassfrac;
+            }
+        }
+
+        public float AGBiomassFrac
+        {
+            get
+            {
+                return _agbiomassfrac;
             }
         }
 

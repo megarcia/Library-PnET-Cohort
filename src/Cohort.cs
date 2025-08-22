@@ -151,7 +151,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return (int)(Math.Round((1 - PnETspecies.BGBiomassFrac) * data.TotalBiomass) + data.Fol);
+                return (int)(Math.Round(PnETspecies.AGBiomassFrac * data.TotalBiomass) + data.Fol);
             }
         }
 
@@ -173,7 +173,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return (uint)Math.Round((1 - PnETspecies.BGBiomassFrac) * data.TotalBiomass);
+                return (uint)Math.Round(PnETspecies.AGBiomassFrac * data.TotalBiomass);
             }
         }
 
@@ -736,7 +736,7 @@ namespace Landis.Library.PnETCohorts
             data.MaxBiomass = Math.Max(MaxBiomass, data.TotalBiomass);
             data.Fol += cohort.Fol;
             data.MaxFolYear = Math.Max(MaxFolYear, data.Fol);
-            data.AGBiomass = (1 - cohort.PnETSpecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
+            data.AGBiomass = cohort.PnETSpecies.AGBiomassFrac * data.TotalBiomass + data.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
             data.UniversalData.ANPP += cohort.ANPP;
         }
@@ -765,7 +765,7 @@ namespace Landis.Library.PnETCohorts
         {
             float newTotalBiomass = data.TotalBiomass + dBiomass;
             data.TotalBiomass = Math.Max(0, newTotalBiomass);
-            data.AGBiomass = (1 - PnETSpecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
+            data.AGBiomass = PnETSpecies.AGBiomassFrac * data.TotalBiomass + data.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
             data.MaxBiomass = Math.Max(data.MaxBiomass, data.TotalBiomass);
         }
@@ -797,7 +797,7 @@ namespace Landis.Library.PnETCohorts
             data.NSC = (ushort)PnETspecies.InitialNSC;
             // Initialize biomass assuming fixed concentration of NSC, convert gC to gDW
             data.TotalBiomass = (uint)Math.Max(1.0, NSC / (PnETspecies.NSCFrac * PnETspecies.CFracBiomass) * fracBiomass);
-            data.AGBiomass = (1 - PnETspecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
+            data.AGBiomass = PnETspecies.AGBiomassFrac * data.TotalBiomass + data.Fol;
             data.MaxBiomass = data.TotalBiomass;
             float cohortIdealFol = PnETspecies.FolBiomassFrac * FActiveBiom * data.TotalBiomass;
             float cohortLAI = Canopy.CalcCohortLAI(PnETSpecies, cohortIdealFol);
@@ -840,7 +840,7 @@ namespace Landis.Library.PnETCohorts
             data.UniversalData.Age = cohort.Age;
             data.NSC = cohort.NSC;
             data.TotalBiomass = cohort.TotalBiomass;
-            data.AGBiomass = (1 - cohort.PnETSpecies.BGBiomassFrac) * cohort.TotalBiomass + cohort.Fol;
+            data.AGBiomass = cohort.PnETSpecies.AGBiomassFrac * cohort.TotalBiomass + cohort.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * cohort.CanopyLayerFrac);
             data.MaxBiomass = cohort.MaxBiomass;
             data.Fol = cohort.Fol;
@@ -864,7 +864,7 @@ namespace Landis.Library.PnETCohorts
             data.UniversalData.Age = cohort.Age;
             data.NSC = cohort.NSC;
             data.TotalBiomass = cohort.TotalBiomass;
-            data.AGBiomass = (1 - cohort.PnETSpecies.BGBiomassFrac) * cohort.TotalBiomass + cohort.Fol;
+            data.AGBiomass = cohort.PnETSpecies.AGBiomassFrac * cohort.TotalBiomass + cohort.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * cohort.CanopyLayerFrac);
             data.MaxBiomass = cohort.MaxBiomass;
             data.Fol = cohort.Fol;
@@ -893,7 +893,7 @@ namespace Landis.Library.PnETCohorts
             data.SuccessionTimestep = successionTimestep;
             data.UniversalData.Age = age;
             // incoming biomass is aboveground wood, calculate total biomass
-            float biomass = woodBiomass / (1 - PnETspecies.BGBiomassFrac);
+            float biomass = woodBiomass / PnETspecies.AGBiomassFrac;
             data.TotalBiomass = biomass;
             data.MaxBiomass = biomass;
             data.LastSeasonFRad = new List<float>();
@@ -919,7 +919,7 @@ namespace Landis.Library.PnETCohorts
             if (cohortStacking)
                 data.CanopyLayerFrac = 1.0f;
             data.CanopyGrowingSpace = 1.0f;
-            data.AGBiomass = (1 - this.PnETspecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
+            data.AGBiomass = this.PnETspecies.AGBiomassFrac * data.TotalBiomass + data.Fol;
             data.LastAGBio = data.AGBiomass;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
             data.NSC = this.PnETspecies.NSCFrac * FActiveBiom * (data.TotalBiomass + data.Fol) * PnETspecies.CFracBiomass;
@@ -947,7 +947,7 @@ namespace Landis.Library.PnETCohorts
             data.SuccessionTimestep = successionTimestep;
             data.UniversalData.Age = age;
             // incoming biomass is aboveground wood, calculate total biomass
-            float biomass = woodBiomass / (1 - PnETspecies.BGBiomassFrac);
+            float biomass = woodBiomass / PnETspecies.AGBiomassFrac;
             data.TotalBiomass = biomass;
             data.MaxBiomass = Math.Max(biomass, maxBiomass);
             data.LastSeasonFRad = new List<float>();
@@ -974,7 +974,7 @@ namespace Landis.Library.PnETCohorts
             if (cohortStacking)
                 data.CanopyLayerFrac = 1.0f;
             data.CanopyGrowingSpace = 1.0f;
-            data.AGBiomass = (1 - this.PnETspecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
+            data.AGBiomass = this.PnETspecies.AGBiomassFrac * data.TotalBiomass + data.Fol;
             data.LastAGBio = data.AGBiomass;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
             data.NSC = this.PnETspecies.NSCFrac * FActiveBiom * (data.TotalBiomass + data.Fol) * PnETspecies.CFracBiomass;
@@ -1136,7 +1136,7 @@ namespace Landis.Library.PnETCohorts
                     // Assumed that NSC will have a minimum concentration, excess is allocated to biomass
                     float NSCallocation = Math.Max(NSC - (PnETspecies.NSCFrac * FActiveBiom * data.TotalBiomass * PnETspecies.CFracBiomass), 0);
                     data.TotalBiomass += NSCallocation / PnETspecies.CFracBiomass;  // convert gC to gDW
-                    data.AGBiomass = (1 - PnETspecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
+                    data.AGBiomass = PnETspecies.AGBiomassFrac * data.TotalBiomass + data.Fol;
                     data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
                     data.MaxBiomass = Math.Max(MaxBiomass, data.TotalBiomass);
                     data.NSC -= NSCallocation;
@@ -1643,7 +1643,7 @@ namespace Landis.Library.PnETCohorts
         {
             float senescence = (Root * PnETspecies.RootTurnoverRate) + Wood * PnETspecies.WoodTurnoverRate;
             data.TotalBiomass -= senescence;
-            data.AGBiomass = (1 - PnETspecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
+            data.AGBiomass = PnETspecies.AGBiomassFrac * data.TotalBiomass + data.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
             data.MaxBiomass = Math.Max(data.MaxBiomass, data.TotalBiomass);
             return senescence;
@@ -1663,7 +1663,7 @@ namespace Landis.Library.PnETCohorts
             }
             Disturbance.AllocateDeadPools(sitecohorts, this, disturbanceType, reductionFrac);
             data.TotalBiomass *= (float)(1.0 - reductionFrac);
-            data.AGBiomass = (1 - PnETspecies.BGBiomassFrac) * data.TotalBiomass + data.Fol;
+            data.AGBiomass = PnETspecies.AGBiomassFrac * data.TotalBiomass + data.Fol;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerFrac);
             data.MaxBiomass = Math.Max(data.MaxBiomass, data.TotalBiomass);
             Fol *= (float)(1.0 - reductionFrac);

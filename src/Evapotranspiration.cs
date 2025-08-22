@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -13,7 +14,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="DaySpan">Days in the month</param>
         /// <param name="DayLength">Length of daylight (s)</param>
         /// <returns></returns>
-        static float CalcPotentialEvaporation_umol(double PAR, double Tair, float DaySpan, float DayLength)
+        public static float CalcPotentialEvaporation_umol(double PAR, double Tair, float DaySpan, float DayLength)
         {
             // convert PAR (umol/m2.s) to total solar radiation (W/m2) (Reis and Ribeiro, 2019, eq. 39)  
             // convert Rs_W (W/m2) to Rs (MJ/m2.d) (Reis and Ribeiro, 2019, eq. 13)
@@ -37,7 +38,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="T">Average monthly temperature (C)</param>
         /// <param name="DaySpan">Days in the month</param>
         /// <returns></returns>
-        public float CalcPotentialGroundET_Radiation_umol(float AboveCanopyPAR, float SubCanopyPAR, float DayLength, float T, float DaySpan)
+        public static float CalcPotentialGroundET_Radiation_umol(float AboveCanopyPAR, float SubCanopyPAR, float DayLength, float T, float DaySpan)
         {
             // convert daytime PAR (umol/m2*s) to total daily PAR (umol/m2*s)
             float Rs_daily = (float)(AboveCanopyPAR / Constants.SecondsPerDay / DayLength); 
@@ -67,7 +68,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="T">Average monthly temperature (C)</param>
         /// <param name="DayLength">Daytime length (s)</param>
         /// <returns></returns>
-        public float CalcReferenceET_Hamon(float T, float DayLength)
+        public static float CalcReferenceET_Hamon(float T, float DayLength)
         {
             if (T < 0)
                 return 0f;
@@ -87,7 +88,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="DayLength">Daytime length (s)</param>
         /// <param name="DaySpan">Days in the month</param>
         /// <returns></returns>
-        public float CalcPotentialGroundET_LAI_WATER(float LAI, float T, float DayLength, float DaySpan)
+        public static float CalcPotentialGroundET_LAI_WATER(float LAI, float T, float DayLength, float DaySpan)
         {
             float ReferenceET = CalcReferenceET_Hamon(T, DayLength); // mm/day
             float Egp = 0.8f * ReferenceET * (float)Math.Exp(-0.695f * LAI); // mm/day
@@ -103,7 +104,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="DayLength">Daytime length (s)</param>
         /// <param name="DaySpan">Days in the month</param>
         /// <returns></returns>
-        public float CalcPotentialGroundET_LAI_WEPP(float LAI, float T, float DayLength, float DaySpan)
+        public static float CalcPotentialGroundET_LAI_WEPP(float LAI, float T, float DayLength, float DaySpan)
         {
             float ReferenceET = CalcReferenceET_Hamon(T, DayLength); // mm/day
             float Egp = ReferenceET * (float)Math.Exp(-0.4f * LAI); // mm/day
@@ -120,7 +121,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="k">LAI extinction coefficient</param>
         /// <param name="cropCoeff">Crop coefficient (scalar adjustment)</param>
         /// <returns></returns>
-        public float CalcPotentialGroundET_LAI(float LAI, float T, float DayLength, float DaySpan, float k)
+        public static float CalcPotentialGroundET_LAI(float LAI, float T, float DayLength, float DaySpan, float k)
         {
             float CropCoeff = ((Parameter<float>)Names.GetParameter("ReferenceETCropCoeff")).Value;
             float ReferenceET = CalcReferenceET_Hamon(T, DayLength); // mm/day

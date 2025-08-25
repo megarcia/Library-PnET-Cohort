@@ -1255,13 +1255,13 @@ namespace Landis.Library.PnETCohorts
                 float cicaRatio = (-0.075f * adjFolN) + 0.875f;
                 // Elevated leaf internal CO2 concentration
                 float ciElev = Photosynthesis.CalcCiElev(cicaRatio, ciModifier, variables.CO2);
-                // Franks method (2013, New Phytologist, 197:1077-1094)
+                // modified Franks method (2013, New Phytologist, 197:1077-1094)
                 float delamaxCi = Photosynthesis.CalcDelAmaxCi(ciElev);
-                DelAmax[index] = delamaxCi;  // Modified Franks
+                DelAmax[index] = delamaxCi;
                 // M. Kubiske method for wue calculation: Improved methods for calculating WUE and Transpiration in PnET.
                 float JCO2_JH2O = Photosynthesis.CalcJCO2_JH2O(variables[species.Name].JH2O, variables.Tmin, variables.CO2, ciElev, ciModifier);
                 float wue = JCO2_JH2O * Constants.MCO2_MC;
-
+                // Calculate potential gross photosynthesis
                 float Amax = (float)(delamaxCi * (PnETspecies.AmaxA + variables[species.Name].AmaxB_CO2 * adjFolN)); // nmole CO2/g Fol/s
                 float BaseFoliarRespiration = variables[species.Name].BaseFoliarRespirationFrac * Amax; // nmole CO2/g Fol/s
                 float AmaxAdj = Amax * PnETspecies.AmaxAmod;  // Amax adjustment as applied in PnET

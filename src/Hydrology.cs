@@ -120,7 +120,8 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Add mm water to volumetric soil water content (mm/m) (considering activeSoilDepth - frozen soil cannot accept water)
+        /// Add mm water to volumetric soil water content (mm/m) 
+        /// (considering activeSoilDepth - frozen soil cannot accept water)
         /// </summary>
         /// <param name="addWater"></param>
         /// <param name="activeSoilDepth"></param>
@@ -131,7 +132,7 @@ namespace Landis.Library.PnETCohorts
             if (activeSoilDepth > 0)
                 adjSoilWaterContent = addWater / activeSoilDepth;
             soilWaterContent += adjSoilWaterContent;
-            // Note 20250721 MG: always returns true because of this value reset
+            // NOTE 20250721 MG: always returns true because of this value reset
             if (soilWaterContent < 0)
                 soilWaterContent = 0;
             // end Note
@@ -172,7 +173,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public bool SetFrozenSoilWaterContent(float soilWaterContent)
         {
-            this.frozenSoilWaterContent = soilWaterContent;
+            frozenSoilWaterContent = soilWaterContent;
             if (soilWaterContent >= 0)
                 return true;
             else
@@ -186,7 +187,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public bool SetFrozenSoilDepth(float depth)
         {
-            this.frozenSoilDepth = depth;
+            frozenSoilDepth = depth;
             if (depth >= 0)
                 return true;
             else

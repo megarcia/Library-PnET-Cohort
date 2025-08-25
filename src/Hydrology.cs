@@ -327,5 +327,21 @@ namespace Landis.Library.PnETCohorts
             if (!success)
                 throw new Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
         }
+
+        /// <summary>
+        /// Account for transpiration
+        /// </summary>
+        /// <param name="hydrology"></param>
+        /// <param name="ecoregion"></param>
+        /// <param name="transpiration"></param>
+        /// <param name="fracRootAboveFrost"></param>
+        /// <param name="location"></param>
+        /// <exception cref="Exception"></exception>
+        public void SubtractTranspiration(Hydrology hydrology, IPnETEcoregionData ecoregion, float transpiration, float fracRootAboveFrost, string location)
+        {
+            bool success = hydrology.AddWater(-1 * transpiration, ecoregion.RootingDepth * fracRootAboveFrost);
+            if (!success)
+                throw new Exception("Error adding water, Transpiration = " + transpiration + " soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+        }
     }
 }

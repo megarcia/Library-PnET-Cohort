@@ -1284,7 +1284,7 @@ namespace Landis.Library.PnETCohorts
                 float BaseFoliarRespiration = variables[species.Name].BaseFoliarRespirationFrac * Amax; //nmole CO2/g Fol/s
                 float AmaxAdj = Amax * PnETspecies.AmaxAmod;  //Amax adjustment as applied in PnET
                 float GrossAmax = AmaxAdj + BaseFoliarRespiration; //nmole CO2/g Fol/s
-                //Reference gross Psn (lab conditions) in gC/g Fol/month
+                // Reference gross Psn (lab conditions) in gC/g Fol/month
                 float RefGrossPsn = variables.DaySpan * (GrossAmax * variables[species.Name].DVPD * variables.DayLength * Constants.MC) / Constants.billion;
                 // Calculate gross psn from stress factors and reference gross psn (gC/g Fol/month)
                 // Reduction factors include temperature (PsnFTemp), water (FWater), light (FRad), age (FAge)
@@ -1318,10 +1318,8 @@ namespace Landis.Library.PnETCohorts
                     GrossPsn[index] = GrossPsnPotential * FWater[index];  // gC/m2 ground/mo
                     Transpiration[index] = PotentialTranspiration[index] * FWater[index]; //mm
                 }
-                // Subtract transpiration from hydrology
-                success = hydrology.AddWater(-1 * Transpiration[index], siteCohort.Ecoregion.RootingDepth * frostFreeFrac);
-                if (!success)
-                    throw new Exception("Error adding water, Transpiration = " + Transpiration[index] + " soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + siteCohort.Ecoregion.Name + "; site = " + siteCohort.Site.Location);
+                // Subtract transpiration from soil water content
+                Hydrology.SubtractTranspiration(hydrology, siteCohort.Ecoregion, Transpiration[index], frostFreeFrac, siteCohort.Site.Location);
                 // Infiltration (let captured surface water soak into soil)
                 Hydrology.CalcInfiltration(hydrology, siteCohort.Ecoregion, frostFreeFrac, siteCohort.Site.Location);
                 // Net foliage respiration depends on reference psn (BaseFoliarRespiration)

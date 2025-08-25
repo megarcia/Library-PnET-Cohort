@@ -1245,7 +1245,7 @@ namespace Landis.Library.PnETCohorts
             }
             data.adjFolN = Photosynthesis.CalcAdjFolN(PnETspecies.FolN_slope, PnETspecies.FolN_intercept, PnETspecies.FolN, FRad[index]);
             AdjFolN[index] = adjFolN;  // Stored for output
-            AdjFolBiomassFrac[index] = adjFolBiomassFrac; //Stored for output
+            AdjFolBiomassFrac[index] = adjFolBiomassFrac; // Stored for output
             float ciModifier = Photosynthesis.CalcCiModifier(o3_cum, PnETspecies.StomataO3Sensitivity, FWaterOzone);
             CiModifier[index] = ciModifier;  // Stored for output
             // If trees are physiologically active
@@ -1256,22 +1256,16 @@ namespace Landis.Library.PnETCohorts
                 // Elevated leaf internal CO2 concentration
                 float ciElev = Photosynthesis.CalcCiElev(cicaRatio, ciModifier, variables.CO2);
                 // Franks method (2013, New Phytologist, 197:1077-1094)
-                float Ca0_adj = Constants.CO2RefConc * cicaRatio;  // Calculated internal concentration given external 350
                 float delamaxCi = Photosynthesis.CalcDelAmaxCi(ciElev);
                 DelAmax[index] = delamaxCi;  // Modified Franks
-                // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
+                // M. Kubiske method for wue calculation: Improved methods for calculating WUE and Transpiration in PnET.
                 float JCO2_JH2O = Photosynthesis.CalcJCO2_JH2O(variables[species.Name].JH2O, variables.Tmin, variables.CO2, ciElev, ciModifier);
                 float wue = JCO2_JH2O * Constants.MCO2_MC;
-                float Amax = (float)(delamaxCi * (PnETspecies.AmaxA + variables[species.Name].AmaxB_CO2 * adjFolN)); //nmole CO2/g Fol/s
-                float BaseFoliarRespiration = variables[species.Name].BaseFoliarRespirationFrac * Amax; //nmole CO2/g Fol/s
-                float AmaxAdj = Amax * PnETspecies.AmaxAmod;  //Amax adjustment as applied in PnET
-                float GrossAmax = AmaxAdj + BaseFoliarRespiration; //nmole CO2/g Fol/s
-                // Reference gross Psn (lab conditions) in gC/g Fol/month
-                float RefGrossPsn = variables.DaySpan * (GrossAmax * variables[species.Name].DVPD * variables.DayLength * Constants.MC) / Constants.billion;
-                // Calculate gross psn from stress factors and reference gross psn (gC/g Fol/month)
-                // Reduction factors include temperature (PsnFTemp), water (FWater), light (FRad), age (FAge)
-                // Remove FWater from psn reduction because it is accounted for in WUE through ciModifier [mod2, mod3]
-                float GrossPsnPotential = 1 / (float)Globals.IMAX * variables[species.Name].PsnFTemp * FRad[index] * FAge * RefGrossPsn * Fol;  // gC/m2 ground/mo
+
+                float Amax = (float)(delamaxCi * (PnETspecies.AmaxA + variables[species.Name].AmaxB_CO2 * adjFolN)); // nmole CO2/g Fol/s
+                float BaseFoliarRespiration = variables[species.Name].BaseFoliarRespirationFrac * Amax; // nmole CO2/g Fol/s
+                float AmaxAdj = Amax * PnETspecies.AmaxAmod;  // Amax adjustment as applied in PnET
+                float GrossPsnPotential = Photosynthesis.CalcPotentialGrossPsn(AmaxAdj, BaseFoliarRespiration, variables.DaySpan, variables[species.Name].DVPD, variables.DayLength, variables[species.Name].PsnFTemp, FRad[index], FAge, Fol);
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 // JH2O has been modified by CiModifier to reduce water use efficiency
                 // Scale transpiration to fraction of site occupied (CanopyLayerFrac)

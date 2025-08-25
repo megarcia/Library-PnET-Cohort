@@ -12,7 +12,8 @@ namespace Landis.Library.PnETCohorts
         /// <param name="PsnTmin"></param>
         /// <param name="PsnTmax"></param>
         /// <returns></returns>
-        public static float CurvilinearPsnTempResponse(float Tday, float PsnTopt, float PsnTmin, float PsnTmax)
+        public static float CurvilinearPsnTempResponse(float Tday, float PsnTopt,
+                                                       float PsnTmin, float PsnTmax)
         {
             if (Tday < PsnTmin)
                 return 0F;
@@ -30,7 +31,8 @@ namespace Landis.Library.PnETCohorts
         /// <param name="PsnTmin"></param>
         /// <param name="PsnTmax"></param>
         /// <returns></returns>
-        public static float DTempResponse(float Tday, float PsnTopt, float PsnTmin, float PsnTmax)
+        public static float DTempResponse(float Tday, float PsnTopt, float PsnTmin,
+                                          float PsnTmax)
         {
             if (Tday < PsnTmin || Tday > PsnTmax)
                 return 0F;
@@ -104,7 +106,8 @@ namespace Landis.Library.PnETCohorts
         /// <param name="FWaterOzone"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static float CalcCiModifier(float CumulativeO3, string StomataO3Sens, float FWaterOzone)
+        public static float CalcCiModifier(float CumulativeO3, string StomataO3Sens,
+                                           float FWaterOzone)
         {
             float CiModifier = 1.0f; // if no ozone, ciModifier defaults to 1
             if (CumulativeO3 > 0)
@@ -161,12 +164,40 @@ namespace Landis.Library.PnETCohorts
         /// <param name="HalfSat"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static float CalcFRad(float Radiation, float HalfSat)
+        public static float CalcFRad(float Rad, float HalfSat)
         {
-            if (HalfSat > 0)
-                return (float)(1.0 - Math.Exp(-1.0 * Radiation * Math.Log(2.0) / HalfSat));
-            else
+            if (HalfSat <= 0)
                 throw new Exception("HalfSat <= 0. Cannot calculate fRad.");
+            float FRad = (float)(1F - Math.Exp(-1F * Rad * Math.Log(2F) / HalfSat));
+            return FRad;
+        }
+
+        /// <summary>
+        /// Calculate the potential gross photosynthesis (gC/m2 ground/mo)
+        /// </summary>
+        /// <param name="AmaxAdj"></param>
+        /// <param name="BaseFolResp"></param>
+        /// <param name="DaySpan"></param>
+        /// <param name="DVPD"></param>
+        /// <param name="DayLength"></param>
+        /// <param name="PsnFTemp"></param>
+        /// <param name="FRad"></param>
+        /// <param name="FAge"></param>
+        /// <param name="Fol"></param>
+        /// <returns></returns>
+        public static float CalcPotentialGrossPsn(float AmaxAdj, float BaseFolResp,
+                                                  float DaySpan, float DVPD, float DayLength,
+                                                  float PsnFTemp, float FRad, float FAge,
+                                                  float Fol)
+        {
+            float GrossAmax = AmaxAdj + BaseFolResp;
+            // Reference gross Psn (lab conditions) in gC/g Fol/month
+            float RefGrossPsn = DaySpan * (GrossAmax * DVPD * DayLength * Constants.MC) / Constants.billion;
+            // Calculate gross psn from stress factors and reference gross psn (gC/g Fol/month)
+            // Reduction factors include temperature (PsnFTemp), water (FWater), light (FRad), age (FAge)
+            // Remove FWater from psn reduction because it is accounted for in WUE through ciModifier [mod2, mod3]
+            float PotentialGrossPsn = 1 / (float)Globals.IMAX * PsnFTemp * FRad * FAge * RefGrossPsn * Fol;
+            return PotentialGrossPsn;
         }
 
         /// <summary>

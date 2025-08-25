@@ -1779,18 +1779,9 @@ namespace Landis.Library.PnETCohorts
                             lastOzoneEffect[subCanopyIndex - 1] = FOzone;
                             if (groundPotentialET > 0)
                             {
-                                float evaporationEvent = 0;
                                 // If more than one precip event assigned to layer, repeat evaporation for all events prior to respiration
                                 for (int p = 1; p <= precipCount; p++)
-                                {
-                                    PotentialETnonfor = groundPotentialETbyEvent;
-                                    if (fracRootAboveFrost > 0 && snowpack == 0)
-                                        evaporationEvent = hydrology.CalcEvaporation(this, PotentialETnonfor); //mm
-                                    success = hydrology.AddWater(-1 * evaporationEvent, Ecoregion.RootingDepth * fracRootAboveFrost);
-                                    if (!success)
-                                        throw new Exception("Error adding water, evaporation = " + evaporationEvent + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                                    hydrology.Evaporation += evaporationEvent;
-                                }
+                                    Hydrology.CalcSoilEvaporation(hydrology, Ecoregion, snowpack, fracRootAboveFrost, PotentialETnonfor, Site.Location);
                             }
                         } // end sublayer loop in canopy b
                         int cCount = AllCohorts.Count();
@@ -1932,13 +1923,7 @@ namespace Landis.Library.PnETCohorts
                             // Evaporation
                             float PotentialETnonfor = groundPotentialET / numEvents;
                             PotentialETcumulative += ReferenceET * data[m].DaySpan / numEvents;
-                            float evaporationEvent = 0;
-                            if (fracRootAboveFrost > 0 && snowpack == 0)
-                                evaporationEvent = hydrology.CalcEvaporation(this, PotentialETnonfor); //mm
-                            success = hydrology.AddWater(-1 * evaporationEvent, Ecoregion.RootingDepth * fracRootAboveFrost);
-                            if (!success)
-                                throw new Exception("Error adding water, evaporation = " + evaporationEvent + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                            hydrology.Evaporation += evaporationEvent;
+                            Hydrology.CalcSoilEvaporation(hydrology, Ecoregion, snowpack, fracRootAboveFrost, PotentialETnonfor, Site.Location);
                             // Infiltration (add surface water to soil)
                             if (hydrology.SurfaceWater > 0)
                                 Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location);

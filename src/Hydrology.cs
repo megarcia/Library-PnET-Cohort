@@ -220,39 +220,66 @@ namespace Landis.Library.PnETCohorts
                 }
         }
 
-        public float CalcEvaporation(SiteCohorts sitecohorts, float PotentialET)
+        /// <summary>
+        /// Calculate surface evaporation
+        /// </summary>
+        /// <param name="ecoregion"></param>
+        /// <param name="potentialET"></param>
+        /// <returns></returns>
+        public float CalcEvaporation(IPnETEcoregionData ecoregion, float potentialET)
         {
             lock (threadLock)
             {
                 // frozen soils
-                float frostFreeSoilDepth = sitecohorts.Ecoregion.RootingDepth - FrozenSoilDepth;
-                float frostFreeFrac = Math.Min(1.0F, frostFreeSoilDepth / sitecohorts.Ecoregion.RootingDepth);
+                float frostFreeSoilDepth = ecoregion.RootingDepth - FrozenSoilDepth;
+                float frostFreeFrac = Math.Min(1.0F, frostFreeSoilDepth / ecoregion.RootingDepth);
                 // Evaporation is limited to frost free soil above EvapDepth
-                float evapSoilDepth = Math.Min(sitecohorts.Ecoregion.RootingDepth * frostFreeFrac, sitecohorts.Ecoregion.EvapDepth);
+                float evapSoilDepth = Math.Min(ecoregion.RootingDepth * frostFreeFrac, ecoregion.EvapDepth);
                 // Maximum actual evaporation = Potential ET
-                float AEmax = PotentialET; // Modified 11/4/22 in v 5.0-rc19; remove access limitation and only use physical limit at wilting point below
+                float AEmax = potentialET; // Modified 11/4/22 in v 5.0-rc19; remove access limitation and only use physical limit at wilting point below
                 // Evaporation cannot remove water below wilting point           
-                float evaporationEvent = Math.Min(AEmax, (soilWaterContent - sitecohorts.Ecoregion.WiltingPoint) * evapSoilDepth); // mm/month
+                float evaporationEvent = Math.Min(AEmax, (soilWaterContent - ecoregion.WiltingPoint) * evapSoilDepth); // mm/month
                 evaporationEvent = Math.Max(0f, evaporationEvent);  // evaporation cannot be negative
                 return evaporationEvent; // mm/month
             }
         }
 
         /// <summary>
+        /// Evaporation from soil water content
+        /// </summary>
+        /// <param name="hydrology"></param>
+        /// <param name="ecoregion"></param>
+        /// <param name="snowpack"></param>
+        /// <param name="fracRootAboveFrost"></param>
+        /// <param name="PET"></param>
+        /// <param name="location"></param>
+        /// <exception cref="Exception"></exception>
+        public void CalcSoilEvaporation(Hydrology hydrology, IPnETEcoregionData ecoregion, float snowpack, float fracRootAboveFrost, float potentialET, string location)
+        {
+            float EvaporationEvent = 0;
+            if (fracRootAboveFrost > 0 && snowpack == 0)
+                EvaporationEvent = hydrology.CalcEvaporation(ecoregion, potentialET); //mm
+            bool success = hydrology.AddWater(-1 * EvaporationEvent, ecoregion.RootingDepth * fracRootAboveFrost);
+            if (!success)
+                throw new Exception("Error adding water, evaporation = " + EvaporationEvent + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+            hydrology.Evaporation += EvaporationEvent;
+        }
+
+        /// <summary>
         /// Infiltration: add surface water to soil water content
         /// </summary>
-        /// <param name="Hydrology"></param>
-        /// <param name="Ecoregion"></param>
+        /// <param name="hydrology"></param>
+        /// <param name="ecoregion"></param>
         /// <param name="fracRootAboveFrost"></param>
-        /// <param name="Location"></param>
+        /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        public void CalcInfiltration(Hydrology Hydrology, IPnETEcoregionData Ecoregion, float fracRootAboveFrost, string Location)
+        public void CalcInfiltration(Hydrology hydrology, IPnETEcoregionData ecoregion, float fracRootAboveFrost, string location)
         {
-            float SurfaceInput = Math.Min(Hydrology.SurfaceWater, (Ecoregion.Porosity - Hydrology.SoilWaterContent) * Ecoregion.RootingDepth * fracRootAboveFrost);
-            Hydrology.SurfaceWater -= SurfaceInput;
-            bool success = Hydrology.AddWater(SurfaceInput, Ecoregion.RootingDepth * fracRootAboveFrost);
+            float SurfaceInput = Math.Min(hydrology.SurfaceWater, (ecoregion.Porosity - hydrology.SoilWaterContent) * ecoregion.RootingDepth * fracRootAboveFrost);
+            hydrology.SurfaceWater -= SurfaceInput;
+            bool success = hydrology.AddWater(SurfaceInput, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
-                throw new Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; soilWaterContent = " + Hydrology.SoilWaterContent + "; ecoregion = " + Ecoregion.Name + "; site = " + Location);
+                throw new Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
         }
     }
 }

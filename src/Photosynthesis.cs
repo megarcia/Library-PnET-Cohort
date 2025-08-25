@@ -123,6 +123,20 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
+        /// Calculate elevated leaf internal CO2 concentration
+        /// </summary>
+        /// <param name="Ci_Ca"></param>
+        /// <param name="CiModifier"></param>
+        /// <param name="CO2"></param>
+        /// <returns></returns>
+        public static float CalcCiElev(float Ci_Ca, float CiModifier, float CO2)
+        {
+            float modCi_Ca = Ci_Ca * CiModifier;
+            float CiElev = CO2 * modCi_Ca;
+            return CiElev;
+        }
+
+        /// <summary>
         /// Radiative (light) effect on photosynthesis
         /// </summary>
         /// <param name="Radiation"></param>
@@ -207,7 +221,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="FolN_shape"></param>
         /// <param name="FolN_intercept"></param>
         /// <param name="FolN"></param>
-        /// <param name="fracGround"></param>
+        /// <param name="FRad"></param>
         /// <returns></returns>
         /// via non-linear reduction in FolN with canopy depth via FRad
         public static float CalcAdjFolN(float FolN_shape, float FolN_intercept, float FolN, float FRad)
@@ -221,15 +235,15 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         /// <param name="Tmin"></param>
         /// <param name="CO2"></param>
-        /// <param name="ciElev"></param>
+        /// <param name="CiElev"></param>
         /// <param name="JH2O"></param>
-        /// <param name="ciModifier"></param>
+        /// <param name="CiModifier"></param>
         /// <returns></returns>
-        public static float CalcJCO2_JH2O(float JH2O, float Tmin, float CO2, float ciElev, float ciModifier)
+        public static float CalcJCO2_JH2O(float JH2O, float Tmin, float CO2, float CiElev, float CiModifier)
         {
             float V = Constants.GasConst_JperkmolK * (Tmin + Constants.Tref_K) / Constants.Pref_kPa;
-            float JCO2 = (float)(0.139 * ((CO2 - ciElev) / V) * 0.000001);
-            float JCO2_JH2O = JCO2 / JH2O / ciModifier;
+            float JCO2 = (float)(0.139 * ((CO2 - CiElev) / V) * 0.000001);
+            float JCO2_JH2O = JCO2 / JH2O / CiModifier;
             return JCO2_JH2O;
         }
     }

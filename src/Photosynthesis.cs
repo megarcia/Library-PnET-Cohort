@@ -201,12 +201,36 @@ namespace Landis.Library.PnETCohorts
             return AdjHalfSat;
         }
 
-        // Calculate foliar N adjusted for canopy position
-        // via non-Linear reduction in FolN with canopy depth (FRad
-        public static float CalcAdjFolN(float FolN_shape, float FolN_intercept, float FolN, float fracGround)
+        /// <summary>
+        /// Calculate foliar N adjusted for canopy position
+        /// </summary>
+        /// <param name="FolN_shape"></param>
+        /// <param name="FolN_intercept"></param>
+        /// <param name="FolN"></param>
+        /// <param name="fracGround"></param>
+        /// <returns></returns>
+        /// via non-linear reduction in FolN with canopy depth via FRad
+        public static float CalcAdjFolN(float FolN_shape, float FolN_intercept, float FolN, float FRad)
         {
             float adjFolN = FolN + ((FolN_intercept - FolN) * (float)Math.Pow(FRad, FolN_shape));
             return adjFolN;
+        }
+
+        /// <summary>
+        /// Calculate ratio JCO2/JH2O
+        /// </summary>
+        /// <param name="Tmin"></param>
+        /// <param name="CO2"></param>
+        /// <param name="ciElev"></param>
+        /// <param name="JH2O"></param>
+        /// <param name="ciModifier"></param>
+        /// <returns></returns>
+        public static float CalcJCO2_JH2O(float JH2O, float Tmin, float CO2, float ciElev, float ciModifier)
+        {
+            float V = Constants.GasConst_JperkmolK * (Tmin + Constants.Tref_K) / Constants.Pref_kPa;
+            float JCO2 = (float)(0.139 * ((CO2 - ciElev) / V) * 0.000001);
+            float JCO2_JH2O = JCO2 / JH2O / ciModifier;
+            return JCO2_JH2O;
         }
     }
 }

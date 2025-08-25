@@ -1208,7 +1208,7 @@ namespace Landis.Library.PnETCohorts
             LAISum = Canopy.CalcLAISum(index, LAI);
             data.LAI[index] = Canopy.CalcLAI(PnETspecies, Fol, index, LAISum);
             // Adjust HalfSat for CO2 effect
-            data.AdjHalfSat = Photosynthesis.CalcAdjHalfSat(variables.CO2, PnETspecies.HalfSat, PnETspecies.HalfSatFCO2)
+            data.AdjHalfSat = Photosynthesis.CalcAdjHalfSat(variables.CO2, PnETspecies.HalfSat, PnETspecies.HalfSatFCO2);
             // Reduction factor for radiation on photosynthesis
             float LayerPAR = (float)(mainLayerPAR * Math.Exp(-PnETspecies.K * (LAI.Sum() - LAI[index])));
             FRad[index] = Photosynthesis.CalcFRad(LayerPAR, AdjHalfSat);
@@ -1257,7 +1257,7 @@ namespace Landis.Library.PnETCohorts
                 // Elevated leaf internal co2 concentration
                 float ciElev = variables.CO2 * modCiCaRatio;
                 // Franks method
-                // (Franks,2013, New Phytologist, 197:1077-1094)
+                // (Franks, 2013, New Phytologist, 197:1077-1094)
                 float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
                 // float Ca0 = Constants.CO2RefConc;
                 float Ca0_adj = Constants.CO2RefConc * cicaRatio;  // Calculated internal concentration given external 350
@@ -1268,10 +1268,8 @@ namespace Landis.Library.PnETCohorts
                     delamaxCi = 0;
                 DelAmax[index] = delamaxCi;  // Modified Franks
                 // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
-                float V = (float)(Constants.GasConst_JperkmolK * (variables.Tmin + Constants.Tref_K) / Constants.Pref_kPa);
-                float JCO2 = (float)(0.139 * ((variables.CO2 - ciElev) / V) * 0.000001);  // Corrected conversion units 11/29/22
-                float JH2O = variables[species.Name].JH2O / ciModifier;  // Modified from * to / 11.18.2022 [mod1]
-                float wue = JCO2 / JH2O * Constants.MCO2_MC;
+                float JCO2_JH2O = Photosynthesis.CalcJCO2_JH2O(variables[species.Name].JH2O, variables.Tmin, variables.CO2, ciElev, ciModifier);
+                float wue = JCO2_JH2O * Constants.MCO2_MC;
                 float Amax = (float)(delamaxCi * (PnETspecies.AmaxA + variables[species.Name].AmaxB_CO2 * adjFolN)); //nmole CO2/g Fol/s
                 float BaseFoliarRespiration = variables[species.Name].BaseFoliarRespirationFrac * Amax; //nmole CO2/g Fol/s
                 float AmaxAdj = Amax * PnETspecies.AmaxAmod;  //Amax adjustment as applied in PnET
@@ -1286,7 +1284,7 @@ namespace Landis.Library.PnETCohorts
                 // JH2O has been modified by CiModifier to reduce water use efficiency
                 // Scale transpiration to fraction of site occupied (CanopyLayerFrac)
                 // Corrected conversion factor                
-                PotentialTranspiration[index] = (float)(0.0015f * (GrossPsnPotential / (JCO2 / JH2O))) * CanopyLayerFrac; //mm
+                PotentialTranspiration[index] = (float)(0.0015f * (GrossPsnPotential / JCO2_JH2O)) * CanopyLayerFrac; //mm
                 // It is possible for transpiration to calculate to exceed available water
                 // In this case, we cap transpiration at available water, and back-calculate GrossPsn and NetPsn to downgrade those as well
                 // Volumetric soil water content (mm/m) at species wilting point (h4) 
@@ -1295,9 +1293,9 @@ namespace Landis.Library.PnETCohorts
                 float availableWater = (hydrology.SoilWaterContent - wiltPtWater) * siteCohort.Ecoregion.RootingDepth * frostFreeFrac;
                 if (PotentialTranspiration[index] > availableWater)
                 {
-                    Transpiration[index] = (float)Math.Max(availableWater, 0f); //mm
+                    Transpiration[index] = Math.Max(availableWater, 0f); // mm
                     if (CanopyLayerFrac > 0)
-                        GrossPsn[index] = Transpiration[index] / 0.0015f * (JCO2 / JH2O) / CanopyLayerFrac;
+                        GrossPsn[index] = Transpiration[index] / 0.0015f * JCO2_JH2O / CanopyLayerFrac;
                     else
                         GrossPsn[index] = 0f;
                     if (PotentialTranspiration[index] > 0)

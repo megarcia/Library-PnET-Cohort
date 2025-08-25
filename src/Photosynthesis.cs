@@ -181,10 +181,24 @@ namespace Landis.Library.PnETCohorts
             float kO3Eff = 0.0026F * O3Coeff;  // Scaled by species using input parameters
             float O3Prof = (float)(0.6163F + (0.00105F * FolMass));
             float RelLayer = Layer / (float)nLayers;
-            float RelO3 = Math.Min(1F, 1F - RelLayer * O3Prof * Math.Pow((RelLayer * O3Prof),2));
+            float RelO3 = (float)Math.Min(1F, 1F - RelLayer * O3Prof * Math.Pow((RelLayer * O3Prof), 2));
             // Kubiske method (using water vapor conductance in place of conductance
             float FOzone = (float)Math.Min(1F, (LastFOzone * DroughtO3Frac) + (kO3Eff * WVConductance * O3 * RelO3));
             return FOzone;
+        }
+
+        /// <summary>
+        /// calculate adjustment for CO2 saturation level on photosynthesis
+        /// </summary>
+        /// <param name="CO2"></param>
+        /// <param name="HalfSat"></param>
+        /// <param name="HalfSatFCO2"></param>
+        /// <returns></returns>
+        public static float CalcAdjHalfSat(float CO2, float HalfSat, float HalfSatFCO2)
+        {
+            float halfSatIntercept = HalfSat - Constants.CO2RefConc * HalfSatFCO2;
+            float AdjHalfSat = HalfSatFCO2 * CO2 + halfSatIntercept;
+            return AdjHalfSat;
         }
     }
 }

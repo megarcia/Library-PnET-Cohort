@@ -1208,8 +1208,7 @@ namespace Landis.Library.PnETCohorts
             LAISum = Canopy.CalcLAISum(index, LAI);
             data.LAI[index] = Canopy.CalcLAI(PnETspecies, Fol, index, LAISum);
             // Adjust HalfSat for CO2 effect
-            float halfSatIntercept = PnETspecies.HalfSat - Constants.CO2RefConc * PnETspecies.HalfSatFCO2;
-            data.AdjHalfSat = PnETspecies.HalfSatFCO2 * variables.CO2 + halfSatIntercept;
+            data.AdjHalfSat = Photosynthesis.CalcAdjHalfSat(variables.CO2, PnETspecies.HalfSat, PnETspecies.HalfSatFCO2)
             // Reduction factor for radiation on photosynthesis
             float LayerPAR = (float)(mainLayerPAR * Math.Exp(-PnETspecies.K * (LAI.Sum() - LAI[index])));
             FRad[index] = Photosynthesis.CalcFRad(LayerPAR, AdjHalfSat);
@@ -1349,7 +1348,7 @@ namespace Landis.Library.PnETCohorts
                 FOzone[index] = 1 - fOzone;
                 NetPsn[index] = nonOzoneNetPsn * FOzone[index];
                 // Add net psn to non soluble carbons
-                data.NSC += NetPsn[index]; //gC
+                data.NSC += NetPsn[index]; // gC
                 if (data.NSC < 0)
                     data.NSC = 0f;
             }
@@ -1449,7 +1448,7 @@ namespace Landis.Library.PnETCohorts
                 limitingFactor = "ColdTolerance (" + ColdKill.ToString() + ")";
             else
             {
-                List<float> factorList = new List<float>(new float[] { fWaterAvg, fRadAvg, fOzoneAvg, Fage, fTemp });
+                List<float> factorList = new List<float>(new float[] { fWaterAvg, fRadAvg, fOzoneAvg, FAge, fTemp });
                 float minFactor = factorList.Min();
                 if (minFactor == fTemp)
                     limitingFactor = "fTemp";

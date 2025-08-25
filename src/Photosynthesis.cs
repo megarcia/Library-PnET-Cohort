@@ -188,7 +188,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// calculate adjustment for CO2 saturation level on photosynthesis
+        /// Calculate adjustment for CO2 saturation level on photosynthesis
         /// </summary>
         /// <param name="CO2"></param>
         /// <param name="HalfSat"></param>
@@ -199,6 +199,14 @@ namespace Landis.Library.PnETCohorts
             float halfSatIntercept = HalfSat - Constants.CO2RefConc * HalfSatFCO2;
             float AdjHalfSat = HalfSatFCO2 * CO2 + halfSatIntercept;
             return AdjHalfSat;
+        }
+
+        // Calculate foliar N adjusted for canopy position
+        // via non-Linear reduction in FolN with canopy depth (FRad
+        public static float CalcAdjFolN(float FolN_shape, float FolN_intercept, float FolN, float fracGround)
+        {
+            float adjFolN = FolN + ((FolN_intercept - FolN) * (float)Math.Pow(FRad, FolN_shape));
+            return adjFolN;
         }
     }
 }

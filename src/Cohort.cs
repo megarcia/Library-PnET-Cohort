@@ -1226,8 +1226,8 @@ namespace Landis.Library.PnETCohorts
             }
             else // Spinup
             {
-                if (((Parameter<string>)Names.GetParameter(Names.SpinUpWaterStress)).Value == "true"
-                    || ((Parameter<string>)Names.GetParameter(Names.SpinUpWaterStress)).Value == "yes")
+                if (Names.GetParameter(Names.SpinUpWaterStress).Value == "true"
+                    || Names.GetParameter(Names.SpinUpWaterStress).Value == "yes")
                 {
                     FWater[index] = Photosynthesis.CalcFWater(PnETspecies.H1, PnETspecies.H2, PnETspecies.H3, PnETspecies.H4, PressureHead);
                     fWaterOzone = Photosynthesis.CalcFWater(-1, -1, PnETspecies.H3, PnETspecies.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
@@ -1243,12 +1243,7 @@ namespace Landis.Library.PnETCohorts
                 FWater[index] = 0;
                 fWaterOzone = 0;
             }
-            // FoliarN adjusted based on canopy position (FRad)
-            float folN_shape = PnETspecies.FolN_slope; // Slope for linear FolN relationship
-            float folN_intercept = PnETspecies.FolN_intercept; // Intercept for linear FolN relationship
-            // Non-Linear reduction in FolN with canopy depth (FRad)
-            // slope is shape parm; FolN is minFolN; intcpt is max FolN. EJG-7-24-18
-            data.adjFolN = PnETspecies.FolN + ((folN_intercept - PnETspecies.FolN) * (float)Math.Pow(FRad[index], folN_shape)); 
+            data.adjFolN = Photosynthesis.CalcAdjFolN(PnETspecies.FolN_slope, PnETspecies.FolN_intercept, PnETspecies.FolN, FRad[index]);
             AdjFolN[index] = adjFolN;  // Stored for output
             AdjFolBiomassFrac[index] = adjFolBiomassFrac; //Stored for output
             float ciModifier = Photosynthesis.CalcCiModifier(o3_cum, PnETspecies.StomataO3Sensitivity, fWaterOzone);
@@ -1259,8 +1254,6 @@ namespace Landis.Library.PnETCohorts
                 // CO2 ratio internal to the leaf versus external
                 float cicaRatio = (-0.075f * adjFolN) + 0.875f;
                 float modCiCaRatio = cicaRatio * ciModifier;
-                // Reference co2 ratio
-                // float ci350 = Constants.CO2RefConc * modCiCaRatio;
                 // Elevated leaf internal co2 concentration
                 float ciElev = variables.CO2 * modCiCaRatio;
                 // Franks method

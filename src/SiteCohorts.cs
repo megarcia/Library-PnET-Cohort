@@ -1894,7 +1894,7 @@ namespace Landis.Library.PnETCohorts
                         hydrology.Runoff += snowmeltRunoff;
                         success = hydrology.AddWater(MeltInWater - snowmeltRunoff, Ecoregion.RootingDepth * fracRootAboveFrost);
                         if (!success)
-                            throw new Exception("Error adding water, MeltInWaterr = " + MeltInWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; snowmeltRunoff = " + snowmeltRunoff + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                            throw new Exception("Error adding water, MeltInWater = " + MeltInWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; snowmeltRunoff = " + snowmeltRunoff + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                         float capturedRunoff = 0;
                         if ((Ecoregion.RunoffCapture > 0) & (snowmeltRunoff > 0))
                         {
@@ -1939,30 +1939,18 @@ namespace Landis.Library.PnETCohorts
                             if (!success)
                                 throw new Exception("Error adding water, evaporation = " + evaporationEvent + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                             hydrology.Evaporation += evaporationEvent;
-                            // Add surface water to soil
+                            // Infiltration (add surface water to soil)
                             if (hydrology.SurfaceWater > 0)
-                            {
-                                float surfaceInput = Math.Min(hydrology.SurfaceWater, (Ecoregion.Porosity - hydrology.SoilWaterContent) * Ecoregion.RootingDepth * fracRootAboveFrost);
-                                hydrology.SurfaceWater -= surfaceInput;
-                                success = hydrology.AddWater(surfaceInput, Ecoregion.RootingDepth * fracRootAboveFrost);
-                                if (!success)
-                                    throw new Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                            }
+                                Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location);
                         }
                     }
                     else  // precin > 0
                     {
                         if (MeltInWater > 0)
                         {
-                            // Add surface water to soil
+                            // Infiltration (add surface water to soil)
                             if (hydrology.SurfaceWater > 0)
-                            {
-                                float surfaceInput = Math.Min(hydrology.SurfaceWater, (Ecoregion.Porosity - hydrology.SoilWaterContent) * Ecoregion.RootingDepth * fracRootAboveFrost);
-                                hydrology.SurfaceWater -= surfaceInput;
-                                success = hydrology.AddWater(surfaceInput, Ecoregion.RootingDepth * fracRootAboveFrost);
-                                if (!success)
-                                    throw new Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                            }
+                                Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location);
                         }
                     }
                     hydrology.PotentialET += PotentialETcumulative;
@@ -2013,6 +2001,7 @@ namespace Landis.Library.PnETCohorts
                 float groundAlbedo = 0.20F;
                 if (snowDepth > 0)
                 {
+                    // TODO: move this calculation to Snow class
                     float snowMultiplier = snowDepth >= Constants.snowReflectanceThreshold ? 1 : snowDepth / Constants.snowReflectanceThreshold;
                     groundAlbedo = (float)(groundAlbedo + (groundAlbedo * (2.125 * snowMultiplier)));
                 }
@@ -2102,15 +2091,9 @@ namespace Landis.Library.PnETCohorts
                 this.SetActualET(ActualET, data[m].Month);
                 this.SetPotentialET(PotentialETcumulative);
                 SiteVars.ClimaticWaterDeficit[Site] += PotentialETcumulative - ActualET;
-                // Add surface water to soil
+                // Infiltration (add surface water to soil)
                 if ((hydrology.SurfaceWater > 0) & (hydrology.SoilWaterContent < Ecoregion.Porosity))
-                {
-                    float surfaceInput = Math.Min(hydrology.SurfaceWater, (Ecoregion.Porosity - hydrology.SoilWaterContent) * Ecoregion.RootingDepth * fracRootAboveFrost);
-                    hydrology.SurfaceWater -= surfaceInput;
-                    success = hydrology.AddWater(surfaceInput, Ecoregion.RootingDepth * fracRootAboveFrost);
-                    if (!success)
-                        throw new Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                }
+                    Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location);
                 if (siteoutput != null && outputCohortData)
                 {
                     AddSiteOutput(data[m]);
@@ -3518,7 +3501,7 @@ namespace Landis.Library.PnETCohorts
                        hydrology.SoilWaterContent + "," +
                        hydrology.PressureHeadTable.CalcSoilWaterPressureHead(hydrology.SoilWaterContent,Ecoregion.SoilType)+ "," +
                        hydrology.SurfaceWater + "," +
-                       ((hydrology.SoilWaterContent - Ecoregion.WiltingPoint) * Ecoregion.RootingDepth * fracRootAboveFrost + hydrology.SurfaceWater) + "," +  // mm of avialable water
+                       ((hydrology.SoilWaterContent - Ecoregion.WiltingPoint) * Ecoregion.RootingDepth * fracRootAboveFrost + hydrology.SurfaceWater) + "," +  // mm of available water
                        snowpack + "," +
                        cohorts.Values.Sum(o => o.Sum(x => x.LAI.Sum() * x.CanopyLayerFrac)) + "," +
                        monthdata.VPD + "," +

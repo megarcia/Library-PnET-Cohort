@@ -208,16 +208,16 @@ namespace Landis.Library.PnETCohorts
             }
             Globals.ModelCore.UI.WriteLine("Eco\tSoiltype\tWiltingPoint\t\tFieldCapacity\tFC-WP\t\tPorosity");
             foreach (IPnETEcoregionData ecoregion in PnETEcoregionData.Ecoregions) if (ecoregion.Active)
-            {
-                // Volumetric soil water content (mm/m) at field capacity
-                ecoregion.FieldCapacity = (float)pressureHeadTable.CalcSoilWaterContent(-Constants.FieldCapacity_kPa, ecoregion.SoilType);
-                // Volumetric soil water content (mm/m) at wilting point
-                ecoregion.WiltingPoint = (float)pressureHeadTable.CalcSoilWaterContent(-Constants.WiltingPoint_kPa, ecoregion.SoilType);
-                // Volumetric soil water content (mm/m) at porosity
-                ecoregion.Porosity = (float)pressureHeadTable.SoilPorosity(ecoregion.SoilType);
-                float f = ecoregion.FieldCapacity - ecoregion.WiltingPoint;
-                Globals.ModelCore.UI.WriteLine(ecoregion.Name + "\t" + ecoregion.SoilType + "\t\t" + ecoregion.WiltingPoint + "\t" + ecoregion.FieldCapacity + "\t" + f + "\t" + ecoregion.Porosity);
-            }
+                {
+                    // Volumetric soil water content (mm/m) at field capacity
+                    ecoregion.FieldCapacity = (float)pressureHeadTable.CalcSoilWaterContent(-Constants.FieldCapacity_kPa, ecoregion.SoilType);
+                    // Volumetric soil water content (mm/m) at wilting point
+                    ecoregion.WiltingPoint = (float)pressureHeadTable.CalcSoilWaterContent(-Constants.WiltingPoint_kPa, ecoregion.SoilType);
+                    // Volumetric soil water content (mm/m) at porosity
+                    ecoregion.Porosity = (float)pressureHeadTable.SoilPorosity(ecoregion.SoilType);
+                    float f = ecoregion.FieldCapacity - ecoregion.WiltingPoint;
+                    Globals.ModelCore.UI.WriteLine(ecoregion.Name + "\t" + ecoregion.SoilType + "\t\t" + ecoregion.WiltingPoint + "\t" + ecoregion.FieldCapacity + "\t" + f + "\t" + ecoregion.Porosity);
+                }
         }
 
         public float CalcEvaporation(SiteCohorts sitecohorts, float PotentialET)
@@ -236,6 +236,23 @@ namespace Landis.Library.PnETCohorts
                 evaporationEvent = Math.Max(0f, evaporationEvent);  // evaporation cannot be negative
                 return evaporationEvent; // mm/month
             }
+        }
+
+        /// <summary>
+        /// Infiltration: add surface water to soil water content
+        /// </summary>
+        /// <param name="Hydrology"></param>
+        /// <param name="Ecoregion"></param>
+        /// <param name="fracRootAboveFrost"></param>
+        /// <param name="Location"></param>
+        /// <exception cref="Exception"></exception>
+        public void CalcInfiltration(Hydrology Hydrology, IPnETEcoregionData Ecoregion, float fracRootAboveFrost, string Location)
+        {
+            float SurfaceInput = Math.Min(Hydrology.SurfaceWater, (Ecoregion.Porosity - Hydrology.SoilWaterContent) * Ecoregion.RootingDepth * fracRootAboveFrost);
+            Hydrology.SurfaceWater -= SurfaceInput;
+            bool success = Hydrology.AddWater(SurfaceInput, Ecoregion.RootingDepth * fracRootAboveFrost);
+            if (!success)
+                throw new Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; soilWaterContent = " + Hydrology.SoilWaterContent + "; ecoregion = " + Ecoregion.Name + "; site = " + Location);
         }
     }
 }

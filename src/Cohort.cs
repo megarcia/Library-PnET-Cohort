@@ -1215,14 +1215,14 @@ namespace Landis.Library.PnETCohorts
             // Get pressure head given ecoregion and soil water content (latter in hydrology)
             float PressureHead = hydrology.PressureHeadTable.CalcSoilWaterPressureHead(hydrology.SoilWaterContent, siteCohort.Ecoregion.SoilType);
             // Reduction water for sub or supra optimal soil water content
-            float fWaterOzone = 1.0f;  //fWater for ozone functions; ignores H1 and H2 parameters because only impacts when drought-stressed
+            float FWaterOzone = 1.0f;  // fWater for ozone functions; ignores H1 and H2 parameters because only impacts when drought-stressed
             SoilWaterContent[index] = hydrology.SoilWaterContent;
             PressHead[index] = PressureHead;
             NumPrecipEvents[index] = precipCount;
             if (Globals.ModelCore.CurrentTime > 0)
             {
                 FWater[index] = Photosynthesis.CalcFWater(PnETspecies.H1, PnETspecies.H2, PnETspecies.H3, PnETspecies.H4, PressureHead);
-                fWaterOzone = Photosynthesis.CalcFWater(-1, -1, PnETspecies.H3, PnETspecies.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
+                FWaterOzone = Photosynthesis.CalcFWater(-1, -1, PnETspecies.H3, PnETspecies.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
             }
             else // Spinup
             {
@@ -1230,23 +1230,23 @@ namespace Landis.Library.PnETCohorts
                     || Names.GetParameter(Names.SpinUpWaterStress).Value == "yes")
                 {
                     FWater[index] = Photosynthesis.CalcFWater(PnETspecies.H1, PnETspecies.H2, PnETspecies.H3, PnETspecies.H4, PressureHead);
-                    fWaterOzone = Photosynthesis.CalcFWater(-1, -1, PnETspecies.H3, PnETspecies.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
+                    FWaterOzone = Photosynthesis.CalcFWater(-1, -1, PnETspecies.H3, PnETspecies.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
                 }
                 else // Ignore H1 and H2 parameters during spinup
                 {
                     FWater[index] = Photosynthesis.CalcFWater(-1, -1, PnETspecies.H3, PnETspecies.H4, PressureHead);
-                    fWaterOzone = FWater[index];
+                    FWaterOzone = FWater[index];
                 }
             }
             if (frostFreeFrac <= 0)
             {
                 FWater[index] = 0;
-                fWaterOzone = 0;
+                FWaterOzone = 0;
             }
             data.adjFolN = Photosynthesis.CalcAdjFolN(PnETspecies.FolN_slope, PnETspecies.FolN_intercept, PnETspecies.FolN, FRad[index]);
             AdjFolN[index] = adjFolN;  // Stored for output
             AdjFolBiomassFrac[index] = adjFolBiomassFrac; //Stored for output
-            float ciModifier = Photosynthesis.CalcCiModifier(o3_cum, PnETspecies.StomataO3Sensitivity, fWaterOzone);
+            float ciModifier = Photosynthesis.CalcCiModifier(o3_cum, PnETspecies.StomataO3Sensitivity, FWaterOzone);
             CiModifier[index] = ciModifier;  // Stored for output
             // If trees are physiologically active
             if (IsLeafOn)

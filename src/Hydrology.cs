@@ -245,7 +245,9 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Evaporation from soil water content
+        /// Evaporation from soil water content at soil surface.
+        /// TODO: evaporate from available captured surface water first, 
+        /// then take water from soil column.   
         /// </summary>
         /// <param name="hydrology"></param>
         /// <param name="ecoregion"></param>
@@ -258,7 +260,7 @@ namespace Landis.Library.PnETCohorts
         {
             float EvaporationEvent = 0;
             if (fracRootAboveFrost > 0 && snowpack == 0)
-                EvaporationEvent = hydrology.CalcEvaporation(ecoregion, potentialET); //mm
+                EvaporationEvent = hydrology.CalcEvaporation(ecoregion, potentialET); // mm
             bool success = hydrology.AddWater(-1 * EvaporationEvent, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
                 throw new Exception("Error adding water, evaporation = " + EvaporationEvent + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
@@ -266,7 +268,8 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Runoff due to input in excess of soil porosity 
+        /// Calculate runoff from input in excess of surface capture 
+        /// and/or available soil capacity. Includes infiltration.
         /// </summary>
         /// <param name="hydrology"></param>
         /// <param name="ecoregion"></param>
@@ -291,7 +294,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Infiltration: add surface water to soil water content
+        /// Calculate soil infiltration purely from surface captured water.
         /// </summary>
         /// <param name="hydrology"></param>
         /// <param name="ecoregion"></param>
@@ -305,6 +308,24 @@ namespace Landis.Library.PnETCohorts
             if (!success)
                 throw new Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
             hydrology.SurfaceWater -= SurfaceInput;
+        }
+
+        /// <summary>
+        /// Calculate leakage of soil water to "groundwater."
+        /// </summary>
+        /// <param name="hydrology"></param>
+        /// <param name="ecoregion"></param>
+        /// <param name="leakageFrac"></param>
+        /// <param name="fracRootAboveFrost"></param>
+        /// <param name="location"></param>
+        /// <exception cref="Exception"></exception>
+        public void CalcLeakage(Hydrology hydrology, IPnETEcoregionData ecoregion, float leakageFrac, float fracRootAboveFrost, string location)
+        {
+            float leakage = Math.Max(leakageFrac * (hydrology.SoilWaterContent - ecoregion.FieldCapacity), 0) * ecoregion.RootingDepth * fracRootAboveFrost; //mm
+            hydrology.Leakage += leakage;
+            bool success = hydrology.AddWater(-1 * leakage, ecoregion.RootingDepth * fracRootAboveFrost);
+            if (!success)
+                throw new Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
         }
     }
 }

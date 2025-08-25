@@ -1873,13 +1873,14 @@ namespace Landis.Library.PnETCohorts
                     // end main canopy layer loop
                     hydrology.PotentialET += PotentialETcumulative;
                 }
-                else
+                else // No cohorts are present
                 {
-                    // When no cohorts are present
                     if (MeltInWater > 0)
                     {
                         // Instantaneous runoff due to snowmelt (excess of soilPorosity)
                         Hydrology.CalcRunoff(hydrology, Ecoregion, MeltInWater, fracRootAboveFrost, Site.Location);
+                        // Fast Leakage
+                        Hydrology.CalcLeakage(hydrology, Ecoregion, leakageFrac, fracRootAboveFrost, Site.Location);
                     }
                     if (precin > 0)
                     {
@@ -1887,30 +1888,26 @@ namespace Landis.Library.PnETCohorts
                         {
                             // Instantaneous runoff due to rain (excess of soilPorosity)
                             Hydrology.CalcRunoff(hydrology, Ecoregion, precin, fracRootAboveFrost, Site.Location);
-                            // Fast Leakage
-                            float leakage = Math.Max((float)leakageFrac * (hydrology.SoilWaterContent - Ecoregion.FieldCapacity), 0) * Ecoregion.RootingDepth * fracRootAboveFrost; //mm
-                            hydrology.Leakage += leakage;
-                            // Remove fast leakage
-                            success = hydrology.AddWater(-1 * leakage, Ecoregion.RootingDepth * fracRootAboveFrost);
-                            if (!success)
-                                throw new Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                             // Evaporation
                             float PotentialETnonfor = groundPotentialET / numEvents;
                             PotentialETcumulative += ReferenceET * data[m].DaySpan / numEvents;
                             Hydrology.CalcSoilEvaporation(hydrology, Ecoregion, snowpack, fracRootAboveFrost, PotentialETnonfor, Site.Location);
                             // Infiltration (add surface water to soil)
-                            if (hydrology.SurfaceWater > 0)
-                                Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location);
+                            Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location);
+                            // Fast Leakage
+                            Hydrology.CalcLeakage(hydrology, Ecoregion, leakageFrac, fracRootAboveFrost, Site.Location);
                         }
                     }
-                    else  // precin > 0
+                    else  // precin = 0
                     {
-                        if (MeltInWater > 0)
-                        {
-                            // Infiltration (add surface water to soil)
-                            if (hydrology.SurfaceWater > 0)
-                                Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location);
-                        }
+                        // Evaporation
+                        float PotentialETnonfor = groundPotentialET / numEvents;
+                        PotentialETcumulative += ReferenceET * data[m].DaySpan / numEvents;
+                        Hydrology.CalcSoilEvaporation(hydrology, Ecoregion, snowpack, fracRootAboveFrost, PotentialETnonfor, Site.Location);
+                        // Infiltration (let captured surface water soak into soil)
+                        Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location);
+                        // Fast Leakage
+                        Hydrology.CalcLeakage(hydrology, Ecoregion, leakageFrac, fracRootAboveFrost, Site.Location);
                     }
                     hydrology.PotentialET += PotentialETcumulative;
                 }

@@ -1253,18 +1253,11 @@ namespace Landis.Library.PnETCohorts
             {
                 // CO2 ratio internal to the leaf versus external
                 float cicaRatio = (-0.075f * adjFolN) + 0.875f;
-                // Elevated leaf internal co2 concentration
+                // Elevated leaf internal CO2 concentration
                 float ciElev = Photosynthesis.CalcCiElev(cicaRatio, ciModifier, variables.CO2);
-                // Franks method
-                // (Franks, 2013, New Phytologist, 197:1077-1094)
-                float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
-                // float Ca0 = Constants.CO2RefConc;
+                // Franks method (2013, New Phytologist, 197:1077-1094)
                 float Ca0_adj = Constants.CO2RefConc * cicaRatio;  // Calculated internal concentration given external 350
-                // Modified Franks method - by M. Kubiske
-                // substitute ciElev for CO2
-                float delamaxCi = (ciElev - Gamma) / (ciElev + 2 * Gamma) * (Constants.CO2RefConc + 2 * Gamma) / (Constants.CO2RefConc - Gamma);
-                if (delamaxCi < 0)
-                    delamaxCi = 0;
+                float delamaxCi = Photosynthesis.CalcDelAmaxCi(ciElev);
                 DelAmax[index] = delamaxCi;  // Modified Franks
                 // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
                 float JCO2_JH2O = Photosynthesis.CalcJCO2_JH2O(variables[species.Name].JH2O, variables.Tmin, variables.CO2, ciElev, ciModifier);

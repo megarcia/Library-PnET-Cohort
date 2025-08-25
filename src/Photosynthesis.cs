@@ -137,6 +137,24 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
+        /// Calculate vertical gradient of CO2 concentration in canopy
+        /// based on Franks (2013, New Phytologist, 197:1077-1094) and
+        /// modified by M. Kubiske
+        /// </summary>
+        /// <param name="CiElev"></param>
+        /// <returns></returns>
+        public static float CalcDelAmaxCi(float CiElev)
+        {
+            // the CO2 compensation point at which photorespiration balances 
+            // exactly with photosynthesis.  Assumed to be 40 based on leaf 
+            // Temp = 25ºC
+            float Gamma = 40;
+            float DelAmaxCi = (CiElev - Gamma) / (CiElev + 2 * Gamma) * (Constants.CO2RefConc + 2 * Gamma) / (Constants.CO2RefConc - Gamma);
+            DelAmaxCi = Math.Max(DelAmaxCi, 0F);
+            return DelAmaxCi;
+        }
+
+        /// <summary>
         /// Radiative (light) effect on photosynthesis
         /// </summary>
         /// <param name="Radiation"></param>

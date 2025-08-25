@@ -1878,41 +1878,15 @@ namespace Landis.Library.PnETCohorts
                     // When no cohorts are present
                     if (MeltInWater > 0)
                     {
-                        // Add melted snow to soil moisture
-                        // Instantaneous runoff (excess of soilPorosity)
-                        float soilWaterCapacity = Ecoregion.Porosity * Ecoregion.RootingDepth * fracRootAboveFrost; //mm
-                        float snowmeltRunoff = Math.Min(MeltInWater, Math.Max(hydrology.SoilWaterContent * Ecoregion.RootingDepth * fracRootAboveFrost + MeltInWater - soilWaterCapacity, 0));
-                        hydrology.Runoff += snowmeltRunoff;
-                        success = hydrology.AddWater(MeltInWater - snowmeltRunoff, Ecoregion.RootingDepth * fracRootAboveFrost);
-                        if (!success)
-                            throw new Exception("Error adding water, MeltInWater = " + MeltInWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; snowmeltRunoff = " + snowmeltRunoff + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                        float capturedRunoff = 0;
-                        if ((Ecoregion.RunoffCapture > 0) & (snowmeltRunoff > 0))
-                        {
-                            capturedRunoff = Math.Max(0, Math.Min(snowmeltRunoff, Ecoregion.RunoffCapture - hydrology.SurfaceWater));
-                            hydrology.SurfaceWater += capturedRunoff;
-                        }
-                        hydrology.Runoff += snowmeltRunoff - capturedRunoff;
+                        // Instantaneous runoff due to snowmelt (excess of soilPorosity)
+                        Hydrology.CalcRunoff(hydrology, Ecoregion, MeltInWater, fracRootAboveFrost, Site.Location);
                     }
                     if (precin > 0)
                     {
                         for (int p = 0; p < numEvents; p++)
                         {
-                            // Instantaneous runoff (excess of soilPorosity)
-                            float soilWaterCapacity = Ecoregion.Porosity * Ecoregion.RootingDepth * fracRootAboveFrost; //mm
-                            float rainRunoff = Math.Min(precin, Math.Max(hydrology.SoilWaterContent * Ecoregion.RootingDepth * fracRootAboveFrost + PrecInByEvent - soilWaterCapacity, 0));
-                            float capturedRunoff = 0;
-                            if ((Ecoregion.RunoffCapture > 0) & (rainRunoff > 0))
-                            {
-                                capturedRunoff = Math.Max(0, Math.Min(rainRunoff, Ecoregion.RunoffCapture - hydrology.SurfaceWater));
-                                hydrology.SurfaceWater += capturedRunoff;
-                            }
-                            hydrology.Runoff += rainRunoff - capturedRunoff;
-                            float precipIn = PrecInByEvent - rainRunoff; //mm
-                            // Add incoming precipitation to soil moisture
-                            success = hydrology.AddWater(precipIn, Ecoregion.RootingDepth * fracRootAboveFrost);
-                            if (!success)
-                                throw new Exception("Error adding water, waterIn = " + precipIn + "; soilWaterContent = " + hydrology.SoilWaterContent + "; rainRunoff = " + rainRunoff + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                            // Instantaneous runoff due to rain (excess of soilPorosity)
+                            Hydrology.CalcRunoff(hydrology, Ecoregion, precin, fracRootAboveFrost, Site.Location);
                             // Fast Leakage
                             float leakage = Math.Max((float)leakageFrac * (hydrology.SoilWaterContent - Ecoregion.FieldCapacity), 0) * Ecoregion.RootingDepth * fracRootAboveFrost; //mm
                             hydrology.Leakage += leakage;

@@ -266,6 +266,31 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
+        /// Runoff due to input in excess of soil porosity 
+        /// </summary>
+        /// <param name="hydrology"></param>
+        /// <param name="ecoregion"></param>
+        /// <param name="inputWater"></param>
+        /// <param name="fracRootAboveFrost"></param>
+        /// <param name="location"></param>
+        /// <exception cref="Exception"></exception>
+        public void CalcRunoff(Hydrology hydrology, IPnETEcoregionData ecoregion, float inputWater, float fracRootAboveFrost, string location)
+        {
+            if (ecoregion.RunoffCapture > 0)
+            {
+                float capturedInput = Math.Min(inputWater, Math.Max(ecoregion.RunoffCapture - hydrology.SurfaceWater, 0));
+                hydrology.SurfaceWater += capturedInput;
+                inputWater -= capturedInput;
+            }
+            float availableSoilCapacity = Math.Max(ecoregion.Porosity - hydrology.SoilWaterContent, 0) * ecoregion.RootingDepth * fracRootAboveFrost; // mm
+            float runoff = Math.Max(inputWater - availableSoilCapacity, 0);
+            bool success = hydrology.AddWater(inputWater - runoff, ecoregion.RootingDepth * fracRootAboveFrost);
+            if (!success)
+                throw new Exception("Error adding water, InputWater = " + inputWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; Runoff = " + runoff + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+            hydrology.Runoff += runoff;
+        }
+
+        /// <summary>
         /// Infiltration: add surface water to soil water content
         /// </summary>
         /// <param name="hydrology"></param>
@@ -276,10 +301,10 @@ namespace Landis.Library.PnETCohorts
         public void CalcInfiltration(Hydrology hydrology, IPnETEcoregionData ecoregion, float fracRootAboveFrost, string location)
         {
             float SurfaceInput = Math.Min(hydrology.SurfaceWater, (ecoregion.Porosity - hydrology.SoilWaterContent) * ecoregion.RootingDepth * fracRootAboveFrost);
-            hydrology.SurfaceWater -= SurfaceInput;
             bool success = hydrology.AddWater(SurfaceInput, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
                 throw new Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+            hydrology.SurfaceWater -= SurfaceInput;
         }
     }
 }

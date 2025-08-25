@@ -39,7 +39,7 @@ namespace Landis.Library.PnETCohorts
         float[] FWater { get; }
         float[] SoilWaterContent { get; }
         float[] PressHead { get; }
-        int[] NumEvents { get; }
+        int[] NumPrecipEvents { get; }
         float[] FOzone { get; }
         float[] Interception { get; }
         float[] AdjFolN { get; }

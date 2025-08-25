@@ -180,7 +180,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Number of precip events allocated to sublayer
         /// </summary>
-        public int[] NumEvents;
+        public int[] NumPrecipEvents;
 
         /// <summary>
         /// Reduction factor for ozone 
@@ -269,7 +269,7 @@ namespace Landis.Library.PnETCohorts
             this.NetPsn = cohort.NetPsn;
             this.NSC = cohort.NSC;
             this.PressHead = cohort.PressHead;
-            this.NumEvents = cohort.NumEvents;
+            this.NumPrecipEvents = cohort.NumPrecipEvents;
             this.Transpiration = cohort.Transpiration;
             this.PotentialTranspiration = cohort.PotentialTranspiration;
             this.SoilWaterContent = cohort.SoilWaterContent;
@@ -328,7 +328,7 @@ namespace Landis.Library.PnETCohorts
             this.NetPsn = new float[Globals.IMAX];
             this.NSC = 0;
             this.PressHead = new float[Globals.IMAX];
-            this.NumEvents = new int[Globals.IMAX];
+            this.NumPrecipEvents = new int[Globals.IMAX];
             this.Transpiration = new float[Globals.IMAX];
             this.PotentialTranspiration = new float[Globals.IMAX];
             this.SoilWaterContent = new float[Globals.IMAX];

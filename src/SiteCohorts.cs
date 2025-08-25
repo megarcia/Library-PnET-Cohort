@@ -1639,9 +1639,9 @@ namespace Landis.Library.PnETCohorts
                 if (precin < 0)
                     throw new Exception("Error, precin = " + precin + " newSnow = " + newSnow + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 // maximum number of precipitation events per month
-                int numEvents = Ecoregion.PrecipEvents;
+                int numPrecipEvents = Ecoregion.PrecipEvents;
                 // Divide precip into discrete events within the month
-                float PrecInByEvent = precin / numEvents;
+                float PrecInByEvent = precin / numPrecipEvents;
                 if (PrecInByEvent < 0)
                     throw new Exception("Error, PrecInByEvent = " + PrecInByEvent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 if (fracRootAboveFrost >= 1)
@@ -1652,14 +1652,14 @@ namespace Landis.Library.PnETCohorts
                 float MeltInWater = snowmelt;
                 // Calculate ground PotentialET
                 float groundPotentialET = Evapotranspiration.CalcPotentialGroundET_LAI(CanopyLAI.Sum(), data[m].Tavg, data[m].DayLength, data[m].DaySpan, ((Parameter<float>)Names.GetParameter("ETExtCoeff")).Value);
-                float  groundPotentialETbyEvent = groundPotentialET / numEvents;  // divide evaporation into discreet events to match precip
+                float  groundPotentialETbyEvent = groundPotentialET / numPrecipEvents;  // divide evaporation into discreet events to match precip
                 // Randomly choose which layers will receive the precip events
                 // If # of layers < precipEvents, some layers will show up multiple times in number list.  This ensures the same number of precip events regardless of the number of cohorts
                 List<int> randomNumbers = new List<int>();
                 if (PrecipEventsWithReplacement)
                 {
                     // Sublayer selection with replacement    
-                    while (randomNumbers.Count < numEvents)
+                    while (randomNumbers.Count < numPrecipEvents)
                     {
                         int rand = Statistics.DiscreteUniformRandom(1, SubCanopyCohorts.Count());
                         randomNumbers.Add(rand);
@@ -1670,10 +1670,10 @@ namespace Landis.Library.PnETCohorts
                     // Sublayer selection without replacement
                     if (SubCanopyCohorts.Count() > 0)
                     {
-                        while (randomNumbers.Count < numEvents)
+                        while (randomNumbers.Count < numPrecipEvents)
                         {
                             List<int> subCanopyList = Enumerable.Range(1, SubCanopyCohorts.Count()).ToList();
-                            while ((randomNumbers.Count < numEvents) && (subCanopyList.Count() > 0))
+                            while ((randomNumbers.Count < numPrecipEvents) && (subCanopyList.Count() > 0))
                             {
                                 int rand = Statistics.DiscreteUniformRandom(0, subCanopyList.Count() - 1);
                                 randomNumbers.Add(subCanopyList[rand]);
@@ -1884,13 +1884,13 @@ namespace Landis.Library.PnETCohorts
                     }
                     if (precin > 0)
                     {
-                        for (int p = 0; p < numEvents; p++)
+                        for (int p = 0; p < numPrecipEvents; p++)
                         {
                             // Instantaneous runoff due to rain (excess of soilPorosity)
                             Hydrology.CalcRunoff(hydrology, Ecoregion, precin, fracRootAboveFrost, Site.Location);
                             // Evaporation
-                            float PotentialETnonfor = groundPotentialET / numEvents;
-                            PotentialETcumulative += ReferenceET * data[m].DaySpan / numEvents;
+                            float PotentialETnonfor = groundPotentialET / numPrecipEvents;
+                            PotentialETcumulative += ReferenceET * data[m].DaySpan / numPrecipEvents;
                             Hydrology.CalcSoilEvaporation(hydrology, Ecoregion, snowpack, fracRootAboveFrost, PotentialETnonfor, Site.Location);
                             // Infiltration (add surface water to soil)
                             Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location);
@@ -1901,8 +1901,8 @@ namespace Landis.Library.PnETCohorts
                     else  // precin = 0
                     {
                         // Evaporation
-                        float PotentialETnonfor = groundPotentialET / numEvents;
-                        PotentialETcumulative += ReferenceET * data[m].DaySpan / numEvents;
+                        float PotentialETnonfor = groundPotentialET / numPrecipEvents;
+                        PotentialETcumulative += ReferenceET * data[m].DaySpan / numPrecipEvents;
                         Hydrology.CalcSoilEvaporation(hydrology, Ecoregion, snowpack, fracRootAboveFrost, PotentialETnonfor, Site.Location);
                         // Infiltration (let captured surface water soak into soil)
                         Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location);

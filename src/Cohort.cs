@@ -544,11 +544,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public int[] NumEvents
+        public int[] NumPrecipEvents
         {
             get
             {
-                return data.NumEvents;
+                return data.NumPrecipEvents;
             }
         }
 
@@ -656,7 +656,7 @@ namespace Landis.Library.PnETCohorts
             data.FWater = new float[Globals.IMAX];
             data.SoilWaterContent = new float[Globals.IMAX];
             data.PressHead = new float[Globals.IMAX];
-            data.NumEvents = new int[Globals.IMAX];
+            data.NumPrecipEvents = new int[Globals.IMAX];
             data.FOzone = new float[Globals.IMAX];
             data.MaintenanceRespiration = new float[Globals.IMAX];
             data.Interception = new float[Globals.IMAX];
@@ -680,7 +680,7 @@ namespace Landis.Library.PnETCohorts
             data.FRad = null;
             data.FWater = null;
             data.PressHead = null;
-            data.NumEvents = null;
+            data.NumPrecipEvents = null;
             data.SoilWaterContent = null;
             data.FOzone = null;
             data.MaintenanceRespiration = null;
@@ -1274,7 +1274,7 @@ namespace Landis.Library.PnETCohorts
             float fWaterOzone = 1.0f;  //fWater for ozone functions; ignores H1 and H2 parameters because only impacts when drought-stressed
             SoilWaterContent[index] = hydrology.SoilWaterContent;
             PressHead[index] = PressureHead;
-            NumEvents[index] = precipCount;
+            NumPrecipEvents[index] = precipCount;
             if (Globals.ModelCore.CurrentTime > 0)
             {
                 FWater[index] = Photosynthesis.CalcFWater(PnETspecies.H1, PnETspecies.H2, PnETspecies.H3, PnETspecies.H4, PressureHead);

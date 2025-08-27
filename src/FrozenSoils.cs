@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class FrozenSoils
+    public class Soils
     {
         public static SortedList<float, float> CalcMonthlySoilTemps(SortedList<float, float> depthTempDict, IPnETEcoregionData Ecoregion, int daysOfWinter, float snowpack, IHydrology hydrology, float lastTempBelowSnow)
         {
-            //
             // Snow calculations, now handled in Snow class
             float densitySnow_kg_m3 = Snow.CalcDensity(daysOfWinter);
             float snowDepth = Snow.CalcDepth(densitySnow_kg_m3, snowpack);
@@ -19,15 +20,8 @@ namespace Landis.Library.PnETCohorts
             float snowThermalConductivity = Snow.CalcThermalConductivity(densitySnow_kg_m3);
             float snowThermalDamping = Snow.CalcThermalDamping(snowThermalConductivity);
             float snowDampingRatio = Snow.CalcDampingRatio(snowDepth, snowThermalDamping);
-            //
-            // Frozen soil calculations
-            float soilPorosity = Ecoregion.Porosity / Ecoregion.RootingDepth;  //m3/m3
-            float soilWaterContent = hydrology.SoilWaterContent / Ecoregion.RootingDepth;  //m3/m3
-            float ga = 0.035F + 0.298F * (soilWaterContent / soilPorosity);
-            float Fa = (2.0F / 3.0F / (1.0F + ga * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))) + (1.0F / 3.0F / (1.0F + (1.0F - 2.0F * ga) * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))); // ratio of air temp gradient
-            float Fs = Hydrology_SaxtonRawls.GetFs(Ecoregion.SoilType);
-            float ThermalConductivitySoil = Hydrology_SaxtonRawls.GetThermalConductivitySoil(Ecoregion.SoilType);
-            float ThermalConductivity_theta = (Fs * (1.0F - soilPorosity) * ThermalConductivitySoil + Fa * (soilPorosity - soilWaterContent) * Constants.ThermalConductivityAir_kJperday + soilWaterContent * Constants.ThermalConductivityWater_kJperday) / (Fs * (1.0F - soilPorosity) + Fa * (soilPorosity - soilWaterContent) + soilWaterContent); //soil thermal conductivity (kJ/m/d/K)
+            // Soil thermal conductivity via De Vries model (convert to kJ/m.d.K)
+            float ThermalConductivity_theta = Soils.CalcThermalConductivitySoil_Watts(hydrology.SoilWaterContent, Ecoregion.Porosity, Ecoregion.SoilType) / Constants.Convert_kJperday_to_Watts;
             float D = ThermalConductivity_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  //m2/day
             float Dmonth = D * Ecoregion.Variables.DaySpan; // m2/month
             float d = (float)Math.Pow(Constants.omega / (2.0F * Dmonth), 0.5);
@@ -51,6 +45,77 @@ namespace Landis.Library.PnETCohorts
             if (maxDepth < 100) // mm
                 depthTempDict[0.1F] = depthTempDict[0];
             return depthTempDict;
+        }
+
+        /// <summary>
+        /// Calculate ga term in De Vries model of soil thermal conductivity
+        /// </summary>
+        /// <param name="WaterContent"></param>
+        /// <param name="Porosity"></param>
+        /// <returns></returns>
+        public static float CalcAirShapeFactor(float WaterContent, float Porosity)
+        {
+            float ga = 0.035F + 0.298F * (WaterContent / Porosity);
+            return ga;
+        }
+
+        /// <summary>
+        /// Calculate thermal conductivity of De Vries "fluid"
+        /// </summary>
+        /// <param name="WaterContent"></param>
+        /// <param name="ClayFrac"></param>
+        /// <returns></returns>
+        public static float CalcThermalConductivityFluid(float WaterContent, float ClayFrac)
+        {
+            float theta0 = 0.33f * ClayFrac + 0.078f;
+            float ratio = WaterContent / theta0;
+            float q = 7.25f * ClayFrac + 2.52f;
+            float fw = 1F / (1F + (float)Math.Pow(ratio, -q));
+            return fw;
+        }
+
+        /// <summary>
+        /// Calculate weights in De Vries model of soil thermal conductivity
+        /// </summary>
+        /// <param name="ga"></param>
+        /// <param name="gc"></param>
+        /// <param name="Numerator"></param>
+        /// <param name="ThermalConductivityFluid"></param>
+        /// <returns></returns>
+        public static float CalcDeVriesWeight(float ga, float gc, float Numerator, float ThermalConductivityFluid)
+        {
+            float term1 = 2F / 3F / (1F + ga * ((Numerator / ThermalConductivityFluid) - 1F));
+            float term2 = 1F / 3F / (1F + gc * ((Numerator / ThermalConductivityFluid) - 1F));
+            float weight = term1 + term2;
+            return weight;
+        }
+
+        /// <summary>
+        /// Calculate thermal conductivity of moist/wet soil via De Vries model
+        /// (De Vries, 1963) summarized in (Campbell et al., 1994; Tong et al., 2016) 
+        /// </summary>
+        /// <param name="WaterContent"></param>
+        /// <param name="Porosity"></param>
+        /// <param name="SoilType"></param>
+        /// <returns></returns>
+        public static float CalcThermalConductivitySoil_Watts(float WaterContent, float Porosity, string SoilType)
+        {
+            float ga = CalcAirShapeFactor(WaterContent, Porosity);
+            float gc = 1F - 2F * ga;
+            float ClayFrac = Hydrology_SaxtonRawls.GetClayFrac(SoilType);
+            float ThermalConductivityFluid = CalcThermalConductivityFluid(WaterContent, ClayFrac);
+            float Kair = CalcDeVriesWeight(ga, gc, Constants.ThermalConductivityAir_Watts, ThermalConductivityFluid);
+            float ThermalConductivitySoil_Watts = Hydrology_SaxtonRawls.GetThermalConductivitySoil(SoilType) * Constants.Convert_kJperday_to_Watts;
+            float Ksoil = CalcDeVriesWeight(ga, gc, ThermalConductivitySoil_Watts, ThermalConductivityFluid);
+            float Kwater = CalcDeVriesWeight(ga, gc, Constants.ThermalConductivityWater_Watts, ThermalConductivityFluid);
+            float AirContent = Porosity - WaterContent;
+            float numerator_air = Kair * AirContent * Constants.ThermalConductivityAir_Watts;
+            float numerator_soil = Ksoil * (1F - Porosity) * ThermalConductivitySoil_Watts;
+            float numerator_water = Kwater * WaterContent * Constants.ThermalConductivityWater_Watts;
+            float numerator = numerator_air + numerator_soil + numerator_water;
+            float denominator = Kair * AirContent + Ksoil * (1F - Porosity) + Kwater * WaterContent;
+            float ThermalConductivitySoil = numerator / denominator;
+            return ThermalConductivitySoil;
         }
     }
 }

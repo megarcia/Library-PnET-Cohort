@@ -1403,10 +1403,12 @@ namespace Landis.Library.PnETCohorts
                 else
                     ozoneD40 = data[m].O3;
                 float O3_D40_ppmh = ozoneD40 / 1000; // convert D40 units to ppm h
+
                 // Melt snow
                 float snowmelt = Math.Min(snowpack, CalcMaxSnowMelt(data[m].Tavg, data[m].DaySpan)); // mm
                 if (snowmelt < 0)
                     throw new Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+
                 float newSnow = CalcSnowFrac(data[m].Tavg) * data[m].Prec;
                 float newSnowDepth = newSnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
                 if (newSnowDepth < 0 || newSnowDepth > data[m].Prec)
@@ -1414,6 +1416,7 @@ namespace Landis.Library.PnETCohorts
                 snowpack += newSnowDepth - snowmelt;
                 if (snowpack < 0)
                     throw new Exception("Error, snowpack = " + snowpack + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+
                 fracRootAboveFrost = 1;
                 leakageFrac = Ecoregion.LeakageFrac;
                 float fracThawed = 0;
@@ -1433,17 +1436,10 @@ namespace Landis.Library.PnETCohorts
                     float thermalDamping_Snow = Snow.CalcThermalDamping(thermalConductivity_Snow);
                     float DRz_snow = Snow.CalcDampingRatio(snowDepth, thermalDamping_Snow);
                     // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
-                    float DRz_moss = (float)Math.Exp(-1.0F * this.SiteMossDepth * Constants.ThermalDampingMoss); 
-                    // Soil diffusivity 
-                    float soilWaterContent = hydrology.SoilWaterContent;// volumetric m/m
-                    float soilPorosity = Ecoregion.Porosity;  // volumetric m/m 
-                    float ga = 0.035F + 0.298F * (soilWaterContent / soilPorosity);
-                    // ratio of air temp gradient
-                    float Fa = (2.0F / 3.0F / (1.0F + ga * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))) + (1.0F / 3.0F / (1.0F + (1.0F - 2.0F * ga) * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F)));
-                    float Fs = Hydrology_SaxtonRawls.GetFs(Ecoregion.SoilType);
-                    float ThermalConductivitySoil = Hydrology_SaxtonRawls.GetThermalConductivitySoil(Ecoregion.SoilType);
-                    // soil thermal conductivity (kJ/m.d.K)
-                    float ThermalConductivity_theta = (Fs * (1.0F - soilPorosity) * ThermalConductivitySoil + Fa * (soilPorosity - soilWaterContent) * Constants.ThermalConductivityAir_kJperday + soilWaterContent * Constants.ThermalConductivityWater_kJperday) / (Fs * (1.0F - soilPorosity) + Fa * (soilPorosity - soilWaterContent) + soilWaterContent);
+                    float DRz_moss = (float)Math.Exp(-1.0F * SiteMossDepth * Constants.ThermalDampingMoss);
+                    // Soil thermal conductivity via De Vries model (convert to kJ/m.d.K)
+                    float ThermalConductivity_theta = Soils.CalcThermalConductivitySoil_Watts(hydrology.SoilWaterContent, Ecoregion.Porosity, Ecoregion.SoilType) / Constants.Convert_kJperday_to_Watts;
+                    // Soil thermal diffusivity
                     float D = ThermalConductivity_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  // m2/day
                     float Dmms = D * 1000000F / Constants.SecondsPerDay; // mm2/s
                     soilDiffusivity = Dmms;
@@ -1521,9 +1517,10 @@ namespace Landis.Library.PnETCohorts
                         int lagMin = data[m].Month + (minMonth - 5);
                         if (minMonth >= 9)
                             lagMin = data[m].Month + (minMonth - 12 - 5);
-                        float lagAvg = ((float)lagMax + (float)lagMin) / 2f;
+                        float lagAvg = (lagMax + lagMin) / 2f;
                         zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * lagAvg - testDepth / d));
                         depthTempDict[testDepth] = zTemp;
+
                         if (zTemp <= 0 && !permafrost)
                             lastBelowZeroDepth = testDepth;
                         if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !permafrost)
@@ -1531,25 +1528,28 @@ namespace Landis.Library.PnETCohorts
                             frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
                             foundBottomIce = true;
                         }
+
                         if (zTemp <= 0)
                         {
                             if (testDepth < activeLayerDepth[data[m].Month - 1])
                                 activeLayerDepth[data[m].Month - 1] = testDepth;
                         }
+
                         if (testDepth == 0f)
                             testDepth = 0.10f;
                         else if (testDepth == 0.10f)
                             testDepth = 0.25f;
                         else
                             testDepth += 0.25F;
+
                     }
                     // The ice lens is deeper than the max depth
                     if (zTemp <= 0 && !foundBottomIce && !permafrost)
                         frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                 }
-                depthTempDict = FrozenSoils.CalcMonthlySoilTemps(depthTempDict, Ecoregion, daysOfWinter, snowpack, hydrology, lastTempBelowSnow);
+                depthTempDict = Soils.CalcMonthlySoilTemps(depthTempDict, Ecoregion, daysOfWinter, snowpack, hydrology, lastTempBelowSnow);
                 SortedList<float, float> monthlyDepthTempDict = new SortedList<float, float>();
-                monthlyDepthTempDict.Add(0.1f, depthTempDict[0.1f]);
+                // monthlyDepthTempDict.Add(0.1f, depthTempDict[0.1f]);
                 lastTempBelowSnow = depthTempDict[0];
                 if (soilIceDepth)
                 {
@@ -1564,6 +1564,7 @@ namespace Landis.Library.PnETCohorts
                     while (testDepth <= bottomFreezeDepth)
                     {
                         zTemp = depthTempDict[testDepth];
+
                         if (zTemp <= 0 && !permafrost)
                             lastBelowZeroDepth = testDepth;
                         if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !permafrost)
@@ -1571,17 +1572,20 @@ namespace Landis.Library.PnETCohorts
                             frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
                             foundBottomIce = true;
                         }
+
                         if (zTemp <= 0)
                         {
                             if (testDepth < activeLayerDepth[data[m].Month - 1])
                                 activeLayerDepth[data[m].Month - 1] = testDepth;
                         }
+
                         if (testDepth == 0f)
                             testDepth = 0.10f;
                         else if (testDepth == 0.10f)
                             testDepth = 0.25f;
                         else
                             testDepth += 0.25F;
+
                     }
                     // The ice lens is deeper than the max depth
                     if (zTemp <= 0 && !foundBottomIce && !permafrost)
@@ -1608,6 +1612,7 @@ namespace Landis.Library.PnETCohorts
                         float thawedWater = fracThawed * hydrology.FrozenSoilWaterContent;
                         float newWaterContent = (existingWater + thawedWater) / fracRootAboveFrost;
                         hydrology.AddWater(newWaterContent - hydrology.SoilWaterContent, Ecoregion.RootingDepth * fracRootBelowFrost);
+
                         // Volume of rooting soil that is frozen
                         bool successdepth = hydrology.SetFrozenSoilDepth(Ecoregion.RootingDepth * fracRootBelowFrost);  
                     }

@@ -40,15 +40,15 @@ namespace Landis.Library.PnETCohorts
             return soilPorosity_OM_comp[soilType];
         }
 
-        public float this[IPnETEcoregionData ecoregion, int soilWaterContent]
+        public float this[IPnETEcoregionData pnetecoregion, int soilWaterContent]
         {
             get
             {
                 try
                 {
-                    if (soilWaterContent >= table[ecoregion].Length)
+                    if (soilWaterContent >= table[pnetecoregion].Length)
                         return 0;
-                    return table[ecoregion][soilWaterContent];
+                    return table[pnetecoregion][soilWaterContent];
                 }
                 catch (Exception)
                 {
@@ -104,18 +104,18 @@ namespace Landis.Library.PnETCohorts
             PctOM = Names.GetParameter("pctOM");
             DensFactor = Names.GetParameter("densFactor");
             Gravel = Names.GetParameter("gravel");
-            foreach (IPnETEcoregionData ecoregion in Globals.ModelCore.Ecoregions)
+            foreach (IPnETEcoregionData pnetecoregion in Globals.ModelCore.Ecoregions)
             {
-                if (ecoregion.Active)
+                if (pnetecoregion.Active)
                 {
                     List<float> PressureHead = new List<float>();
-                    if (tensionB.ContainsKey(SoilType[ecoregion]) == false)
+                    if (tensionB.ContainsKey(SoilType[pnetecoregion]) == false)
                     {
-                        double sand = double.Parse(Sand[SoilType[ecoregion]]);
-                        double clay = double.Parse(Clay[SoilType[ecoregion]]);
-                        double pctOM = double.Parse(PctOM[SoilType[ecoregion]]);
-                        double densFactor = double.Parse(DensFactor[SoilType[ecoregion]]);
-                        double gravel = double.Parse(Gravel[SoilType[ecoregion]]);
+                        double sand = double.Parse(Sand[SoilType[pnetecoregion]]);
+                        double clay = double.Parse(Clay[SoilType[pnetecoregion]]);
+                        double pctOM = double.Parse(PctOM[SoilType[pnetecoregion]]);
+                        double densFactor = double.Parse(DensFactor[SoilType[pnetecoregion]]);
+                        double gravel = double.Parse(Gravel[SoilType[pnetecoregion]]);
                         // Moisture at wilting point 
                         double predMoist1500 = -0.024 * sand + 0.487 * clay + 0.006 * pctOM + 0.005 * sand * pctOM - 0.013 * clay * pctOM + 0.068 * sand * clay + 0.031;
                         double predMoist1500adj = predMoist1500 + 0.14 * predMoist1500 - 0.02;
@@ -129,35 +129,35 @@ namespace Landis.Library.PnETCohorts
                         double sandAdjSat = satPor33 + satSandAdj;
                         double density_OM = (1.0 - sandAdjSat) * 2.65;
                         double density_comp = density_OM * densFactor;
-                        soilPorosity_OM_comp.Add(SoilType[ecoregion], (float)(1.0 - (density_comp / 2.65)));
+                        soilPorosity_OM_comp.Add(SoilType[pnetecoregion], (float)(1.0 - (density_comp / 2.65)));
                         double soilPorosity_change_comp = 1.0 - density_comp / 2.65 - (1.0 - density_OM / 2.65);
                         double moist33_comp = predMoist33Adj + 0.2 * soilPorosity_change_comp;
-                        double soilPorosity_moist33_comp = soilPorosity_OM_comp[SoilType[ecoregion]] - moist33_comp;
+                        double soilPorosity_moist33_comp = soilPorosity_OM_comp[SoilType[pnetecoregion]] - moist33_comp;
                         double ThermalConductivity = (Math.Log(moist33_comp) - Math.Log(predMoist1500adj)) / (Math.Log(1500) - Math.Log(33));
                         double gravel_red_sat_cond = (1.0 - gravel) / (1.0 - gravel * (1.0 - 1.5 * (density_comp / 2.65)));
                         double satcond_mmhr = 1930 * Math.Pow(soilPorosity_moist33_comp, 3.0 - ThermalConductivity) * gravel_red_sat_cond;
                         double gravels_vol = density_comp / 2.65 * gravel / (1 - gravel * (1 - density_comp / 2.65));
                         double bulk_density = gravels_vol * 2.65 + (1 - gravels_vol) * density_comp; // g/cm3                      
-                        tensionB.Add(SoilType[ecoregion], (float)((Math.Log(1500) - Math.Log(33.0)) / (Math.Log(moist33_comp) - Math.Log(predMoist1500adj))));
-                        tensionA.Add(SoilType[ecoregion], (float)Math.Exp(Math.Log(33.0) + (tensionB[SoilType[ecoregion]] * Math.Log(moist33_comp))));
+                        tensionB.Add(SoilType[pnetecoregion], (float)((Math.Log(1500) - Math.Log(33.0)) / (Math.Log(moist33_comp) - Math.Log(predMoist1500adj))));
+                        tensionA.Add(SoilType[pnetecoregion], (float)Math.Exp(Math.Log(33.0) + (tensionB[SoilType[pnetecoregion]] * Math.Log(moist33_comp))));
                         // For frozen soil
-                        clayFrac.Add(SoilType[ecoregion], (float)clay);
-                        double cTheta_temp = Constants.HeatCapacitySoil * (1.0 - soilPorosity_OM_comp[SoilType[ecoregion]]) + Constants.HeatCapacityWater * soilPorosity_OM_comp[SoilType[ecoregion]];  //specific heat of soil	kJ/m3/K
-                        cTheta.Add(SoilType[ecoregion], (float)cTheta_temp);
+                        clayFrac.Add(SoilType[pnetecoregion], (float)clay);
+                        double cTheta_temp = Constants.HeatCapacitySoil * (1.0 - soilPorosity_OM_comp[SoilType[pnetecoregion]]) + Constants.HeatCapacityWater * soilPorosity_OM_comp[SoilType[pnetecoregion]];  //specific heat of soil	kJ/m3/K
+                        cTheta.Add(SoilType[pnetecoregion], (float)cTheta_temp);
                         double ThermalConductivitySoil_temp = (1.0 - clay) * Constants.ThermalConductivitySandstone + clay * Constants.ThermalConductivityClay;   //thermal conductivity soil	kJ/m/d/K
-                        ThermalConductivitySoil.Add(SoilType[ecoregion], (float)ThermalConductivitySoil_temp);
+                        ThermalConductivitySoil.Add(SoilType[pnetecoregion], (float)ThermalConductivitySoil_temp);
                         double Fs_temp = (2.0 / 3.0 / (1.0 + Constants.gs * ((ThermalConductivitySoil_temp / Constants.ThermalConductivityWater_kJperday) - 1.0))) + (1.0 / 3.0 / (1.0 + (1.0 - 2.0 * Constants.gs) * ((ThermalConductivitySoil_temp / Constants.ThermalConductivityWater_kJperday) - 1.0)));  //ratio of solid temp gradient
-                        Fs.Add(SoilType[ecoregion], (float)Fs_temp);
+                        Fs.Add(SoilType[pnetecoregion], (float)Fs_temp);
                     }
                     double soilWaterContent = 0.0;
                     float pressureHead = float.MaxValue;
                     while (pressureHead > 0.01)
                     {
-                        pressureHead = CalcSoilWaterPressureHead(soilWaterContent, SoilType[ecoregion]);
+                        pressureHead = CalcSoilWaterPressureHead(soilWaterContent, SoilType[pnetecoregion]);
                         PressureHead.Add(pressureHead);
                         soilWaterContent += 0.01;
                     }
-                    table[ecoregion] = PressureHead.ToArray();
+                    table[pnetecoregion] = PressureHead.ToArray();
                 }
             }
         }

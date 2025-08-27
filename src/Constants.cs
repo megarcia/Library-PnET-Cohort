@@ -94,10 +94,28 @@ namespace Landis.Library.PnETCohorts
         public const float ThermalConductivityAir_kJperday = 2.25F;
 
         /// <summary>
+        /// thermal conductivity of air in W/m.K 
+        /// (CLM5 documentation, Table 2.7)
+        /// </summary>
+        public const float ThermalConductivityAir_Watts = 0.023F;
+
+        /// <summary>
         /// thermal conductivity of water in kJ/m.d.K
         /// (vanLier and Durigon, 2013)
         /// </summary>
         public const float ThermalConductivityWater_kJperday = 51.51F;
+
+        /// <summary>
+        /// thermal conductivity of water in W/m.K 
+        /// (CLM5 documentation, Table 2.7)
+        /// </summary>
+        public const float ThermalConductivityWater_Watts = 0.57F;
+
+        /// <summary>
+        /// thermal conductivity of ice in W/m.K 
+        /// (CLM5 documentation, Table 2.7)
+        /// </summary>
+        public const float ThermalConductivityIce_Watts = 2.29F;
 
         /// <summary>
         /// thermal conductivity of clay soil in kJ/m.d.K
@@ -149,18 +167,6 @@ namespace Landis.Library.PnETCohorts
         public const float DensityWater = 1000.0F;
 
         /// <summary>
-        /// thermal conductivity of air in W/m.K 
-        /// (CLM5 documentation, Table 2.7)
-        /// </summary>
-        public const float ThermalConductivityAir_Watts = 0.023F;
-
-        /// <summary>
-        /// thermal conductivity of ice in W/m.K 
-        /// (CLM5 documentation, Table 2.7)
-        /// </summary>
-        public const float ThermalConductivityIce_Watts = 2.29F;
-
-        /// <summary>
         /// minimum depth of snow (m) that counts as 
         /// full snow cover for albedo calculations
         /// </summary>
@@ -202,5 +208,9 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public const float WiltingPoint_mmH2O = WiltingPoint_kPa / 9.804139432F;
 
+        /// <summary>
+        /// convert kJ/m.d.K to W/m.K
+        /// </summary>
+        public const float Convert_kJperday_to_Watts = 0.2777777778F / 24F;
     }
 }

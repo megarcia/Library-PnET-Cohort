@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
-using System.Runtime.CompilerServices;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -82,8 +80,9 @@ namespace Landis.Library.PnETCohorts
         /// <param name="Numerator"></param>
         /// <param name="ThermalConductivityFluid"></param>
         /// <returns></returns>
-        public static float CalcDeVriesWeight(float ga, float gc, float Numerator, float ThermalConductivityFluid)
+        public static float CalcDeVriesWeight(float ga, float Numerator, float ThermalConductivityFluid)
         {
+            float gc = 1F - 2F * ga;
             float term1 = 2F / 3F / (1F + ga * ((Numerator / ThermalConductivityFluid) - 1F));
             float term2 = 1F / 3F / (1F + gc * ((Numerator / ThermalConductivityFluid) - 1F));
             float weight = term1 + term2;
@@ -101,13 +100,12 @@ namespace Landis.Library.PnETCohorts
         public static float CalcThermalConductivitySoil_Watts(float WaterContent, float Porosity, string SoilType)
         {
             float ga = CalcAirShapeFactor(WaterContent, Porosity);
-            float gc = 1F - 2F * ga;
             float ClayFrac = Hydrology_SaxtonRawls.GetClayFrac(SoilType);
             float ThermalConductivityFluid = CalcThermalConductivityFluid(WaterContent, ClayFrac);
-            float Kair = CalcDeVriesWeight(ga, gc, Constants.ThermalConductivityAir_Watts, ThermalConductivityFluid);
+            float Kair = CalcDeVriesWeight(ga, Constants.ThermalConductivityAir_Watts, ThermalConductivityFluid);
             float ThermalConductivitySoil_Watts = Hydrology_SaxtonRawls.GetThermalConductivitySoil(SoilType) * Constants.Convert_kJperday_to_Watts;
-            float Ksoil = CalcDeVriesWeight(ga, gc, ThermalConductivitySoil_Watts, ThermalConductivityFluid);
-            float Kwater = CalcDeVriesWeight(ga, gc, Constants.ThermalConductivityWater_Watts, ThermalConductivityFluid);
+            float Ksoil = CalcDeVriesWeight(ga, ThermalConductivitySoil_Watts, ThermalConductivityFluid);
+            float Kwater = CalcDeVriesWeight(ga, Constants.ThermalConductivityWater_Watts, ThermalConductivityFluid);
             float AirContent = Porosity - WaterContent;
             float numerator_air = Kair * AirContent * Constants.ThermalConductivityAir_Watts;
             float numerator_soil = Ksoil * (1F - Porosity) * ThermalConductivitySoil_Watts;

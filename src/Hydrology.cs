@@ -215,7 +215,7 @@ namespace Landis.Library.PnETCohorts
                     // Volumetric soil water content (mm/m) at wilting point
                     ecoregion.WiltingPoint = (float)pressureHeadTable.CalcSoilWaterContent(-Constants.WiltingPoint_kPa, ecoregion.SoilType);
                     // Volumetric soil water content (mm/m) at porosity
-                    ecoregion.Porosity = (float)pressureHeadTable.SoilPorosity(ecoregion.SoilType);
+                    ecoregion.Porosity = (float)pressureHeadTable.GetSoilPorosity(ecoregion.SoilType);
                     float f = ecoregion.FieldCapacity - ecoregion.WiltingPoint;
                     Globals.ModelCore.UI.WriteLine(ecoregion.Name + "\t" + ecoregion.SoilType + "\t\t" + ecoregion.WiltingPoint + "\t" + ecoregion.FieldCapacity + "\t" + f + "\t" + ecoregion.Porosity);
                 }

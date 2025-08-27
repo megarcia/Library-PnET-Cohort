@@ -35,9 +35,29 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         /// <param name="soilType"></param>
         /// <returns></returns>
-        public float SoilPorosity(string soilType)
+        public float GetSoilPorosity(string soilType)
         {
             return soilPorosity_OM_comp[soilType];
+        }
+
+        public static float GetClayFrac(string soilType)
+        {
+            return clayFrac[soilType];
+        }
+
+        public static float GetFs(string soilType)
+        {
+            return Fs[soilType];
+        }
+
+        public static float GetThermalConductivitySoil(string soilType)
+        {
+            return ThermalConductivitySoil[soilType];
+        }
+
+        public static float GetCTheta(string soilType)
+        {
+            return cTheta[soilType];
         }
 
         public float this[IPnETEcoregionData pnetecoregion, int soilWaterContent]
@@ -160,26 +180,6 @@ namespace Landis.Library.PnETCohorts
                     table[pnetecoregion] = PressureHead.ToArray();
                 }
             }
-        }
-
-        public static float GetClayFrac(string soilType)
-        {
-            return clayFrac[soilType];
-        }
-
-        public static float GetFs(string soilType)
-        {
-            return Fs[soilType];
-        }
-
-        public static float GetThermalConductivitySoil(string soilType)
-        {
-            return ThermalConductivitySoil[soilType];
-        }
-
-        public static float GetCTheta(string soilType)
-        {
-            return cTheta[soilType];
         }
     }
 }

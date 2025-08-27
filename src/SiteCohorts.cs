@@ -1375,9 +1375,9 @@ namespace Landis.Library.PnETCohorts
                     canopylaimax = float.MinValue;
                     monthlyLAI = new float[13];
                     // Reset max foliage and AdjFolBiomassFrac in each cohort
-                    foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                    foreach (Landis.Core.ISpecies spc in cohorts.Keys)
                     {
-                        foreach (Cohort cohort in cohorts[species])
+                        foreach (Cohort cohort in cohorts[spc])
                         {
                             cohort.ResetFoliageMax();
                             cohort.LastAGBio = cohort.AGBiomass;
@@ -1584,11 +1584,7 @@ namespace Landis.Library.PnETCohorts
                     if (fracThawed > 0) // thawing
                     {
                         // Thawing soil water added to existing water - redistributes evenly in active soil
-                        float existingWater = (1 - lastFracBelowFrost) * hydrology.SoilWaterContent;
-                        float thawedWater = fracThawed * hydrology.FrozenSoilWaterContent;
-                        float newWaterContent = (existingWater + thawedWater) / fracRootAboveFrost;
-                        hydrology.AddWater(newWaterContent - hydrology.SoilWaterContent, Ecoregion.RootingDepth * fracRootBelowFrost);
-
+                        hydrology.ThawFrozenSoil(hydrology, Ecoregion, lastFracBelowFrost, fracThawed, fracRootAboveFrost, fracRootBelowFrost, Site.Location);
                         // Volume of rooting soil that is frozen
                         bool successdepth = hydrology.SetFrozenSoilDepth(Ecoregion.RootingDepth * fracRootBelowFrost);  
                     }
@@ -1608,12 +1604,13 @@ namespace Landis.Library.PnETCohorts
                     throw new Exception("Error, this.data[m].Prec = " + data[m].Prec + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 // Calculate above-canopy reference daily ET
                 float ReferenceET = Evapotranspiration.CalcReferenceET_Hamon(data[m].Tavg, data[m].DayLength); //mm/day
-                float newrain = data[m].Prec - newSnow;
+                float newSnow = Snow.CalcSnowFrac(data[m].Tavg) * data[m].Prec;
+                float newRain = data[m].Prec - newSnow;
                 // Reduced by interception
                 if (CanopyLAI == null)
                     CanopyLAI = new float[tempMaxCanopyLayers];
-                interception = newrain * (float)(1 - Math.Exp(-1 * Ecoregion.PrecIntConst * CanopyLAI.Sum()));
-                float surfaceRain = newrain - interception;
+                interception = newRain * (float)(1 - Math.Exp(-1 * Ecoregion.PrecIntConst * CanopyLAI.Sum()));
+                float surfaceRain = newRain - interception;
                 // Reduced by PrecLossFrac
                 precLoss = surfaceRain * Ecoregion.PrecLossFrac;
                 float precin = surfaceRain - precLoss;

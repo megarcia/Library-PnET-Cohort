@@ -344,5 +344,16 @@ namespace Landis.Library.PnETCohorts
             if (!success)
                 throw new Exception("Error adding water, Transpiration = " + transpiration + " soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
         }
+
+        // Thaw frozen soil and distribute new active soil moisture
+        public void ThawFrozenSoil(Hydrology hydrology, PnETEcoregionData ecoregion, float lastFracBelowFrost, float fracThawed, float fracRootAboveFrost, float fracRootBelowFrost, string location)
+        {
+            float existingWater = (1 - lastFracBelowFrost) * hydrology.SoilWaterContent;
+            float thawedWater = fracThawed * hydrology.FrozenSoilWaterContent;
+            float newWaterContent = (existingWater + thawedWater) / fracRootAboveFrost;
+            bool success = hydrology.AddWater(newWaterContent - hydrology.SoilWaterContent, ecoregion.RootingDepth * fracRootBelowFrost);
+            if (!success)
+                throw new Exception("Error adding water, ThawedWater = " + thawedWater + " soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+        }
     }
 }

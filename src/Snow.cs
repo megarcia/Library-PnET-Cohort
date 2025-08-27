@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http.Headers;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -11,8 +12,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcDensity(int DaysOfWinter)
         {
-            float DensitySnow_kg_m3 = Constants.DensitySnow_intercept + (Constants.DensitySnow_slope * DaysOfWinter);
-            return DensitySnow_kg_m3;
+            return Constants.DensitySnow_intercept + (Constants.DensitySnow_slope * DaysOfWinter);
         }
 
         /// <summary>
@@ -23,8 +23,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcDepth(float DensitySnow_kg_m3, float Snowpack)
         {
-            float DepthSnow = Constants.DensityWater * Snowpack / DensitySnow_kg_m3 / 1000;
-            return DepthSnow;
+            return Constants.DensityWater * Snowpack / DensitySnow_kg_m3 / 1000F;
         }
 
         /// <summary>
@@ -37,8 +36,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcThermalConductivity(float DensitySnow_kg_m3)
         {
-            float ThermalConductivity = (float)(Constants.ThermalConductivityAir_Watts + ((0.0000775 * DensitySnow_kg_m3) + (0.000001105 * Math.Pow(DensitySnow_kg_m3, 2))) * (Constants.ThermalConductivityIce_Watts - Constants.ThermalConductivityAir_Watts)) * 3.6F * 24F;
-            return ThermalConductivity;
+            return (float)(Constants.ThermalConductivityAir_Watts + ((0.0000775 * DensitySnow_kg_m3) + (0.000001105 * Math.Pow(DensitySnow_kg_m3, 2))) * (Constants.ThermalConductivityIce_Watts - Constants.ThermalConductivityAir_Watts)) * 3.6F * 24F;
         }
 
         /// <summary>
@@ -50,8 +48,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcThermalDamping(float ThermalConductivity_Snow)
         {
-            float ThermalDamping = (float)Math.Sqrt(Constants.omega / (2.0F * ThermalConductivity_Snow));
-            return ThermalDamping;
+            return (float)Math.Sqrt(Constants.omega / (2.0F * ThermalConductivity_Snow));
         }
 
         /// <summary>
@@ -65,8 +62,56 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcDampingRatio(float SnowDepth, float ThermalDamping)
         {
-            float DampingRatio = (float)Math.Exp(-1.0F * SnowDepth * ThermalDamping);
-            return DampingRatio;
+            return (float)Math.Exp(-1.0F * SnowDepth * ThermalDamping);
+        }
+
+        /// <summary>
+        /// Snowmelt rate can range between 1.6 to 6.0 mm/degree day, and default should be 2.74 according to NRCS Part 630 Hydrology National Engineering Handbook (Chapter 11: Snowmelt)
+        /// </summary>
+        /// <param name="Tavg"></param>
+        /// <param name="DaySpan"></param>
+        /// <returns></returns>
+        public static float CalcMaxSnowMelt(float Tavg, float DaySpan)
+        {
+            return (float)2.74f * Math.Max(0F, Tavg) * DaySpan;
+        }
+
+        /// <summary>
+        /// Calculate actual snow melt
+        /// </summary>
+        /// <param name="Snowpack"></param>
+        /// <param name="Tavg"></param>
+        /// <param name="DaySpan"></param>
+        /// <param name="Name"></param>
+        /// <param name="Location"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static float CalcMelt(float Snowpack, float Tavg, float DaySpan, string Name, string Location)
+        {
+            float Snowmelt = Math.Min(Snowpack, CalcMaxSnowMelt(Tavg, DaySpan)); // mm
+            if (Snowmelt < 0)
+                throw new Exception("Error, snowmelt = " + Snowmelt + "; ecoregion = " + Name + "; site = " + Location);
+            return Snowmelt;
+        }
+
+        /// <summary>
+        /// Snow fraction of ground cover
+        /// </summary>
+        /// <param name="Tavg"></param>
+        /// <returns></returns>
+        public static float CalcSnowFrac(float Tavg)
+        {
+            return (float)Math.Max(0F, Math.Min(1F, (Tavg - 2F) / -7F));
+        }
+
+        // Calculate depth of new snow
+        public static float CalcNewSnowDepth(float Tavg, float Prec, float SublimationFrac)
+        {
+            float NewSnow = CalcSnowFrac(Tavg) * Prec;
+            float NewSnowDepth = NewSnow * (1 - SublimationFrac); // (mm) Account for sublimation here
+            if (NewSnowDepth < 0 || NewSnowDepth > Prec)
+                throw new Exception("Error, newSnowDepth = " + NewSnowDepth + " availablePrecipitation = " + Prec);
+            return NewSnowDepth;
         }
     }
 }

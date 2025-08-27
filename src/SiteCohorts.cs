@@ -1213,17 +1213,6 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        private static float CalcMaxSnowMelt(float Tavg, float DaySpan)
-        {
-            // Snowmelt rate can range between 1.6 to 6.0 mm/degree day, and default should be 2.74 according to NRCS Part 630 Hydrology National Engineering Handbook (Chapter 11: Snowmelt)
-            return (float)2.74f * Math.Max(0, Tavg) * DaySpan;
-        }
-
-        private static float CalcSnowFrac(float Tavg)
-        {
-            return (float)Math.Max(0.0, Math.Min(1.0, (Tavg - 2) / -7));
-        }
-
         public bool Grow(List<IPnETEcoregionVars> data, bool AllowMortality = true, bool outputCohortData = true)
         {
             bool success = true;
@@ -1403,20 +1392,15 @@ namespace Landis.Library.PnETCohorts
                 else
                     ozoneD40 = data[m].O3;
                 float O3_D40_ppmh = ozoneD40 / 1000; // convert D40 units to ppm h
-
                 // Melt snow
-                float snowmelt = Math.Min(snowpack, CalcMaxSnowMelt(data[m].Tavg, data[m].DaySpan)); // mm
-                if (snowmelt < 0)
-                    throw new Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-
-                float newSnow = CalcSnowFrac(data[m].Tavg) * data[m].Prec;
-                float newSnowDepth = newSnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
-                if (newSnowDepth < 0 || newSnowDepth > data[m].Prec)
-                    throw new Exception("Error, newSnowDepth = " + newSnowDepth + " availablePrecipitation = " + data[m].Prec);
+                float snowmelt = Snow.CalcMelt(snowpack, data[m].Tavg, data[m].DaySpan, Ecoregion.Name, Site.Location); // mm
+                // Add new snow
+                float newSnowDepth = Snow.CalcNewSnowDepth(data[m].Tavg, data[m].Prec, Ecoregion.SnowSublimFrac);
+                // Update snowpack depth
                 snowpack += newSnowDepth - snowmelt;
                 if (snowpack < 0)
                     throw new Exception("Error, snowpack = " + snowpack + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-
+                // 
                 fracRootAboveFrost = 1;
                 leakageFrac = Ecoregion.LeakageFrac;
                 float fracThawed = 0;
@@ -1450,7 +1434,7 @@ namespace Landis.Library.PnETCohorts
                     float lastBelowZeroDepth = 0;
                     float bottomFreezeDepth = maxDepth / 1000;
                     activeLayerDepth[data[m].Month - 1] = bottomFreezeDepth;
-                    // When there was permafrost at the end of summer, assume that the bottom of the ice lens is as deep as possible
+                    // When there was frozen soil at the end of summer, assume that the bottom of the ice lens is as deep as possible
                     frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                     float testDepth = 0;
                     float zTemp = 0;
@@ -1506,7 +1490,7 @@ namespace Landis.Library.PnETCohorts
                     if (snowDepth > 0)
                         tempBelowSnow = annualTavg + (Ecoregion.Variables.Tavg - annualTavg) * DRz_snow;
                     lastTempBelowSnow = tempBelowSnow;
-                    // Regardless of permafrost, need to fill the tempDict with values
+                    // Regardless of frozen soil status, need to fill the tempDict with values
                     bool foundBottomIce = false;
                     // Calculate depth to bottom of ice lens with FrostDepth
                     while (testDepth <= bottomFreezeDepth)
@@ -1520,7 +1504,6 @@ namespace Landis.Library.PnETCohorts
                         float lagAvg = (lagMax + lagMin) / 2f;
                         zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * lagAvg - testDepth / d));
                         depthTempDict[testDepth] = zTemp;
-
                         if (zTemp <= 0 && !permafrost)
                             lastBelowZeroDepth = testDepth;
                         if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !permafrost)
@@ -1528,20 +1511,17 @@ namespace Landis.Library.PnETCohorts
                             frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
                             foundBottomIce = true;
                         }
-
                         if (zTemp <= 0)
                         {
                             if (testDepth < activeLayerDepth[data[m].Month - 1])
                                 activeLayerDepth[data[m].Month - 1] = testDepth;
                         }
-
                         if (testDepth == 0f)
                             testDepth = 0.10f;
                         else if (testDepth == 0.10f)
                             testDepth = 0.25f;
                         else
                             testDepth += 0.25F;
-
                     }
                     // The ice lens is deeper than the max depth
                     if (zTemp <= 0 && !foundBottomIce && !permafrost)
@@ -1564,7 +1544,6 @@ namespace Landis.Library.PnETCohorts
                     while (testDepth <= bottomFreezeDepth)
                     {
                         zTemp = depthTempDict[testDepth];
-
                         if (zTemp <= 0 && !permafrost)
                             lastBelowZeroDepth = testDepth;
                         if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !permafrost)
@@ -1572,20 +1551,17 @@ namespace Landis.Library.PnETCohorts
                             frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
                             foundBottomIce = true;
                         }
-
                         if (zTemp <= 0)
                         {
                             if (testDepth < activeLayerDepth[data[m].Month - 1])
                                 activeLayerDepth[data[m].Month - 1] = testDepth;
                         }
-
                         if (testDepth == 0f)
                             testDepth = 0.10f;
                         else if (testDepth == 0.10f)
                             testDepth = 0.25f;
                         else
                             testDepth += 0.25F;
-
                     }
                     // The ice lens is deeper than the max depth
                     if (zTemp <= 0 && !foundBottomIce && !permafrost)

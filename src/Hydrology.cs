@@ -345,7 +345,17 @@ namespace Landis.Library.PnETCohorts
                 throw new Exception("Error adding water, Transpiration = " + transpiration + " soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
         }
 
-        // Thaw frozen soil and distribute new active soil moisture
+        /// <summary>
+        /// Thaw frozen soil and distribute new active soil moisture
+        /// </summary>
+        /// <param name="hydrology"></param>
+        /// <param name="ecoregion"></param>
+        /// <param name="lastFracBelowFrost"></param>
+        /// <param name="fracThawed"></param>
+        /// <param name="fracRootAboveFrost"></param>
+        /// <param name="fracRootBelowFrost"></param>
+        /// <param name="location"></param>
+        /// <exception cref="Exception"></exception>
         public void ThawFrozenSoil(Hydrology hydrology, PnETEcoregionData ecoregion, float lastFracBelowFrost, float fracThawed, float fracRootAboveFrost, float fracRootBelowFrost, string location)
         {
             float existingWater = (1 - lastFracBelowFrost) * hydrology.SoilWaterContent;

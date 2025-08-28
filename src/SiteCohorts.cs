@@ -16,7 +16,7 @@ namespace Landis.Library.PnETCohorts
         private float[] CanopyLAI;
         private float subcanopypar;
         private float julysubcanopypar;
-        private float subcanopyparmax;
+        private float maxsubcanopypar;
         private float fracRootAboveFrost;
         private float soilDiffusivity;
         private float leakageFrac;
@@ -47,7 +47,7 @@ namespace Landis.Library.PnETCohorts
         IProbEstablishment probEstablishment = null;
         public ActiveSite Site;
         public Dictionary<Landis.Core.ISpecies, List<Cohort>> cohorts = null;
-        public List<Landis.Core.ISpecies> SpeciesEstablishedByPlant = null;
+        public List<Landis.Core.ISpecies> SpeciesEstablishedByPlanting = null;
         public List<Landis.Core.ISpecies> SpeciesEstablishedBySerotiny = null;
         public List<Landis.Core.ISpecies> SpeciesEstablishedByResprout = null;
         public List<Landis.Core.ISpecies> SpeciesEstablishedBySeed = null;
@@ -82,19 +82,19 @@ namespace Landis.Library.PnETCohorts
         Dictionary<double, bool> ratioAbove10 = new Dictionary<double, bool>();
         private static float CanopySumScale;
 
-        public List<Landis.Core.ISpecies> SpeciesByPlant
+        public List<Landis.Core.ISpecies> SpeciesEstByPlanting
         {
             get
             {
-                return SpeciesEstablishedByPlant;
+                return SpeciesEstablishedByPlanting;
             }
             set
             {
-                SpeciesEstablishedByPlant = value;
+                SpeciesEstablishedByPlanting = value;
             }
         }
 
-        public List<Landis.Core.ISpecies> SpeciesBySerotiny
+        public List<Landis.Core.ISpecies> SpeciesEstBySerotiny
         {
             get
             {
@@ -106,7 +106,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public List<Landis.Core.ISpecies> SpeciesByResprout
+        public List<Landis.Core.ISpecies> SpeciesEstByResprout
         {
             get
             {
@@ -118,7 +118,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public List<Landis.Core.ISpecies> SpeciesBySeed
+        public List<Landis.Core.ISpecies> SpeciesEstBySeeding
         {
             get
             {
@@ -130,7 +130,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public List<int> CohortsBySuccession
+        public List<int> CohortsDiedBySuccession
         {
             get
             {
@@ -142,7 +142,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public List<int> CohortsByCold
+        public List<int> CohortsDiedByCold
         {
             get
             {
@@ -154,7 +154,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public List<int> CohortsByHarvest
+        public List<int> CohortsDiedByHarvest
         {
             get
             {
@@ -166,7 +166,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public List<int> CohortsByFire
+        public List<int> CohortsDiedByFire
         {
             get
             {
@@ -178,7 +178,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public List<int> CohortsByWind
+        public List<int> CohortsDiedByWind
         {
             get
             {
@@ -190,7 +190,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public List<int> CohortsByOther
+        public List<int> CohortsDiedByOther
         {
             get
             {
@@ -218,7 +218,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float JulySubCanopyPar
+        public float JulySubCanopyPAR
         {
             get
             {
@@ -226,7 +226,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float SubcanopyPAR
+        public float SubCanopyPAR
         {
             get
             {
@@ -242,11 +242,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float SubCanopyParMAX
+        public float MaxSubCanopyPAR
         {
             get
             {
-                return subcanopyparmax;
+                return maxsubcanopypar;
             }
         }
 
@@ -333,7 +333,7 @@ namespace Landis.Library.PnETCohorts
             this.Ecoregion = PnETEcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[site]);
             this.Site = site;
             cohorts = new Dictionary<Landis.Core.ISpecies, List<Cohort>>();
-            SpeciesEstablishedByPlant = new List<Landis.Core.ISpecies>();
+            SpeciesEstablishedByPlanting = new List<Landis.Core.ISpecies>();
             SpeciesEstablishedBySerotiny = new List<Landis.Core.ISpecies>();
             SpeciesEstablishedByResprout = new List<Landis.Core.ISpecies>();
             SpeciesEstablishedBySeed = new List<Landis.Core.ISpecies>();
@@ -359,7 +359,7 @@ namespace Landis.Library.PnETCohorts
             hydrology = new Hydrology(Ecoregion.FieldCapacity);
             avgSoilWaterContent = hydrology.SoilWaterContent;
             subcanopypar = ecoregionInitializer[0].PAR0;
-            subcanopyparmax = subcanopypar;
+            maxsubcanopypar = subcanopypar;
             SiteVars.WoodDebris[Site] = new Pool();
             SiteVars.LeafLitter[Site] = new Pool();
             SiteVars.FineFuels[Site] = SiteVars.LeafLitter[Site].Mass;
@@ -1036,7 +1036,7 @@ namespace Landis.Library.PnETCohorts
             this.Ecoregion = PnETEcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[site]);
             this.Site = site;
             cohorts = new Dictionary<Landis.Core.ISpecies, List<Cohort>>();
-            SpeciesEstablishedByPlant = new List<Landis.Core.ISpecies>();
+            SpeciesEstablishedByPlanting = new List<Landis.Core.ISpecies>();
             SpeciesEstablishedBySerotiny = new List<Landis.Core.ISpecies>();
             SpeciesEstablishedByResprout = new List<Landis.Core.ISpecies>();
             SpeciesEstablishedBySeed = new List<Landis.Core.ISpecies>();
@@ -1058,8 +1058,8 @@ namespace Landis.Library.PnETCohorts
                 else
                     probEstablishment = new ProbEstablishment(null, null);
                 subcanopypar = initialSites[key].subcanopypar;
-                subcanopyparmax = initialSites[key].SubCanopyParMAX;
-                avgSoilWaterContent = initialSites[key].wateravg;
+                maxsubcanopypar = initialSites[key].MaxSubCanopyPAR;
+                avgSoilWaterContent = initialSites[key].AvgSoilWaterContent;
                 hydrology = new Hydrology(initialSites[key].hydrology.SoilWaterContent);
                 SiteVars.WoodDebris[Site] = SiteVars.WoodDebris[initialSites[key].Site].Clone();
                 SiteVars.LeafLitter[Site] = SiteVars.LeafLitter[initialSites[key].Site].Clone();
@@ -3378,7 +3378,7 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.WoodDebris + "," +
                        OutputHeaders.WoodSenescence + "," + 
                        OutputHeaders.FolSenescence + "," +
-                       OutputHeaders.SubcanopyPAR + ","+
+                       OutputHeaders.SubCanopyPAR + ","+
                        OutputHeaders.SoilDiffusivity + "," +
                        OutputHeaders.ActiveLayerDepth+","+
                        OutputHeaders.LeakageFrac + "," +

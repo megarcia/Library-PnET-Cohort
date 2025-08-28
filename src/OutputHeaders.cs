@@ -84,7 +84,7 @@ namespace Landis.Library.PnETCohorts
         public const string AdjFolN = "AdjFolN(gN_gC)";
         public const string AdjFolBiomassFrac = "AdjFolBiomassFrac(-)";
         public const string CiModifier = "CiModifier(-)";
-        public const string SubcanopyPAR = "SubcanopyPAR";
+        public const string SubCanopyPAR = "SubCanopyPAR";
         public const string LimitingFactor = "LimitingFactor";
         public const string SoilDiffusivity = "SoilDiffusivity(mm2_s)";
         public const string SPEI = "SPEI";

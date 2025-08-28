@@ -999,7 +999,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="leakageFrac"></param>
         /// <param name="hydrology"></param>
         /// <param name="mainLayerPAR"></param>
-        /// <param name="SubCanopyPar"></param>
+        /// <param name="SubCanopyPAR"></param>
         /// <param name="o3_cum"></param>
         /// <param name="o3_month"></param>
         /// <param name="subCanopyIndex"></param>
@@ -1015,7 +1015,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="allowMortality"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool CalcPhotosynthesis(float PrecInByCanopyLayer, int precipCount, float leakageFrac, ref Hydrology hydrology, float mainLayerPAR, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float fOzone, float frostFreeFrac, float snowpack, float MeltInByCanopyLayer, bool coldKillBoolean, IPnETEcoregionVars variables, SiteCohorts siteCohort, float sumCanopyFrac, float groundPotentialETbyEvent, bool allowMortality = true)
+        public bool CalcPhotosynthesis(float PrecInByCanopyLayer, int precipCount, float leakageFrac, ref Hydrology hydrology, float mainLayerPAR, ref float SubCanopyPAR, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float fOzone, float frostFreeFrac, float snowpack, float MeltInByCanopyLayer, bool coldKillBoolean, IPnETEcoregionVars variables, SiteCohorts siteCohort, float sumCanopyFrac, float groundPotentialETbyEvent, bool allowMortality = true)
         {
             bool success = true;
             float lastFOzone = fOzone;

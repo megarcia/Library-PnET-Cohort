@@ -45,8 +45,8 @@ namespace Landis.Library.PnETCohorts
         float WoodSenescenceSum { get; }
         float FolSenescenceSum { get; }
         int CohortCount { get; }
-        float JulySubCanopyPar { get; }
-        float SubCanopyParMAX { get; }
+        float JulySubCanopyPAR { get; }
+        float MaxSubCanopyPAR { get; }
         double LeafLitter { get; }
         double WoodDebris { get; }
         int AgeMax { get; }
@@ -58,15 +58,15 @@ namespace Landis.Library.PnETCohorts
         float NetPsnSum { get; }
         float PotentialET { get; }
 
-        List<Landis.Core.ISpecies> SpeciesByPlant { get; set; }
-        List<Landis.Core.ISpecies> SpeciesBySerotiny { get; set; }
-        List<Landis.Core.ISpecies> SpeciesByResprout { get; set; }
-        List<Landis.Core.ISpecies> SpeciesBySeed { get; set; }
-        List<int> CohortsBySuccession { get; set; }
-        List<int> CohortsByCold { get; set; }
-        List<int> CohortsByHarvest { get; set; }
-        List<int> CohortsByFire { get; set; }
-        List<int> CohortsByWind { get; set; }
-        List<int> CohortsByOther { get; set; }
+        List<Landis.Core.ISpecies> SpeciesEstByPlanting { get; set; }
+        List<Landis.Core.ISpecies> SpeciesEstBySerotiny { get; set; }
+        List<Landis.Core.ISpecies> SpeciesEstByResprout { get; set; }
+        List<Landis.Core.ISpecies> SpeciesEstBySeeding { get; set; }
+        List<int> CohortsDiedBySuccession { get; set; }
+        List<int> CohortsDiedByCold { get; set; }
+        List<int> CohortsDiedByHarvest { get; set; }
+        List<int> CohortsDiedByFire { get; set; }
+        List<int> CohortsDiedByWind { get; set; }
+        List<int> CohortsDiedByOther { get; set; }
     }
 }

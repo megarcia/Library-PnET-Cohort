@@ -236,12 +236,12 @@ namespace Landis.Library.PnETCohorts
         /// <param name="FolMass"></param>
         /// <param name="LastFOzone"></param>
         /// <param name="WVConductance"></param>
-        /// <param name="O3Coeff"></param>
+        /// <param name="FOzone_slope"></param>
         /// <returns></returns>
-        public static float CalcFOzone(float O3, int Layer, int nLayers, float FolMass, float LastFOzone, float WVConductance, float O3Coeff)
+        public static float CalcFOzone(float O3, int Layer, int nLayers, float FolMass, float LastFOzone, float WVConductance, float FOzone_slope)
         {
             float DroughtO3Frac = 1.0F; // Not using DroughtO3Frac from PnET code per M. Kubiske and A. Chappelka
-            float kO3Eff = 0.0026F * O3Coeff;  // Scaled by species using input parameters
+            float kO3Eff = 0.0026F * FOzone_slope;  // Scaled by species using input parameters
             float O3Prof = (float)(0.6163F + (0.00105F * FolMass));
             float RelLayer = Layer / (float)nLayers;
             float RelO3 = (float)Math.Min(1F, 1F - RelLayer * O3Prof * Math.Pow((RelLayer * O3Prof), 2));

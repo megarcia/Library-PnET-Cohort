@@ -170,7 +170,7 @@ namespace Landis.Library.PnETCohorts
         /// minimum depth of snow (m) that counts as 
         /// full snow cover for albedo calculations
         /// </summary>
-        public const float snowReflectanceThreshold = 0.1F;
+        public const float SnowReflectanceThreshold = 0.1F;
 
         /// <summary>
         /// thermal diffusivity of moss

@@ -1923,7 +1923,7 @@ namespace Landis.Library.PnETCohorts
                 if (snowDepth > 0)
                 {
                     // TODO: move this calculation to Snow class
-                    float snowMultiplier = snowDepth >= Constants.snowReflectanceThreshold ? 1 : snowDepth / Constants.snowReflectanceThreshold;
+                    float snowMultiplier = snowDepth >= Constants.SnowReflectanceThreshold ? 1 : snowDepth / Constants.SnowReflectanceThreshold;
                     groundAlbedo = (float)(groundAlbedo + (groundAlbedo * (2.125 * snowMultiplier)));
                 }
                 for (int layer = 0; layer < tempMaxCanopyLayers; layer++)
@@ -2175,7 +2175,7 @@ namespace Landis.Library.PnETCohorts
             if (!PnETEcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[this.Site]).Active)
                 return -1;
             float finalAlbedo = 0;
-            float snowMultiplier = snowDepth >= Constants.snowReflectanceThreshold ? 1 : snowDepth / Constants.snowReflectanceThreshold;
+            float snowMultiplier = snowDepth >= Constants.SnowReflectanceThreshold ? 1 : snowDepth / Constants.SnowReflectanceThreshold;
             if ((!string.IsNullOrEmpty(cohort.PnETSpecies.Lifeform))
                     && (cohort.PnETSpecies.Lifeform.ToLower().Contains("ground")
                         || cohort.PnETSpecies.Lifeform.ToLower().Contains("open")

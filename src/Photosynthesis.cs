@@ -244,7 +244,7 @@ namespace Landis.Library.PnETCohorts
             float kO3Eff = 0.0026F * FOzone_slope;  // Scaled by species using input parameters
             float O3Prof = (float)(0.6163F + (0.00105F * FolMass));
             float RelLayer = Layer / (float)nLayers;
-            float RelO3 = (float)Math.Min(1F, 1F - RelLayer * O3Prof * Math.Pow((RelLayer * O3Prof), 2));
+            float RelO3 = (float)Math.Min(1F, 1F - RelLayer * O3Prof * Math.Pow(RelLayer * O3Prof, 2));
             // Kubiske method (using water vapor conductance in place of conductance
             float FOzone = (float)Math.Min(1F, (LastFOzone * DroughtO3Frac) + (kO3Eff * WVConductance * O3 * RelO3));
             return FOzone;

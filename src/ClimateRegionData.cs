@@ -1,7 +1,8 @@
 ﻿//  Author: Robert Scheller, Melissa Lucash
 
-using Landis.Library.Climate;
 using System.Linq;
+using Landis.Library.Climate;
+using Landis.Library.Parameters;
 
 namespace Landis.Library.PnETCohorts
 {

@@ -1427,7 +1427,8 @@ namespace Landis.Library.PnETCohorts
                     float thermalDamping_Snow = Snow.CalcThermalDamping(thermalConductivity_Snow);
                     float DRz_snow = Snow.CalcDampingRatio(snowDepth, thermalDamping_Snow);
                     // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
-                    float DRz_moss = (float)Math.Exp(-1.0F * SiteMossDepth * Constants.ThermalDampingMoss);
+                    float thermalDamping_Moss = (float)Math.Sqrt(2.0F * Constants.ThermalDiffusivityMoss / Constants.omega);
+                    float DRz_moss = (float)Math.Exp(-1.0F * SiteMossDepth * thermalDamping_Moss);
                     // Soil thermal conductivity via De Vries model (convert to kJ/m.d.K)
                     float ThermalConductivity_theta = Soils.CalcThermalConductivitySoil_Watts(hydrology.SoilWaterContent, Ecoregion.Porosity, Ecoregion.SoilType) / Constants.Convert_kJperday_to_Watts;
                     // Soil thermal diffusivity

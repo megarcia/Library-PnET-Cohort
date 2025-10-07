@@ -178,11 +178,6 @@ namespace Landis.Library.PnETCohorts
         public const float ThermalDiffusivityMoss = ThermalConductivityMoss / HeatCapacityMoss;
 
         /// <summary>
-        /// thermal damping coefficient for moss
-        /// </summary>
-        public const float ThermalDampingMoss = (float)Math.Sqrt(2.0F * ThermalDiffusivityMoss / omega);
-
-        /// <summary>
         /// Psychrometric coefficient in kPa/K
         /// (Cabrera et al., 2016, Table 1)
         /// </summary>

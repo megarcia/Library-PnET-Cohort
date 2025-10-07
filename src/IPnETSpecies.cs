@@ -1,10 +1,13 @@
- 
-namespace Landis.Library.PnETCohorts 
+// NOTE: ISpecies --> Landis.Core
+
+using Landis.Core;
+
+namespace Landis.Library.PnETCohorts
 {
     /// <summary>
     /// The information for a tree species (its index and parameters).
     /// </summary>
-    public interface IPnETSpecies : Landis.Core.ISpecies
+    public interface IPnETSpecies : ISpecies
     {
         /// <summary>
         /// Species name 
@@ -271,7 +274,7 @@ namespace Landis.Library.PnETCohorts
         /// Minimum defoliation amount that triggers refoliation
         /// </summary>
         float RefoliationMinimumTrigger { get; }
-        
+
         /// <summary>
         /// Maximum amount of refoliation
         /// </summary>

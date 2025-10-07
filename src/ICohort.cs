@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Landis.Library.UniversalCohorts;
 
 namespace Landis.Library.PnETCohorts
 {

@@ -162,8 +162,8 @@ namespace Landis.Library.PnETCohorts
 
         public PnETEcoregionVars(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<IPnETSpecies> Species, float Latitude)
         {
-            this._date = Date;
-            this.obs_clim = climate_dataset;
+            _date = Date;
+            obs_clim = climate_dataset;
             speciesVariables = new Dictionary<string, PnETSpeciesVars>();
             _tavg = Weather.CalcTavg(climate_dataset.Tmin, climate_dataset.Tmax);
             _dayspan = Calendar.CalcDaySpan(Date.Month);

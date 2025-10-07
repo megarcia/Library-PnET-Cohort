@@ -1,5 +1,9 @@
-﻿using System;
+﻿// NOTE: ICore --> Landis.Core
+
+using System;
 using System.Linq;
+using Landis.Core;
+using Landis.Library.Climate;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -7,13 +11,13 @@ namespace Landis.Library.PnETCohorts
     {
         public static ICore ModelCore;
         public static ushort IMAX { get; private set; }
-        public static DateTime StartDate {  get; private set; }
+        public static DateTime StartDate { get; private set; }
         public static int MinSpinUpClimateYear { get; private set; }
         public static int MaxSpinUpClimateYear { get; private set; }
         public static int MinFutureClimateYear { get; private set; }
         public static int MaxFutureClimateYear { get; private set; }
-        public static int MaxSpinUpIndex {  get; private set; }
-        public static int MaxFutureClimateIndex {  get; private set; }
+        public static int MaxSpinUpIndex { get; private set; }
+        public static int MaxFutureClimateIndex { get; private set; }
         public static readonly object WoodDebrisThreadLock = new object();
         public static readonly object LeafLitterThreadLock = new object();
         public static readonly object DistributionThreadLock = new object();

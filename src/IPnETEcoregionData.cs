@@ -1,7 +1,10 @@
-﻿
+﻿// NOTE: IEcoregion --> Landis.Core
+
+using Landis.Core;
+
 namespace Landis.Library.PnETCohorts
 {
-    public interface IPnETEcoregionData : Landis.Core.IEcoregion
+    public interface IPnETEcoregionData : IEcoregion
     {
         /// <summary>
         /// Ecoregion name

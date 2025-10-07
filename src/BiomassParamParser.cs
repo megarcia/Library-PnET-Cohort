@@ -1,4 +1,16 @@
-﻿
+﻿// NOTE: AtEndOfInput --> Landis.Utilities
+// NOTE: CurrentLine --> Landis.Utilities
+// NOTE: GetNextLine --> Landis.Utilities
+// NOTE: InputVar --> Landis.Utilities
+// NOTE: NewParseException --> Landis.Utilities
+// NOTE: ReadLandisDataVar --> Landis.Core
+// NOTE: ReadValue --> Landis.Utilities
+// NOTE: ReadVar --> Landis.Utilities
+// NOTE: StringReader --> Landis.Utilities
+
+using Landis.Core;
+using Landis.Utilities;
+
 namespace Landis.Library.PnETCohorts
 {
     class BiomassParamParser : Landis.TextParser<BiomassParam>
@@ -11,9 +23,9 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        //read biomass coefficients from a file into matrix, (float) BioMassData(int ID,2). No Return Value
-        //Read a ID first from the file, and ID is the size of BioMassData;
-        //Read the two variable in to BioMassData(v1,v2)
+        // read biomass coefficients from a file into matrix, (float) BioMassData(int ID, 2). No Return Value
+        // Read ID first from the file, and ID is the size of BioMassData;
+        // Read the two variable in to BioMassData(v1, v2)
         protected override BiomassParam Parse()
         {
             ReadLandisDataVar();
@@ -28,7 +40,7 @@ namespace Landis.Library.PnETCohorts
             {
                 if (AtEndOfInput)
                     throw NewParseException("Expected a line here");
-                Landis.Utilities.StringReader currentLine = new Landis.Utilities.StringReader(CurrentLine);
+                StringReader currentLine = new StringReader(CurrentLine);
                 ReadValue(float_val, currentLine);
                 SpeciesParameters.biomass_util.SetBiomassData(i, 1, float_val.Value.Actual);
                 ReadValue(float_val, currentLine);

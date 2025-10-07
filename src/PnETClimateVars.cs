@@ -1,6 +1,6 @@
 ﻿/// <summary>
-/// John McNabb: This is a copy of PnETEcoregionVars 
-/// substituting MonthlyClimateRecord _monthlyClimateRecord for 
+/// John McNabb: This is a copy of PnETEcoregionVars substituting 
+/// MonthlyClimateRecord _monthlyClimateRecord for 
 /// IObservedClimate obs_clim
 /// </summary>
 
@@ -11,7 +11,6 @@ namespace Landis.Library.PnETCohorts
 {
     public class PnETClimateVars : IPnETEcoregionVars
     {
-        #region private fields
         private MonthlyClimateRecord _monthlyClimateRecord;
         private DateTime _date;
         private float _vpd;
@@ -20,9 +19,7 @@ namespace Landis.Library.PnETCohorts
         private float _tday;
         private float _dayLength;
         private Dictionary<string, PnETSpeciesVars> speciesVariables;
-        #endregion
 
-        #region constructor
         public PnETClimateVars(MonthlyClimateRecord monthlyClimateRecord, DateTime date, bool wythers, bool dTemp, List<IPnETSpecies> Species, float latitude)
         {
             _monthlyClimateRecord = monthlyClimateRecord;
@@ -41,9 +38,7 @@ namespace Landis.Library.PnETCohorts
                 speciesVariables.Add(pnetspecies.Name, pnetspeciesvars);
             }
         }
-        #endregion
 
-        #region properties
         public float VPD => _vpd;
         public byte Month => (byte)_date.Month;
         public float Tday => _tday;
@@ -61,9 +56,7 @@ namespace Landis.Library.PnETCohorts
         public float DayLength => _dayLength;
         public float SPEI => (float)_monthlyClimateRecord.SPEI;
         public PnETSpeciesVars this[string species] => speciesVariables[species];
-        #endregion
 
-        #region private methods
         private PnETSpeciesVars GetSpeciesVariables(MonthlyClimateRecord monthlyClimateRecord, bool wythers, bool dTemp, float dayLength, float nightLength, IPnETSpecies spc)
         {
             // Class that contains species specific PnET variables for a certain month
@@ -106,6 +99,5 @@ namespace Landis.Library.PnETCohorts
             pnetspeciesvars.MaintenanceRespirationFTemp = spc.MaintResp * RespFTemp;
             return pnetspeciesvars;
         }
-        #endregion
     }
 }

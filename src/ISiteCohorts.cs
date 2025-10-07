@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿// NOTE: ISpecies --> Landis.Core
+
+using System.Collections.Generic;
+using Landis.Core;
+using Landis.Library.Parameters;
+using Landis.Library.UniversalCohorts;
 
 namespace Landis.Library.PnETCohorts 
 {
@@ -58,10 +63,10 @@ namespace Landis.Library.PnETCohorts
         float NetPsnSum { get; }
         float PotentialET { get; }
 
-        List<Landis.Core.ISpecies> SpeciesEstByPlanting { get; set; }
-        List<Landis.Core.ISpecies> SpeciesEstBySerotiny { get; set; }
-        List<Landis.Core.ISpecies> SpeciesEstByResprout { get; set; }
-        List<Landis.Core.ISpecies> SpeciesEstBySeeding { get; set; }
+        List<ISpecies> SpeciesEstByPlanting { get; set; }
+        List<ISpecies> SpeciesEstBySerotiny { get; set; }
+        List<ISpecies> SpeciesEstByResprout { get; set; }
+        List<ISpecies> SpeciesEstBySeeding { get; set; }
         List<int> CohortsDiedBySuccession { get; set; }
         List<int> CohortsDiedByCold { get; set; }
         List<int> CohortsDiedByHarvest { get; set; }

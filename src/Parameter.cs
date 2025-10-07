@@ -1,6 +1,11 @@
-﻿using System;
+﻿// NOTE: IEcoregion --> Landis.Core
+// NOTE: ISpecies --> Landis.Core
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Landis.Core;
+using Landis.Library.Parameters;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -78,7 +83,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 return P;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 throw new Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
@@ -95,7 +100,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 return P;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 throw new Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
@@ -112,7 +117,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 return P;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 throw new Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
@@ -129,7 +134,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 return P;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 throw new Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
@@ -146,7 +151,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 return P;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 throw new Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
@@ -168,9 +173,9 @@ namespace Landis.Library.PnETCohorts
                     }
                 return newvalues;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
-                if (e.GetType() == typeof(System.Collections.Generic.KeyNotFoundException))
+                if (e.GetType() == typeof(KeyNotFoundException))
                     throw new Exception("Error parsing parameter " + m.p_label + " for species " + ecoregionname + " missing value");
                 else
                     throw new Exception("Error parsing parameter " + m.p_label + " for species " + ecoregionname + e.Message);
@@ -184,7 +189,7 @@ namespace Landis.Library.PnETCohorts
             try
             {
                 Library.Parameters.Species.AuxParm<T> newvalues = new Library.Parameters.Species.AuxParm<T>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in Globals.ModelCore.Species)
+                foreach (ISpecies species in Globals.ModelCore.Species)
                 {
                     speciesname = species.Name;
                     if (m.values.Count == 1) value = m.values.First().Value;
@@ -193,9 +198,9 @@ namespace Landis.Library.PnETCohorts
                 }
                 return newvalues;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
-                if (e.GetType() == typeof(System.Collections.Generic.KeyNotFoundException))
+                if (e.GetType() == typeof(KeyNotFoundException))
                     throw new Exception("Error parsing parameter " + m.p_label + " for species " + speciesname + " missing value");
                 else
                     throw new Exception("Error parsing parameter " + m.p_label + " for species " + speciesname + e.Message);

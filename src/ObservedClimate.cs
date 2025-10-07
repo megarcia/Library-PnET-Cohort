@@ -1,6 +1,10 @@
-﻿using System;
+﻿// NOTE: IEcoregion --> Landis.Core
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Landis.Core;
+using Landis.Library.Parameters;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -188,7 +192,6 @@ namespace Landis.Library.PnETCohorts
                     if (System.Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(Headers[h], Label, System.Globalization.CompareOptions.IgnoreCase) >= 0)
                         return h;
                 }
-
                 return -1;
             }
 
@@ -215,18 +218,16 @@ namespace Landis.Library.PnETCohorts
                 if (startcomment > 0)
                     ClimateFileContent[line] = ClimateFileContent[line].Remove(startcomment, ClimateFileContent[line].Count() - startcomment);
             }
-
             return ClimateFileContent;
         }
 
         private static T CheckInRange<T>(T value, T min, T max, string label)
-           where T : System.IComparable<T>
+           where T : IComparable<T>
         {
             if (Library.Parameters.InputValue_ExtensionMethods.GreaterThan<T>(value, max))
                 throw new Exception(label + " is out of range " + min + " " + max);
             if (Library.Parameters.InputValue_ExtensionMethods.LessThan<T>(value, min))
                 throw new Exception(label + " is out of range " + min + " " + max);
-
             return value;
         }
 
@@ -242,7 +243,7 @@ namespace Landis.Library.PnETCohorts
             foreach (string line in ClimateFileContent)
             {
                 ObservedClimate climate = new ObservedClimate();
-                string[] terms = line.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries);
+                string[] terms = line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
                 // Get one state of static information for the line in the climate file
                 climate.tmax = CheckInRange<float>(float.Parse(terms[columns.Tmax]), -80, 80, "Tmax");
                 climate.tmin = CheckInRange<float>(float.Parse(terms[columns.Tmin]), -80, climate.tmax, "TMin");

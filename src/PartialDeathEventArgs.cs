@@ -1,4 +1,10 @@
-//  Authors:  Robert M. Scheller, James B. Domingo
+// Authors: Robert M. Scheller, James B. Domingo
+
+// NOTE: ActiveSite --> Landis.SpatialModeling
+// NOTE: ExtensionType --> Landis.Core
+
+using Landis.Core;
+using Landis.SpatialModeling;
 
 namespace Landis.Library.PnETCohorts
 {

@@ -1,6 +1,9 @@
-//  Authors:  Robert M. Scheller, James B. Domingo
+// Authors:  Robert M. Scheller, James B. Domingo
+
+// NOTE: ActiveSite --> Landis.SpatialModeling
 
 using System;
+using Landis.SpatialModeling;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -76,7 +79,7 @@ namespace Landis.Library.PnETCohorts
         {
             string mesg = "Old-to-young iterator has no current cohort";
             if (currentCohortDied)
-                mesg = mesg + "; the previous current cohort died";
+                mesg += "; the previous current cohort died";
             return new InvalidOperationException(mesg);
         }
 

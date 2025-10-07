@@ -1,5 +1,10 @@
-﻿using System;
+﻿// NOTE: ISiteVar --> Landis.Core
+// NOTE: Pool --> Landis.Library.UniversalCohorts
+
+using System;
 using System.Collections.Generic;
+using Landis.Core;
+using Landis.Library.UniversalCohorts;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -7,7 +12,7 @@ namespace Landis.Library.PnETCohorts
     {
         public static ISiteVar<Pool> WoodDebris;
         public static ISiteVar<Pool> LeafLitter;
-        public static ISiteVar<Double> FineFuels;
+        public static ISiteVar<double> FineFuels;
         public static ISiteVar<float> PressureHead;
         public static ISiteVar<float> ExtremeMinTemp;
         public static ISiteVar<double> AnnualPotentialEvaporation;  //Annual Potential Evaporation

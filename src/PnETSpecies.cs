@@ -1,6 +1,11 @@
+// NOTE: ISpecies --> Landis.Core
+// NOTE: PostFireRegeneration --> Landis.Core
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Landis.Core;
+using Landis.Library.Parameters;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -9,9 +14,7 @@ namespace Landis.Library.PnETCohorts
     /// </summary>
     public class PnETSpecies : IPnETSpecies
     {
-        static List<Tuple<Landis.Core.ISpecies, IPnETSpecies>> SpeciesCombinations;
-
-        #region private variables
+        static List<Tuple<ISpecies, IPnETSpecies>> SpeciesCombinations;
         private float _halfSatFCO2;
         private float _cfracbiomass;
         private float _wooddebrisdecomprate;
@@ -58,7 +61,7 @@ namespace Landis.Library.PnETCohorts
         private int index;        
         private int maxSproutAge;
         private int minSproutAge;
-        private Landis.Core.PostFireRegeneration postfireregeneration;
+        private PostFireRegeneration postfireregeneration;
         private int maxSeedDist;
         private int effectiveSeedDist;
         private float vegReprodProb;
@@ -80,9 +83,6 @@ namespace Landis.Library.PnETCohorts
         private float _nonRefoliationCost;
         private float _maxLAI;
         private float _mossScalar;
-        #endregion
-
-        #region private static species variables
         private static Library.Parameters.Species.AuxParm<float> halfSatFCO2;
         private static Library.Parameters.Species.AuxParm<float> nscfrac;
         private static Library.Parameters.Species.AuxParm<float> cfracbiomass;
@@ -138,13 +138,11 @@ namespace Landis.Library.PnETCohorts
         private static Library.Parameters.Species.AuxParm<float> nonRefoliationCost;
         private static Library.Parameters.Species.AuxParm<float> maxlai;
         private static Library.Parameters.Species.AuxParm<float> mossScalar;
-        private static Dictionary<Landis.Core.ISpecies,float> maxLAI;
-        private static Dictionary<Landis.Core.ISpecies, string> lifeForm;
-        #endregion
+        private static Dictionary<ISpecies,float> maxLAI;
+        private static Dictionary<ISpecies, string> lifeForm;
 
         public PnETSpecies()
         {
-            #region initialize private static species variables
             halfSatFCO2 = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("HalfSatFCO2");
             nscfrac = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NSCFrac");
             cfracbiomass = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CFracBiomass");
@@ -208,8 +206,8 @@ namespace Landis.Library.PnETCohorts
             nonRefoliationCost = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("NonRefolCost");
             maxlai = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MaxLAI"); //Optional
             mossScalar = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("MossScalar"); //Optional
-            maxLAI = new Dictionary<Landis.Core.ISpecies, float>();
-            foreach (Landis.Core.ISpecies species in Globals.ModelCore.Species)
+            maxLAI = new Dictionary<ISpecies, float>();
+            foreach (ISpecies species in Globals.ModelCore.Species)
             {
                 if (maxlai[species] == -9999F)
                 {
@@ -218,17 +216,15 @@ namespace Landis.Library.PnETCohorts
                     float peakFoliage = peakBiomass * folbiomassfrac[species] * (float)Math.Exp(-1f * liveWoodBiomassFrac[species] * peakBiomass);
                     float tempLAI = 0;
                     for (int i = 0; i < Globals.IMAX; i++)
-                    {
                         tempLAI += (float)Math.Max(0.01, peakFoliage / Globals.IMAX / (slwmax[species] - (slwdel[species] * i * (peakFoliage / Globals.IMAX))));
-                    }
                     maxLAI.Add(species, tempLAI);
                 }
                 else
                     maxLAI.Add(species, maxlai[species]);
             }
             lifeform = (Library.Parameters.Species.AuxParm<string>)(Parameter<string>)Names.GetParameter("Lifeform");
-            lifeForm = new Dictionary<Landis.Core.ISpecies, string>();
-            foreach (Landis.Core.ISpecies species in Globals.ModelCore.Species)
+            lifeForm = new Dictionary<ISpecies, string>();
+            foreach (ISpecies species in Globals.ModelCore.Species)
             {
                 if (lifeform != null && lifeform[species] != null && !string.IsNullOrEmpty(lifeform[species]))
                 {
@@ -240,17 +236,15 @@ namespace Landis.Library.PnETCohorts
                 else
                     lifeForm.Add(species, "tree");
             }
-            #endregion
-
-            SpeciesCombinations = new List<Tuple<Landis.Core.ISpecies, IPnETSpecies>>();
-            foreach (Landis.Core.ISpecies species in Globals.ModelCore.Species)
+            SpeciesCombinations = new List<Tuple<ISpecies, IPnETSpecies>>();
+            foreach (ISpecies species in Globals.ModelCore.Species)
             {
                 PnETSpecies pnetspecies = new PnETSpecies(species);
-                SpeciesCombinations.Add(new Tuple<Landis.Core.ISpecies, IPnETSpecies>(species, pnetspecies));
+                SpeciesCombinations.Add(new Tuple<ISpecies, IPnETSpecies>(species, pnetspecies));
             }
         }
 
-        PnETSpecies(Landis.Core.PostFireRegeneration postFireRegeneration,
+        PnETSpecies(PostFireRegeneration postFireRegeneration,
                     float nscfrac, float cfracbiomass, float wooddebrisdecomprate,
                     float bgbiomassfrac, float folbiomassfrac, float liveWoodBiomassFrac,
                     float photosynthesisfage, float h1, float h2, float h3,
@@ -275,8 +269,8 @@ namespace Landis.Library.PnETCohorts
         {
             float initBiomass = initialnsc / (nscfrac * cfracbiomass);
             _bgbiomassfrac = bgbiomassfrac;
-            _agbiomassfrac = 1F - agbiomassfrac;
-            _initBiomass = (int)(initBiomass * (1F - (bgbiomassfrac * rootturnoverrate) - (agbiomassfrac * woodturnoverrate)));
+            _agbiomassfrac = 1F - bgbiomassfrac;
+            _initBiomass = (int)(initBiomass * (1F - (bgbiomassfrac * rootturnoverrate) - (_agbiomassfrac * woodturnoverrate)));
             _nscfrac = nscfrac;
             _cfracbiomass = cfracbiomass;
             _wooddebrisdecomprate = wooddebrisdecomprate;
@@ -342,12 +336,12 @@ namespace Landis.Library.PnETCohorts
             this.longevity = longevity;
         }
 
-        private PnETSpecies(Landis.Core.ISpecies species)
+        private PnETSpecies(ISpecies species)
         {
             float initBiomass = initialnsc[species] / (nscfrac[species] * cfracbiomass[species]);
             _bgbiomassfrac = bgbiomassfrac[species];
-            _agbiomassfrac = (float)(1F - agbiomassfrac[species]);
-            _initBiomass = (int)(initBiomass * (1F - (bgbiomassfrac[species] * rootturnoverrate[species]) - (agbiomassfrac[species] * woodturnoverrate[species])));
+            _agbiomassfrac = 1F - bgbiomassfrac[species];
+            _initBiomass = (int)(initBiomass * (1F - (bgbiomassfrac[species] * rootturnoverrate[species]) - (_agbiomassfrac * woodturnoverrate[species])));
             _nscfrac = nscfrac[species];
             _cfracbiomass = cfracbiomass[species];
             _wooddebrisdecomprate = wooddebrisdecomprate[species];
@@ -413,7 +407,6 @@ namespace Landis.Library.PnETCohorts
             longevity = species.Longevity;
         }
 
-        #region Accessors
         public List<IPnETSpecies> AllSpecies
         {
             get
@@ -430,7 +423,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Core.ISpecies this[IPnETSpecies species]
+        public ISpecies this[IPnETSpecies species]
         {
             get
             {
@@ -801,7 +794,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Core.PostFireRegeneration PostFireRegeneration
+        public PostFireRegeneration PostFireRegeneration
         {
             get
             {
@@ -992,7 +985,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                System.Type type = typeof(PnETSpecies); // Get type pointer
+                Type type = typeof(PnETSpecies); // Get type pointer
                 List<string> names = type.GetProperties().Select(x => x.Name).ToList(); // Obtain all fields
                 return names;
             }
@@ -1003,6 +996,5 @@ namespace Landis.Library.PnETCohorts
             get;
             set;
         }
-        #endregion
     }
 }

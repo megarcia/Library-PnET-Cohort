@@ -1,10 +1,20 @@
-﻿//  Copyright ...
-//  Authors:  Arjan de Bruijn
+﻿// Authors: Arjan de Bruijn
+
+// NOTE: ActiveSite --> Landis.SpatialModeling
+// NOTE: ExtensionType --> Landis.Core
+// NOTE: ICommunity --> Landis.Library.InitialCommunities.Universal
+// NOTE: ISpecies --> Landis.Core
+// NOTE: Pool --> Landis.Library.UniversalCohorts
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Landis.Core;
+using Landis.Library.InitialCommunities.Universal;
+using Landis.Library.Parameters;
+using Landis.Library.UniversalCohorts;
+using Landis.SpatialModeling;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -46,11 +56,11 @@ namespace Landis.Library.PnETCohorts
         private Hydrology hydrology = null;
         IProbEstablishment probEstablishment = null;
         public ActiveSite Site;
-        public Dictionary<Landis.Core.ISpecies, List<Cohort>> cohorts = null;
-        public List<Landis.Core.ISpecies> SpeciesEstablishedByPlanting = null;
-        public List<Landis.Core.ISpecies> SpeciesEstablishedBySerotiny = null;
-        public List<Landis.Core.ISpecies> SpeciesEstablishedByResprout = null;
-        public List<Landis.Core.ISpecies> SpeciesEstablishedBySeed = null;
+        public Dictionary<ISpecies, List<Cohort>> cohorts = null;
+        public List<ISpecies> SpeciesEstablishedByPlanting = null;
+        public List<ISpecies> SpeciesEstablishedBySerotiny = null;
+        public List<ISpecies> SpeciesEstablishedByResprout = null;
+        public List<ISpecies> SpeciesEstablishedBySeed = null;
         public List<int> CohortsKilledBySuccession = null;
         public List<int> CohortsKilledByCold = null;
         public List<int> CohortsKilledByHarvest = null;
@@ -82,7 +92,7 @@ namespace Landis.Library.PnETCohorts
         Dictionary<double, bool> ratioAbove10 = new Dictionary<double, bool>();
         private static float CanopySumScale;
 
-        public List<Landis.Core.ISpecies> SpeciesEstByPlanting
+        public List<ISpecies> SpeciesEstByPlanting
         {
             get
             {
@@ -94,7 +104,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public List<Landis.Core.ISpecies> SpeciesEstBySerotiny
+        public List<ISpecies> SpeciesEstBySerotiny
         {
             get
             {
@@ -106,7 +116,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public List<Landis.Core.ISpecies> SpeciesEstByResprout
+        public List<ISpecies> SpeciesEstByResprout
         {
             get
             {
@@ -118,7 +128,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public List<Landis.Core.ISpecies> SpeciesEstBySeeding
+        public List<ISpecies> SpeciesEstBySeeding
         {
             get
             {
@@ -266,10 +276,7 @@ namespace Landis.Library.PnETCohorts
                 {
                     float[] netpsn_array = new float[12];
                     for (int i = 0; i < netpsn_array.Length; i++)
-                    {
                         netpsn_array[i] = 0;
-                    }
-
                     return netpsn_array;
                 }
                 else
@@ -298,12 +305,12 @@ namespace Landis.Library.PnETCohorts
             Parameter<string> CohortBinSizeParm = null;
             if (Names.TryGetParameter(Names.CohortBinSize, out CohortBinSizeParm))
             {
-                if (!Int32.TryParse(CohortBinSizeParm.Value, out CohortBinSize))
+                if (! Int32.TryParse(CohortBinSizeParm.Value, out CohortBinSize))
                     throw new Exception("CohortBinSize is not an integer value.");
             }
             else
                 CohortBinSize = Timestep;
-            string precipEventsWithReplacement = ((Parameter<string>)Names.GetParameter(Names.PrecipEventsWithReplacement)).Value;
+            string precipEventsWithReplacement = Names.GetParameter(Names.PrecipEventsWithReplacement).Value;
             PrecipEventsWithReplacement = true;
             if (precipEventsWithReplacement == "false" || precipEventsWithReplacement == "no")
                 PrecipEventsWithReplacement = false;
@@ -332,11 +339,11 @@ namespace Landis.Library.PnETCohorts
         {
             this.Ecoregion = PnETEcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[site]);
             this.Site = site;
-            cohorts = new Dictionary<Landis.Core.ISpecies, List<Cohort>>();
-            SpeciesEstablishedByPlanting = new List<Landis.Core.ISpecies>();
-            SpeciesEstablishedBySerotiny = new List<Landis.Core.ISpecies>();
-            SpeciesEstablishedByResprout = new List<Landis.Core.ISpecies>();
-            SpeciesEstablishedBySeed = new List<Landis.Core.ISpecies>();
+            cohorts = new Dictionary<ISpecies, List<Cohort>>();
+            SpeciesEstablishedByPlanting = new List<ISpecies>();
+            SpeciesEstablishedBySerotiny = new List<ISpecies>();
+            SpeciesEstablishedByResprout = new List<ISpecies>();
+            SpeciesEstablishedBySeed = new List<ISpecies>();
             CohortsKilledBySuccession = new List<int>(new int[Globals.ModelCore.Species.Count()]);
             CohortsKilledByCold = new List<int>(new int[Globals.ModelCore.Species.Count()]);
             CohortsKilledByHarvest = new List<int>(new int[Globals.ModelCore.Species.Count()]);
@@ -367,7 +374,7 @@ namespace Landis.Library.PnETCohorts
             List<float> cohortCanopyLayerFrac = new List<float>();
             if (SiteOutputName != null)
             {
-                this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", Header(site));
+                siteoutput = new LocalOutput(SiteOutputName, "Site.csv", Header(site));
                 probEstablishment = new ProbEstablishment(SiteOutputName, "Establishment.csv");
             }
             else
@@ -407,10 +414,10 @@ namespace Landis.Library.PnETCohorts
                         Globals.ModelCore.UI.WriteLine("Warning:  InitialCommunitiesSpinup parameter is not 'Spinup', 'SpinupLayers','SpinupLayersRescale' or 'NoSpinup'.  Biomass is provided so using 'SpinupLayers' by default.");
                     SpinUp(StartDate, site, initialCommunity, usingClimateLibrary, SiteOutputName, false);
                     // species-age key to store maxbiomass values
-                    Dictionary<Landis.Core.ISpecies, Dictionary<int, float[]>> cohortDictionary = new Dictionary<Landis.Core.ISpecies, Dictionary<int, float[]>>();
+                    Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary = new Dictionary<ISpecies, Dictionary<int, float[]>>();
                     foreach (Cohort cohort in AllCohorts)
                     {
-                        Landis.Core.ISpecies species = cohort.Species;
+                        ISpecies species = cohort.Species;
                         int age = cohort.Age;
                         float lastSeasonAvgFRad = 0F;
                         if (cohort.LastSeasonFRad.Count() > 0)
@@ -442,7 +449,7 @@ namespace Landis.Library.PnETCohorts
                         {
                             // TODO: Add warning if biomass is 0
                             int age = cohort.Data.Age;
-                            Landis.Core.ISpecies species = cohort.Species;
+                            ISpecies species = cohort.Species;
                             float[] values = cohortDictionary[species][age];
                             int cohortMaxBiomass = (int)values[0];
                             float cohortSpinupBiomass = values[1];
@@ -715,7 +722,7 @@ namespace Landis.Library.PnETCohorts
                         float LAISum = cohort.LAI.Sum();
                         if (cohort.IsLeafOn)
                         {
-                            if (LAISum > c.LastLAI)
+                            if (LAISum > cohort.LastLAI)
                                 cohort.LastLAI = LAISum;
                         }
                         if (CohortStacking)
@@ -850,10 +857,10 @@ namespace Landis.Library.PnETCohorts
                             ClearAllCohorts();
                             SpinUp(StartDate, site, initialCommunity, usingClimateLibrary, null, false);
                             // species-age key to store maxbiomass values and canopy growing space
-                            Dictionary<Landis.Core.ISpecies, Dictionary<int, float[]>> cohortDictionary = new Dictionary<Landis.Core.ISpecies, Dictionary<int, float[]>>();
+                            Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary = new Dictionary<ISpecies, Dictionary<int, float[]>>();
                             foreach (Cohort cohort in AllCohorts)
                             {
-                                Landis.Core.ISpecies spp = cohort.Species;
+                                ISpecies spp = cohort.Species;
                                 int age = cohort.Age;
                                 float lastSeasonAvgFRad = cohort.LastSeasonFRad.ToArray().Average();
                                 if (cohortDictionary.ContainsKey(spp))
@@ -884,7 +891,7 @@ namespace Landis.Library.PnETCohorts
                                 foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
                                 {
                                     int age = cohort.Data.Age;
-                                    Landis.Core.ISpecies spp = cohort.Species;
+                                    ISpecies spp = cohort.Species;
                                     float[] values = cohortDictionary[spp][age];
                                     int cohortMaxBiomass = (int)values[0];
                                     float cohortSpinupBiomass = values[1];
@@ -907,10 +914,10 @@ namespace Landis.Library.PnETCohorts
                             ClearAllCohorts();
                             SpinUp(StartDate, site, initialCommunity, usingClimateLibrary, null, false);
                             // species-age key to store maxbiomass values, biomass, LastSeasonFRad
-                            Dictionary<Landis.Core.ISpecies, Dictionary<int, float[]>> cohortDictionary = new Dictionary<Landis.Core.ISpecies, Dictionary<int, float[]>>();
+                            Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary = new Dictionary<ISpecies, Dictionary<int, float[]>>();
                             foreach (Cohort cohort in AllCohorts)
                             {
-                                Landis.Core.ISpecies spp = cohort.Species;
+                                ISpecies spp = cohort.Species;
                                 int age = cohort.Age;
                                 float lastSeasonAvgFRad = cohort.LastSeasonFRad.ToArray().Average();
                                 if (cohortDictionary.ContainsKey(spp))
@@ -942,7 +949,7 @@ namespace Landis.Library.PnETCohorts
                                 foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
                                 {
                                     int age = cohort.Data.Age;
-                                    Landis.Core.ISpecies spp = cohort.Species;
+                                    ISpecies spp = cohort.Species;
                                     float[] values = cohortDictionary[spp][age];
                                     int cohortMaxBiomass = (int)values[0];
                                     float cohortSpinupBiomass = values[1];
@@ -1035,11 +1042,11 @@ namespace Landis.Library.PnETCohorts
         {
             this.Ecoregion = PnETEcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[site]);
             this.Site = site;
-            cohorts = new Dictionary<Landis.Core.ISpecies, List<Cohort>>();
-            SpeciesEstablishedByPlanting = new List<Landis.Core.ISpecies>();
-            SpeciesEstablishedBySerotiny = new List<Landis.Core.ISpecies>();
-            SpeciesEstablishedByResprout = new List<Landis.Core.ISpecies>();
-            SpeciesEstablishedBySeed = new List<Landis.Core.ISpecies>();
+            cohorts = new Dictionary<ISpecies, List<Cohort>>();
+            SpeciesEstablishedByPlanting = new List<ISpecies>();
+            SpeciesEstablishedBySerotiny = new List<ISpecies>();
+            SpeciesEstablishedByResprout = new List<ISpecies>();
+            SpeciesEstablishedBySeed = new List<ISpecies>();
             CohortsKilledBySuccession = new List<int>(new int[Globals.ModelCore.Species.Count()]);
             CohortsKilledByCold = new List<int>(new int[Globals.ModelCore.Species.Count()]);
             CohortsKilledByHarvest = new List<int>(new int[Globals.ModelCore.Species.Count()]);
@@ -1073,7 +1080,7 @@ namespace Landis.Library.PnETCohorts
                 List<float> cohortLastWoodSenescence = new List<float>();
                 List<float> cohortLastFolSenescence = new List<float>();
                 List<float> cohortLastYearAvgFRad = new List<float>();
-                foreach (Landis.Core.ISpecies species in initialSites[key].cohorts.Keys)
+                foreach (ISpecies species in initialSites[key].cohorts.Keys)
                 {
                     foreach (Cohort cohort in initialSites[key].cohorts[species])
                     {
@@ -1375,7 +1382,7 @@ namespace Landis.Library.PnETCohorts
                     canopylaimax = float.MinValue;
                     monthlyLAI = new float[13];
                     // Reset max foliage and AdjFolBiomassFrac in each cohort
-                    foreach (Landis.Core.ISpecies spc in cohorts.Keys)
+                    foreach (ISpecies spc in cohorts.Keys)
                     {
                         foreach (Cohort cohort in cohorts[spc])
                         {
@@ -2657,7 +2664,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 float mossDepth = Ecoregion.MossDepth; //m
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                 {
                     foreach (Cohort cohort in cohorts[species])
                         mossDepth += cohort.MossDepth * cohort.CanopyLayerFrac;
@@ -2687,7 +2694,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<bool> SpeciesPresent = new Library.Parameters.Species.AuxParm<bool>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     SpeciesPresent[species] = true;
                 return SpeciesPresent;
             }
@@ -2698,7 +2705,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<int> BiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     BiomassPerSpecies[species] = cohorts[species].Sum(o => (int)(o.TotalBiomass * o.CanopyLayerFrac));
                 return BiomassPerSpecies;
             }
@@ -2709,7 +2716,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<int> AGBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     AGBiomassPerSpecies[species] = cohorts[species].Sum(o => (int)(o.AGBiomass * o.CanopyLayerFrac));
                 return AGBiomassPerSpecies;
             }
@@ -2720,7 +2727,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<int> WoodBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     WoodBiomassPerSpecies[species] = cohorts[species].Sum(o => (int)(o.Wood * o.CanopyLayerFrac));
                 return WoodBiomassPerSpecies;
             }
@@ -2731,7 +2738,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<int> BGBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     BGBiomassPerSpecies[species] = cohorts[species].Sum(o => (int)(o.Root * o.CanopyLayerFrac));
                 return BGBiomassPerSpecies;
             }
@@ -2742,7 +2749,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     FoliageBiomassPerSpecies[species] = cohorts[species].Sum(o => (int)(o.Fol * o.CanopyLayerFrac));
                 return FoliageBiomassPerSpecies;
             }
@@ -2753,7 +2760,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                 {
                     // Edited according to Brian Miranda's advice (https://github.com/LANDIS-II-Foundation/Extension-Output-Biomass-PnET/issues/11#issuecomment-2400646970_
                     // to correct how the variable is computed, to make it similar to FolBiomassSum.
@@ -2768,7 +2775,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<int> NSCPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     NSCPerSpecies[species] = cohorts[species].Sum(o => (int)(o.NSC * o.CanopyLayerFrac));
                 return NSCPerSpecies;
             }
@@ -2779,7 +2786,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<float> LAIPerSpecies = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     LAIPerSpecies[species] = cohorts[species].Sum(o => o.LastLAI * o.CanopyLayerFrac);
                 return LAIPerSpecies;
             }
@@ -2790,7 +2797,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<int> WoodSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     WoodSenescencePerSpecies[species] = cohorts[species].Sum(o => (int)(o.LastWoodSenescence * o.CanopyLayerFrac));
                 return WoodSenescencePerSpecies;
             }
@@ -2801,7 +2808,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<int> FolSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     FolSenescencePerSpecies[species] = cohorts[species].Sum(o => (int)(o.LastFolSenescence * o.CanopyLayerFrac));
                 return FolSenescencePerSpecies;
             }
@@ -2812,7 +2819,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies = new Library.Parameters.Species.AuxParm<int>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     CohortCountPerSpecies[species] = cohorts[species].Count();
                 return CohortCountPerSpecies;
             }
@@ -2824,7 +2831,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<List<ushort>> CohortAges = new Library.Parameters.Species.AuxParm<List<ushort>>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     CohortAges[species] = new List<ushort>(cohorts[species].Select(o => o.Age));
                 return CohortAges;
             }
@@ -3096,7 +3103,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 List<Cohort> all = new List<Cohort>();
-                foreach (Landis.Core.ISpecies species in cohorts.Keys)
+                foreach (ISpecies species in cohorts.Keys)
                     all.AddRange(cohorts[species]);
                 return all;
             }
@@ -3144,7 +3151,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        Library.UniversalCohorts.ISpeciesCohorts IISiteCohorts<Library.UniversalCohorts.ISpeciesCohorts>.this[ISpecies species]
+        Library.UniversalCohorts.ISpeciesCohorts Library.UniversalCohorts.IISiteCohorts<Library.UniversalCohorts.ISpeciesCohorts>.this[ISpecies species]
         {
             get
             {
@@ -3178,7 +3185,7 @@ namespace Landis.Library.PnETCohorts
             int totalReduction = 0;
             List<Cohort> ToRemove = new List<Cohort>();
             Library.UniversalCohorts.SpeciesCohortBoolArray isSpeciesCohortDamaged = new Library.UniversalCohorts.SpeciesCohortBoolArray();
-            foreach (Landis.Core.ISpecies species in cohorts.Keys)
+            foreach (ISpecies species in cohorts.Keys)
             {
                 SpeciesCohorts speciescohort = GetSpeciesCohort(cohorts[species]);               
                 isSpeciesCohortDamaged.SetAllFalse(speciescohort.Count);
@@ -3245,7 +3252,7 @@ namespace Landis.Library.PnETCohorts
             Disturbance.AllocateDeadPools(this, cohort, disturbanceType, 1.0);  // Disturbance fraction is 1.0 for complete removals
         }
 
-        public bool IsMaturePresent(Landis.Core.ISpecies species)
+        public bool IsMaturePresent(ISpecies species)
         {
             bool speciesPresent = cohorts.ContainsKey(species);
             bool IsMaturePresent = (speciesPresent && (cohorts[species].Max(o => o.Age) >= species.Maturity)) ? true : false;
@@ -3259,14 +3266,12 @@ namespace Landis.Library.PnETCohorts
             if (cohorts.ContainsKey(newCohort.Species))
             {
                 // This should deliver only one KeyValuePair
-                KeyValuePair<Landis.Core.ISpecies, List<Cohort>> i = new List<KeyValuePair<Landis.Core.ISpecies, List<Cohort>>>(cohorts.Where(o => o.Key == newCohort.Species))[0];
+                KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(cohorts.Where(o => o.Key == newCohort.Species))[0];
                 List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < CohortBinSize));
                 if (Cohorts.Count() > 1)
                 {
                     foreach(Cohort Cohort in Cohorts.Skip(1))
-                    {
                         newCohort.Accumulate(Cohort);
-                    }
                 }                
                 if (Cohorts.Count() > 0)
                 {
@@ -3289,9 +3294,7 @@ namespace Landis.Library.PnETCohorts
         {
             SpeciesCohorts species = new SpeciesCohorts(cohorts[0]);
             for (int cohort = 1; cohort < cohorts.Count; cohort++)
-            {
                 species.AddNewCohort(cohorts[cohort]);
-            }
             return species;
         }
 
@@ -3450,7 +3453,7 @@ namespace Landis.Library.PnETCohorts
  
         public override IEnumerator<Library.UniversalCohorts.ISpeciesCohorts> GetEnumerator()
         {
-            foreach (Landis.Core.ISpecies species in cohorts.Keys)
+            foreach (ISpecies species in cohorts.Keys)
             {
                 yield return this[species];
             }
@@ -3463,7 +3466,7 @@ namespace Landis.Library.PnETCohorts
 
         IEnumerator<Library.UniversalCohorts.ISpeciesCohorts> IEnumerable<Library.UniversalCohorts.ISpeciesCohorts>.GetEnumerator()
         {
-            foreach (Landis.Core.ISpecies species in cohorts.Keys)
+            foreach (ISpecies species in cohorts.Keys)
             {
                 Library.UniversalCohorts.ISpeciesCohorts isp = this[species];
                 yield return isp;

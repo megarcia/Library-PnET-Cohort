@@ -1,5 +1,7 @@
 //  Authors:  Robert M. Scheller, James B. Domingo
 
+using Landis.Library.UniversalCohorts;
+
 namespace Landis.Library.PnETCohorts
 {
     /// <summary>

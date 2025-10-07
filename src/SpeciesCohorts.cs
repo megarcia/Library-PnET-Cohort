@@ -1,9 +1,19 @@
-//  Authors:  Robert M. Scheller, James B. Domingo
+// Authors: Robert M. Scheller, James B. Domingo
+
+// NOTE: ActiveSite --> Landis.SpatialModeling
+// NOTE: ExtensionType --> Landis.Core
+// NOTE: ISpecies --> Landis.Core
+// NOTE: ISpeciesCohortsDisturbance --> Landis.Core
+// NOTE: SpeciesCohortBoolArray --> Library.UniversalCohorts
 
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using Landis.Core;
+using Landis.Library.UniversalCohorts;
+using Landis.SpatialModeling;
+using log4net;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -14,7 +24,7 @@ namespace Landis.Library.PnETCohorts
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly bool isDebugEnabled = log.IsDebugEnabled;
-        private Landis.Core.ISpecies species;
+        private ISpecies species;
         private bool isMaturePresent;
         private List<CohortData> cohortData; // List of cohorts is ordered oldest to youngest.
         private static SpeciesCohortBoolArray isSpeciesCohortDamaged;
@@ -29,11 +39,11 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Landis.Core.ISpecies Species
+        public ISpecies Species
         {
             get
             {
-                return (Landis.Core.ISpecies)Globals.ModelCore.Species[species.Index];
+                return (ISpecies)Globals.ModelCore.Species[species.Index];
             }
         }
 
@@ -92,7 +102,7 @@ namespace Landis.Library.PnETCohorts
         /// <remarks>
         /// Private constructor used by Clone method.
         /// </remarks>
-        private SpeciesCohorts(Landis.Core.ISpecies species)
+        private SpeciesCohorts(ISpecies species)
         {
             this.species = species;
         }
@@ -251,7 +261,7 @@ namespace Landis.Library.PnETCohorts
                 }
             }
         }
-        
+
         /// <summary>
         /// Calculates how much a disturbance damages the cohorts by reducing
         /// their biomass.
@@ -301,7 +311,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns>
         /// The total biomass of all the cohorts damaged by the disturbance.
         /// </returns>
-        public int MarkCohorts(Landis.Core.ISpeciesCohortsDisturbance disturbance)
+        public int MarkCohorts(ISpeciesCohortsDisturbance disturbance)
         {
             isSpeciesCohortDamaged.SetAllFalse(Count);
             disturbance.MarkCohortsForDeath(this, isSpeciesCohortDamaged);

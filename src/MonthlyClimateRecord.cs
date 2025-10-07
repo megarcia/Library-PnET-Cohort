@@ -1,4 +1,7 @@
-﻿using System;
+﻿// NOTE: IEcoregion --> Landis.Core
+
+using System;
+using Landis.Core;
 
 namespace Landis.Library.PnETCohorts
 {

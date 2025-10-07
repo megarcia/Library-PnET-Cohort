@@ -1,6 +1,9 @@
-﻿using System;
+﻿// NOTE: ExtensionType --> Landis.Core
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Landis.Core;
 
 namespace Landis.Library.PnETCohorts
 {

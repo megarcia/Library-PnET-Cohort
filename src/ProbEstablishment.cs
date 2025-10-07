@@ -1,5 +1,9 @@
-﻿using System;
+﻿// NOTE: ISpecies --> Landis.Core
+
+using System;
 using System.Collections.Generic;
+using Landis.Core;
+using Landis.Library.Parameters;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -16,7 +20,7 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<float> SpeciesProbEstablishment = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
-                foreach (Landis.Core.ISpecies species in Globals.ModelCore.Species)
+                foreach (ISpecies species in Globals.ModelCore.Species)
                 {
                     IPnETSpecies pnetspecies = SpeciesParameters.PnETSpecies[species];
                     SpeciesProbEstablishment[species] = speciesProbEstablishment[pnetspecies];

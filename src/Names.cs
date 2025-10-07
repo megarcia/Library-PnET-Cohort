@@ -1,5 +1,9 @@
-﻿using System;
+﻿// NOTE: File --> System.IO
+
+using System;
 using System.Collections.Generic;
+using System.IO;
+using Landis.Data;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -117,7 +121,7 @@ namespace Landis.Library.PnETCohorts
         public static Dictionary<string, Parameter<string>> LoadTable(string label, List<string> RowLabels, List<string> Columnheaders, bool transposed = false)
         {
             string filename = GetParameter(label).Value;
-            if (System.IO.File.Exists(filename) == false)
+            if (File.Exists(filename) == false)
                 throw new Exception("File not found " + filename);
             ParameterTableParser parser = new ParameterTableParser(filename, label, RowLabels, Columnheaders, transposed);
             Dictionary<string, Parameter<string>> parameters = Landis.Data.Load<Dictionary<string, Parameter<string>>>(filename, parser);
@@ -153,8 +157,7 @@ namespace Landis.Library.PnETCohorts
         public static bool HasMultipleMatches(string lifeForm, ref string[] matches)
         {
             int matchCount = 0;
-
-            foreach (string type in Names.MutuallyExclusiveCanopyTypes)
+            foreach (string type in MutuallyExclusiveCanopyTypes)
             {
                 if (!string.IsNullOrEmpty(lifeForm) && lifeForm.ToLower().Contains(type.ToLower()))
                 {
@@ -164,7 +167,6 @@ namespace Landis.Library.PnETCohorts
                 if (matchCount > 1)
                     return true;
             }
-
             return false;
         }
     }

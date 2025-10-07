@@ -1,10 +1,20 @@
-﻿using System;
+﻿// NOTE: AtEndOfInput --> Landis.Utilities
+// NOTE: CurrentLine --> Landis.Utilities
+// NOTE: GetNextLine --> Landis.Utilities
+// NOTE: InputValueException --> Landis.Utilities
+// NOTE: InputVar --> Landis.Utilities
+// NOTE: ReadValue --> Landis.Utilities
+// NOTE: ReadVar --> Landis.Utilities
+
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Landis.Utilities;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class ParameterTableParser : TextParser<Dictionary<string, Parameter<string>>>  
+    public class ParameterTableParser : Landis.TextParser<Dictionary<string, Parameter<string>>>  
     {
         public Dictionary<string, Parameter<string>> Parameters { get; private set; }
         public List<string> ExpectedRowLabels { get; private set; }
@@ -62,7 +72,7 @@ namespace Landis.Library.PnETCohorts
                 Dictionary<string, Parameter<string>> parameters = new Dictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
                 InputVar<string> landisData = new InputVar<string>("LandisData");
                 ReadVar(landisData);
-                if (landisData.Value.Actual != this.KeyWord)
+                if (landisData.Value.Actual != KeyWord)
                     throw new InputValueException(landisData.Value.String, "Landis Keyword expected " + this.KeyWord + " but read \"{0}\"" + this.FileName, landisData.Value.Actual);
                 string line = new StringReader(CurrentLine).ReadLine().Trim();
                 while (line.Length == 0)
@@ -127,16 +137,15 @@ namespace Landis.Library.PnETCohorts
                 }
                 return parameters;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 if (e is PnetSpeciesParameterFileFormatException)
                     throw e;
                 else
                 {
                     throw new Exception("Unexpected file format (dir,file) (" +
-                        System.IO.Directory.GetCurrentDirectory() + "," +
-                        this.FileName + ")" +
-                        " " + e.Message + "\n\nNOTE header line is mandatory");
+                        Directory.GetCurrentDirectory() + "," + FileName + ") " +
+                        e.Message + "\n\nNOTE header line is mandatory");
                 }
             }
         }

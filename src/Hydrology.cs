@@ -1,14 +1,14 @@
-﻿using System;
+﻿// References:
+//     Cabrera et al. 2016: Performance of evaporation estimation methods compared with standard 20 m2 tank https://doi.org/10.1590/1807-1929/agriambi.v20n10p874-879
+//     Reis, M. G. dos, and A. Ribeiro, 2020: Conversion factors and general equations applied in agricultural and forest meteorology. Agrometeoros, 27(2). https://doi.org/10.31062/agrom.v27i2.26527
+//     Robock, A., K.Y. Vinnikov, C.A. Schlosser, N.A. Speranskaya, and Y. Xue, 1995: Use of midlatitude soil moisture and meteorological observations to validate soil moisture simulations with biosphere and bucket models. Journal of Climate, 8(1), 15-35.
+
+using System;
 
 namespace Landis.Library.PnETCohorts
 {
     public class Hydrology : IHydrology
     {
-        // References:
-        //     Cabrera et al. 2016: Performance of evaporation estimation methods compared with standard 20 m2 tank https://doi.org/10.1590/1807-1929/agriambi.v20n10p874-879
-        //     Reis, M. G. dos, and A. Ribeiro, 2020: Conversion factors and general equations applied in agricultural and forest meteorology. Agrometeoros, 27(2). https://doi.org/10.31062/agrom.v27i2.26527
-        //     Robock, A., K.Y. Vinnikov, C.A. Schlosser, N.A. Speranskaya, and Y. Xue, 1995: Use of midlatitude soil moisture and meteorological observations to validate soil moisture simulations with biosphere and bucket models. Journal of Climate, 8(1), 15-35.
-
         private float soilWaterContent;
         private float frozenSoilWaterContent;
         private float frozenSoilDepth;
@@ -250,27 +250,20 @@ namespace Landis.Library.PnETCohorts
         /// TODO: evaporate from available captured surface water first, 
         /// then take water from soil column.   
         /// </summary>
-        /// <param name="hydrology"></param>
         /// <param name="ecoregion"></param>
         /// <param name="snowpack"></param>
         /// <param name="fracRootAboveFrost"></param>
         /// <param name="PET"></param>
         /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        // public void CalcSoilEvaporation(Hydrology hydrology, IPnETEcoregionData ecoregion, float snowpack, float fracRootAboveFrost, float potentialET, string location)
         public void CalcSoilEvaporation(IPnETEcoregionData ecoregion, float snowpack, float fracRootAboveFrost, float potentialET, string location)
         {
             float EvaporationEvent = 0;
             if (fracRootAboveFrost > 0 && snowpack == 0)
                 EvaporationEvent = CalcEvaporation(ecoregion, potentialET); // mm
-            // bool success = hydrology.AddWater(-1 * EvaporationEvent, ecoregion.RootingDepth * fracRootAboveFrost);
             bool success = AddWater(-1 * EvaporationEvent, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
-            {
-                // throw new Exception("Error adding water, evaporation = " + EvaporationEvent + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
                 throw new Exception("Error adding water, evaporation = " + EvaporationEvent + "; soilWaterContent = " + SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
-            }
-            // hydrology.Evaporation += EvaporationEvent;
             Evaporation += EvaporationEvent;
         }
 
@@ -278,111 +271,78 @@ namespace Landis.Library.PnETCohorts
         /// Calculate runoff from input in excess of surface capture 
         /// and/or available soil capacity. Includes infiltration.
         /// </summary>
-        /// <param name="hydrology"></param>
         /// <param name="ecoregion"></param>
         /// <param name="inputWater"></param>
         /// <param name="fracRootAboveFrost"></param>
         /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        // public void CalcRunoff(Hydrology hydrology, IPnETEcoregionData ecoregion, float inputWater, float fracRootAboveFrost, string location)
         public void CalcRunoff(IPnETEcoregionData ecoregion, float inputWater, float fracRootAboveFrost, string location)
         {
             if (ecoregion.RunoffCapture > 0)
             {
-                // float capturedInput = Math.Min(inputWater, Math.Max(ecoregion.RunoffCapture - hydrology.SurfaceWater, 0));
                 float capturedInput = Math.Min(inputWater, Math.Max(ecoregion.RunoffCapture - SurfaceWater, 0));
-                // hydrology.SurfaceWater += capturedInput;
                 SurfaceWater += capturedInput;
                 inputWater -= capturedInput;
             }
-            // float availableSoilCapacity = Math.Max(ecoregion.Porosity - hydrology.SoilWaterContent, 0) * ecoregion.RootingDepth * fracRootAboveFrost; // mm
             float availableSoilCapacity = Math.Max(ecoregion.Porosity - SoilWaterContent, 0) * ecoregion.RootingDepth * fracRootAboveFrost; // mm
             float runoff = Math.Max(inputWater - availableSoilCapacity, 0);
-            // bool success = hydrology.AddWater(inputWater - runoff, ecoregion.RootingDepth * fracRootAboveFrost);
             bool success = AddWater(inputWater - runoff, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
-            {
-                // throw new Exception("Error adding water, InputWater = " + inputWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; Runoff = " + runoff + "; ecoregion = " + ecoregion.Name + "; site = " + location);
                 throw new Exception("Error adding water, InputWater = " + inputWater + "; soilWaterContent = " + SoilWaterContent + "; Runoff = " + runoff + "; ecoregion = " + ecoregion.Name + "; site = " + location);
-            }
-            // hydrology.Runoff += runoff;
             Runoff += runoff;
         }
 
         /// <summary>
         /// Calculate soil infiltration purely from surface captured water.
         /// </summary>
-        /// <param name="hydrology"></param>
         /// <param name="ecoregion"></param>
         /// <param name="fracRootAboveFrost"></param>
         /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        // public void CalcInfiltration(Hydrology hydrology, IPnETEcoregionData ecoregion, float fracRootAboveFrost, string location)
         public void CalcInfiltration(IPnETEcoregionData ecoregion, float fracRootAboveFrost, string location)
         {
-            // float SurfaceInput = Math.Min(hydrology.SurfaceWater, (ecoregion.Porosity - hydrology.SoilWaterContent) * ecoregion.RootingDepth * fracRootAboveFrost);
             float SurfaceInput = Math.Min(SurfaceWater, (ecoregion.Porosity - SoilWaterContent) * ecoregion.RootingDepth * fracRootAboveFrost);
-            // bool success = hydrology.AddWater(SurfaceInput, ecoregion.RootingDepth * fracRootAboveFrost);
             bool success = AddWater(SurfaceInput, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
-            {
-                // throw new Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
                 throw new Exception("Error adding water, SurfaceWater = " + SurfaceWater + "; soilWaterContent = " + SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
-            }
-            // hydrology.SurfaceWater -= SurfaceInput;
             SurfaceWater -= SurfaceInput;
         }
 
         /// <summary>
         /// Calculate leakage of soil water to "groundwater."
         /// </summary>
-        /// <param name="hydrology"></param>
         /// <param name="ecoregion"></param>
         /// <param name="leakageFrac"></param>
         /// <param name="fracRootAboveFrost"></param>
         /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        // public void CalcLeakage(Hydrology hydrology, IPnETEcoregionData ecoregion, float leakageFrac, float fracRootAboveFrost, string location)
         public void CalcLeakage(IPnETEcoregionData ecoregion, float leakageFrac, float fracRootAboveFrost, string location)
         {
-            // float leakage = Math.Max(leakageFrac * (hydrology.SoilWaterContent - ecoregion.FieldCapacity), 0) * ecoregion.RootingDepth * fracRootAboveFrost; //mm
             float leakage = Math.Max(leakageFrac * (SoilWaterContent - ecoregion.FieldCapacity), 0) * ecoregion.RootingDepth * fracRootAboveFrost; //mm
-            // hydrology.Leakage += leakage;
             Leakage += leakage;
-            // bool success = hydrology.AddWater(-1 * leakage, ecoregion.RootingDepth * fracRootAboveFrost);
             bool success = AddWater(-1 * leakage, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
-            {
-                // throw new Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
                 throw new Exception("Error adding water, Hydrology.Leakage = " + Leakage + "; soilWaterContent = " + SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
-            }
         }
 
         /// <summary>
         /// Account for transpiration
         /// </summary>
-        /// <param name="hydrology"></param>
         /// <param name="ecoregion"></param>
         /// <param name="transpiration"></param>
         /// <param name="fracRootAboveFrost"></param>
         /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        // public void SubtractTranspiration(Hydrology hydrology, IPnETEcoregionData ecoregion, float transpiration, float fracRootAboveFrost, string location)
         public void SubtractTranspiration(IPnETEcoregionData ecoregion, float transpiration, float fracRootAboveFrost, string location)
         {
-            // bool success = hydrology.AddWater(-1 * transpiration, ecoregion.RootingDepth * fracRootAboveFrost);
             bool success = AddWater(-1 * transpiration, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
-            {
-                // throw new Exception("Error adding water, Transpiration = " + transpiration + " soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
                 throw new Exception("Error adding water, Transpiration = " + transpiration + " soilWaterContent = " + SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
-            }
         }
 
         /// <summary>
         /// Thaw frozen soil and distribute new active soil moisture
         /// </summary>
-        /// <param name="hydrology"></param>
         /// <param name="ecoregion"></param>
         /// <param name="lastFracBelowFrost"></param>
         /// <param name="fracThawed"></param>
@@ -390,14 +350,14 @@ namespace Landis.Library.PnETCohorts
         /// <param name="fracRootBelowFrost"></param>
         /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        public void ThawFrozenSoil(Hydrology hydrology, PnETEcoregionData ecoregion, float lastFracBelowFrost, float fracThawed, float fracRootAboveFrost, float fracRootBelowFrost, string location)
+        public void ThawFrozenSoil(PnETEcoregionData ecoregion, float lastFracBelowFrost, float fracThawed, float fracRootAboveFrost, float fracRootBelowFrost, string location)
         {
-            float existingWater = (1 - lastFracBelowFrost) * hydrology.SoilWaterContent;
-            float thawedWater = fracThawed * hydrology.FrozenSoilWaterContent;
+            float existingWater = (1 - lastFracBelowFrost) * SoilWaterContent;
+            float thawedWater = fracThawed * FrozenSoilWaterContent;
             float newWaterContent = (existingWater + thawedWater) / fracRootAboveFrost;
-            bool success = hydrology.AddWater(newWaterContent - hydrology.SoilWaterContent, ecoregion.RootingDepth * fracRootBelowFrost);
+            bool success = AddWater(newWaterContent - SoilWaterContent, ecoregion.RootingDepth * fracRootBelowFrost);
             if (!success)
-                throw new Exception("Error adding water, ThawedWater = " + thawedWater + " soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+                throw new Exception("Error adding water, ThawedWater = " + thawedWater + " soilWaterContent = " + SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
         }
     }
 }

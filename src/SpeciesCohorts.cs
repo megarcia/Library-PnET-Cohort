@@ -161,7 +161,7 @@ namespace Landis.Library.PnETCohorts
             {
                 cohortData.RemoveRange(cohortData.Count - youngCount, youngCount);
                 bool cohortStacking = ((Parameter<bool>)Names.GetParameter(Names.CohortStacking)).Value;
-                ushort successionTimestep = cohortData[cohortData.Count - 1].SuccessionTimestep;
+                byte successionTimestep = cohortData[cohortData.Count - 1].SuccessionTimestep;
                 cohortData.Add(new CohortData((ushort)(successionTimestep - 1), successionTimestep, totalBiomass, totalANPP, this.Species, cohortStacking));
             }
         }

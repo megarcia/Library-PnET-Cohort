@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Landis.Data;
 
 namespace Landis.Library.PnETCohorts
 {

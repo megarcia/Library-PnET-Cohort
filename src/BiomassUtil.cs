@@ -20,7 +20,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public biomassUtil()
+        public BiomassUtil()
         {
         }
 

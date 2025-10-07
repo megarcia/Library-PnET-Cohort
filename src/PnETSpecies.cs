@@ -148,7 +148,7 @@ namespace Landis.Library.PnETCohorts
             cfracbiomass = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("CFracBiomass");
             wooddebrisdecomprate = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("wooddebrisdecomprate");
             bgbiomassfrac = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("bgbiomassfrac");
-            agbiomassfrac = 1F - bgbiomassfrac;
+            agbiomassfrac = (Library.Parameters.Species.AuxParm<float>)(1.0F - bgbiomassfrac);
             folbiomassfrac = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("folbiomassfrac");
             liveWoodBiomassFrac = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("liveWoodBiomassFrac");
             photosynthesisfage = (Library.Parameters.Species.AuxParm<float>)(Parameter<float>)Names.GetParameter("photosynthesisfage");

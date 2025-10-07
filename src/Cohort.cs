@@ -1042,7 +1042,8 @@ namespace Landis.Library.PnETCohorts
             if (MeltInByCanopyLayer > 0)
             {
                 // Instantaneous runoff due to snowmelt (excess of soilPorosity)
-                Hydrology.CalcRunoff(hydrology, siteCohort.Ecoregion, MeltInByCanopyLayer, frostFreeFrac, siteCohort.Site.Location.ToString());
+                // Hydrology.CalcRunoff(hydrology, siteCohort.Ecoregion, MeltInByCanopyLayer, frostFreeFrac, siteCohort.Site.Location.ToString());
+                hydrology.CalcRunoff(siteCohort.Ecoregion, MeltInByCanopyLayer, frostFreeFrac, siteCohort.Site.Location.ToString());
                 // Fast Leakage
                 Hydrology.CalcLeakage(hydrology, siteCohort.Ecoregion, leakageFrac, frostFreeFrac, siteCohort.Site.Location.ToString());
             }

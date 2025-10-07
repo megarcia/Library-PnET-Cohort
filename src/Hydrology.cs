@@ -261,7 +261,7 @@ namespace Landis.Library.PnETCohorts
         {
             float EvaporationEvent = 0;
             if (fracRootAboveFrost > 0 && snowpack == 0)
-                EvaporationEvent = hydrology.CalcEvaporation(ecoregion, potentialET); // mm
+                EvaporationEvent = CalcEvaporation(ecoregion, potentialET); // mm
             bool success = hydrology.AddWater(-1 * EvaporationEvent, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
                 throw new Exception("Error adding water, evaporation = " + EvaporationEvent + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
@@ -278,20 +278,29 @@ namespace Landis.Library.PnETCohorts
         /// <param name="fracRootAboveFrost"></param>
         /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        public void CalcRunoff(Hydrology hydrology, IPnETEcoregionData ecoregion, float inputWater, float fracRootAboveFrost, string location)
+        // public void CalcRunoff(Hydrology hydrology, IPnETEcoregionData ecoregion, float inputWater, float fracRootAboveFrost, string location)
+        public void CalcRunoff(IPnETEcoregionData ecoregion, float inputWater, float fracRootAboveFrost, string location)
         {
             if (ecoregion.RunoffCapture > 0)
             {
-                float capturedInput = Math.Min(inputWater, Math.Max(ecoregion.RunoffCapture - hydrology.SurfaceWater, 0));
-                hydrology.SurfaceWater += capturedInput;
+                // float capturedInput = Math.Min(inputWater, Math.Max(ecoregion.RunoffCapture - hydrology.SurfaceWater, 0));
+                float capturedInput = Math.Min(inputWater, Math.Max(ecoregion.RunoffCapture - SurfaceWater, 0));
+                // hydrology.SurfaceWater += capturedInput;
+                SurfaceWater += capturedInput;
                 inputWater -= capturedInput;
             }
-            float availableSoilCapacity = Math.Max(ecoregion.Porosity - hydrology.SoilWaterContent, 0) * ecoregion.RootingDepth * fracRootAboveFrost; // mm
+            // float availableSoilCapacity = Math.Max(ecoregion.Porosity - hydrology.SoilWaterContent, 0) * ecoregion.RootingDepth * fracRootAboveFrost; // mm
+            float availableSoilCapacity = Math.Max(ecoregion.Porosity - SoilWaterContent, 0) * ecoregion.RootingDepth * fracRootAboveFrost; // mm
             float runoff = Math.Max(inputWater - availableSoilCapacity, 0);
-            bool success = hydrology.AddWater(inputWater - runoff, ecoregion.RootingDepth * fracRootAboveFrost);
+            // bool success = hydrology.AddWater(inputWater - runoff, ecoregion.RootingDepth * fracRootAboveFrost);
+            bool success = AddWater(inputWater - runoff, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
-                throw new Exception("Error adding water, InputWater = " + inputWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; Runoff = " + runoff + "; ecoregion = " + ecoregion.Name + "; site = " + location);
-            hydrology.Runoff += runoff;
+            {
+                // throw new Exception("Error adding water, InputWater = " + inputWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; Runoff = " + runoff + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+                throw new Exception("Error adding water, InputWater = " + inputWater + "; soilWaterContent = " + SoilWaterContent + "; Runoff = " + runoff + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+            }
+            // hydrology.Runoff += runoff;
+            Runoff += runoff;
         }
 
         /// <summary>

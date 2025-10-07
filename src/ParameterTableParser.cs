@@ -9,7 +9,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Landis.Utilities;
 
@@ -50,7 +49,7 @@ namespace Landis.Library.PnETCohorts
             return List.Any(s => s.Equals(value, StringComparison.OrdinalIgnoreCase));
         }
 
-        void CheckHeaderCount(Landis.Utilities.StringReader s, int ReadHeaderLabelsCount)
+        void CheckHeaderCount(StringReader s, int ReadHeaderLabelsCount)
         {
             string headerline = s.ReadLine();
             if (headerline.Contains(">>"))

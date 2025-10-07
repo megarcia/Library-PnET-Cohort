@@ -350,7 +350,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="fracRootBelowFrost"></param>
         /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        public void ThawFrozenSoil(PnETEcoregionData ecoregion, float lastFracBelowFrost, float fracThawed, float fracRootAboveFrost, float fracRootBelowFrost, string location)
+        public void ThawFrozenSoil(IPnETEcoregionData ecoregion, float lastFracBelowFrost, float fracThawed, float fracRootAboveFrost, float fracRootBelowFrost, string location)
         {
             float existingWater = (1 - lastFracBelowFrost) * SoilWaterContent;
             float thawedWater = fracThawed * FrozenSoilWaterContent;

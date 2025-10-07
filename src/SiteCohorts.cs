@@ -1400,7 +1400,7 @@ namespace Landis.Library.PnETCohorts
                     ozoneD40 = data[m].O3;
                 float O3_D40_ppmh = ozoneD40 / 1000; // convert D40 units to ppm h
                 // Melt snow
-                float snowmelt = Snow.CalcMelt(snowpack, data[m].Tavg, data[m].DaySpan, Ecoregion.Name, Site.Location); // mm
+                float snowmelt = Snow.CalcMelt(snowpack, data[m].Tavg, data[m].DaySpan, Ecoregion.Name, Site.Location.ToString()); // mm
                 // Add new snow
                 float newSnowDepth = Snow.CalcNewSnowDepth(data[m].Tavg, data[m].Prec, Ecoregion.SnowSublimFrac);
                 // Update snowpack depth
@@ -1592,7 +1592,7 @@ namespace Landis.Library.PnETCohorts
                     if (fracThawed > 0) // thawing
                     {
                         // Thawing soil water added to existing water - redistributes evenly in active soil
-                        hydrology.ThawFrozenSoil(hydrology, Ecoregion, lastFracBelowFrost, fracThawed, fracRootAboveFrost, fracRootBelowFrost, Site.Location);
+                        hydrology.ThawFrozenSoil(hydrology, Ecoregion, lastFracBelowFrost, fracThawed, fracRootAboveFrost, fracRootBelowFrost, Site.Location.ToString());
                         // Volume of rooting soil that is frozen
                         bool successdepth = hydrology.SetFrozenSoilDepth(Ecoregion.RootingDepth * fracRootBelowFrost);  
                     }
@@ -1767,7 +1767,7 @@ namespace Landis.Library.PnETCohorts
                             {
                                 // If more than one precip event assigned to layer, repeat evaporation for all events prior to respiration
                                 for (int p = 1; p <= precipCount; p++)
-                                    Hydrology.CalcSoilEvaporation(hydrology, Ecoregion, snowpack, fracRootAboveFrost, PotentialETnonfor, Site.Location);
+                                    Hydrology.CalcSoilEvaporation(hydrology, Ecoregion, snowpack, fracRootAboveFrost, PotentialETnonfor, Site.Location.ToString());
                             }
                         } // end sublayer loop in canopy b
                         int cCount = AllCohorts.Count();
@@ -1864,25 +1864,25 @@ namespace Landis.Library.PnETCohorts
                     if (MeltInWater > 0)
                     {
                         // Instantaneous runoff due to snowmelt (excess of soilPorosity)
-                        Hydrology.CalcRunoff(hydrology, Ecoregion, MeltInWater, fracRootAboveFrost, Site.Location);
+                        Hydrology.CalcRunoff(hydrology, Ecoregion, MeltInWater, fracRootAboveFrost, Site.Location.ToString());
                     }
                     if (precin > 0)
                     {
                         for (int p = 0; p < numPrecipEvents; p++)
                         {
                             // Instantaneous runoff due to rain (excess of soilPorosity)
-                            Hydrology.CalcRunoff(hydrology, Ecoregion, precin, fracRootAboveFrost, Site.Location);
+                            Hydrology.CalcRunoff(hydrology, Ecoregion, precin, fracRootAboveFrost, Site.Location.ToString());
                         }
                     }
                     // Evaporation
                     PotentialETcumulative += ReferenceET * data[m].DaySpan / numPrecipEvents;
                     hydrology.PotentialET += PotentialETcumulative;
                     float PotentialETnonfor = groundPotentialET / numPrecipEvents;
-                    Hydrology.CalcSoilEvaporation(hydrology, Ecoregion, snowpack, fracRootAboveFrost, PotentialETnonfor, Site.Location);
+                    Hydrology.CalcSoilEvaporation(hydrology, Ecoregion, snowpack, fracRootAboveFrost, PotentialETnonfor, Site.Location.ToString());
                     // Infiltration (let captured surface water soak into soil)
-                    Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location);
+                    Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location.ToString());
                     // Fast Leakage
-                    Hydrology.CalcLeakage(hydrology, Ecoregion, leakageFrac, fracRootAboveFrost, Site.Location);
+                    Hydrology.CalcLeakage(hydrology, Ecoregion, leakageFrac, fracRootAboveFrost, Site.Location.ToString());
                 }
                 SiteVars.AnnualPotentialEvaporation[Site] = hydrology.PotentialEvaporation;
                 int cohortCount = AllCohorts.Count();
@@ -2022,7 +2022,7 @@ namespace Landis.Library.PnETCohorts
                 SiteVars.ClimaticWaterDeficit[Site] += PotentialETcumulative - ActualET;
                 // Infiltration (add surface water to soil)
                 if ((hydrology.SurfaceWater > 0) & (hydrology.SoilWaterContent < Ecoregion.Porosity))
-                    Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location);
+                    Hydrology.CalcInfiltration(hydrology, Ecoregion, fracRootAboveFrost, Site.Location.ToString());
                 if (siteoutput != null && outputCohortData)
                 {
                     AddSiteOutput(data[m]);

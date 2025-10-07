@@ -1,10 +1,10 @@
-﻿// NOTE: ISiteVar --> Landis.Core
+﻿// NOTE: ISiteVar --> Landis.SpatialModeling
 // NOTE: Pool --> Landis.Library.UniversalCohorts
 
 using System;
 using System.Collections.Generic;
-using Landis.Core;
 using Landis.Library.UniversalCohorts;
+using Landis.SpatialModeling;
 
 namespace Landis.Library.PnETCohorts
 {

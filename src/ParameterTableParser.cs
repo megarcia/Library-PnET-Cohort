@@ -5,6 +5,7 @@
 // NOTE: InputVar --> Landis.Utilities
 // NOTE: ReadValue --> Landis.Utilities
 // NOTE: ReadVar --> Landis.Utilities
+// NOTE: StringReader --> Landis.Utilities
 
 using System;
 using System.Collections.Generic;
@@ -49,7 +50,7 @@ namespace Landis.Library.PnETCohorts
             return List.Any(s => s.Equals(value, StringComparison.OrdinalIgnoreCase));
         }
 
-        void CheckHeaderCount(StringReader s, int ReadHeaderLabelsCount)
+        void CheckHeaderCount(Landis.Utilities.StringReader s, int ReadHeaderLabelsCount)
         {
             string headerline = s.ReadLine();
             if (headerline.Contains(">>"))

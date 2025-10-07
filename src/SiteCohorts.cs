@@ -3162,7 +3162,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public Library.UniversalCohorts.ISpeciesCohorts this[ISpecies species]
+        public new Library.UniversalCohorts.ISpeciesCohorts this[ISpecies species]  // also declared in UniversalCohorts.SiteCohorts
         {
             get
             {
@@ -3253,7 +3253,7 @@ namespace Landis.Library.PnETCohorts
             Disturbance.AllocateDeadPools(this, cohort, disturbanceType, 1.0);  // Disturbance fraction is 1.0 for complete removals
         }
 
-        public bool IsMaturePresent(ISpecies species)
+        public new bool IsMaturePresent(ISpecies species)  // also declared in UniversalCohorts.SiteCohorts
         {
             bool speciesPresent = cohorts.ContainsKey(species);
             bool IsMaturePresent = (speciesPresent && (cohorts[species].Max(o => o.Age) >= species.Maturity)) ? true : false;

@@ -9,12 +9,12 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Ecoregion name
         /// </summary>
-        string Name { get; }
+        new string Name { get; }  // also declared in IEcoregion : IEcoregionParameters
 
         /// <summary>
         /// Is active ecoregion
         /// </summary>
-        bool Active { get; }
+        new bool Active { get; }  // also declared in IEcoregion : IEcoregionParameters
 
         /// <summary>
         /// Fraction of water above field capacity that drains out of the soil rooting zone immediately after entering the soil (fast leakage)

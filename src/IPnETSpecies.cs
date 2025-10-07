@@ -12,7 +12,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Species name 
         /// </summary>
-        string Name { get; }
+        new string Name { get; }  // also declared in ISpecies : ISpeciesParameters
 
         /// <summary>
         /// Carbon fraction in biomass 
@@ -87,7 +87,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Species longevity (yr)
         /// </summary>
-        int Longevity { get; }
+        new int Longevity { get; }  // also declared in ISpecies : ISpeciesParameters
 
         /// <summary>
         /// Growth reduction parameter with age

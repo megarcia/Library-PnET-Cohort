@@ -32,7 +32,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Age (y)
         /// </summary>
-        public ushort Age
+        public new ushort Age  // also declared in UniversalCohorts.Cohort
         {
             get
             {
@@ -69,7 +69,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// The cohort's data
         /// </summary>
-        public CohortData Data
+        public new CohortData Data  // also declared in UniversalCohorts.Cohort
         {
             get
             {
@@ -138,7 +138,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Aboveground Biomass (g/m2) scaled to the site
         /// </summary>
-        public int Biomass
+        public new int Biomass  // also declared in UniversalCohorts.Cohort
         {
             get
             {
@@ -281,7 +281,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// LANDIS species (without PnET parameter additions)
         /// </summary>
-        public ISpecies Species
+        public new ISpecies Species  // also declared in UniversalCohorts.Cohort
         {
             get
             {
@@ -631,7 +631,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public double ANPP
+        public new double ANPP  // also declared in UniversalCohorts.Cohort
         {
             get
             {
@@ -757,7 +757,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Increment the cohort age by one year.
         /// </summary>
-        public void IncrementAge()
+        public new void IncrementAge()  // also declared in UniversalCohorts.Cohort
         {
             data.UniversalData.Age += 1;
         }
@@ -774,7 +774,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Change the cohort biomass.
         /// </summary>
-        public void ChangeBiomass(int dBiomass)
+        public new void ChangeBiomass(int dBiomass)  // also declared in UniversalCohorts.Cohort
         {
             float newTotalBiomass = data.TotalBiomass + dBiomass;
             data.TotalBiomass = Math.Max(0, newTotalBiomass);
@@ -786,7 +786,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Change the cohort ANPP.
         /// </summary>
-        public void ChangeANPP(double dANPP)
+        public new void ChangeANPP(double dANPP)  // also declared in UniversalCohorts.Cohort
         {
             data.UniversalData.ANPP = data.UniversalData.ANPP + dANPP;
         }
@@ -1412,7 +1412,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public static event DeathEventHandler<DeathEventArgs> DeathEvent;
 
-        public static event PartialDeathEventHandler<PartialDeathEventArgs> PartialDeathEvent;
+        public static new event PartialDeathEventHandler<PartialDeathEventArgs> PartialDeathEvent;  // also declared in UniversalCohorts.Cohort
 
         /// <summary>
         /// Raises a Cohort.AgeOnlyDeathEvent
@@ -1607,7 +1607,7 @@ namespace Landis.Library.PnETCohorts
                 DeathEvent(sender, new DeathEventArgs(cohort, site, disturbanceType));
         }
 
-        public void ChangeParameters(ExpandoObject additionalParams)
+        public new void ChangeParameters(ExpandoObject additionalParams)  // also declared in UniversalCohorts.Cohort
         {
             return;
         }

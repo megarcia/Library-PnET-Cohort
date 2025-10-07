@@ -257,15 +257,21 @@ namespace Landis.Library.PnETCohorts
         /// <param name="PET"></param>
         /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        public void CalcSoilEvaporation(Hydrology hydrology, IPnETEcoregionData ecoregion, float snowpack, float fracRootAboveFrost, float potentialET, string location)
+        // public void CalcSoilEvaporation(Hydrology hydrology, IPnETEcoregionData ecoregion, float snowpack, float fracRootAboveFrost, float potentialET, string location)
+        public void CalcSoilEvaporation(IPnETEcoregionData ecoregion, float snowpack, float fracRootAboveFrost, float potentialET, string location)
         {
             float EvaporationEvent = 0;
             if (fracRootAboveFrost > 0 && snowpack == 0)
                 EvaporationEvent = CalcEvaporation(ecoregion, potentialET); // mm
-            bool success = hydrology.AddWater(-1 * EvaporationEvent, ecoregion.RootingDepth * fracRootAboveFrost);
+            // bool success = hydrology.AddWater(-1 * EvaporationEvent, ecoregion.RootingDepth * fracRootAboveFrost);
+            bool success = AddWater(-1 * EvaporationEvent, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
-                throw new Exception("Error adding water, evaporation = " + EvaporationEvent + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
-            hydrology.Evaporation += EvaporationEvent;
+            {
+                // throw new Exception("Error adding water, evaporation = " + EvaporationEvent + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+                throw new Exception("Error adding water, evaporation = " + EvaporationEvent + "; soilWaterContent = " + SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+            }
+            // hydrology.Evaporation += EvaporationEvent;
+            Evaporation += EvaporationEvent;
         }
 
         /// <summary>
@@ -311,13 +317,20 @@ namespace Landis.Library.PnETCohorts
         /// <param name="fracRootAboveFrost"></param>
         /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        public void CalcInfiltration(Hydrology hydrology, IPnETEcoregionData ecoregion, float fracRootAboveFrost, string location)
+        // public void CalcInfiltration(Hydrology hydrology, IPnETEcoregionData ecoregion, float fracRootAboveFrost, string location)
+        public void CalcInfiltration(IPnETEcoregionData ecoregion, float fracRootAboveFrost, string location)
         {
-            float SurfaceInput = Math.Min(hydrology.SurfaceWater, (ecoregion.Porosity - hydrology.SoilWaterContent) * ecoregion.RootingDepth * fracRootAboveFrost);
-            bool success = hydrology.AddWater(SurfaceInput, ecoregion.RootingDepth * fracRootAboveFrost);
+            // float SurfaceInput = Math.Min(hydrology.SurfaceWater, (ecoregion.Porosity - hydrology.SoilWaterContent) * ecoregion.RootingDepth * fracRootAboveFrost);
+            float SurfaceInput = Math.Min(SurfaceWater, (ecoregion.Porosity - SoilWaterContent) * ecoregion.RootingDepth * fracRootAboveFrost);
+            // bool success = hydrology.AddWater(SurfaceInput, ecoregion.RootingDepth * fracRootAboveFrost);
+            bool success = AddWater(SurfaceInput, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
-                throw new Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
-            hydrology.SurfaceWater -= SurfaceInput;
+            {
+                // throw new Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+                throw new Exception("Error adding water, SurfaceWater = " + SurfaceWater + "; soilWaterContent = " + SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+            }
+            // hydrology.SurfaceWater -= SurfaceInput;
+            SurfaceWater -= SurfaceInput;
         }
 
         /// <summary>
@@ -329,13 +342,20 @@ namespace Landis.Library.PnETCohorts
         /// <param name="fracRootAboveFrost"></param>
         /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        public void CalcLeakage(Hydrology hydrology, IPnETEcoregionData ecoregion, float leakageFrac, float fracRootAboveFrost, string location)
+        // public void CalcLeakage(Hydrology hydrology, IPnETEcoregionData ecoregion, float leakageFrac, float fracRootAboveFrost, string location)
+        public void CalcLeakage(IPnETEcoregionData ecoregion, float leakageFrac, float fracRootAboveFrost, string location)
         {
-            float leakage = Math.Max(leakageFrac * (hydrology.SoilWaterContent - ecoregion.FieldCapacity), 0) * ecoregion.RootingDepth * fracRootAboveFrost; //mm
-            hydrology.Leakage += leakage;
-            bool success = hydrology.AddWater(-1 * leakage, ecoregion.RootingDepth * fracRootAboveFrost);
+            // float leakage = Math.Max(leakageFrac * (hydrology.SoilWaterContent - ecoregion.FieldCapacity), 0) * ecoregion.RootingDepth * fracRootAboveFrost; //mm
+            float leakage = Math.Max(leakageFrac * (SoilWaterContent - ecoregion.FieldCapacity), 0) * ecoregion.RootingDepth * fracRootAboveFrost; //mm
+            // hydrology.Leakage += leakage;
+            Leakage += leakage;
+            // bool success = hydrology.AddWater(-1 * leakage, ecoregion.RootingDepth * fracRootAboveFrost);
+            bool success = AddWater(-1 * leakage, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
-                throw new Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+            {
+                // throw new Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+                throw new Exception("Error adding water, Hydrology.Leakage = " + Leakage + "; soilWaterContent = " + SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+            }
         }
 
         /// <summary>
@@ -347,11 +367,16 @@ namespace Landis.Library.PnETCohorts
         /// <param name="fracRootAboveFrost"></param>
         /// <param name="location"></param>
         /// <exception cref="Exception"></exception>
-        public void SubtractTranspiration(Hydrology hydrology, IPnETEcoregionData ecoregion, float transpiration, float fracRootAboveFrost, string location)
+        // public void SubtractTranspiration(Hydrology hydrology, IPnETEcoregionData ecoregion, float transpiration, float fracRootAboveFrost, string location)
+        public void SubtractTranspiration(IPnETEcoregionData ecoregion, float transpiration, float fracRootAboveFrost, string location)
         {
-            bool success = hydrology.AddWater(-1 * transpiration, ecoregion.RootingDepth * fracRootAboveFrost);
+            // bool success = hydrology.AddWater(-1 * transpiration, ecoregion.RootingDepth * fracRootAboveFrost);
+            bool success = AddWater(-1 * transpiration, ecoregion.RootingDepth * fracRootAboveFrost);
             if (!success)
-                throw new Exception("Error adding water, Transpiration = " + transpiration + " soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+            {
+                // throw new Exception("Error adding water, Transpiration = " + transpiration + " soilWaterContent = " + hydrology.SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+                throw new Exception("Error adding water, Transpiration = " + transpiration + " soilWaterContent = " + SoilWaterContent + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+            }
         }
 
         /// <summary>

@@ -1045,7 +1045,8 @@ namespace Landis.Library.PnETCohorts
                 // Hydrology.CalcRunoff(hydrology, siteCohort.Ecoregion, MeltInByCanopyLayer, frostFreeFrac, siteCohort.Site.Location.ToString());
                 hydrology.CalcRunoff(siteCohort.Ecoregion, MeltInByCanopyLayer, frostFreeFrac, siteCohort.Site.Location.ToString());
                 // Fast Leakage
-                Hydrology.CalcLeakage(hydrology, siteCohort.Ecoregion, leakageFrac, frostFreeFrac, siteCohort.Site.Location.ToString());
+                // Hydrology.CalcLeakage(hydrology, siteCohort.Ecoregion, leakageFrac, frostFreeFrac, siteCohort.Site.Location.ToString());
+                hydrology.CalcLeakage(siteCohort.Ecoregion, leakageFrac, frostFreeFrac, siteCohort.Site.Location.ToString());
             }
             if (PrecInByCanopyLayer > 0)
             {
@@ -1053,15 +1054,19 @@ namespace Landis.Library.PnETCohorts
                 for (int p = 1; p <= precipCount; p++)
                 {
                     // Instantaneous runoff due to rain (excess of soilPorosity)
-                    Hydrology.CalcRunoff(hydrology, siteCohort.Ecoregion, PrecInByCanopyLayer, frostFreeFrac, siteCohort.Site.Location.ToString());
+                    // Hydrology.CalcRunoff(hydrology, siteCohort.Ecoregion, PrecInByCanopyLayer, frostFreeFrac, siteCohort.Site.Location.ToString());
+                    hydrology.CalcRunoff(siteCohort.Ecoregion, PrecInByCanopyLayer, frostFreeFrac, siteCohort.Site.Location.ToString());
                 }
             }
             // Evaporation
-            Hydrology.CalcSoilEvaporation(hydrology, siteCohort.Ecoregion, snowpack, frostFreeFrac, groundPotentialETbyEvent, siteCohort.Site.Location.ToString());
+            // Hydrology.CalcSoilEvaporation(hydrology, siteCohort.Ecoregion, snowpack, frostFreeFrac, groundPotentialETbyEvent, siteCohort.Site.Location.ToString());
+            hydrology.CalcSoilEvaporation(siteCohort.Ecoregion, snowpack, frostFreeFrac, groundPotentialETbyEvent, siteCohort.Site.Location.ToString());
             // Infiltration (let captured surface water soak into soil)
-            Hydrology.CalcInfiltration(hydrology, siteCohort.Ecoregion, frostFreeFrac, siteCohort.Site.Location.ToString());
+            // Hydrology.CalcInfiltration(hydrology, siteCohort.Ecoregion, frostFreeFrac, siteCohort.Site.Location.ToString());
+            hydrology.CalcInfiltration(siteCohort.Ecoregion, frostFreeFrac, siteCohort.Site.Location.ToString());
             // Fast Leakage
-            Hydrology.CalcLeakage(hydrology, siteCohort.Ecoregion, leakageFrac, frostFreeFrac, siteCohort.Site.Location.ToString());
+            // Hydrology.CalcLeakage(hydrology, siteCohort.Ecoregion, leakageFrac, frostFreeFrac, siteCohort.Site.Location.ToString());
+            hydrology.CalcLeakage(siteCohort.Ecoregion, leakageFrac, frostFreeFrac, siteCohort.Site.Location.ToString());
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature
             data.MaintenanceRespiration[index] = 1 / (float)Globals.IMAX * (float)Math.Min(NSC, variables[Species.Name].MaintenanceRespirationFTemp * (data.TotalBiomass * PnETspecies.CFracBiomass));//gC //IMAXinverse
             // Subtract mainenance respiration (gC/mo)
@@ -1311,9 +1316,11 @@ namespace Landis.Library.PnETCohorts
                     Transpiration[index] = PotentialTranspiration[index] * FWater[index]; //mm
                 }
                 // Subtract transpiration from soil water content
-                Hydrology.SubtractTranspiration(hydrology, siteCohort.Ecoregion, Transpiration[index], frostFreeFrac, siteCohort.Site.Location.ToString());
+                // Hydrology.SubtractTranspiration(hydrology, siteCohort.Ecoregion, Transpiration[index], frostFreeFrac, siteCohort.Site.Location.ToString());
+                hydrology.SubtractTranspiration(siteCohort.Ecoregion, Transpiration[index], frostFreeFrac, siteCohort.Site.Location.ToString());
                 // Infiltration (let captured surface water soak into soil)
-                Hydrology.CalcInfiltration(hydrology, siteCohort.Ecoregion, frostFreeFrac, siteCohort.Site.Location.ToString());
+                // Hydrology.CalcInfiltration(hydrology, siteCohort.Ecoregion, frostFreeFrac, siteCohort.Site.Location.ToString());
+                hydrology.CalcInfiltration(siteCohort.Ecoregion, frostFreeFrac, siteCohort.Site.Location.ToString());
                 // Net foliage respiration depends on reference psn (BaseFoliarRespiration)
                 // Substitute 24 hours in place of DayLength because foliar respiration does occur at night.  BaseFoliarRespiration and RespirationFQ10 use Tavg temps reflecting both day and night temperatures.
                 float RefFoliarRespiration = BaseFoliarRespiration * variables[species.Name].RespirationFQ10 * variables.DaySpan * Constants.SecondsPerDay * Constants.MC / Constants.billion; // gC/g Fol/month

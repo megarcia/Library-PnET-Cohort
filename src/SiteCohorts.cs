@@ -525,7 +525,6 @@ namespace Landis.Library.PnETCohorts
                     {
                         int layer = cohort.Layer;
                         int layerCount = cohortBins[layer].Count();
-                        float denomSum = 0f;
                         float canopyLayerFrac = Math.Min(canopyFracs[cohort], cohort.CanopyGrowingSpace);
                         canopyLayerFrac = Math.Min(canopyFracs[cohort], 1f / layerCount);
                         if (LayerFoliagePotential[layer] > 1)
@@ -1163,7 +1162,7 @@ namespace Landis.Library.PnETCohorts
                 //  Add those cohorts that were born at the current year
                 while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == (sortedAgeCohorts[0].Data.Age - 1))
                 {
-                    Cohort cohort = new Cohort(sortedAgeCohorts[0].Species, SpeciesParameters.PnETSpecies[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName,1, CohortStacking, sortedAgeCohorts[0].Data.SuccessionTimestep);
+                    Cohort cohort = new Cohort(sortedAgeCohorts[0].Species, SpeciesParameters.PnETSpecies[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName,1, CohortStacking, Timestep);
                     if (CohortStacking)
                     {
                         cohort.CanopyLayerFrac = 1.0f;
@@ -1247,7 +1246,6 @@ namespace Landis.Library.PnETCohorts
             List<int> cohortAges = new List<int>();
             List<List<int>> rawBins = new List<List<int>>();
             int subLayerIndex = 0;
-            bool reducedLayer = false;
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
             {
                 string lifeForm = AllCohorts[cohort].PnETSpecies.Lifeform.ToLower();

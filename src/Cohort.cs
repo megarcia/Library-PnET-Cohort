@@ -1404,7 +1404,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Occurs when a cohort is killed by an age-only disturbance.
         /// </summary>
-        public static event DeathEventHandler<DeathEventArgs> AgeOnlyDeathEvent;
+        public static new event DeathEventHandler<DeathEventArgs> AgeOnlyDeathEvent;  // also declared in UniversalCohorts.Cohort
 
         /// <summary>
         /// Occurs when a cohort dies either due to senescence or biomass
@@ -1412,7 +1412,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public static event DeathEventHandler<DeathEventArgs> DeathEvent;
 
-        public static new event PartialDeathEventHandler<PartialDeathEventArgs> PartialDeathEvent;  // also declared in UniversalCohorts.Cohort
+        public static event PartialDeathEventHandler<PartialDeathEventArgs> PartialDeathEvent;
 
         /// <summary>
         /// Raises a Cohort.AgeOnlyDeathEvent

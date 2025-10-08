@@ -28,8 +28,6 @@ namespace Landis.Library.PnETCohorts
         private bool isMaturePresent;
         private List<CohortData> cohortData; // List of cohorts is ordered oldest to youngest.
         private static SpeciesCohortBoolArray isSpeciesCohortDamaged;
-        private ushort age_key;
-        private int initialWoodBiomass;
 
         public int Count
         {

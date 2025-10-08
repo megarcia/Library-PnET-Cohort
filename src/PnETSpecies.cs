@@ -88,7 +88,6 @@ namespace Landis.Library.PnETCohorts
         private static Library.Parameters.Species.AuxParm<float> cfracbiomass;
         private static Library.Parameters.Species.AuxParm<float> wooddebrisdecomprate;
         private static Library.Parameters.Species.AuxParm<float> bgbiomassfrac;
-        private static Library.Parameters.Species.AuxParm<float> agbiomassfrac;
         private static Library.Parameters.Species.AuxParm<float> folbiomassfrac;
         private static Library.Parameters.Species.AuxParm<float> liveWoodBiomassFrac;
         private static Library.Parameters.Species.AuxParm<float> photosynthesisfage;

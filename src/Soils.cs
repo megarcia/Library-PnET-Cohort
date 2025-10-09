@@ -30,7 +30,8 @@ namespace Landis.Library.PnETCohorts
                 tempBelowSnow = lastTempBelowSnow + (Ecoregion.Variables.Tavg - lastTempBelowSnow) * snowDampingRatio;
             while (testDepth <= (maxDepth / 1000.0))
             {
-                float DRz = (float)Math.Exp(-1.0F * testDepth * d); // adapted from Kang et al. (2000) and Liang et al. (2014)
+                // adapted from Kang et al. (2000) and Liang et al. (2014)
+                float DRz = (float)Math.Exp(-1.0F * testDepth * d);
                 float zTemp = depthTempDict[testDepth] + (tempBelowSnow - depthTempDict[testDepth]) * DRz;
                 depthTempDict[testDepth] = zTemp;
                 if (testDepth == 0F)

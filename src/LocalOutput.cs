@@ -9,9 +9,8 @@ namespace Landis.Library.PnETCohorts
 {
     public class LocalOutput
     {
-        public static string PnEToutputsites;
+        public static string PnETOutputSites;
         private List<string> FileContent;
-
         public string FileName { get; private set; }
         public string SiteName { get; private set; }
         public string Path { get; private set; }
@@ -19,7 +18,7 @@ namespace Landis.Library.PnETCohorts
         public LocalOutput(string SiteName, string FileName, string Header)
         {
             this.SiteName = SiteName;
-            this.Path = "Output" + System.IO.Path.DirectorySeparatorChar + PnEToutputsites + System.IO.Path.DirectorySeparatorChar + SiteName + System.IO.Path.DirectorySeparatorChar;
+            Path = "Output" + System.IO.Path.DirectorySeparatorChar + PnETOutputSites + System.IO.Path.DirectorySeparatorChar + SiteName + System.IO.Path.DirectorySeparatorChar;
             this.FileName = FileName;
             if (File.Exists(Path + FileName))
                 File.Delete(Path + FileName);
@@ -53,7 +52,6 @@ namespace Landis.Library.PnETCohorts
                     }
                     sw.Close();
                     FileContent.Clear();
-
                     return;
                 }
                 catch (IOException e)

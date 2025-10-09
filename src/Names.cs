@@ -10,7 +10,7 @@ namespace Landis.Library.PnETCohorts
     {
         public static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         public const string ExtensionName = "PnET-Succession";
-        public const string PnEToutputsites = "PnEToutputsites";
+        public const string PnETOutputSites = "PnETOutputSites";
         public const string EcoregionParameters = "EcoregionParameters";
         public const string DisturbanceReductions = "DisturbanceReductions";
         public const string PnETGenericParameters = "PnETGenericParameters";

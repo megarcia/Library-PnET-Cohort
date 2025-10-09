@@ -1,6 +1,8 @@
 // authors: 
 
 // NOTE: ActiveSite --> Landis.SpatialModeling
+// NOTE: DeathEvent --> Library.UniversalCohorts.DeathEventHandler
+// NOTE: DeathEventArgs --> Library.UniversalCohorts.DeathEventArgs
 // NOTE: ExtensionType --> Landis.Core
 // NOTE: ISpecies --> Landis.Core
 // NOTE: Percentage --> Landis.Utilities

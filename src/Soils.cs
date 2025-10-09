@@ -19,7 +19,7 @@ namespace Landis.Library.PnETCohorts
             float snowThermalDamping = Snow.CalcThermalDamping(snowThermalConductivity);
             float snowDampingRatio = Snow.CalcDampingRatio(snowDepth, snowThermalDamping);
             // Soil thermal conductivity via De Vries model (convert to kJ/m.d.K)
-            float ThermalConductivity_theta = Soils.CalcThermalConductivitySoil_Watts(hydrology.SoilWaterContent, Ecoregion.Porosity, Ecoregion.SoilType) / Constants.Convert_kJperday_to_Watts;
+            float ThermalConductivity_theta = CalcThermalConductivitySoil_Watts(hydrology.SoilWaterContent, Ecoregion.Porosity, Ecoregion.SoilType) / Constants.Convert_kJperday_to_Watts;
             float D = ThermalConductivity_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  //m2/day
             float Dmonth = D * Ecoregion.Variables.DaySpan; // m2/month
             float d = (float)Math.Pow(Constants.omega / (2.0F * Dmonth), 0.5);

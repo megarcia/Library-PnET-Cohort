@@ -1,8 +1,10 @@
 ﻿// NOTE: File --> System.IO
+// NOTE: Landis.Data --> Landis.Core
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Landis.Core;
 
 namespace Landis.Library.PnETCohorts
 {

@@ -127,14 +127,14 @@ namespace Landis.Library.PnETCohorts
             return ClimateData[ClimateFileName[ecoregion]];
         }
 
-        /// <summary>
-        /// Get specific climate data from climate txt file
-        /// </summary>
-        /// <param name="ecoregion"></param>
-        /// <param name="date"></param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception"></exception>
-        public static ObservedClimate GetData(IEcoregion ecoregion, DateTime date)
+    /// <summary>
+    /// Get specific climate data from climate txt file
+    /// </summary>
+    /// <param name="ecoregion"></param>
+    /// <param name="date"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public static ObservedClimate GetData(IEcoregion ecoregion, DateTime date)
         {
             // get the appropriate values as read in from a climate txt file
             IObservedClimate observed_climate = GetClimateData(ecoregion);
@@ -148,14 +148,14 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        /// <summary>
-        /// Get actual climate data values for specific date (Year, Month)
-        /// </summary>
-        /// <param name="observed_climate"></param>
-        /// <param name="date"></param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception"></exception>
-        public static ObservedClimate GetData(IObservedClimate observed_climate, DateTime date)
+    /// <summary>
+    /// Get actual climate data values for specific date (Year, Month)
+    /// </summary>
+    /// <param name="observed_climate"></param>
+    /// <param name="date"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public static ObservedClimate GetData(IObservedClimate observed_climate, DateTime date)
         {
             foreach (ObservedClimate d in observed_climate)
             {
@@ -201,7 +201,7 @@ namespace Landis.Library.PnETCohorts
                 Year = GetColNr(Headers, "Year");
                 Month = GetColNr(Headers, "Month");
                 Tmax = GetColNr(Headers, "Tmax");
-                Tmin = GetColNr(Headers, "TMin");
+                Tmin = GetColNr(Headers, "Tmin");
                 CO2 = GetColNr(Headers, "CO2");
                 PAR0 = GetColNr(Headers, "PAR");
                 Prec = GetColNr(Headers, "Prec");
@@ -222,7 +222,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         private static T CheckInRange<T>(T value, T min, T max, string label)
-           where T : IComparable<T>
+            where T : IComparable<T>
         {
             if (Library.Parameters.InputValue_ExtensionMethods.GreaterThan<T>(value, max))
                 throw new Exception(label + " is out of range " + min + " " + max);
@@ -245,12 +245,12 @@ namespace Landis.Library.PnETCohorts
                 ObservedClimate climate = new ObservedClimate();
                 string[] terms = line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
                 // Get one state of static information for the line in the climate file
-                climate.tmax = CheckInRange<float>(float.Parse(terms[columns.Tmax]), -80, 80, "Tmax");
-                climate.tmin = CheckInRange<float>(float.Parse(terms[columns.Tmin]), -80, climate.tmax, "TMin");
-                climate.co2 = CheckInRange<float>(float.Parse(terms[columns.CO2]), 0, float.MaxValue, "CO2");
-                climate.par0 = (ushort)CheckInRange<float>(float.Parse(terms[columns.PAR0]), 0, float.MaxValue, "PAR0");
-                climate.prec = CheckInRange<float>(float.Parse(terms[columns.Prec]), 0, float.MaxValue, "PREC");
-                climate.o3 = columns.O3 > 0 ? CheckInRange<float>(float.Parse(terms[columns.O3]), 0, float.MaxValue, "O3") : 0;
+                climate.tmax = CheckInRange(float.Parse(terms[columns.Tmax]), -80, 80, "Tmax");
+                climate.tmin = CheckInRange(float.Parse(terms[columns.Tmin]), -80, climate.tmax, "TMin");
+                climate.co2 = CheckInRange(float.Parse(terms[columns.CO2]), 0, float.MaxValue, "CO2");
+                climate.par0 = (ushort)CheckInRange(float.Parse(terms[columns.PAR0]), 0, float.MaxValue, "PAR0");
+                climate.prec = CheckInRange(float.Parse(terms[columns.Prec]), 0, float.MaxValue, "PREC");
+                climate.o3 = columns.O3 > 0 ? CheckInRange(float.Parse(terms[columns.O3]), 0, float.MaxValue, "O3") : 0;
                 climate.year = terms[columns.Year];
                 climate.month = terms[columns.Month];
                 data_lines.Add(climate);

@@ -984,7 +984,7 @@ namespace Landis.Library.PnETCohorts
             if (index == Globals.IMAX - 1)
             {
                 // In the last month
-                if (variables.Month == (int)Constants.Months.December)
+                if (variables.Month == (int)Calendar.Months.December)
                 {
                     if (allowMortality)
                     {

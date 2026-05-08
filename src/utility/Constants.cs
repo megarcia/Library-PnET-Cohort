@@ -8,22 +8,6 @@ namespace Landis.Library.PnETCohorts
         public static int SecondsPerHour = 60 * 60;         // Seconds per hour
         public static int billion = 1000000000;             // Bilion 
         public static  float MCO2_MC = MCO2 / MC;           // Molecular weight of CO2 relative to C 
-            
-        public enum Months
-        {
-            January = 1,
-            February,
-            March,
-            April,
-            May,
-            June,
-            July,
-            August,
-            September,
-            October,
-            November,
-            December
-        }
 
         // For Permafrost
         public static float cs = 1942;                  //heat capacity solid	kJ/m3/K (Farouki 1986 in vanLier and Durigon 2013)

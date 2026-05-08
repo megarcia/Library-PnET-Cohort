@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Landis.Library.PnETCohorts
@@ -27,13 +28,13 @@ namespace Landis.Library.PnETCohorts
             _monthlyClimateRecord = monthlyClimateRecord;
             _date = date;
             _tave = (float)(0.5 * (monthlyClimateRecord.Tmin + monthlyClimateRecord.Tmax));
-            _dayspan = EcoregionPnETVariables.Calculate_DaySpan(date.Month);
-            _daylength = EcoregionPnETVariables.Calculate_DayLength(hr);
+            _dayspan = Calendar.CalcDaySpan(date.Month);
+            _daylength = Calendar.CalcDayLength(hr);
             _tday = (float)(0.5 * (monthlyClimateRecord.Tmax + _tave));
             _vpd = EcoregionPnETVariables.Calculate_VPD(Tday, (float)monthlyClimateRecord.Tmin);
             speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
-            float hr = EcoregionPnETVariables.Calculate_hr(date.DayOfYear, latitude);
-            float nightlength = EcoregionPnETVariables.Calculate_NightLength(hr);
+            float hr = Calendar.CalcDaylightHrs(date.DayOfYear, latitude);
+            float nightlength = Calendar.CalcNightLength(hr);
 
             foreach (ISpeciesPnET spc in Species)
             {
@@ -72,15 +73,12 @@ namespace Landis.Library.PnETCohorts
         {
             // Class that contains species specific PnET variables for a certain month
             SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
-
             // Gradient of effect of vapour pressure deficit on growth. 
             speciespnetvars.DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
-
             // ** CO2 effect on growth **
             // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
-            float JH2O = (float)(0.239 * ((VPD / (8314.47 * (monthlyClimateRecord.Tmin + 273)))));
+            float JH2O = (float)(0.239 * (VPD / (8314.47 * (monthlyClimateRecord.Tmin + 273))));
             speciespnetvars.JH2O = JH2O;
-
             // NETPSN net photosynthesis
             // Modify AmaxB based on CO2 level
             // Equations solved from 2 known points: (350, AmaxB) and (550, AmaxB * CO2AmaxBEff)
@@ -88,13 +86,11 @@ namespace Landis.Library.PnETCohorts
             float AmaxB_int = (float)(-1.0 * (((spc.CO2AMaxBEff - 1.0) * 1.75) - 1.0) * spc.AmaxB);  // Derived from b = AmaxB - (AmaxB_slope * 350)
             float AmaxB_CO2 = (float)(AmaxB_slope * monthlyClimateRecord.CO2 + AmaxB_int);
             speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
-
             // FTempPSN: reduction factor due to temperature (public for output file)
             if (dTemp)
                 speciespnetvars.FTempPSN = EcoregionPnETVariables.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
             else
                 speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax); // Modified 051216(BRM)
-
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
             // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
             // Acclimation of respiration to temperature and C02 in seedlings of boreal tree species
@@ -104,8 +100,6 @@ namespace Landis.Library.PnETCohorts
             // This set of algorithms resets the veg parameter "BaseFolRespFrac" from
             // the static vegetation parameter, then recalculates BaseFolResp based on the adjusted
             // BaseFolRespFrac
-
-            // Base foliage respiration 
             float BaseFolRespFrac;
             // Base parameter in Q10 temperature dependency calculation
             float Q10base;
@@ -125,20 +119,15 @@ namespace Landis.Library.PnETCohorts
                 Q10base = spc.Q10;
             }
             speciespnetvars.BaseFolRespFrac = BaseFolRespFrac;
-
             // Respiration Q10 factor
             speciespnetvars.Q10Factor = EcoregionPnETVariables.CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
-
             // Daytime maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
             float fTempRespDay = EcoregionPnETVariables.CalcQ10Factor(Q10base, Tday, spc.PsnTOpt);
-
             // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
             float fTempRespNight = EcoregionPnETVariables.CalcQ10Factor(Q10base, Tmin, spc.PsnTOpt);
-
             // Unitless respiration adjustment based on temperature: public for output file only
             float FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength)); ;
             speciespnetvars.FTempRespWeightedDayAndNight = FTempRespWeightedDayAndNight;
-
             // Scaling factor of respiration given day and night temperature and day and night length
             speciespnetvars.MaintRespFTempResp = spc.MaintResp * FTempRespWeightedDayAndNight;
             return speciespnetvars;

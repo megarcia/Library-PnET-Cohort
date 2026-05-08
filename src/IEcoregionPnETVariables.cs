@@ -3,7 +3,6 @@ namespace Landis.Library.PnETCohorts
 {
     public interface IEcoregionPnETVariables
     {
-
         float PAR0 { get; } // Photosynthetically active radiation, average daily during the month (umol/m2*s)
         float Prec { get; } // Precipitation (mm/mo)
         float Tday { get; } // Monthly average daytime air temp: (Tmax + Tave)/2
@@ -19,7 +18,6 @@ namespace Landis.Library.PnETCohorts
         float CO2 { get; } // Atmospheric CO2 concentration (ppm)
         float O3 { get; } // Atmospheric O3 concentration, acumulated during growing season (AOT40) (ppb h)
         float SPEI { get; }  // SPEI
-
         SpeciesPnETVariables this[string species] { get; }
     }
 }

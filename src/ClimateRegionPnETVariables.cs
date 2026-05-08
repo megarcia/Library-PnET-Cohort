@@ -16,7 +16,6 @@ namespace Landis.Library.PnETCohorts
         private float _tave;
         private float _tday;
         private float _daylength;
-
         private Dictionary<string, SpeciesPnETVariables> speciesVariables;
 
         #endregion
@@ -26,28 +25,19 @@ namespace Landis.Library.PnETCohorts
         public ClimateRegionPnETVariables(MonthlyClimateRecord monthlyClimateRecord, DateTime date, bool wythers, bool dTemp, List<ISpeciesPnET> Species, float latitude)
         {
             _monthlyClimateRecord = monthlyClimateRecord;
-
             _date = date;
-
-            speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
-
-
             _tave = (float)(0.5 * (monthlyClimateRecord.Tmin + monthlyClimateRecord.Tmax));
-
             _dayspan = EcoregionPnETVariables.Calculate_DaySpan(date.Month);
-
-            float hr = EcoregionPnETVariables.Calculate_hr(date.DayOfYear, latitude);
             _daylength = EcoregionPnETVariables.Calculate_DayLength(hr);
-            float nightlength = EcoregionPnETVariables.Calculate_NightLength(hr);
-
             _tday = (float)(0.5 * (monthlyClimateRecord.Tmax + _tave));
             _vpd = EcoregionPnETVariables.Calculate_VPD(Tday, (float)monthlyClimateRecord.Tmin);
-
+            speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
+            float hr = EcoregionPnETVariables.Calculate_hr(date.DayOfYear, latitude);
+            float nightlength = EcoregionPnETVariables.Calculate_NightLength(hr);
 
             foreach (ISpeciesPnET spc in Species)
             {
                 SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, Daylength, nightlength, spc);
-
                 speciesVariables.Add(spc.Name, speciespnetvars);
             }
         }
@@ -72,7 +62,6 @@ namespace Landis.Library.PnETCohorts
         public float Tmax => (float)_monthlyClimateRecord.Tmax;
         public float Daylength => _daylength;
         public float SPEI => (float)_monthlyClimateRecord.SPEI;
-
         public SpeciesPnETVariables this[string species] => speciesVariables[species];
 
         #endregion
@@ -102,14 +91,9 @@ namespace Landis.Library.PnETCohorts
 
             // FTempPSN: reduction factor due to temperature (public for output file)
             if (dTemp)
-            {
                 speciespnetvars.FTempPSN = EcoregionPnETVariables.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
-            }
             else
-            {
-                //speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Original PnET-Succession
                 speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax); // Modified 051216(BRM)
-            }
 
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
             // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
@@ -128,13 +112,11 @@ namespace Landis.Library.PnETCohorts
             if (wythers == true)
             {
                 //Computed Base foliar respiration based on temp; this is species-level, so you can compute outside this IF block and use for all cohorts of a species
-                BaseFolRespFrac = (0.138071F - 0.0024519F * Tave);
-
+                BaseFolRespFrac = 0.138071F - 0.0024519F * Tave;
                 //Midpoint between Tave and Optimal Temp; this is also species-level
                 float Tmidpoint = (Tave + spc.PsnTOpt) / 2F;
-
                 // Base parameter in Q10 temperature dependency calculation in current temperature
-                Q10base = (3.22F - 0.046F * Tmidpoint);
+                Q10base = 3.22F - 0.046F * Tmidpoint;
             }
             else
             {
@@ -143,6 +125,7 @@ namespace Landis.Library.PnETCohorts
                 Q10base = spc.Q10;
             }
             speciespnetvars.BaseFolRespFrac = BaseFolRespFrac;
+
             // Respiration Q10 factor
             speciespnetvars.Q10Factor = EcoregionPnETVariables.CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
 
@@ -155,13 +138,12 @@ namespace Landis.Library.PnETCohorts
             // Unitless respiration adjustment based on temperature: public for output file only
             float FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength)); ;
             speciespnetvars.FTempRespWeightedDayAndNight = FTempRespWeightedDayAndNight;
+
             // Scaling factor of respiration given day and night temperature and day and night length
             speciespnetvars.MaintRespFTempResp = spc.MaintResp * FTempRespWeightedDayAndNight;
-
             return speciespnetvars;
         }
 
         #endregion
-
     }
 }

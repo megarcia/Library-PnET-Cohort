@@ -74,7 +74,6 @@ namespace Landis.Library.PnETCohorts
         public const string PotentialTranspiration = "PotentialTranspiration(mm)";
         public const string Transpiration = "Transpiration(mm)";
         public const string DeliveryPotential = "DeliveryPotential(-)";
-        //public const string MaxWater = "MaxWater";
         public const string SoilType = "SoilType";
         public const string FOzone = "fOzone(-)";
         public const string LeakageFrac = "LeakageFrac(-)";

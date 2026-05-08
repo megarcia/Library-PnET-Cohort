@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 using Landis.Core;
 using Landis.Library.UniversalCohorts;
 using Landis.SpatialModeling;
 
 namespace Landis.Library.PnETCohorts
 {
-
     public static class SiteVars
     {
         public static ISiteVar<Pool> WoodyDebris;
@@ -42,7 +40,6 @@ namespace Landis.Library.PnETCohorts
             MonthlyPressureHead = Globals.ModelCore.Landscape.NewSiteVar<float[]>();
             MonthlySoilTemp = Globals.ModelCore.Landscape.NewSiteVar<SortedList<float, float>[]>();
             FieldCapacity = Globals.ModelCore.Landscape.NewSiteVar<float>();
-
             Globals.ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
             Globals.ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
             Globals.ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
@@ -56,6 +53,5 @@ namespace Landis.Library.PnETCohorts
             Globals.ModelCore.RegisterSiteVar(MonthlySoilTemp, "Succession.MonthlySoilTemp");
             Globals.ModelCore.RegisterSiteVar(FieldCapacity, "Succession.SoilFieldCapacity");
         }
-
     }
 }

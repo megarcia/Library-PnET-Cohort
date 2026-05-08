@@ -1,0 +1,28 @@
+﻿
+namespace Landis.Library.PnETCohorts 
+{
+    public class Constants 
+    {
+        public const float MC = 12.0; // Molecular weight of C
+        public const float MCO2 = 44.0; // Molecular weight of CO2
+        public const float MCO2_MC = MCO2 / MC; // Molecular weight of CO2 relative to C 
+        public const int SecondsPerHour = 60 * 60; // Seconds per hour
+        public const int billion = 1000000000; // Billion 
+        public const float cs = 1942.0; //heat capacity of solid rock in kJ/m3/K from Farouki (1986) via vanLier and Durigon (2013)
+        public const float cw = 4186.0; //heat capacity of water in kJ/m3/K from vanLier and Durigon (2013)
+        public const float lambda_a = 2.25; //thermal conductivity of air in kJ/m/d/K from vanLier and Durigon (2013)
+        public const float lambda_w = 51.51; //thermal conductivity of water in kJ/m/d/K from vanLier and Durigon (2013)
+        public const float lambda_clay = 80.0; // thermal conductivity of clay in kJ/m/d/K from Michot et al. (2008) via vanLier and Durigon (2013)
+        public const float lambda_0 = 360.0; // thermal conductivity of sand-silt in kJ/m/d/K from Gemant (1950) via vanLier and Durigon (2013)
+        public const float gs = 0.125; // from Farouki (1986) via vanLier and Durigon (2013)
+        public const float omega = (float)System.Math.PI * 2.0 / 12.0; // angular velocity of Earth (monthly rotation) radians/month
+        public const float tau = 12.0; //length of temp record in months
+        public const float bulkIntercept = 165.0; // kg/m3
+        public const float bulkSlope = 1.3; // kg/m3
+        public const float Pwater = 1000.0;  // Density of water (kg/m3)
+        public const float lambAir = 0.023; // W/m K (CLM5 documentation, Table 2.7)
+        public const float lambIce = 2.29; // W/m K (CLM5 documentation, Table 2.7)
+        public const float snowHeatCapacity = 2090.0; // J/kg K (https://www.engineeringtoolbox.com/specific-heat-capacity-d_391.html)
+        public const float snowReflectanceThreshold = 0.100;  // minimum depth of snow (m) that counts as full snow for albedo calculations
+    }
+}

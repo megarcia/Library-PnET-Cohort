@@ -1,7 +1,7 @@
 ﻿
 namespace Landis.Library.PnETCohorts
 {
-    // Mimicks the functionality of .Net 4 Tuple. 
+    // Mimicks the functionality of .Net4 Tuple. 
     class Tuple<T1, T2>
     {
         public T1 Item1 { get; set; }
@@ -11,8 +11,6 @@ namespace Landis.Library.PnETCohorts
         {
             this.Item1 = Item1;
             this.Item2 = Item2;
-           
         }
-
     }
 }

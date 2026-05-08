@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Microsoft.VisualBasic;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -20,7 +21,7 @@ namespace Landis.Library.PnETCohorts
     {
         private float canopylaimax;
         private float wateravg;
-        private float snowPack;
+        private float snowpack;
         private float[] CanopyLAI;
         private float subcanopypar;
         private float julysubcanopypar;
@@ -1359,16 +1360,13 @@ namespace Landis.Library.PnETCohorts
                     ozoneD40 = data[m].O3;
                 float O3_D40_ppmh = ozoneD40 / 1000; // convert D40 units to ppm h
                 // Melt snow
-                float snowmelt = Math.Min(snowPack, ComputeMaxSnowMelt(data[m].Tave, data[m].DaySpan)); // mm
-                if (snowmelt < 0)
-                    throw new System.Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                float newsnow = CumputeSnowFraction(data[m].Tave) * data[m].Prec;
-                float newsnowpack = newsnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
-                if (newsnowpack < 0 || newsnowpack > data[m].Prec)
-                    throw new System.Exception("Error, newsnowpack = " + newsnowpack + " availablePrecipitation = " + data[m].Prec);
-                snowPack += newsnowpack - snowmelt;
-                if (snowPack < 0)
-                    throw new System.Exception("Error, snowPack = " + snowPack + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                float snowmelt = Snow.CalcMelt(snowpack, data[m].Tavg, data[m].DaySpan, Ecoregion.Name, Site.Location.ToString()); // mm
+                // Add new snow
+                float newSnowDepth = Snow.CalcNewSnowDepth(data[m].Tavg, data[m].Prec, Ecoregion.SnowSublimFrac);
+                // Update snowpack depth
+                snowpack += newSnowDepth - snowmelt;
+                if (snowpack < 0)
+                    throw new System.Exception("Error, snowpack = " + snowpack + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 propRootAboveFrost = 1;
                 leakageFrac = Ecoregion.LeakageFrac;
                 float propThawed = 0;
@@ -1376,26 +1374,22 @@ namespace Landis.Library.PnETCohorts
                 // snow calculations - from "Soil thawing worksheet with snow.xlsx"
                 if (data[m].Tave <= 0)
                     daysOfWinter += (int)data[m].DaySpan;
-                else if (snowPack > 0)
+                else if (snowpack > 0)
                     daysOfWinter += (int)data[m].DaySpan;
                 else
                     daysOfWinter = 0;
-                float Psno_kg_m3 = Constants.bulkIntercept + (Constants.bulkSlope * daysOfWinter); //kg/m3
-                float Psno_g_cm3 = Psno_kg_m3 / 1000; //g/cm3
-                float sno_dep = Constants.Pwater * (snowPack / 1000) / Psno_kg_m3; //m
+                float Psno_kg_m3 = Snow.CalcDensity(daysOfWinter);
+                float snowDepth = Snow.CalcDepth(Psno_kg_m3, snowpack);
                 if (lastTempBelowSnow == float.MaxValue)
                 {
-                    float lambda_Snow = (float)(Constants.lambAir + ((0.0000775 * Psno_kg_m3) + (0.000001105 * Math.Pow(Psno_kg_m3, 2))) * (Constants.lambIce - Constants.lambAir)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
-                    float vol_heat_capacity_snow = Constants.snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
-                    float Ks_snow = 1000000F / 86400F * (lambda_Snow / vol_heat_capacity_snow); //thermal diffusivity (mm2/s)
-                    float damping = (float)Math.Sqrt((2.0F * Ks_snow) / Constants.omega);
+                    float damping = Snow.CalcThermalDamping(Psno_kg_m3);
                     float DRz_snow = 1F;
                     if (sno_dep > 0)
-                        DRz_snow = (float)Math.Exp(-1.0F * sno_dep * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
+                        DRz_snow = Snow.CalcDampingRatio(sno_dep, damping);
                     float mossDepth = this.SiteMossDepth;
-                    float cv = 2500; // heat capacity moss - kJ/m3/K (Sazonova and Romanovsky 2003)
+                    float cv_moss = 2500; // heat capacity moss - kJ/m3/K (Sazonova and Romanovsky 2003)
                     float lambda_moss = 432; // kJ/m/d/K - converted from 0.2 W/mK (Sazonova and Romanovsky 2003)
-                    float moss_diffusivity = lambda_moss / cv;
+                    float moss_diffusivity = lambda_moss / cv_moss;
                     float damping_moss = (float)Math.Sqrt((2.0F * moss_diffusivity) / Constants.omega);
                     float DRz_moss = (float)Math.Exp(-1.0F * mossDepth * damping_moss); // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
                     float waterContent = hydrology.Water;// volumetric m/m
@@ -1508,7 +1502,7 @@ namespace Landis.Library.PnETCohorts
                     if (zTemp <= 0 && !foundBottomIce && !permafrost)
                         frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                 }
-                depthTempDict = Permafrost.CalculateMonthlySoilTemps(depthTempDict, Ecoregion, daysOfWinter, snowPack, hydrology, lastTempBelowSnow);
+                depthTempDict = Permafrost.CalculateMonthlySoilTemps(depthTempDict, Ecoregion, daysOfWinter, snowpack, hydrology, lastTempBelowSnow);
                 SortedList<float, float> monthlyDepthTempDict = new SortedList<float, float>();
                 monthlyDepthTempDict.Add(0.1f, depthTempDict[0.1f]);
                 lastTempBelowSnow = depthTempDict[0];
@@ -1710,7 +1704,7 @@ namespace Landis.Library.PnETCohorts
                                     precipCount = g.Count();
                                     subCanopyPrecip = PrecInByEvent; 
                                     InterceptCumulative += interception / groupList.Count();
-                                    if (snowPack == 0)
+                                    if (snowpack == 0)
                                         subCanopyPET = groundPETbyEvent;
                                 }
                             }
@@ -1734,7 +1728,7 @@ namespace Landis.Library.PnETCohorts
                                 for (int p = 1; p <= precipCount; p++)
                                 {
                                     PETnonfor = groundPETbyEvent;
-                                    if (propRootAboveFrost > 0 && snowPack == 0)
+                                    if (propRootAboveFrost > 0 && snowpack == 0)
                                         evaporationEvent = hydrology.CalculateEvaporation(this, PETnonfor); //mm
                                     success = hydrology.AddWater(-1 * evaporationEvent, Ecoregion.RootingDepth * propRootAboveFrost);
                                     if (success == false)
@@ -1882,7 +1876,7 @@ namespace Landis.Library.PnETCohorts
                             float PETnonfor = groundPET / numEvents;
                             PETcumulative = PETcumulative + RET * data[m].DaySpan / numEvents;
                             float evaporationEvent = 0;
-                            if (propRootAboveFrost > 0 && snowPack == 0)
+                            if (propRootAboveFrost > 0 && snowpack == 0)
                                 evaporationEvent = hydrology.CalculateEvaporation(this, PETnonfor); //mm
                             success = hydrology.AddWater(-1 * evaporationEvent, Ecoregion.RootingDepth * propRootAboveFrost);
                             if (success == false)
@@ -1926,7 +1920,7 @@ namespace Landis.Library.PnETCohorts
                 float[] CanopyPropSum = new float[tempMaxCanopyLayers];
                 CumulativeLeafAreas leafAreas = new CumulativeLeafAreas();
                 monthCount[data[m].Month - 1]++;
-                monthlySnowPack[data[m].Month - 1] += snowPack;
+                monthlySnowPack[data[m].Month - 1] += snowpack;
                 monthlyWater[data[m].Month - 1] += hydrology.Water;
                 monthlyEvap[data[m].Month - 1] += hydrology.Evaporation;
                 monthlyInterception[data[m].Month - 1] += InterceptCumulative;
@@ -2309,19 +2303,19 @@ namespace Landis.Library.PnETCohorts
             {
                 if (monthlySnowPack == null)
                 {
-                    float[] snowPack_array = new float[12];
-                    for (int i = 0; i < snowPack_array.Length; i++)
-                        snowPack_array[i] = 0;
-                    return snowPack_array;
+                    float[] snowpack_array = new float[12];
+                    for (int i = 0; i < snowpack_array.Length; i++)
+                        snowpack_array[i] = 0;
+                    return snowpack_array;
                 }
                 else
                 {
-                    float[] snowSum = monthlySnowPack.Select(snowPack => (float)snowPack).ToArray();
+                    float[] snowSum = monthlySnowPack.Select(snowpack => (float)snowpack).ToArray();
                     float[] monthSum = monthCount.Select(months => (float)months).ToArray();
-                    float[] snowPack_array = new float[12];
-                    for (int i = 0; i < snowPack_array.Length; i++)
-                        snowPack_array[i] = snowSum[i] / monthSum[i];
-                    return snowPack_array;
+                    float[] snowpack_array = new float[12];
+                    for (int i = 0; i < snowpack_array.Length; i++)
+                        snowpack_array[i] = snowSum[i] / monthSum[i];
+                    return snowpack_array;
                 }
             }
         }
@@ -3389,7 +3383,7 @@ namespace Landis.Library.PnETCohorts
                        hydrology.PressureHeadTable.CalculateWaterPressure(hydrology.Water,Ecoregion.SoilType)+ "," +
                        hydrology.SurfaceWater + "," +
                        ((hydrology.Water - Ecoregion.WiltPnt) * Ecoregion.RootingDepth * propRootAboveFrost + hydrology.SurfaceWater) + "," +  // mm of avialable water
-                       snowPack + "," +
+                       snowpack + "," +
                        cohorts.Values.Sum(o => o.Sum(x => (x.LAI.Sum() * x.CanopyLayerProp))) + "," +
                        monthdata.VPD + "," +
                        cohorts.Values.Sum(o => o.Sum(x => (x.GrossPsn.Sum() * x.CanopyLayerProp))) + "," +

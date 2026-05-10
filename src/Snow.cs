@@ -79,13 +79,26 @@ namespace Landis.Library.PnETCohorts
         /// adapted from Kang et al. (2000) and Liang et al. (2014)
         /// based on CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
         /// Eq. 85 in Jordan (1991)
+        /// ----------
+        /// NOTE by MGarcia on 20260510: the CLM reference is no longer available and the reference
+        /// to Jordan (1991) is invalid -- this is not eq. 85 in the Jordan (1991) document that I 
+        /// could find.
+        /// 
+        /// Liang (2014) clearly indicates that the exponential should be 
+        ///     -1.0 * SnowDepth * sqrt(omega / (2 * ks))
+        /// which is 
+        ///     -1.0 * SnowDepth / ThermalDamping
+        /// NOT
+        ///     -1.0 * SnowDepth * ThermalDamping
+        /// 
+        /// I've also corrected this error in the calculation for moss damping in the SiteCohorts class.
         /// </summary>
         /// <param name="SnowDepth"></param>
         /// <param name="ThermalDamping"></param>
         /// <returns></returns>
         public static float CalcDampingRatio(float SnowDepth, float ThermalDamping)
         {
-            float dampingratio = (float)Math.Exp(-1.0F * SnowDepth * ThermalDamping);
+            float dampingratio = (float)Math.Exp(-1.0 * SnowDepth / ThermalDamping);
             return dampingratio;
         }
 

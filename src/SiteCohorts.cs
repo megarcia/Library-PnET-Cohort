@@ -1387,11 +1387,12 @@ namespace Landis.Library.PnETCohorts
                     if (sno_dep > 0)
                         DRz_snow = Snow.CalcDampingRatio(sno_dep, damping);
                     float mossDepth = this.SiteMossDepth;
-                    float cv_moss = 2500; // heat capacity moss - kJ/m3/K (Sazonova and Romanovsky 2003)
-                    float lambda_moss = 432; // kJ/m/d/K - converted from 0.2 W/mK (Sazonova and Romanovsky 2003)
-                    float moss_diffusivity = lambda_moss / cv_moss;
-                    float damping_moss = (float)Math.Sqrt((2.0F * moss_diffusivity) / Constants.omega);
-                    float DRz_moss = (float)Math.Exp(-1.0F * mossDepth * damping_moss); // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
+                    float moss_diffusivity = Constants.lambda_moss / Constants.cv_moss;
+                    float damping_moss = (float)Math.Sqrt(2.0F * moss_diffusivity / Constants.omega);
+                    // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
+                    // previously float DRz_moss = (float)Math.Exp(-1.0F * mossDepth * damping_moss); 
+                    // corrected by MGarcia on 20260510 -- see comments for same calculation in Snow class.
+                    float DRz_moss = (float)Math.Exp(-1.0F * mossDepth / damping_moss); 
                     float waterContent = hydrology.Water;// volumetric m/m
                     float porosity = Ecoregion.Porosity;  // volumetric m/m 
                     float ga = 0.035F + 0.298F * (waterContent / porosity);

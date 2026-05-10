@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace Landis.Library.PnETCohorts 
 {
     public class Constants 
@@ -17,7 +18,7 @@ namespace Landis.Library.PnETCohorts
         public const float lambda_clay = 80.0; // thermal conductivity of clay in kJ/m/d/K from Michot et al. (2008) via vanLier and Durigon (2013)
         public const float lambda_0 = 360.0; // thermal conductivity of sand-silt in kJ/m/d/K from Gemant (1950) via vanLier and Durigon (2013)
         public const float gs = 0.125; // from Farouki (1986) via vanLier and Durigon (2013)
-        public const float omega = (float)System.Math.PI * 2.0 / 12.0; // angular velocity of Earth (monthly rotation) radians/month
+        public const float omega = 2.0 * (float)Math.PI; // angular velocity of Earth (daily rotation) in radians/day; see Ochsner, 2019: Rain or Shine (textbook), Eq. 13-5 https://open.library.okstate.edu/rainorshine/chapter/13-4-sub-surface-soil-temperatures/ for explanation
         public const float tau = 12.0; // length of temp record in months
         public const float DensitySnow_intercept = 165.0; // kg/m3
         public const float DensitySnow_slope = 1.3; // kg/m3

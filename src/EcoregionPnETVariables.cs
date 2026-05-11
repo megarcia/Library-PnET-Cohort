@@ -208,41 +208,24 @@ namespace Landis.Library.PnETCohorts
             float BaseFolRespFrac;
             // Base parameter in Q10 temperature dependency calculation
             float Q10base;
-            if (Wythers == true)
+            if (wythers)
             {
-                //Computed Base foliar respiration based on temp; this is species-level
-                BaseFolRespFrac = 0.138071F - 0.0024519F * Tavg;
-                //Midpoint between Tavg and Optimal Temp; this is also species-level
-                float Tmidpoint = (Tavg + spc.PsnTOpt) / 2F;
-                // Base parameter in Q10 temperature dependency calculation in current temperature
-                Q10base = 3.22F - 0.046F * Tmidpoint;
+                speciespnetvars.BaseFoliarRespirationFrac = Respiration.CalcBaseFolRespFrac_Wythers(Tavg);
+                Q10base = Respiration.CalcQ10_Wythers(Tavg, spc.PsnTopt);
             }
             else
             {
-                // The default PnET setting 
-                BaseFolRespFrac = spc.BFolResp;
+                speciespnetvars.BaseFoliarRespirationFrac = spc.BaseFoliarRespiration;
                 Q10base = spc.Q10;
             }
-            speciespnetvars.BaseFolRespFrac = BaseFolRespFrac;
             // Respiration Q10 factor
-            speciespnetvars.Q10Factor = CalcQ10Factor(Q10base, Tavg, spc.PsnTOpt);
-            // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
-            float fTempRespDay = CalcQ10Factor(Q10base, Tday, spc.PsnTOpt);
-            // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
-            float fTempRespNight = CalcQ10Factor(Q10base, Tmin, spc.PsnTOpt);
-            // Unitless respiration adjustment: public for output file only
-            float FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength));
-            speciespnetvars.FTempRespWeightedDayAndNight = FTempRespWeightedDayAndNight;
+            speciespnetvars.Q10Factor = Respiration.CalcFQ10(Q10base, Tavg, spc.PsnTopt);
+            // Respiration adjustment for temperature
+            float RespFTemp = Respiration.CalcFTemp(Q10base, Tday, Tmin, spc.PsnTopt, dayLength, nightLength);
+            speciespnetvars.FTempRespWeightedDayAndNight = RespFTemp;
             // Scaling factor of respiration given day and night temperature and day and night length
-            speciespnetvars.MaintRespFTempResp = spc.MaintResp * FTempRespWeightedDayAndNight;
+            speciespnetvars.MaintRespFTempResp = spc.MaintResp * RespFTemp;
             return speciespnetvars;
-        }
-
-        public static float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
-        {
-            // Generic computation for a Q10 reduction factor used for respiration calculations
-            float q10Fact = (float)Math.Pow(Q10, (Tday - PsnTOpt) / 10);
-            return q10Fact;
         }
     }
 }

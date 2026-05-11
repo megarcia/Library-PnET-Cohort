@@ -82,7 +82,7 @@ namespace Landis.Library.PnETCohorts
             // NETPSN net photosynthesis
             // Modify AmaxB based on CO2 level
             // Equations solved from 2 known points: (350, AmaxB) and (550, AmaxB * CO2AmaxBEff)
-            float AmaxB_slope = (float)(((spc.CO2AMaxBEff - 1.0) * spc.AmaxB) / 200.0);  // Derived from m = [(AmaxB*CO2AMaxBEff) - AmaxB]/[550 - 350]
+            float AmaxB_slope = (float)((spc.CO2AMaxBEff - 1.0) * spc.AmaxB / 200.0);  // Derived from m = [(AmaxB*CO2AMaxBEff) - AmaxB]/[550 - 350]
             float AmaxB_int = (float)(-1.0 * (((spc.CO2AMaxBEff - 1.0) * 1.75) - 1.0) * spc.AmaxB);  // Derived from b = AmaxB - (AmaxB_slope * 350)
             float AmaxB_CO2 = (float)(AmaxB_slope * monthlyClimateRecord.CO2 + AmaxB_int);
             speciespnetvars.AmaxB_CO2 = AmaxB_CO2;

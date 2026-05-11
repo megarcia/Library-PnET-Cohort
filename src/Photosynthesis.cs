@@ -88,7 +88,7 @@ namespace Landis.Library.PnETCohorts
         public static float CalcAmaxB_CO2(float CO2, float AmaxB, float AMaxBFCO2)
         {
             // AmaxB_slope = [(AmaxB * AMaxBFCO2) - AmaxB] / [550 - 350]
-            float AmaxB_slope = (float)((AMaxBFCO2 - 1.0) * AmaxB / 200.0F);
+            float AmaxB_slope = (float)((AMaxBFCO2 - 1.0) * AmaxB / 200.0);
             // AmaxB_intercept = AmaxB - (AmaxB_slope * 350)
             float AmaxB_intercept = (float)(-1.0 * (((AMaxBFCO2 - 1.0) * 1.75) - 1.0) * AmaxB);
             float AmaxB_CO2 = (float)(AmaxB_slope * CO2 + AmaxB_intercept);

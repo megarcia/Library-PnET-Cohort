@@ -1206,13 +1206,13 @@ namespace Landis.Library.PnETCohorts
                 float cicaRatio = (-0.075f * adjFolN) + 0.875f;
                 float modCiCaRatio = cicaRatio * ciModifier; 
                 // Reference co2 ratio
-                float ci350 = 350 * modCiCaRatio;
+                float ci350 = Constants.CO2RefConc * modCiCaRatio;
                 // Elevated leaf internal co2 concentration
                 float ciElev = variables.CO2 * modCiCaRatio;
                 float Ca_Ci = variables.CO2 - ciElev;
                 // Franks method (Franks,2013, New Phytologist, 197:1077-1094)
                 float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
-                float Ca0 = 350;  // 350
+                float Ca0 = Constants.CO2RefConc;  // 350
                 float Ca0_adj = Ca0 * cicaRatio;  // Calculated internal concentration given external 350
                 // Modified Franks method - by M. Kubiske
                 // substitute ciElev for CO2

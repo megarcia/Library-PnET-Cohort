@@ -58,9 +58,9 @@ namespace Landis.Library.PnETCohorts
                 if (pnetvars.Tmin > spc.PsnTMin && pnetvars.Tmax < spc.PsnTMax && propRootAboveFrost > 0)
                 {
                     // Adjust HalfSat for CO2 effect
-                    float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
+                    float halfSatIntercept = spc.HalfSat - Constants.CO2RefConc * spc.CO2HalfSatEff;
                     float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
-                    float frad = (float)(Math.Min(1.0,(Math.Pow(Cohort.ComputeFrad(PAR, adjHalfSat),2) * (1/(Math.Pow(spc.EstRad,2))))));
+                    float frad = (float)Math.Min(1.0, Math.Pow(Cohort.ComputeFrad(PAR, adjHalfSat), 2) / Math.Pow(spc.EstRad, 2));
                     float adjFrad = frad;
                     // Optional adjustment to invert Pest based on relative halfSat
                     if (invertPest && halfSatRange > 0)
@@ -70,8 +70,8 @@ namespace Landis.Library.PnETCohorts
                         adjFrad = 1 - frad_adj_int + frad * frad_slope;
                     }  
                     float PressureHead = hydrology.PressureHeadTable.CalculateWaterContent(hydrology.Water, ecoregion.SoilType);
-                    float fwater = (float)(Math.Min(1.0,(Math.Pow(Cohort.ComputeFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), 2) * (1/(Math.Pow(spc.EstMoist,2))))));
-                    float pest = (float) Math.Min(1.0,adjFrad * fwater);
+                    float fwater = (float)Math.Min(1.0, Math.Pow(Cohort.ComputeFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), 2) / Math.Pow(spc.EstMoist, 2));
+                    float pest = (float) Math.Min(1.0, adjFrad * fwater);
                     estabDict[spc] = pest;
                     _fwater[spc] = fwater;
                     _frad[spc] = adjFrad;

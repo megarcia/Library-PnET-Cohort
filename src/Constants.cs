@@ -32,6 +32,17 @@ namespace Landis.Library.PnETCohorts
         public const float lambda_moss = 432.0; // thermal conductivity of moss in kJ/m/d/K - converted from 0.2 W/mK (Sazonova and Romanovsky 2003)
 
         /// <summary>
+        /// Reference temperature in K
+        /// </summary>
+        public const float Tref_K = 273.15F;
+
+        /// <summary>
+        /// Psychrometric coefficient in kPa/K
+        /// (Cabrera et al., 2016, Table 1)
+        /// </summary>
+        public const float PsychrometricCoeff = 0.062;
+
+        /// <summary>
         /// convert kJ/m.d.K to W/m.K
         /// </summary>
         public const float Convert_kJperday_to_Watts = 0.2777777778 / 24.0;

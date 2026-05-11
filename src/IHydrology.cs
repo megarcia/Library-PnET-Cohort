@@ -6,7 +6,7 @@ namespace Landis.Library.PnETCohorts
         float Water { get; } // volumetric water (mm/m)
         float FrozenWaterContent { get; } // volumetric water content (mm/m) of the frozen soil
         float FrozenDepth { get; } // Depth at which soil is frozen (mm); Rooting zone soil below this depth is frozen
-        PressureHeadSaxton_Rawls PressureHeadTable { get; } // Get the PressureHeadTable object
+        Hydrology_SaxtonRawls PressureHeadTable { get; } // Get the PressureHeadTable object
         
         bool AddWater(float water, float activeSoilDepth); // Add mm water to volumetric water content (mm/m) (considering activeSoilDepth - frozen soil cannot accept water)
         float CalculateEvaporation(SiteCohorts sitecohorts, float PET);

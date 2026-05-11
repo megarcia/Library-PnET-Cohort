@@ -35,9 +35,9 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public static PressureHeadSaxton_Rawls pressureheadtable;
+        public static Hydrology_SaxtonRawls pressureheadtable;
 
-        public PressureHeadSaxton_Rawls PressureHeadTable
+        public Hydrology_SaxtonRawls PressureHeadTable
         {
             get
             {
@@ -125,7 +125,7 @@ namespace Landis.Library.PnETCohorts
             if (Names.TryGetParameter(Names.PressureHeadCalculationMethod, out PressureHeadCalculationMethod))
             {
                 Parameter<string> p = Names.GetParameter(Names.PressureHeadCalculationMethod);
-                pressureheadtable = new PressureHeadSaxton_Rawls();
+                pressureheadtable = new Hydrology_SaxtonRawls();
             }
             else
             {

@@ -1397,10 +1397,10 @@ namespace Landis.Library.PnETCohorts
                     float porosity = Ecoregion.Porosity;  // volumetric m/m 
                     float ga = 0.035F + 0.298F * (waterContent / porosity);
                     float Fa = ((2.0F / 3.0F) / (1.0F + ga * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))) + ((1.0F / 3.0F) / (1.0F + (1.0F - 2.0F * ga) * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))); // ratio of air temp gradient
-                    float Fs = PressureHeadSaxton_Rawls.GetFs(Ecoregion.SoilType);
-                    float lambda_s = PressureHeadSaxton_Rawls.GetLambda_s(Ecoregion.SoilType);
+                    float Fs = Hydrology_SaxtonRawls.GetFs(Ecoregion.SoilType);
+                    float lambda_s = Hydrology_SaxtonRawls.GetLambda_s(Ecoregion.SoilType);
                     float lambda_theta = (Fs * (1.0F - porosity) * lambda_s + Fa * (porosity - waterContent) * Constants.lambda_a + waterContent * Constants.lambda_w) / (Fs * (1.0F - porosity) + Fa * (porosity - waterContent) + waterContent); //soil thermal conductivity (kJ/m/d/K)
-                    float D = lambda_theta / PressureHeadSaxton_Rawls.GetCTheta(Ecoregion.SoilType);  //m2/day
+                    float D = lambda_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  //m2/day
                     float Dmms = D * 1000000 / 86400; //mm2/s
                     soilDiffusivity = Dmms;
                     float Dmonth = D * data[m].DaySpan; // m2/month

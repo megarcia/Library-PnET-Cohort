@@ -57,7 +57,7 @@ namespace Landis.Library.PnETCohorts
         public float DaySpan => _dayspan;
         public float Time => _date.Year + 1F / 12F * (_date.Month - 1);
         public int Year => _date.Year;
-        public float Tave => _tavg;
+        public float Tavg => _tavg;
         public float Tmin => (float)_monthlyClimateRecord.Tmin;
         public float Tmax => (float)_monthlyClimateRecord.Tmax;
         public float Daylength => _daylength;
@@ -105,9 +105,9 @@ namespace Landis.Library.PnETCohorts
             if (wythers == true)
             {
                 //Computed Base foliar respiration based on temp; this is species-level, so you can compute outside this IF block and use for all cohorts of a species
-                BaseFolRespFrac = 0.138071F - 0.0024519F * Tave;
-                //Midpoint between Tave and Optimal Temp; this is also species-level
-                float Tmidpoint = (Tave + spc.PsnTOpt) / 2F;
+                BaseFolRespFrac = 0.138071F - 0.0024519F * Tavg;
+                //Midpoint between Tavg and Optimal Temp; this is also species-level
+                float Tmidpoint = (Tavg + spc.PsnTOpt) / 2F;
                 // Base parameter in Q10 temperature dependency calculation in current temperature
                 Q10base = 3.22F - 0.046F * Tmidpoint;
             }
@@ -119,7 +119,7 @@ namespace Landis.Library.PnETCohorts
             }
             speciespnetvars.BaseFolRespFrac = BaseFolRespFrac;
             // Respiration Q10 factor
-            speciespnetvars.Q10Factor = EcoregionPnETVariables.CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
+            speciespnetvars.Q10Factor = EcoregionPnETVariables.CalcQ10Factor(Q10base, Tavg, spc.PsnTOpt);
             // Daytime maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
             float fTempRespDay = EcoregionPnETVariables.CalcQ10Factor(Q10base, Tday, spc.PsnTOpt);
             // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)

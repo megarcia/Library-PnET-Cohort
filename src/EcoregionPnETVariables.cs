@@ -113,7 +113,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public float Tave
+        public float Tavg
         {
             get
             {
@@ -211,9 +211,9 @@ namespace Landis.Library.PnETCohorts
             if (Wythers == true)
             {
                 //Computed Base foliar respiration based on temp; this is species-level
-                BaseFolRespFrac = 0.138071F - 0.0024519F * Tave;
-                //Midpoint between Tave and Optimal Temp; this is also species-level
-                float Tmidpoint = (Tave + spc.PsnTOpt) / 2F;
+                BaseFolRespFrac = 0.138071F - 0.0024519F * Tavg;
+                //Midpoint between Tavg and Optimal Temp; this is also species-level
+                float Tmidpoint = (Tavg + spc.PsnTOpt) / 2F;
                 // Base parameter in Q10 temperature dependency calculation in current temperature
                 Q10base = 3.22F - 0.046F * Tmidpoint;
             }
@@ -225,7 +225,7 @@ namespace Landis.Library.PnETCohorts
             }
             speciespnetvars.BaseFolRespFrac = BaseFolRespFrac;
             // Respiration Q10 factor
-            speciespnetvars.Q10Factor = CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
+            speciespnetvars.Q10Factor = CalcQ10Factor(Q10base, Tavg, spc.PsnTOpt);
             // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
             float fTempRespDay = CalcQ10Factor(Q10base, Tday, spc.PsnTOpt);
             // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)

@@ -19,7 +19,7 @@ namespace Landis.Library.PnETCohorts
         public const string TopLayer = "TopLayer";
         public const string SumCanopyProp = "SumCanopyProp";
         public const string Tmin = "Tmin(C)";
-        public const string Tave = "Tave(C)";
+        public const string Tavg = "Tavg(C)";
         public const string Tday = "Tday(C)";
         public const string Tmax = "Tmax(C)";
         public const string Precip = "Precip(mm/mo)";

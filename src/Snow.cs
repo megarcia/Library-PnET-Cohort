@@ -34,7 +34,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcHeatCapacity(float DensitySnow_kg_m3)
         {
-            float heatcapacity = Constants.snowHeatCapacity * DensitySnow_kg_m3 / 1000F;
+            float heatcapacity = Constants.HeatCapacitySnow_Jperkg * DensitySnow_kg_m3 / 1000F;
             return heatcapacity;
         }
 

@@ -1387,7 +1387,7 @@ namespace Landis.Library.PnETCohorts
                     if (sno_dep > 0)
                         DRz_snow = Snow.CalcDampingRatio(sno_dep, damping);
                     float mossDepth = this.SiteMossDepth;
-                    float moss_diffusivity = Constants.lambda_moss / Constants.cv_moss;
+                    float moss_diffusivity = Constants.ThermalConductivityMoss / Constants.HeatCapacityMoss;
                     float damping_moss = (float)Math.Sqrt(2.0F * moss_diffusivity / Constants.omega);
                     // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
                     // previously float DRz_moss = (float)Math.Exp(-1.0F * mossDepth * damping_moss); 
@@ -1396,10 +1396,10 @@ namespace Landis.Library.PnETCohorts
                     float waterContent = hydrology.Water;// volumetric m/m
                     float porosity = Ecoregion.Porosity;  // volumetric m/m 
                     float ga = 0.035F + 0.298F * (waterContent / porosity);
-                    float Fa = ((2.0F / 3.0F) / (1.0F + ga * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))) + ((1.0F / 3.0F) / (1.0F + (1.0F - 2.0F * ga) * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))); // ratio of air temp gradient
+                    float Fa = ((2.0F / 3.0F) / (1.0F + ga * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))) + ((1.0F / 3.0F) / (1.0F + (1.0F - 2.0F * ga) * ((Constants.ThermalConductivityAir_kJperday / Constants.ThermalConductivityWater_kJperday) - 1.0F))); // ratio of air temp gradient
                     float Fs = Hydrology_SaxtonRawls.GetFs(Ecoregion.SoilType);
                     float lambda_s = Hydrology_SaxtonRawls.GetLambda_s(Ecoregion.SoilType);
-                    float lambda_theta = (Fs * (1.0F - porosity) * lambda_s + Fa * (porosity - waterContent) * Constants.lambda_a + waterContent * Constants.lambda_w) / (Fs * (1.0F - porosity) + Fa * (porosity - waterContent) + waterContent); //soil thermal conductivity (kJ/m/d/K)
+                    float lambda_theta = (Fs * (1.0F - porosity) * lambda_s + Fa * (porosity - waterContent) * Constants.ThermalConductivityAir_kJperday + waterContent * Constants.ThermalConductivityWater_kJperday) / (Fs * (1.0F - porosity) + Fa * (porosity - waterContent) + waterContent); //soil thermal conductivity (kJ/m/d/K)
                     float D = lambda_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  //m2/day
                     float Dmms = D * 1000000 / 86400; //mm2/s
                     soilDiffusivity = Dmms;
@@ -1959,7 +1959,7 @@ namespace Landis.Library.PnETCohorts
                 float groundAlbedo = 0.20F;
                 if (sno_dep > 0)
                 {
-                    float snowMultiplier = sno_dep >= Constants.snowReflectanceThreshold ? 1 : sno_dep / Constants.snowReflectanceThreshold;
+                    float snowMultiplier = sno_dep >= Constants.SnowReflectanceThreshold ? 1 : sno_dep / Constants.SnowReflectanceThreshold;
                     groundAlbedo = (float)(groundAlbedo + (groundAlbedo * (2.125 * snowMultiplier)));
                 }
                 for (int layer = 0; layer < tempMaxCanopyLayers; layer++)
@@ -2213,7 +2213,7 @@ namespace Landis.Library.PnETCohorts
             if (!EcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[this.Site]).Active)
                 return -1;
             float finalAlbedo = 0;
-            float snowMultiplier = snowDepth >= Constants.snowReflectanceThreshold ? 1 : snowDepth / Constants.snowReflectanceThreshold;
+            float snowMultiplier = snowDepth >= Constants.SnowReflectanceThreshold ? 1 : snowDepth / Constants.SnowReflectanceThreshold;
             if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
                     && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground")
                         || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open")

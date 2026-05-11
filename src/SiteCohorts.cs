@@ -1471,7 +1471,9 @@ namespace Landis.Library.PnETCohorts
                     while (testDepth <= bottomFreezeDepth)
                     {
                         // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
-                        float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); 
+                        // previously float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); 
+                        // corrected by MGarcia on 20260510 -- see comments for same calculation in Snow class.
+                        float DRz = (float)Math.Exp(-1.0F * testDepth / d * Ecoregion.FrostFactor); 
                         // Calculate lag months from both max and min temperature months
                         int lagMax = (data[m].Month + (3 - maxMonth));
                         int lagMin = (data[m].Month + (minMonth - 5));

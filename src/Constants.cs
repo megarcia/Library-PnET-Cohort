@@ -23,11 +23,17 @@ namespace Landis.Library.PnETCohorts
         public const float DensitySnow_intercept = 165.0; // kg/m3
         public const float DensitySnow_slope = 1.3; // kg/m3
         public const float DensityWater = 1000.0;  // Density of water (kg/m3)
-        public const float ThermalConductivityAir_Watts = 0.023; // W/m K (CLM5 documentation, Table 2.7)
-        public const float ThermalConductivityIce_Watts = 2.29; // W/m K (CLM5 documentation, Table 2.7)
+        public const float ThermalConductivityAir_Watts = 0.023; // W/m.K (CLM5 documentation, Table 2.7)
+        public const float ThermalConductivityWater_Watts = 0.57;  // W/m.K (CLM5 documentation, Table 2.7)
+        public const float ThermalConductivityIce_Watts = 2.29; // W/m.K (CLM5 documentation, Table 2.7)
         public const float snowHeatCapacity = 2090.0; // J/kg K (https://www.engineeringtoolbox.com/specific-heat-capacity-d_391.html)
         public const float snowReflectanceThreshold = 0.100;  // minimum depth of snow (m) that counts as full snow for albedo calculations
         public const float cv_moss = 2500.0; // heat capacity of moss - kJ/m3/K (Sazonova and Romanovsky 2003)
         public const float lambda_moss = 432.0; // thermal conductivity of moss in kJ/m/d/K - converted from 0.2 W/mK (Sazonova and Romanovsky 2003)
+
+        /// <summary>
+        /// convert kJ/m.d.K to W/m.K
+        /// </summary>
+        public const float Convert_kJperday_to_Watts = 0.2777777778 / 24.0;
     }
 }

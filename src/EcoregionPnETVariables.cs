@@ -10,7 +10,7 @@ namespace Landis.Library.PnETCohorts
         private IObservedClimate obs_clim;
         private float _vpd;
         private float _dayspan;
-        private float _tave;
+        private float _tavg;
         private float _tday;
         private float _daylength;
 
@@ -117,7 +117,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return _tave;
+                return _tavg;
             }
         }
 
@@ -145,61 +145,6 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        #region static computation functions
-
-        private static float Calculate_VP(float a, float b, float c, float T)
-        {
-            // Calculates vapor pressure at temperature (T)
-            // a,b,c are coefficients
-            // Equation from PnET-II
-            return a * (float)Math.Exp(b * T / (T + c));
-        }
-
-        public static float Calculate_VPD(float Tday, float TMin)
-        {
-            float emean;
-            float es = Calculate_VP(0.61078f, 17.26939f, 237.3f, Tday);
-            if (Tday < 0)
-                es = Calculate_VP(0.61078f, 21.87456f, 265.5f, Tday);
-            emean = Calculate_VP(0.61078f, 17.26939f, 237.3f, TMin);
-            if (TMin < 0) 
-                emean = Calculate_VP(0.61078f, 21.87456f, 265.5f, TMin);
-            return es - emean;
-        }
-
-        public static float CurvelinearPsnTempResponse(float tday, float PsnTOpt, float PsnTMin, float PsnTMax)
-        {
-            if (tday < PsnTMin)
-                return 0;
-            else if (tday > PsnTOpt)
-                return 1;
-            else 
-                return (PsnTMax - tday) * (tday - PsnTMin) / (float)Math.Pow((PsnTMax - PsnTMin) / 2, 2);
-        }
-
-        public static float DTempResponse(float tday, float PsnTOpt, float PsnTMin, float PsnTMax)
-        {
-            if (tday < PsnTMin)
-                return 0;
-            else if (tday > PsnTMax)
-                return 0;
-            else
-            {
-                if (tday <= PsnTOpt)
-                {
-                    float PsnTMaxestimate = PsnTOpt + (PsnTOpt - PsnTMin);
-                    return (float)Math.Max(0.0, (PsnTMaxestimate - tday) * (tday - PsnTMin) / (float)Math.Pow((PsnTMaxestimate - PsnTMin) / 2, 2));
-                }
-                else
-                {
-                    float PsnTMinestimate = PsnTOpt + (PsnTOpt - PsnTMax);
-                    return (float)Math.Max(0.0, (PsnTMax - tday) * (tday - PsnTMinestimate) / (float)Math.Pow((PsnTMax - PsnTMinestimate) / 2), 2);
-                }
-            }
-        }
-
-        #endregion
-
         private Dictionary<string, SpeciesPnETVariables> speciesVariables;
 
         public SpeciesPnETVariables this[string species]
@@ -212,16 +157,16 @@ namespace Landis.Library.PnETCohorts
 
         public EcoregionPnETVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<ISpeciesPnET> Species, float Latitude)
         {
-            this._date = Date;
-            this.obs_clim = climate_dataset;
-            speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
-            _tave = (float)0.5 * (climate_dataset.Tmin + climate_dataset.Tmax);
+            obs_clim = climate_dataset;
+            _date = Date;
+            _tavg = Weather.CalcTavg(climate_dataset.Tmin, climate_dataset.Tmax);
             _dayspan = Calendar.CalcDaySpan(Date.Month);
-            float hr = Calendar.CalcDaylightHrs(Date.DayOfYear, Latitude);
             _daylength = Calendar.CalcDayLength(hr);
+            _tday = Weather.CalcTday(_tavg, climate_dataset.Tmax);
+            _vpd = Weather.CalcVPD(Tday, climate_dataset.Tmin);
+            float hr = Calendar.CalcDaylightHrs(Date.DayOfYear, Latitude);
             float nightlength = Calendar.CalcNightLength(hr);
-            _tday = (float)0.5 * (climate_dataset.Tmax + _tave);
-            _vpd = EcoregionPnETVariables.Calculate_VPD(Tday, climate_dataset.Tmin);
+            speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
             foreach (ISpeciesPnET spc in Species)
             {
                 SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, Daylength, nightlength, spc);
@@ -247,11 +192,11 @@ namespace Landis.Library.PnETCohorts
             float AmaxB_CO2 = AmaxB_slope * climate_dataset.CO2 + AmaxB_int;
             speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
             if (DTemp)
-                speciespnetvars.FTempPSN = EcoregionPnETVariables.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
+                speciespnetvars.FTempPSN = Photosynthesis.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
             else
-                speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax); // Modified 051216(BRM)
+                speciespnetvars.FTempPSN = Photosynthesis.CurvilinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax); // Modified 051216(BRM)
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
-            // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
+            // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
             // Acclimation of respiration to temperature and C02 in seedlings of boreal tree species
             // in relation to plant size and relative growth rate. Global Change Biology. 49:679-691,
             // and Tjoelker, M.G., Oleksyn, J., Reich, P.B. 2001. Modeling respiration of vegetation:

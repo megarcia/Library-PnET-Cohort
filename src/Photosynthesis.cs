@@ -1,0 +1,304 @@
+using System;
+
+namespace Landis.Library.PnETCohorts
+{
+    public class Photosynthesis
+    {
+        /// <summary>
+        /// Curvilinear response of photosynthesis to temperature
+        /// </summary>
+        /// <param name="Tday"></param>
+        /// <param name="PsnTopt"></param>
+        /// <param name="PsnTmin"></param>
+        /// <param name="PsnTmax"></param>
+        /// <returns></returns>
+        public static float CurvilinearPsnTempResponse(float Tday, float PsnTopt,
+                                                       float PsnTmin, float PsnTmax)
+        {
+            if (Tday < PsnTmin)
+                return 0F;
+            else if (Tday > PsnTopt)
+                return 1F;
+            else
+                return (PsnTmax - Tday) * (Tday - PsnTmin) / (float)Math.Pow((PsnTmax - PsnTmin) / 2F, 2);
+        }
+
+        /// <summary>
+        /// Alternate response of photosynthesis to temperature
+        /// </summary>
+        /// <param name="Tday"></param>
+        /// <param name="PsnTopt"></param>
+        /// <param name="PsnTmin"></param>
+        /// <param name="PsnTmax"></param>
+        /// <returns></returns>
+        public static float DTempResponse(float Tday, float PsnTopt, float PsnTmin,
+                                          float PsnTmax)
+        {
+            if (Tday < PsnTmin || Tday > PsnTmax)
+                return 0F;
+            else
+            {
+                if (Tday <= PsnTopt)
+                {
+                    float PsnTmaxEst = PsnTopt + (PsnTopt - PsnTmin);
+                    return (float)Math.Max(0.0, (PsnTmaxEst - Tday) * (Tday - PsnTmin) / (float)Math.Pow((PsnTmaxEst - PsnTmin) / 2F, 2));
+                }
+                else
+                {
+                    float PsnTminEst = PsnTopt + (PsnTopt - PsnTmax);
+                    return (float)Math.Max(0.0, (PsnTmax - Tday) * (Tday - PsnTminEst) / (float)Math.Pow((PsnTmax - PsnTminEst) / 2F, 2));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Calculate DVPD, gradient of effect of vapor pressure deficit 
+        /// on growth
+        /// </summary>
+        /// <param name="VPD"></param>
+        /// <param name="DVPD1"></param>
+        /// <param name="DVPD2"></param>
+        /// <returns></returns>
+        public static float CalcDVPD(float VPD, float DVPD1, float DVPD2)
+        {
+            float DVPD = Math.Max(0, 1.0F - DVPD1 * (float)Math.Pow(VPD, DVPD2));
+            return DVPD;
+        }
+
+        /// <summary>
+        /// Calculate JH20
+        /// </summary>
+        /// <param name="Tmin"></param>
+        /// <param name="VPD"></param>
+        /// <returns></returns>
+        public static float CalcJH2O(float Tmin, float VPD)
+        {
+            float JH2O = (float)(Constants.CalperJ * (VPD / (Constants.GasConst_JperkmolK * (Tmin + Constants.Tref_K))));
+            return JH2O;
+        }
+
+        /// <summary>
+        /// Modify AmaxB based on CO2 level using linear interpolation
+        /// uses 2 known points: (350, AmaxB) and (550, AmaxB * AMaxBFCO2)
+        /// </summary>
+        /// <param name="CO2"></param>
+        /// <param name="AmaxB"></param>
+        /// <param name="AMaxBFCO2"></param>
+        /// <returns></returns>
+        public static float CalcAmaxB_CO2(float CO2, float AmaxB, float AMaxBFCO2)
+        {
+            // AmaxB_slope = [(AmaxB * AMaxBFCO2) - AmaxB] / [550 - 350]
+            float AmaxB_slope = (float)((AMaxBFCO2 - 1.0) * AmaxB / 200.0F);
+            // AmaxB_intercept = AmaxB - (AmaxB_slope * 350)
+            float AmaxB_intercept = (float)(-1.0 * (((AMaxBFCO2 - 1.0) * 1.75) - 1.0) * AmaxB);
+            float AmaxB_CO2 = (float)(AmaxB_slope * CO2 + AmaxB_intercept);
+            return AmaxB_CO2;
+        }
+
+        /// <summary>
+        /// Calculate CiModifier as a function of leaf O3 tolerance
+        /// Regression coefs estimated from New 3 algorithm for Ozone drought.xlsx
+        /// https://usfs.box.com/s/eksrr4d7fli8kr9r4knfr7byfy9r5z0i
+        /// Uses data provided by Yasutomo Hoshika and Elena Paoletti
+        /// </summary>
+        /// <param name="CumulativeO3"></param>
+        /// <param name="StomataO3Sens"></param>
+        /// <param name="FWaterOzone"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static float CalcCiModifier(float CumulativeO3, string StomataO3Sens,
+                                           float FWaterOzone)
+        {
+            float CiModifier = 1.0f; // if no ozone, ciModifier defaults to 1
+            if (CumulativeO3 > 0)
+            {
+                if (StomataO3Sens == "Sensitive" || StomataO3Sens == "Sens")
+                    CiModifier = (float)(FWaterOzone + (-0.0176 * FWaterOzone + 0.0118) * CumulativeO3);
+                else if (StomataO3Sens == "Intermediate" || StomataO3Sens == "Int")
+                    CiModifier = (float)(FWaterOzone + (-0.0148 * FWaterOzone + 0.0062) * CumulativeO3);
+                else if (StomataO3Sens == "Tolerant" || StomataO3Sens == "Tol")
+                    CiModifier = (float)(FWaterOzone + (-0.021 * FWaterOzone + 0.0087) * CumulativeO3);
+                else
+                    throw new Exception("O3 data provided, but species StomataO3Sensitivity is not set to Sensitive, Intermediate, or Tolerant");
+            }
+            CiModifier = Math.Max(0.00001F, Math.Min(CiModifier, 1.0F));
+            return CiModifier;
+        }
+
+        /// <summary>
+        /// Calculate elevated leaf internal CO2 concentration
+        /// </summary>
+        /// <param name="Ci_Ca"></param>
+        /// <param name="CiModifier"></param>
+        /// <param name="CO2"></param>
+        /// <returns></returns>
+        public static float CalcCiElev(float Ci_Ca, float CiModifier, float CO2)
+        {
+            float modCi_Ca = Ci_Ca * CiModifier;
+            float CiElev = CO2 * modCi_Ca;
+            return CiElev;
+        }
+
+        /// <summary>
+        /// Calculate vertical gradient of CO2 concentration in canopy
+        /// based on Franks (2013, New Phytologist, 197:1077-1094) and
+        /// modified by M. Kubiske
+        /// </summary>
+        /// <param name="CiElev"></param>
+        /// <returns></returns>
+        public static float CalcDelAmaxCi(float CiElev)
+        {
+            // the CO2 compensation point at which photorespiration balances 
+            // exactly with photosynthesis.  Assumed to be 40 based on leaf 
+            // Temp = 25ºC
+            float Gamma = 40;
+            float DelAmaxCi = (CiElev - Gamma) / (CiElev + 2 * Gamma) * (Constants.CO2RefConc + 2 * Gamma) / (Constants.CO2RefConc - Gamma);
+            DelAmaxCi = Math.Max(DelAmaxCi, 0F);
+            return DelAmaxCi;
+        }
+
+        /// <summary>
+        /// Radiative (light) effect on photosynthesis
+        /// </summary>
+        /// <param name="Rad"></param>
+        /// <param name="HalfSat"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static float CalcFRad(float Rad, float HalfSat)
+        {
+            if (HalfSat <= 0)
+                throw new Exception("HalfSat <= 0. Cannot calculate fRad.");
+            float FRad = (float)(1F - Math.Exp(-1F * Rad * Math.Log(2F) / HalfSat));
+            return FRad;
+        }
+
+        /// <summary>
+        /// Calculate the potential gross photosynthesis (gC/m2 ground/mo)
+        /// </summary>
+        /// <param name="AmaxAdj"></param>
+        /// <param name="BaseFolResp"></param>
+        /// <param name="DaySpan"></param>
+        /// <param name="DVPD"></param>
+        /// <param name="DayLength"></param>
+        /// <param name="PsnFTemp"></param>
+        /// <param name="FRad"></param>
+        /// <param name="FAge"></param>
+        /// <param name="Fol"></param>
+        /// <returns></returns>
+        public static float CalcPotentialGrossPsn(float AmaxAdj, float BaseFolResp,
+                                                  float DaySpan, float DVPD, float DayLength,
+                                                  float PsnFTemp, float FRad, float FAge,
+                                                  float Fol)
+        {
+            float GrossAmax = AmaxAdj + BaseFolResp;
+            // Reference gross Psn (lab conditions) in gC/g Fol/month
+            float RefGrossPsn = DaySpan * (GrossAmax * DVPD * DayLength * Constants.MC) / Constants.billion;
+            // Calculate gross psn from stress factors and reference gross psn (gC/g Fol/month)
+            // Reduction factors include temperature (PsnFTemp), water (FWater), light (FRad), age (FAge)
+            // Remove FWater from psn reduction because it is accounted for in WUE through ciModifier [mod2, mod3]
+            float PotentialGrossPsn = 1 / (float)Globals.IMAX * PsnFTemp * FRad * FAge * RefGrossPsn * Fol;
+            return PotentialGrossPsn;
+        }
+
+        /// <summary>
+        /// Soil water effect on photosynthesis
+        /// </summary>
+        /// <param name="H1"></param>
+        /// <param name="H2"></param>
+        /// <param name="H3"></param>
+        /// <param name="H4"></param>
+        /// <param name="pressureHead"></param>
+        /// <returns></returns>
+        public static float CalcFWater(float H1, float H2, float H3, float H4,
+                                       float pressureHead)
+        {
+            float minThreshold = H1;
+            if (H2 <= H1)
+                minThreshold = H2;
+            // Calculate water stress
+            if (pressureHead <= H1)
+                return 0F;
+            else if (pressureHead < minThreshold || pressureHead >= H4)
+                return 0F;
+            else if (pressureHead > H3)
+                return 1F - ((pressureHead - H3) / (H4 - H3));
+            else if (pressureHead < H2)
+                return 1F / (H2 - H1) * pressureHead - (H1 / (H2 - H1));
+            else
+                return 1F;
+        }
+
+        /// <summary>
+        /// O3 effect on photosynthesis
+        /// </summary>
+        /// <param name="O3"></param>
+        /// <param name="Layer"></param>
+        /// <param name="nLayers"></param>
+        /// <param name="FolMass"></param>
+        /// <param name="LastFOzone"></param>
+        /// <param name="WVConductance"></param>
+        /// <param name="FOzone_slope"></param>
+        /// <returns></returns>
+        public static float CalcFOzone(float O3, int Layer, int nLayers, 
+                                       float FolMass, float LastFOzone, 
+                                       float WVConductance, float FOzone_slope)
+        {
+            float DroughtO3Frac = 1.0F; // Not using DroughtO3Frac from PnET code per M. Kubiske and A. Chappelka
+            float kO3Eff = 0.0026F * FOzone_slope;  // Scaled by species using input parameters
+            float O3Prof = (float)(0.6163F + (0.00105F * FolMass));
+            float RelLayer = Layer / (float)nLayers;
+            float RelO3 = (float)Math.Min(1F, 1F - RelLayer * O3Prof * Math.Pow(RelLayer * O3Prof, 2));
+            // Kubiske method (using water vapor conductance in place of conductance
+            float FOzone = (float)Math.Min(1F, (LastFOzone * DroughtO3Frac) + (kO3Eff * WVConductance * O3 * RelO3));
+            return FOzone;
+        }
+
+        /// <summary>
+        /// Calculate adjustment for CO2 saturation level on photosynthesis
+        /// </summary>
+        /// <param name="CO2"></param>
+        /// <param name="HalfSat"></param>
+        /// <param name="HalfSatFCO2"></param>
+        /// <returns></returns>
+        public static float CalcAdjHalfSat(float CO2, float HalfSat, float HalfSatFCO2)
+        {
+            float halfSatIntercept = HalfSat - Constants.CO2RefConc * HalfSatFCO2;
+            float AdjHalfSat = HalfSatFCO2 * CO2 + halfSatIntercept;
+            return AdjHalfSat;
+        }
+
+        /// <summary>
+        /// Calculate foliar N adjusted for canopy position
+        /// </summary>
+        /// <param name="FolN_shape"></param>
+        /// <param name="FolN_intercept"></param>
+        /// <param name="FolN"></param>
+        /// <param name="FRad"></param>
+        /// <returns></returns>
+        /// via non-linear reduction in FolN with canopy depth via FRad
+        public static float CalcAdjFolN(float FolN_shape, float FolN_intercept,
+                                        float FolN, float FRad)
+        {
+            float adjFolN = FolN + ((FolN_intercept - FolN) * (float)Math.Pow(FRad, FolN_shape));
+            return adjFolN;
+        }
+
+        /// <summary>
+        /// Calculate ratio JCO2/JH2O
+        /// </summary>
+        /// <param name="Tmin"></param>
+        /// <param name="CO2"></param>
+        /// <param name="CiElev"></param>
+        /// <param name="JH2O"></param>
+        /// <param name="CiModifier"></param>
+        /// <returns></returns>
+        public static float CalcJCO2_JH2O(float JH2O, float Tmin, float CO2,
+                                          float CiElev, float CiModifier)
+        {
+            float V = Constants.GasConst_JperkmolK * (Tmin + Constants.Tref_K) / Constants.Pref_kPa;
+            float JCO2 = (float)(0.139 * ((CO2 - CiElev) / V) * 0.000001);
+            float JCO2_JH2O = JCO2 / JH2O / CiModifier;
+            return JCO2_JH2O;
+        }
+    }
+}

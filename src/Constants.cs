@@ -32,15 +32,30 @@ namespace Landis.Library.PnETCohorts
         public const float lambda_moss = 432.0; // thermal conductivity of moss in kJ/m/d/K - converted from 0.2 W/mK (Sazonova and Romanovsky 2003)
 
         /// <summary>
+        /// Universal gas constant in J/kmol.K
+        /// </summary>
+        public const float GasConst_JperkmolK = 8314.47F;
+
+        /// <summary>
         /// Reference temperature in K
         /// </summary>
         public const float Tref_K = 273.15F;
+
+        /// <summary>
+        /// Reference pressure in kPa
+        /// </summary>
+        public const float Pref_kPa = 101.3F;
 
         /// <summary>
         /// Psychrometric coefficient in kPa/K
         /// (Cabrera et al., 2016, Table 1)
         /// </summary>
         public const float PsychrometricCoeff = 0.062;
+
+        /// <summary>
+        /// Reference atmospheric concentration of CO2 in ppm
+        /// </summary>
+        public const float CO2RefConc = 350F;
 
         /// <summary>
         /// convert kJ/m.d.K to W/m.K

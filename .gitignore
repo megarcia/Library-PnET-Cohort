@@ -12,3 +12,8 @@ src/.vs/ProjectEvaluation/library-pnet-cohort.projects.v7.bin
 /src/bin
 src/lib/Landis.Library.UniversalCohorts-v1.deps.json
 src/lib/Landis.Library.UniversalCohorts-v1.pdb
+src/lib/Landis.Library.UniversalCohorts-v2.dll
+src/lib/Landis.Library.Succession-v10.dll
+src/lib/Landis.Library.PnETCohorts-v2.dll
+src/lib/Landis.Library.InitialCommunity.Universal-v2.dll
+src/lib/Landis.Library.Climate-v5.dll

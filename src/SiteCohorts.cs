@@ -4212,9 +4212,9 @@ namespace Landis.Library.PnETCohorts
         {
             cohorts.Clear();
         }
-        public override int ReduceOrKillCohorts(Landis.Library.UniversalCohorts.IDisturbance disturbance)
+        public override void ReduceOrKillCohorts(Landis.Library.UniversalCohorts.IDisturbance disturbance)
         {
-            List<int> reduction = new List<int>();
+            List<double> reduction = new List<double>();
 
             List<Cohort> ToRemove = new List<Cohort>();
 
@@ -4227,18 +4227,21 @@ namespace Landis.Library.PnETCohorts
                     Landis.Library.PnETCohorts.ICohort cohort = species_cohort[c];
 
                     // Disturbances return reduction in aboveground biomass
-                    int _reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
+                    double _reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
 
                     reduction.Add(_reduction);
-                    if (reduction[reduction.Count() - 1] >= species_cohort[c].Biomass)  //Compare to aboveground biomass at site scale
+                    //if (reduction[reduction.Count() - 1] >= species_cohort[c].Biomass)  //Compare to aboveground biomass at site scale - JSF UCL change
+                    if (reduction[reduction.Count() - 1] >= 1.0)
                     {
                         ToRemove.Add(species_cohort[c]);
                         // Edited by BRM - 090115
                     }
                     else
                     {
-                        double reductionProp = (double)reduction[reduction.Count() - 1] / (double)species_cohort[c].Biomass;  //Proportion of aboveground biomass at site scale
-                        species_cohort[c].ReduceBiomass(this, reductionProp, disturbance.Type);  // Reduction applies to all biomass
+                        //double reductionProp = (double)reduction[reduction.Count() - 1] / (double)species_cohort[c].Biomass;  //Proportion of aboveground biomass at site scale
+                        //species_cohort[c].ReduceBiomass(this, reductionProp, disturbance.Type);  // Reduction applies to all biomass
+
+                        species_cohort[c].ReduceBiomass(this, reduction[reduction.Count() - 1], disturbance.Type);
                     }
                     //
                 }
@@ -4250,7 +4253,8 @@ namespace Landis.Library.PnETCohorts
                 RemoveCohort(cohort, disturbance.Type);
             }
 
-            return reduction.Sum();
+            //return reduction.Sum();
+            return;
         }
 
         public int AgeMax 

@@ -323,15 +323,16 @@ namespace Landis.Library.PnETCohorts
             for (int i = cohortData.Count - 1; i >= 0; i--)
             {
                 Cohort cohort = new Cohort(species, cohortData[i]);
-                int reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
+                double reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
+                int intReduction = (int)reduction;
                 //Console.WriteLine("  Reduction: {0}, {1} yrs, {2} g/m2, reduction={3}", cohort.Species.Name, cohort.Age, cohort.Biomass, reduction);
                 if (reduction > 0)
                 {
-                    totalReduction += reduction;
+                    totalReduction += intReduction;
                     if (reduction < cohort.Biomass)
                     {
-                        ReduceCohort(cohort, disturbance.CurrentSite, disturbance.Type, reduction);
-                        cohort.ChangeBiomass(-reduction);
+                        ReduceCohort(cohort, disturbance.CurrentSite, disturbance.Type, intReduction);
+                        cohort.ChangeBiomass(-intReduction);
                         cohortData[i] = cohort.Data;
                         //Console.WriteLine("  Partial Reduction: {0}, {1} yrs, {2} Mg/ha", cohort.Species.Name, cohort.Age, cohort.Biomass);
 

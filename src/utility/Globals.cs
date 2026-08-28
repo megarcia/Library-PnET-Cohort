@@ -40,11 +40,11 @@ namespace Landis.Library.PnETCohorts
 
         public static void SetMinMaxClimateYears()
         {
-            MinSpinUpClimateYear = Climate.Climate.SpinupCalendarYear(1);
-            MaxSpinUpClimateYear = Climate.Climate.SpinupEcoregionYearClimate.First(x => x != null).Last(x => x!= null).CalendarYear;
-
-            MinFutureClimateYear = Climate.Climate.FutureCalendarYear(1);
-            MaxSpinUpClimateYear = Climate.Climate.FutureEcoregionYearClimate.First(x => x != null).Last(x => x != null).CalendarYear;
+            // since the climate may be using random years, we need to look through all the available Spinup and Future Calendar Years to get the min and max years of the input climate data
+            MinSpinUpClimateYear = Enumerable.Range(1, Climate.Climate.SpinupAvailableYearCount).Min(x => Climate.Climate.SpinupCalendarYear(x));
+            MaxSpinUpClimateYear = Enumerable.Range(1, Climate.Climate.SpinupAvailableYearCount).Max(x => Climate.Climate.SpinupCalendarYear(x));
+            MinFutureClimateYear = Enumerable.Range(1, Climate.Climate.FutureAvailableYearCount).Min(x => Climate.Climate.FutureCalendarYear(x));
+            MaxFutureClimateYear = Enumerable.Range(1, Climate.Climate.FutureAvailableYearCount).Max(x => Climate.Climate.FutureCalendarYear(x));
         }
 
         public static bool IsFutureClimate(DateTime date)
@@ -65,9 +65,20 @@ namespace Landis.Library.PnETCohorts
 
         public static int ConvertYearToSpinUpClimateYear(DateTime date)
         {
-            int convert = date.Year - MinSpinUpClimateYear + 1;
+            // if the requested year is outside the range of [MinSpinUpClimateYear, MinSpinUpClimateYear + AvailableYearCount], then 
+            //  adjust the year so that the final index falls in the correct range
+            var year = date.Year;
+            while (year < MinSpinUpClimateYear || year > MinSpinUpClimateYear + Climate.Climate.SpinupAvailableYearCount)
+            {
+                if (year < MinSpinUpClimateYear)
+                    year += Climate.Climate.SpinupAvailableYearCount;
 
-            return convert >= 1 ? convert : -1;
+                if (year > MinSpinUpClimateYear + Climate.Climate.SpinupAvailableYearCount)
+                    year -= Climate.Climate.SpinupAvailableYearCount;
+            }
+
+            var convert = year - MinSpinUpClimateYear + 1;
+            return convert;
         }
     }
 }

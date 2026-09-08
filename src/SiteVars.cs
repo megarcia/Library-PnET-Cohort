@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 using Landis.Core;
 using Landis.Library.UniversalCohorts;
 using Landis.SpatialModeling;
@@ -20,19 +19,19 @@ namespace Landis.Library.PnETCohorts
         public static ISiteVar<double> ClimaticWaterDeficit;
         public static ISiteVar<double> SmolderConsumption;
         public static ISiteVar<double> FlamingConsumption;
-        public static ISiteVar<Landis.Library.PnETCohorts.SiteCohorts> SiteCohorts;
-        public static ISiteVar<Landis.Library.UniversalCohorts.SiteCohorts> UniversalCohorts;
+        public static ISiteVar<SiteCohorts> SiteCohorts;
+        public static ISiteVar<UniversalCohorts.SiteCohorts> UniversalCohorts;
         public static ISiteVar<float[]> MonthlyPressureHead;
         public static ISiteVar<SortedList<float, float>[]> MonthlySoilTemp;
         public static ISiteVar<float> FieldCapacity;
 
         public static void Initialize()
         {
+            SiteCohorts = Globals.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
+            UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<UniversalCohorts.SiteCohorts>();
             WoodyDebris = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             Litter = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             FineFuels = Globals.ModelCore.Landscape.NewSiteVar<Double>();
-            SiteCohorts = Globals.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
-            UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<Landis.Library.UniversalCohorts.SiteCohorts>();
             PressureHead = Globals.ModelCore.Landscape.NewSiteVar<float>();
             ExtremeMinTemp = Globals.ModelCore.Landscape.NewSiteVar<float>();
             AnnualPE = Globals.ModelCore.Landscape.NewSiteVar<Double>();
@@ -43,6 +42,7 @@ namespace Landis.Library.PnETCohorts
             MonthlySoilTemp = Globals.ModelCore.Landscape.NewSiteVar<SortedList<float, float>[]>();
             FieldCapacity = Globals.ModelCore.Landscape.NewSiteVar<float>();
 
+            Globals.ModelCore.RegisterSiteVar(SiteCohorts, "Succession.UniversalCohorts");
             Globals.ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
             Globals.ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
             Globals.ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
@@ -56,6 +56,5 @@ namespace Landis.Library.PnETCohorts
             Globals.ModelCore.RegisterSiteVar(MonthlySoilTemp, "Succession.MonthlySoilTemp");
             Globals.ModelCore.RegisterSiteVar(FieldCapacity, "Succession.SoilFieldCapacity");
         }
-
     }
 }

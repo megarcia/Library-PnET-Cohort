@@ -42,7 +42,7 @@ namespace Landis.Library.PnETCohorts
             MonthlySoilTemp = Globals.ModelCore.Landscape.NewSiteVar<SortedList<float, float>[]>();
             FieldCapacity = Globals.ModelCore.Landscape.NewSiteVar<float>();
 
-            Globals.ModelCore.RegisterSiteVar(SiteCohorts, "Succession.UniversalCohorts");  // MG 20260908
+            Globals.ModelCore.RegisterSiteVar(UniversalCohorts, "Succession.UniversalCohorts");  // MG20260908, 20260909
             Globals.ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
             Globals.ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
             Globals.ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");

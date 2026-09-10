@@ -1591,7 +1591,7 @@ namespace Landis.Library.PnETCohorts
             float kO3Eff = 0.0026F * o3Coeff;  // Scaled by species using input parameters            
             float O3Prof = (float)(0.6163 + (0.00105 * FolMass));
             float RelLayer = (float)Layer / (float)nLayers;
-            float relO3 = Math.Min(1, 1 - (RelLayer * O3Prof)**3);
+            float relO3 = Math.Min(1, 1 - Math.Pow(RelLayer * O3Prof, 3));
             // Kubiske method (using gwv in place of conductance
             currentO3Effect = (float)Math.Min(1, (lastO3Effect * droughtO3Frac) + (kO3Eff * gwv * o3 * relO3));
             return currentO3Effect;
@@ -1694,7 +1694,7 @@ namespace Landis.Library.PnETCohorts
                 limitingFactor = "ColdTol ("+ ColdKill.ToString()+ ")";
             else
             {
-               List<float> factorList = [fWaterAvg, fRadAvg, fOzoneAvg, Fage, fTemp];
+               List<float> factorList = new List<float>(new float[]{fWaterAvg,fRadAvg,fOzoneAvg,Fage,fTemp});
                float minFactor = factorList.Min();
                 if (minFactor == fTemp)
                     limitingFactor = "fTemp";

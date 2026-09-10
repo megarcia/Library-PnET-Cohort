@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Landis.Core;
 using Landis.Library.UniversalCohorts;
 using Landis.SpatialModeling;
-using System.Collections.Generic;
-using System;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -12,7 +12,7 @@ namespace Landis.Library.PnETCohorts
     public struct CohortData
     {
         /// <summary>
-        /// The cohort
+        /// The cohort instance
         /// </summary>
         public Cohort Cohort;
 
@@ -39,9 +39,9 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Max biomass achived in the cohorts' life time. 
         /// This value remains high after the cohort has reached its 
-        /// peak biomass. It is used to determine canopy layers where
-        /// it prevents that a cohort could descent in the canopy when 
-        /// it declines (g/m2)
+        /// peak biomass. It is used to determine canopy layers and
+        /// prevents a cohort from descending in the canopy as it
+        /// declines (g/m2)
         /// </summary>
         public float BiomassMax;
 
@@ -229,117 +229,113 @@ namespace Landis.Library.PnETCohorts
         /// Initializes a new instance.
         /// </summary>
         /// <param name="cohort">
-        /// The cohort we are extracting data from.
+        /// The existing cohort instance we are extracting data from.
         public CohortData(Cohort cohort)
         {
-            this.AdjFolN = cohort.AdjFolN;
-            this.adjFolN = cohort.adjFolN;
-            this.AdjFracFol = cohort.AdjFracFol;
-            this.adjFracFol = cohort.adjFracFol;
-            this.AdjHalfSat = cohort.AdjHalfSat;
-            this.AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
-            this.TotalBiomass = cohort.TotalBiomass;
-            this.BiomassMax = cohort.BiomassMax;
-            this.CiModifier = cohort.CiModifier;
-            this.ColdKill = cohort.ColdKill;
-            this.DeFolProp = cohort.DeFolProp;
-            this.DelAmax = cohort.DelAmax;
-            this.Fol = cohort.Fol;
-            this.MaxFolYear = cohort.MaxFolYear;
-            this.FolResp = cohort.FolResp;
-            this.FOzone = cohort.FOzone;
-            this.FRad = cohort.FRad;
-            this.FWater = cohort.FWater;
-            this.GrossPsn = cohort.GrossPsn;
-            this.Interception = cohort.Interception;
-            this.LAI = cohort.LAI;
-            this.LastLAI = cohort.LastLAI;
-            this.LastFoliageSenescence = cohort.LastFoliageSenescence;
-            this.LastFRad = cohort.LastFRad;
-            this.LastSeasonFRad = cohort.LastSeasonFRad;
-            this.LastWoodySenescence = cohort.LastWoodySenescence;
-            this.LastAGBio = cohort.LastAGBio;
-            this.Layer = cohort.Layer;
-            this.Leaf_On = cohort.Leaf_On;
-            this.MaintenanceRespiration = cohort.MaintenanceRespiration;
-            this.NetPsn = cohort.NetPsn;
-            this.NSC = cohort.NSC;
-            this.PressHead = cohort.PressHead;
-            this.NumEvents = cohort.NumEvents;
-            this.Transpiration = cohort.Transpiration;
-            this.PotentialTranspiration = cohort.PotentialTranspiration;
-            this.Water = cohort.Water;
-            this.BiomassLayerProp = cohort.BiomassLayerProp;
-            this.CanopyLayerProp = cohort.CanopyLayerProp;
-            this.Cohort = cohort;
-            this.CanopyGrowingSpace = cohort.CanopyGrowingSpace;
+            AdjFolN = cohort.AdjFolN;
+            adjFolN = cohort.adjFolN;
+            AdjFracFol = cohort.AdjFracFol;
+            adjFracFol = cohort.adjFracFol;
+            AdjHalfSat = cohort.AdjHalfSat;
+            AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
+            TotalBiomass = cohort.TotalBiomass;
+            BiomassMax = cohort.BiomassMax;
+            CiModifier = cohort.CiModifier;
+            ColdKill = cohort.ColdKill;
+            DeFolProp = cohort.DeFolProp;
+            DelAmax = cohort.DelAmax;
+            Fol = cohort.Fol;
+            MaxFolYear = cohort.MaxFolYear;
+            FolResp = cohort.FolResp;
+            FOzone = cohort.FOzone;
+            FRad = cohort.FRad;
+            FWater = cohort.FWater;
+            GrossPsn = cohort.GrossPsn;
+            Interception = cohort.Interception;
+            LAI = cohort.LAI;
+            LastLAI = cohort.LastLAI;
+            LastFoliageSenescence = cohort.LastFoliageSenescence;
+            LastFRad = cohort.LastFRad;
+            LastSeasonFRad = cohort.LastSeasonFRad;
+            LastWoodySenescence = cohort.LastWoodySenescence;
+            LastAGBio = cohort.LastAGBio;
+            Layer = cohort.Layer;
+            Leaf_On = cohort.Leaf_On;
+            MaintenanceRespiration = cohort.MaintenanceRespiration;
+            NetPsn = cohort.NetPsn;
+            NSC = cohort.NSC;
+            PressHead = cohort.PressHead;
+            NumEvents = cohort.NumEvents;
+            Transpiration = cohort.Transpiration;
+            PotentialTranspiration = cohort.PotentialTranspiration;
+            Water = cohort.Water;
+            BiomassLayerProp = cohort.BiomassLayerProp;
+            CanopyLayerProp = cohort.CanopyLayerProp;
+            Cohort = cohort;
+            CanopyGrowingSpace = cohort.CanopyGrowingSpace;
 
-            this.UniversalData.Age = cohort.Age;
-            this.UniversalData.Biomass = (int)(this.AGBiomass * cohort.CanopyLayerProp);
-            this.UniversalData.ANPP = cohort.ANPP;
+            UniversalData.Age = cohort.Age;
+            UniversalData.Biomass = (int)(AGBiomass * cohort.CanopyLayerProp);
+            UniversalData.ANPP = cohort.ANPP;
         }
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="age">
-        /// The age of the cohort.
-        /// <param name="totalBioamss">
-        /// The biomamss of the cohort
         public CohortData(ushort age, float totalBiomass, double totalANPP, ISpecies species, bool cohortStacking)
         {            
-            this.AdjFolN = new float[Globals.IMAX];
-            this.adjFolN = 0; ;
-            this.AdjFracFol = new float[Globals.IMAX];
-            this.adjFracFol = 0;
-            this.AdjHalfSat = 0;
+            AdjFolN = new float[Globals.IMAX];
+            adjFolN = 0; ;
+            AdjFracFol = new float[Globals.IMAX];
+            adjFracFol = 0;
+            AdjHalfSat = 0;
             ISpeciesPnET spc = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
-            this.Cohort = new Cohort(species,spc,0,"",1, cohortStacking);
-            this.AGBiomass = (1 - spc.FracBelowG) * totalBiomass;
-            this.TotalBiomass = totalBiomass;
-            this.BiomassMax = totalBiomass;
-            this.CiModifier = new float[Globals.IMAX];
-            this.ColdKill = int.MaxValue;
-            this.DeFolProp = 0;
-            this.DelAmax = new float[Globals.IMAX];
-            this.Fol = 0;
-            this.MaxFolYear = 0;
-            this.FolResp = new float[Globals.IMAX];
-            this.FOzone = new float[Globals.IMAX];
-            this.FRad = new float[Globals.IMAX];
-            this.FWater = new float[Globals.IMAX];
-            this.GrossPsn = new float[Globals.IMAX];
-            this.Interception = new float[Globals.IMAX];
-            this.LAI = new float[Globals.IMAX];
-            this.LastFoliageSenescence = 0;
-            this.LastFRad = 0;
-            this.LastSeasonFRad = new List<float>();
-            this.LastWoodySenescence = 0;
-            this.LastAGBio = this.AGBiomass;
-            this.Layer = 0;
-            this.Leaf_On = false;
-            this.MaintenanceRespiration = new float[Globals.IMAX];
-            this.NetPsn = new float[Globals.IMAX];
-            this.NSC = 0;
-            this.PressHead = new float[Globals.IMAX];
-            this.NumEvents = new int[Globals.IMAX];
-            this.Transpiration = new float[Globals.IMAX];
-            this.PotentialTranspiration = new float[Globals.IMAX];
-            this.Water = new float[Globals.IMAX];
-            this.BiomassLayerProp = 1.0f;
+            Cohort = new Cohort(species, spc, 0, "", 1, cohortStacking);
+            AGBiomass = (1 - spc.FracBelowG) * totalBiomass;
+            TotalBiomass = totalBiomass;
+            BiomassMax = totalBiomass;
+            CiModifier = new float[Globals.IMAX];
+            ColdKill = int.MaxValue;
+            DeFolProp = 0;
+            DelAmax = new float[Globals.IMAX];
+            Fol = 0;
+            MaxFolYear = 0;
+            FolResp = new float[Globals.IMAX];
+            FOzone = new float[Globals.IMAX];
+            FRad = new float[Globals.IMAX];
+            FWater = new float[Globals.IMAX];
+            GrossPsn = new float[Globals.IMAX];
+            Interception = new float[Globals.IMAX];
+            LAI = new float[Globals.IMAX];
+            LastFoliageSenescence = 0;
+            LastFRad = 0;
+            LastSeasonFRad = new List<float>();
+            LastWoodySenescence = 0;
+            LastAGBio = AGBiomass;
+            Layer = 0;
+            Leaf_On = false;
+            MaintenanceRespiration = new float[Globals.IMAX];
+            NetPsn = new float[Globals.IMAX];
+            NSC = 0;
+            PressHead = new float[Globals.IMAX];
+            NumEvents = new int[Globals.IMAX];
+            Transpiration = new float[Globals.IMAX];
+            PotentialTranspiration = new float[Globals.IMAX];
+            Water = new float[Globals.IMAX];
+            BiomassLayerProp = 1.0f;
             float cohortLAI = 0;
-            float cohortIdealFol = spc.FracFol * (float)Math.Exp(-spc.FrActWd * this.BiomassMax) * this.TotalBiomass;
+            float cohortIdealFol = spc.FracFol * (float)Math.Exp(-spc.FrActWd * BiomassMax) * TotalBiomass;
             for (int i = 0; i < Globals.IMAX; i++)
               cohortLAI += Cohort.CalculateLAI(spc, cohortIdealFol, i, cohortLAI);
-            this.LastLAI = cohortLAI;
-            this.CanopyLayerProp = this.LastLAI / spc.MaxLAI;
+            LastLAI = cohortLAI;
+            CanopyLayerProp = LastLAI / spc.MaxLAI;
             if (cohortStacking)
-                this.CanopyLayerProp = 1.0f;
-            this.CanopyGrowingSpace = 1.0f;
+                CanopyLayerProp = 1.0f;
+            CanopyGrowingSpace = 1.0f;
 
-            this.UniversalData.Age = age;
-            this.UniversalData.Biomass = (int)this.AGBiomass;
-            this.UniversalData.ANPP = totalANPP;
+            UniversalData.Age = age;
+            UniversalData.Biomass = (int)AGBiomass;
+            UniversalData.ANPP = totalANPP;
         }
     }
 }

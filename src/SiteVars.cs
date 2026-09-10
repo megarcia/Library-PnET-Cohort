@@ -10,6 +10,8 @@ namespace Landis.Library.PnETCohorts
 
     public static class SiteVars
     {
+        public static ISiteVar<SiteCohorts> SiteCohorts;
+        public static ISiteVar<UniversalCohorts.SiteCohorts> UniversalCohorts;
         public static ISiteVar<Pool> WoodyDebris;
         public static ISiteVar<Pool> Litter;
         public static ISiteVar<Double> FineFuels;
@@ -19,8 +21,6 @@ namespace Landis.Library.PnETCohorts
         public static ISiteVar<double> ClimaticWaterDeficit;
         public static ISiteVar<double> SmolderConsumption;
         public static ISiteVar<double> FlamingConsumption;
-        public static ISiteVar<SiteCohorts> SiteCohorts;
-        public static ISiteVar<UniversalCohorts.SiteCohorts> UniversalCohorts;
         public static ISiteVar<float[]> MonthlyPressureHead;
         public static ISiteVar<SortedList<float, float>[]> MonthlySoilTemp;
         public static ISiteVar<float> FieldCapacity;
@@ -42,8 +42,8 @@ namespace Landis.Library.PnETCohorts
             MonthlySoilTemp = Globals.ModelCore.Landscape.NewSiteVar<SortedList<float, float>[]>();
             FieldCapacity = Globals.ModelCore.Landscape.NewSiteVar<float>();
 
-            Globals.ModelCore.RegisterSiteVar(SiteCohorts, "Succession.CohortsPnET");  // MG20260909
-            Globals.ModelCore.RegisterSiteVar(UniversalCohorts, "Succession.UniversalCohorts");  // MG20260908, 20260909
+            Globals.ModelCore.RegisterSiteVar(SiteCohorts, "Succession.CohortsPnET");  //MG20260909 moved here from PlugIn.cs
+            Globals.ModelCore.RegisterSiteVar(UniversalCohorts, "Succession.UniversalCohorts");  //MG20260908, 20260909 moved here from PlugIn.cs
             Globals.ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
             Globals.ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
             Globals.ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");

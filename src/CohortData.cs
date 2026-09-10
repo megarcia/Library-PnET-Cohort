@@ -17,7 +17,7 @@ namespace Landis.Library.PnETCohorts
         public Cohort Cohort;
 
         /// <summary>
-        /// The universal cohort data
+        /// UniversalCohort data fields (Age, Biomass, and ANPP)
         /// </summary>
         public UniversalCohorts.CohortData UniversalData;
 
@@ -25,20 +25,16 @@ namespace Landis.Library.PnETCohorts
         /// The cohort's live aboveground biomass (g/m2).
         /// </summary>
         public float AGBiomass;
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// The cohort's live total biomass (wood + root) (g/m2).
         /// </summary>
         public float TotalBiomass;
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Are trees phsyiologically active
         /// </summary>
         public bool Leaf_On;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Max biomass achived in the cohorts' life time. 
@@ -48,8 +44,6 @@ namespace Landis.Library.PnETCohorts
         /// it declines (g/m2)
         /// </summary>
         public float BiomassMax;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Foliage (g/m2)
@@ -61,217 +55,160 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public float MaxFolYear;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// Non-Soluble Carbons
         /// </summary>
         public float NSC;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Defoliation Proportion
         /// </summary>
         public float DeFolProp;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// Annual Woody Senescence (g/m2)
         /// </summary>
         public float LastWoodySenescence;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Annual Foliage Senescence (g/m2)
         /// </summary>
         public float LastFoliageSenescence;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// Last Average FRad
         /// </summary>
         public float LastFRad;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Last Growing Season FRad
         /// </summary>
         public List<float> LastSeasonFRad;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// Adjusted Fraction of Foliage
         /// </summary>
         public float adjFracFol;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Adjusted Half Sat
         /// </summary>
         public float AdjHalfSat;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// Adjusted Foliage Carbons
         /// </summary>
         public float adjFolN;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Boolean whether cohort has been killed by cold temp relative to cold tolerance
         /// </summary>
         public int ColdKill;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// The Layer of the Cohort
         /// </summary>
         public byte Layer;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Leaf area index per subcanopy layer (m/m)
         /// </summary>
         public float[] LAI;
 
-        //---------------------------------------------------------------------
         /// <summary>
         /// Leaf area index (m/m) maximum last year
         /// </summary>
         public float LastLAI;
 
-        //---------------------------------------------------------------------
         /// <summary>
         /// Aboveground Biomass last year
         /// </summary>
         public float LastAGBio;
 
-        //---------------------------------------------------------------------
         /// <summary>
         /// Gross photosynthesis (gC/mo)
         /// </summary>
         public float[] GrossPsn;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Foliar respiration (gC/mo)
         /// </summary>
         public float[] FolResp;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// Net photosynthesis (gC/mo)
         /// </summary>
         public float[] NetPsn;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Mainenance respiration (gC/mo)
         /// </summary>
         public float[] MaintenanceRespiration;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// Transpiration (mm/mo)
         /// </summary>
         public float[] Transpiration;
 
-        //---------------------------------------------------------------------
         /// <summary>
         /// PotentialTranspiration (mm/mo)
         /// </summary>
         public float[] PotentialTranspiration;
 
-        //---------------------------------------------------------------------
         /// <summary>
         /// Reduction factor for suboptimal radiation on growth
         /// </summary>
         public float[] FRad;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Reduction factor for suboptimal or supra optimal water 
         /// </summary>
         public float[] FWater;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// Actual water used to calculate FWater
         /// </summary>
         public float[] Water;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Actual pressurehead used to calculate FWater
         /// </summary>
         public float[] PressHead;
 
-        //---------------------------------------------------------------------
         /// <summary>
         /// Number of precip events allocated to sublayer
         /// </summary>
         public int[] NumEvents;
 
-        //---------------------------------------------------------------------
         /// <summary>
         /// Reduction factor for ozone 
         /// </summary>
         public float[] FOzone;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Interception (mm/mo)
         /// </summary>
         public float[] Interception;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// Adjustment folN based on fRad
         /// </summary>
         public float[] AdjFolN;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Adjustment fracFol based on fRad
         /// </summary>
         public float[] AdjFracFol;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// Modifier of CiCa ratio based on fWater and Ozone
         /// </summary>
         public float[] CiModifier;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// Adjustment to Amax based on CO2
         /// </summary>
         public float[] DelAmax;
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Proportion of layer biomass attributed to cohort
@@ -300,9 +237,7 @@ namespace Landis.Library.PnETCohorts
             this.AdjFracFol = cohort.AdjFracFol;
             this.adjFracFol = cohort.adjFracFol;
             this.AdjHalfSat = cohort.AdjHalfSat;
-            this.UniversalData.Age = cohort.Age;
             this.AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
-            this.UniversalData.Biomass = (int)(this.AGBiomass * cohort.CanopyLayerProp);
             this.TotalBiomass = cohort.TotalBiomass;
             this.BiomassMax = cohort.BiomassMax;
             this.CiModifier = cohort.CiModifier;
@@ -338,6 +273,9 @@ namespace Landis.Library.PnETCohorts
             this.CanopyLayerProp = cohort.CanopyLayerProp;
             this.Cohort = cohort;
             this.CanopyGrowingSpace = cohort.CanopyGrowingSpace;
+
+            this.UniversalData.Age = cohort.Age;
+            this.UniversalData.Biomass = (int)(this.AGBiomass * cohort.CanopyLayerProp);
             this.UniversalData.ANPP = cohort.ANPP;
         }
 
@@ -355,11 +293,9 @@ namespace Landis.Library.PnETCohorts
             this.AdjFracFol = new float[Globals.IMAX];
             this.adjFracFol = 0;
             this.AdjHalfSat = 0;
-            this.UniversalData.Age = age;
             ISpeciesPnET spc = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
             this.Cohort = new Cohort(species,spc,0,"",1, cohortStacking);
-            this.AGBiomass = (1- spc.FracBelowG) * totalBiomass;
-            this.UniversalData.Biomass = (int)this.AGBiomass;
+            this.AGBiomass = (1 - spc.FracBelowG) * totalBiomass;
             this.TotalBiomass = totalBiomass;
             this.BiomassMax = totalBiomass;
             this.CiModifier = new float[Globals.IMAX];
@@ -375,7 +311,6 @@ namespace Landis.Library.PnETCohorts
             this.GrossPsn = new float[Globals.IMAX];
             this.Interception = new float[Globals.IMAX];
             this.LAI = new float[Globals.IMAX];
-            //this.LastLAI = 0;
             this.LastFoliageSenescence = 0;
             this.LastFRad = 0;
             this.LastSeasonFRad = new List<float>();
@@ -393,7 +328,7 @@ namespace Landis.Library.PnETCohorts
             this.Water = new float[Globals.IMAX];
             this.BiomassLayerProp = 1.0f;
             float cohortLAI = 0;
-            float cohortIdealFol = (spc.FracFol * (float)Math.Exp(-spc.FrActWd * this.BiomassMax) * this.TotalBiomass);
+            float cohortIdealFol = spc.FracFol * (float)Math.Exp(-spc.FrActWd * this.BiomassMax) * this.TotalBiomass;
             for (int i = 0; i < Globals.IMAX; i++)
               cohortLAI += Cohort.CalculateLAI(spc, cohortIdealFol, i, cohortLAI);
             this.LastLAI = cohortLAI;
@@ -401,6 +336,9 @@ namespace Landis.Library.PnETCohorts
             if (cohortStacking)
                 this.CanopyLayerProp = 1.0f;
             this.CanopyGrowingSpace = 1.0f;
+
+            this.UniversalData.Age = age;
+            this.UniversalData.Biomass = (int)this.AGBiomass;
             this.UniversalData.ANPP = totalANPP;
         }
     }

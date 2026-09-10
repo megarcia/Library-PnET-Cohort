@@ -1586,14 +1586,13 @@ namespace Landis.Library.PnETCohorts
 
         public static float ComputeO3Effect_PnET(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastO3Effect, float gwv, float layerLAI, float o3Coeff)
         {
-            float currentO3Effect = 1.0F;
-            float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
-            float kO3Eff = 0.0026F * o3Coeff;  // Scaled by species using input parameters            
-            float O3Prof = (float)(0.6163 + (0.00105 * FolMass));
+            float droughtO3Frac = 1.0f; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
+            float kO3Eff = 0.0026f * o3Coeff;  // Scaled by species using input parameters            
+            float O3Prof = 0.6163f + (0.00105f * FolMass);
             float RelLayer = (float)Layer / (float)nLayers;
-            float relO3 = Math.Min(1, 1 - Math.Pow(RelLayer * O3Prof, 3));
+            float relO3 = (float)Math.Min(1, 1 - (float)Math.Pow(RelLayer * O3Prof, 3));
             // Kubiske method (using gwv in place of conductance
-            currentO3Effect = (float)Math.Min(1, (lastO3Effect * droughtO3Frac) + (kO3Eff * gwv * o3 * relO3));
+            float currentO3Effect = (float)Math.Min(1, (lastO3Effect * droughtO3Frac) + (kO3Eff * gwv * o3 * relO3));
             return currentO3Effect;
         }
 

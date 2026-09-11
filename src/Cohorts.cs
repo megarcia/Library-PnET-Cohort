@@ -13,8 +13,6 @@ namespace Landis.Library.PnETCohorts
         private static int successionTimeStep;
         private static ICalculator biomassCalculator;
 
-        //---------------------------------------------------------------------
-
         /// <summary>
         /// The succession time step used by biomass cohorts.
         /// </summary>
@@ -25,8 +23,6 @@ namespace Landis.Library.PnETCohorts
                 return successionTimeStep;
             }
         }
-
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// The calculator for computing how a cohort's biomass changes.
@@ -39,8 +35,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        //---------------------------------------------------------------------
-
+        //MG20260911 Doesn't appear to be called from anywhere else
         /// <summary>
         /// Initializes the cohorts module.
         /// </summary>
@@ -53,8 +48,8 @@ namespace Landis.Library.PnETCohorts
             Cohorts.successionTimeStep = successionTimeStep;
         }
 
-        //---------------------------------------------------------------------
-
+        //MG20260911 Is this an endlessly recursive function??? 
+        //MG20260911 Good thing it doesn't appear to be called from anywhere else!
         /// <summary>
         /// Computes the total biomass for all the cohorts at a site.
         /// </summary>
@@ -63,8 +58,7 @@ namespace Landis.Library.PnETCohorts
             return ComputeBiomass(siteCohorts);
         }
         
-        //---------------------------------------------------------------------
-
+        //MG20260911 Doesn't appear to be called from anywhere else
         /// <summary>
         /// Computes the total aboveground live biomass for all the cohorts at a site, and the
         /// total aboveground live biomass for all the young cohorts.
@@ -85,8 +79,7 @@ namespace Landis.Library.PnETCohorts
             return totalBiomass;
         }
 
-        //---------------------------------------------------------------------
-
+        //MG20260911 Doesn't appear to be called from anywhere else
         /// <summary>
         /// Computes the total aboveground live biomass for all the cohorts, not including young cohorts.
         /// </summary>
@@ -95,13 +88,10 @@ namespace Landis.Library.PnETCohorts
             if (siteCohorts == null)
                 return 0;
             int totalBiomass = 0;
-            foreach (ISpeciesCohorts speciesCohorts in (UniversalCohorts.ISiteCohorts)siteCohorts) {
+            foreach (ISpeciesCohorts speciesCohorts in (UniversalCohorts.ISiteCohorts)siteCohorts)
                 foreach (ICohort cohort in speciesCohorts)
-                {
                     if (cohort.Data.UniversalData.Age >= successionTimeStep)
                         totalBiomass += (int)cohort.Data.UniversalData.Biomass;
-                }
-            }
             return totalBiomass;
         }
     }

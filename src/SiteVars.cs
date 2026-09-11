@@ -60,6 +60,7 @@ namespace Landis.Library.PnETCohorts
         //MG20260911 moved here from PlugIn.cs and modified accordingly
         public static void UpdateUniversalCohorts()
         {
+            Globals.ModelCore.UI.WriteLine("Updating UniversalCohorts with PnET SiteCohorts data.");
             foreach (ActiveSite site in Globals.ModelCore.Landscape)
             {
                 UniversalCohorts[site] = new Library.UniversalCohorts.SiteCohorts();

@@ -1521,10 +1521,12 @@ namespace Landis.Library.PnETCohorts
                 if (o3_month > 0)
                 {
                     float o3Coeff = speciesPnET.O3GrowthSens;
-                    O3Effect = ComputeO3Effect_PnET(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, Fol, lastO3Effect, gwv, LAI[index], o3Coeff);
+                    O3Effect = ComputeO3Effect_PnET(o3_month, subCanopyIndex, layerCount, Fol, lastO3Effect, gwv, o3Coeff);
                 }
                 else
-                { O3Effect = 0; }
+                { 
+                    O3Effect = 0;
+                }
                 FOzone[index] = 1 - O3Effect;
                 
                 //Apply reduction factor for Ozone
@@ -1584,7 +1586,7 @@ namespace Landis.Library.PnETCohorts
                 return 1;
         }
 
-        public static float ComputeO3Effect_PnET(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastO3Effect, float gwv, float layerLAI, float o3Coeff)
+        public static float ComputeO3Effect_PnET(float o3, int Layer, int nLayers, float FolMass, float lastO3Effect, float gwv, float o3Coeff)
         {
             float droughtO3Frac = 1.0f; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
             float kO3Eff = 0.0026f * o3Coeff;  // Scaled by species using input parameters            
@@ -1808,7 +1810,6 @@ namespace Landis.Library.PnETCohorts
         public void WriteCohortData()
         {
             cohortoutput.Write();
-         
         }
 
         public float FoliageSenescence()

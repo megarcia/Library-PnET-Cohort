@@ -1,4 +1,5 @@
-﻿
+﻿using System.Math;
+
 namespace Landis.Library.PnETCohorts 
 {
     public class Constants 

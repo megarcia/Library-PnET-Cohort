@@ -144,40 +144,8 @@ namespace Landis.Library.PnETCohorts
                 return _daylength;
             }
         }
-        //---------------------------------------------------------------------
 
-        private static float Calculate_VP(float a, float b, float c, float T)
-        {
-            // Calculates vapor pressure at temperature (T)
-            // a,b,c are coefficients
-            // Equation from PnET-II
-            return a * (float)Math.Exp(b * T / (T + c));
-        }
-        //---------------------------------------------------------------------
-        public static float Calculate_VPD(float Tday, float TMin)
-        {
 
-            float emean;
-
-            //saturated vapor pressure
-            float es = Calculate_VP(0.61078f, 17.26939f, 237.3f, Tday);
-            // 0.61078f * (float)Math.Exp(17.26939f * Tday / (Tday + 237.3f));
-
-            if (Tday < 0)
-            {
-                es = Calculate_VP(0.61078f, 21.87456f, 265.5f, Tday);
-                //0.61078f * (float)Math.Exp(21.87456f * Tday / (Tday + 265.5f));
-                //delta = 5808.0f * es / ((Tday + 265.5f) * (Tday + 265.5f));
-            }
-
-            emean = Calculate_VP(0.61078f, 17.26939f, 237.3f, TMin);
-            //0.61078f * (float)Math.Exp(17.26939f * TMin / (TMin + 237.3f));
-            if (TMin < 0) emean = Calculate_VP(0.61078f, 21.87456f, 265.5f, TMin);
-            //0.61078f * (float)Math.Exp(21.87456f * TMin / (TMin + 265.5f));
-
-            return es - emean;
-        }
-        //---------------------------------------------------------------------
         // Old function - no longer used
         public static float LinearPsnTempResponse(float tday, float PsnTOpt, float PsnTMin)
         {
@@ -240,7 +208,7 @@ namespace Landis.Library.PnETCohorts
 
             speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
 
-            _tave = (float)0.5 * (climate_dataset.Tmin + climate_dataset.Tmax);
+            _tave = Weather.CalcTavg;
 
             _dayspan = Calendar.CalcDaySpan(Date.Month);
 
@@ -248,8 +216,8 @@ namespace Landis.Library.PnETCohorts
             _daylength = Calculate_DayLength(hr);
             float nightlength = Calculate_NightLength(hr);
 
-            _tday = (float)0.5 * (climate_dataset.Tmax + _tave);
-            _vpd = EcoregionPnETVariables.Calculate_VPD(Tday, climate_dataset.Tmin);
+            _tday = Weather.CalcTday;
+            _vpd = Weather.CalcVPD(Tday, climate_dataset.Tmin);
 
             foreach (ISpeciesPnET spc in Species)
             {

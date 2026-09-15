@@ -34,6 +34,8 @@ namespace Landis.Library.PnETCohorts
         /// <param name="T">Temperature (C)</param>
         public static float CalcVaporPressure(float T)
         {
+            float t_coeff;
+            float t_offset;
             float coeff = 0.61078f;
             if (T >= 0.0)  // above freezing point -- vapor pressure over water
             {
@@ -65,6 +67,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Slope of vapor pressure curve at temperature T (C)
         ///     Cabrera et al. 2016 (Table 1)
+        /// assumed over water (t_offset = 237.3K)
         /// </summary>
         /// <param name="T">Temperature (C)</param>
         public static float CalcVaporPressureCurveSlope(float T)

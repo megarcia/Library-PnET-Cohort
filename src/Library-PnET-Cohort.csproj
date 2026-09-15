@@ -41,13 +41,8 @@
     <Compile Remove="EcoregionClimateVariables.cs" />
     <Compile Remove="IEcoregionClimateVariables.cs" />
     <Compile Remove="InitialCommunity\Pixel.cs" />
-    <Compile Remove="WaterStressTable.cs" />
   </ItemGroup>
 	
-  <ItemGroup>
-    <None Remove="Landis.Library.Climate-v6.dll" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Landis.Core" Version="3.0.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

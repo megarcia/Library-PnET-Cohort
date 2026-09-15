@@ -37,10 +37,9 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        //---------------------------------------------------------------------
-        public static PressureHeadSaxton_Rawls pressureheadtable;
-        //---------------------------------------------------------------------
-        public PressureHeadSaxton_Rawls PressureHeadTable
+        public static Hydrology_SaxtonRawls pressureheadtable;
+
+        public Hydrology_SaxtonRawls PressureHeadTable
         {
             get
             {
@@ -48,12 +47,12 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        //---------------------------------------------------------------------
         // Get the pressurehead (mmH2O) for the current water content (converted from proportion to percent)
         public float GetPressureHead(IEcoregionPnET ecoregion)
         {
             return pressureheadtable[ecoregion, (int)Math.Round(water * 100.0)];
         }
+
         // Get the pressurehead (mmH2O) for a provided water content (converted from proportion to percent)
         public float GetPressureHead(IEcoregionPnET ecoregion, float temp_water)
         {
@@ -142,7 +141,7 @@ namespace Landis.Library.PnETCohorts
             if (Names.TryGetParameter(Names.PressureHeadCalculationMethod, out PressureHeadCalculationMethod))
             {
                 Parameter<string> p = Names.GetParameter(Names.PressureHeadCalculationMethod);
-                pressureheadtable = new PressureHeadSaxton_Rawls();
+                pressureheadtable = new Hydrology_SaxtonRawls();
             }
             else
             {

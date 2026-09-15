@@ -32,7 +32,7 @@ namespace Landis.Library.PnETCohorts
             speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
 
 
-            _tave = Weather.CalcTavg;
+            _tave = Weather.CalcTavg((float)monthlyClimateRecord.Tmin, (float)monthlyClimateRecord.Tmax);
 
             _dayspan = Calendar.CalcDaySpan(date.Month);
 
@@ -40,8 +40,8 @@ namespace Landis.Library.PnETCohorts
             _daylength = Calendar.CalcDayLength(hr);
             float nightlength = Calendar.CalcNightLength(hr);
 
-            _tday = Weather.CalcTday;
-            _vpd = Weather.CalcVPD(Tday, (float)monthlyClimateRecord.Tmin);
+            _tday = Weather.CalcTday(_tave, (float)monthlyClimateRecord.Tmax);
+            _vpd = Weather.CalcVPD(_tday, (float)monthlyClimateRecord.Tmin);
 
 
             foreach (ISpeciesPnET spc in Species)

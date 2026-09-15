@@ -12,7 +12,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcTavg(float Tmin, float Tmax)
         {
-            return (float)((Tmin + Tmax) / 2.0);
+            return (float)((Tmin + Tmax) / 2.0f);
         }
 
         /// <summary>
@@ -34,16 +34,16 @@ namespace Landis.Library.PnETCohorts
         /// <param name="T">Temperature (C)</param>
         public static float CalcVaporPressure(float T)
         {
-            float coeff = 0.61078;
+            float coeff = 0.61078f;
             if (T >= 0.0)  // above freezing point -- vapor pressure over water
             {
-                t_coeff = 17.26939; 
-                t_offset = 237.3;
+                t_coeff = 17.26939f; 
+                t_offset = 237.3f;
             }
             else  // below freezing point -- vapor pressure over ice
             {
-                t_coeff = 21.87456;
-                t_offset = 265.5;  
+                t_coeff = 21.87456f;
+                t_offset = 265.5f;  
             }
             float es = coeff * (float)Math.Exp(t_coeff * T / (T + t_offset));
             return es;
@@ -69,8 +69,8 @@ namespace Landis.Library.PnETCohorts
         /// <param name="T">Temperature (C)</param>
         public static float CalcVaporPressureCurveSlope(float T)
         {
-            float t_offset = 237.3;
-            float Slope = 4098.0 * CalcVaporPressure(T) / (float)Math.Pow(T + t_offset, 2);
+            float t_offset = 237.3f;
+            float Slope = 4098.0f * CalcVaporPressure(T) / (float)Math.Pow(T + t_offset, 2);
             return Slope;
         }
     }

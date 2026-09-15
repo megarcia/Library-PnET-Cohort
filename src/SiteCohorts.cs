@@ -1643,7 +1643,7 @@ namespace Landis.Library.PnETCohorts
                 }
                 float Psno_kg_m3 = Constants.DensitySnow_intercept + (Constants.DensitySnow_slope * daysOfWinter); //kg/m3
                 float Psno_g_cm3 = Psno_kg_m3 / 1000; //g/cm3
-                float sno_dep = Globals.DensityWater * (snowPack / 1000) / Psno_kg_m3; //m
+                float sno_dep = Constants.DensityWater * (snowPack / 1000) / Psno_kg_m3; //m
 
                 if (lastTempBelowSnow == float.MaxValue)
                 {
@@ -2429,7 +2429,7 @@ namespace Landis.Library.PnETCohorts
                 float groundAlbedo = 0.20F;
                 if (sno_dep > 0)
                 {
-                    float snowMultiplier = sno_dep >= Globals.snowReflectanceThreshold ? 1 : sno_dep / Globals.snowReflectanceThreshold;
+                    float snowMultiplier = sno_dep >= Constants.SnowReflectanceThreshold ? 1 : sno_dep / Constants.SnowReflectanceThreshold;
                     groundAlbedo = (float)(groundAlbedo + (groundAlbedo * (2.125 * snowMultiplier)));
                 }
 
@@ -2806,7 +2806,7 @@ namespace Landis.Library.PnETCohorts
                 return -1;
             }
             float finalAlbedo = 0;
-            float snowMultiplier = snowDepth >= Globals.snowReflectanceThreshold ? 1 : snowDepth / Globals.snowReflectanceThreshold;
+            float snowMultiplier = snowDepth >= Constants.SnowReflectanceThreshold ? 1 : snowDepth / Constants.SnowReflectanceThreshold;
 
             if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
                     && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground")

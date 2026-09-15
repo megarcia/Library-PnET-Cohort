@@ -2179,7 +2179,7 @@ namespace Landis.Library.PnETCohorts
 
                                 if (layerSumCanopyProp[b] > 1)
                                 {
-                                    //if (data[m].Month == (int)Constants.Months.January)
+                                    //if (data[m].Month == (int)Calendar.Months.January)
                                     if (c.growMonth == 1)
                                     {
 
@@ -2606,7 +2606,7 @@ namespace Landis.Library.PnETCohorts
                 AllCohorts.ForEach(x => x.NullSubLayers());
 
                 //  Processes that happen only once per year
-                if (data[m].Month == (int)Constants.Months.December)
+                if (data[m].Month == (int)Calendar.Months.December)
                 {
                     //  Decompose litter
                     HeterotrophicRespiration = (ushort)(SiteVars.Litter[Site].Decompose() + SiteVars.WoodyDebris[Site].Decompose());
@@ -2655,7 +2655,7 @@ namespace Landis.Library.PnETCohorts
                         annualFwater[spc].Clear();
                         annualFrad[spc].Clear();
                     } //foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
-                } //if (data[m].Month == (int)Constants.Months.December)
+                } //if (data[m].Month == (int)Calendar.Months.December)
 
                 wateravg += hydrology.Water;
             } //for (int m = 0; m < data.Count(); m++ )

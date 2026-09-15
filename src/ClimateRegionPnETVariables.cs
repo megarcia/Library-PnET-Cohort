@@ -34,11 +34,11 @@ namespace Landis.Library.PnETCohorts
 
             _tave = (float)(0.5 * (monthlyClimateRecord.Tmin + monthlyClimateRecord.Tmax));
 
-            _dayspan = EcoregionPnETVariables.Calculate_DaySpan(date.Month);
+            _dayspan = Calendar.CalcDaySpan(date.Month);
 
-            float hr = EcoregionPnETVariables.Calculate_hr(date.DayOfYear, latitude);
-            _daylength = EcoregionPnETVariables.Calculate_DayLength(hr);
-            float nightlength = EcoregionPnETVariables.Calculate_NightLength(hr);
+            float hr = Calendar.CalcDaylightHrs(date.DayOfYear, latitude);
+            _daylength = Calendar.CalcDayLength(hr);
+            float nightlength = Calendar.CalcNightLength(hr);
 
             _tday = (float)(0.5 * (monthlyClimateRecord.Tmax + _tave));
             _vpd = EcoregionPnETVariables.Calculate_VPD(Tday, (float)monthlyClimateRecord.Tmin);

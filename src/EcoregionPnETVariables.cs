@@ -212,9 +212,9 @@ namespace Landis.Library.PnETCohorts
 
             _dayspan = Calendar.CalcDaySpan(Date.Month);
 
-            float hr = Calculate_hr(Date.DayOfYear, Latitude); //hours of daylight
-            _daylength = Calculate_DayLength(hr);
-            float nightlength = Calculate_NightLength(hr);
+            float hr = Calendar.CalcDaylightHrs(Date.DayOfYear, Latitude); //hours of daylight
+            _daylength = Calendar.CalcDayLength(hr);
+            float nightlength = Calendar.CalcNightLength(hr);
 
             _tday = Weather.CalcTday(_tave, climate_dataset.Tmax);
             _vpd = Weather.CalcVPD(_tday, climate_dataset.Tmin);

@@ -1,4 +1,7 @@
-﻿using System;
+﻿//MG20260915 With the addition of the new Snow and Soils classes,
+//           this file/class is deprecated and will be removed.
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 

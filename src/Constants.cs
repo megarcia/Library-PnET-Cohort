@@ -1,4 +1,4 @@
-﻿using System.Math;
+﻿using System;
 
 namespace Landis.Library.PnETCohorts 
 {

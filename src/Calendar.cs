@@ -47,7 +47,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcNightLength(float Hrs)
         {
-            return Constants.SecondsPerHour * (24.0 - Hrs);
+            return Constants.SecondsPerHour * (24.0f - Hrs);
         }
 
         /// <summary>
@@ -69,40 +69,40 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcDaylightHrs(int DOY, double Latitude)
         {
-            float LatRad = (float)Latitude * (2.0 * (float)Math.PI) / 360.0;
-            float z = 0.39785 * (float)Math.Sin(4.868961 + 0.017203 * DOY + 0.033446 * (float)Math.Sin(6.224111 + 0.017202 * DOY));
+            float LatRad = (float)Latitude * (2.0f * (float)Math.PI) / 360.0f;
+            float z = 0.39785f * (float)Math.Sin(4.868961f + 0.017203f * DOY + 0.033446f * (float)Math.Sin(6.224111f + 0.017202f * DOY));
             float decl;
-            if ((float)Math.Abs(z) < 0.7)
-                decl = (float)Math.Atan(z / ((float)Math.Sqrt(1.0 - z * z)));
+            if ((float)Math.Abs(z) < 0.7f)
+                decl = (float)Math.Atan(z / ((float)Math.Sqrt(1.0f - z * z)));
             else
-                decl = (float)Math.PI / 2.0 - (float)Math.Atan((float)Math.Sqrt(1.0 - z * z) / z);
-            if ((float)Math.Abs(LatRad) >= (float)Math.PI / 2.0)
+                decl = (float)Math.PI / 2.0f - (float)Math.Atan((float)Math.Sqrt(1.0f - z * z) / z);
+            if ((float)Math.Abs(LatRad) >= (float)Math.PI / 2.0f)
             {
                 if (Latitude < 0)
-                    LatRad = -1.0 * ((float)Math.PI / 2.0 - 0.01);
+                    LatRad = -1.0f * ((float)Math.PI / 2.0f - 0.01f);
                 else
-                    LatRad = 1.0 * ((float)Math.PI / 2.0 - 0.01);
+                    LatRad = 1.0f * ((float)Math.PI / 2.0f - 0.01f);
             }
             float z2 = -(float)Math.Tan(decl) * (float)Math.Tan(LatRad);
             float h;
-            if (z2 >= 1.0)
-                h = 0.0;
-            else if (z2 <= -1.0)
+            if (z2 >= 1.0f)
+                h = 0.0f;
+            else if (z2 <= -1.0f)
                 h = (float)Math.PI;
             else
             {
                 float TA = (float)Math.Abs(z2);
                 float AC;
-                if (TA < 0.7)
-                    AC = ((float)Math.PI / 2.0) - (float)Math.Atan(TA / (float)Math.Sqrt(1.0 - TA * TA));
+                if (TA < 0.7f)
+                    AC = ((float)Math.PI / 2.0f) - (float)Math.Atan(TA / (float)Math.Sqrt(1.0f - TA * TA));
                 else
-                    AC = (float)Math.Atan((float)Math.Sqrt(1.0 - TA * TA) / TA);
+                    AC = (float)Math.Atan((float)Math.Sqrt(1.0f - TA * TA) / TA);
                 if (z2 < 0)
                     h = (float)Math.PI - AC;
                 else
                     h = AC;
             }
-            float daylight_h = 2.0 * (h * 24.0) / (2.0 * (float)Math.PI);
+            float daylight_h = 2.0f * (h * 24.0f) / (2.0f * (float)Math.PI);
             return daylight_h;
         }
     }

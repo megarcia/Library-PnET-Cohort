@@ -192,27 +192,28 @@ namespace Landis.Library.PnETCohorts
 	        double alphaPT = 1.35;			 // Priestley Taylor constant (parameter)
 
             int sec_per_day = (int) Math.Round(_dayLength);
-            const int JoulesPerMJ = 1000000;
                         
 	        // Atmospheric pressure (unit of vapour pressure kPa, depends on altitude)
 	        //http://www.fao.org/docrep/x0490e/x0490e07.htm#TopOfPage
-	        double press = 101.3 * Math.Pow(((293 -0.0065 * Altitude)/293),5.26);
+	        double press = 101.3 * Math.Pow((293 - 0.0065 * Altitude) / 293, 5.26);
            
 	        // Psychrometric constant [kPa °C-1]
-            double gamE  = Cpd*press/(eps*Lv); 
+            double gamE  = Cpd * press/ (eps * Lv); 
 
 	        // Angle of the curve [-]
-            double delta = (6.112 * Math.Exp(17.67 * _Tair / (_Tair + 243.5))) * 17.67 * 243.5 / Math.Pow((_Tair + 243.5), 2);
+            double delta = 6.112 * Math.Exp(17.67 * _Tair / (_Tair + 243.5)) * 17.67 * 243.5 / Math.Pow(_Tair + 243.5, 2);
 
             // RADs coming in as micromol(PAR)/m2/s
             double Rad_day = _Rads * sec_per_day;   // umol/m2/day
-            double Radn = Math.Max(-15 + 0.6 * Rad_day / JoulesPerMJ, 0); // (MJ/m2/day)
-            double RadnMJM2 = Radn * sec_per_day / JoulesPerMJ;  // Radn should have unit MJ/m2
+            double Radn = Math.Max(-15 + 0.6 * Rad_day / Constants.Million, 0); // (MJ/m2/day)
+            double RadnMJM2 = Radn * sec_per_day / Constants.Million;  // Radn should have unit MJ/m2
             //double RadnMJM2 = _Rads * sec_per_day / 2.0513; //(MJ/m2/day) http://www.pnet.sr.unh.edu/subpages/radconvert.html
 
             double PET = 0;
-	        if (RadnMJM2 > 0)PET = (alphaPT/Lv) * delta / (delta + gamE) * RadnMJM2 * JoulesPerMJ; //BRM - unable to verify this equation and proper units
-	        else PET= 0.0;
+	        if (RadnMJM2 > 0)
+                PET = alphaPT / Lv * delta / (delta + gamE) * RadnMJM2 * Constants.Million; //BRM - unable to verify this equation and proper units
+	        else 
+                PET= 0.0;
 
             return PET * _daySpan;  //mm/month
         }
@@ -228,7 +229,7 @@ namespace Landis.Library.PnETCohorts
             float PE = 0; //mm/month
 
             //float Rs_W = (float)(_Rads / (2.02 * 24 * Constants.SecondsPerHour / _daylength)); // convert daytime PAR (umol/m2*s) to total daily solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
-            float Rs_W = (float)(_Rads / (2.02f)); // convert PAR (umol/m2*s) to total solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
+            float Rs_W = (float)(_Rads / 2.02f); // convert PAR (umol/m2*s) to total solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
             float Rs = Rs_W * 0.0864F; // convert Rs_W (W/m2) to Rs (MJ/m2*d) [Reis and Ribeiro 2019 (eq. 13)]
             float Gamma = 0.062F; // kPa/C; [Cabrera et al. 2016 (Table 1)]
             float es = Weather.CalcVaporPressure((float)_Tair); // water vapor saturation pressure (kPa); [Cabrera et al. 2016 (Table 1)]
@@ -347,8 +348,8 @@ namespace Landis.Library.PnETCohorts
             // T                average monthly temperature (C)
             // daySpan          number of days in the month
 
-            float Rs_daily = (float)(aboveCanopyPAR / (24 * Constants.SecondsPerHour / daylength)); // convert daytime PAR (umol/m2*s) to total daily PAR (umol/m2*s)
-            float Rs_W = (float)(Rs_daily / (2.02f )); // convert daily PAR (umol/m2*s) to total solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
+            float Rs_daily = (float)(aboveCanopyPAR / (Constants.SecondsPerDay / daylength)); // convert daytime PAR (umol/m2*s) to total daily PAR (umol/m2*s)
+            float Rs_W = (float)(Rs_daily / 2.02f); // convert daily PAR (umol/m2*s) to total solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
             //float Rs = Rs_W * 0.0864F; // convert Rs_W (W/m2) to Rs (MJ/m2*d) [Reis and Ribeiro 2019 (eq. 13)]
 
             // Back-calculate LAI from aboveCanopyPAR and subCanopyPAR
@@ -368,11 +369,10 @@ namespace Landis.Library.PnETCohorts
 
             float alpha = 1.0f;
             float gamma = 0.066f;    // kPA/C
-            float L = 2453f;    // MJ/m3 - latent heat of vaporization
             float es = Weather.CalcVaporPressure(T); // water vapor saturation pressure (kPa); [Cabrera et al. 2016 (Table 1)]
             float S = Weather.CalcVaporPressureCurveSlope(T); // slope of curve of water pressure and air temp; [Cabrera et al. 2016 (Table 1)]
 
-            float PET_ground = alpha * (S/(S+gamma)) / L * subCanopyNetRad * 0.0864F; //m/day  (0.0864 conversion W/m2 to MJ/m2*d)
+            float PET_ground = alpha * (S / (S + gamma)) / Constants.LatentHeatVaporWater * subCanopyNetRad * 0.0864F; //m/day  (0.0864 conversion W/m2 to MJ/m2*d)
             return PET_ground * 1000 * daySpan; //mm/month
         }
         //---------------------------------------------------------------------
@@ -386,7 +386,7 @@ namespace Landis.Library.PnETCohorts
             {
                 float k = 1.2f;   // proportionality coefficient
                 float es = Weather.CalcVaporPressure(T);
-                float N = (dayLength / (float)Constants.SecondsPerHour) / 12f;
+                float N = dayLength / (float)Constants.SecondsPerHour / 12f;
                 float PET = k * 0.165f * 216.7f * N * (es / (T + 273.3f));
                 return PET; // mm/day
             }

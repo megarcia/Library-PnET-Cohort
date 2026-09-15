@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Landis.Core;
-using Landis.Climate;
+using Landis.Library.Climate;
 
 namespace Landis.Library.PnETCohorts
 {

@@ -1,21 +1,20 @@
-﻿using Landis.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Landis.Core;
+
 namespace Landis.Library.PnETCohorts
 {
-    public class PressureHeadSaxton_Rawls  
+    public class Hydrology_SaxtonRawls  
     {
-        public const string SaxtonAndRawlsParameters = "SaxtonAndRawlsParameters";
-
         public static List<string> ParameterNames
         {
             get
             {
-                return typeof(PressureHeadSaxton_Rawls).GetFields().Select(x => x.Name).ToList();
+                return typeof(Hydrology_SaxtonRawls).GetFields().Select(x => x.Name).ToList();
             }
         }
-        //---------------------------------------------------------------------
+
         public static Parameter<string> Sand;
         public static Parameter<string> Clay;
         public static Parameter<string> PctOM;
@@ -30,14 +29,14 @@ namespace Landis.Library.PnETCohorts
         static Dictionary<string, float> lambda_s = new Dictionary<string, float>();
         static Dictionary<string, float> Fs = new Dictionary<string, float>();
 
-        Landis.Library.Parameters.Ecoregions.AuxParm<float[]> table = new Library.Parameters.Ecoregions.AuxParm<float[]>(Globals.ModelCore.Ecoregions);
-        //---------------------------------------------------------------------
+        Library.Parameters.Ecoregions.AuxParm<float[]> table = new Library.Parameters.Ecoregions.AuxParm<float[]>(Globals.ModelCore.Ecoregions);
+
         // mm/m of active soil
         public float Porosity(string SoilType)
         {
             return porosity_OM_comp[SoilType];
         }
-        //---------------------------------------------------------------------
+
         public float this[IEcoregion ecoregion, int water]
         {
             get
@@ -54,20 +53,17 @@ namespace Landis.Library.PnETCohorts
                 }
             }
         }
-        //---------------------------------------------------------------------
+
         /// <summary>
         /// </summary>
-        /// <param name="watercontent": fraction  ></param>
+        /// <param name="watercontent"></param>
         /// <param name="soiltype"></param>
-        /// <returns></returns>
         public float CalculateWaterPressure(double watercontent, string soiltype)
         { 
             double tension = 0.0;
 
             if (watercontent <= porosity_OM_comp[soiltype])
-            {
                 tension = tensionA[soiltype] * Math.Pow(watercontent, -tensionB[soiltype]);
-            }
 
             float pressureHead;
             if (double.IsInfinity(tension))
@@ -82,23 +78,19 @@ namespace Landis.Library.PnETCohorts
             }
             return pressureHead;
         }
-        //---------------------------------------------------------------------
+
         // tension =  pressurehead (kPA) 
         // Calculates volumetric water content (m3H2O/m3 SOIL)
         public float CalculateWaterContent(float tension /* kPA*/, string soiltype)
         {
-            // mH2O value =  kPa value x 0.101972
-            //float tension = (float) (WaterPressure / 0.1019977334);
-
-            float watercontent = (float) Math.Pow(tension / tensionA[soiltype], 1.0/-tensionB[soiltype]);
-
+            float watercontent = (float)Math.Pow(tension / tensionA[soiltype], 1.0 / -tensionB[soiltype]);
             return watercontent; 
         }
-        //---------------------------------------------------------------------
-        public PressureHeadSaxton_Rawls()
+
+        public Hydrology_SaxtonRawls()
         {
-            Landis.Library.Parameters.Ecoregions.AuxParm<string> SoilType = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)Names.GetParameter(Names.SoilType);
-            Landis.Library.Parameters.Ecoregions.AuxParm<float> RootingDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter(Names.RootingDepth, 0, float.MaxValue);
+            Library.Parameters.Ecoregions.AuxParm<string> SoilType = (Library.Parameters.Ecoregions.AuxParm<string>)Names.GetParameter(Names.SoilType);
+            Library.Parameters.Ecoregions.AuxParm<float> RootingDepth = (Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)Names.GetParameter(Names.RootingDepth, 0, float.MaxValue);
 
             table = new Library.Parameters.Ecoregions.AuxParm<float[]>(Globals.ModelCore.Ecoregions);
 
@@ -116,7 +108,6 @@ namespace Landis.Library.PnETCohorts
 
                     if (tensionB.ContainsKey(SoilType[ecoregion]) == false)
                     {
-
                         double sand = double.Parse(Sand[SoilType[ecoregion]]);
                         double clay = double.Parse(Clay[SoilType[ecoregion]]);
                         double pctOM = double.Parse(PctOM[SoilType[ecoregion]]);
@@ -165,7 +156,6 @@ namespace Landis.Library.PnETCohorts
                     while (pressureHead > 0.01)
                     {
                         pressureHead = CalculateWaterPressure(watercontent, SoilType[ecoregion]);
-
                         PressureHead.Add(pressureHead);
                         watercontent += 0.01;
                     }
@@ -173,26 +163,25 @@ namespace Landis.Library.PnETCohorts
                 }
             }
         }
-        //---------------------------------------------------------------------
+
         public static float GetClay(string SoilType)
         {
             return clayProp[SoilType];
         }
-        //---------------------------------------------------------------------
+
         public static float GetFs(string SoilType)
         {
             return Fs[SoilType];
         }
-        //---------------------------------------------------------------------
+
         public static float GetLambda_s(string SoilType)
         {
             return lambda_s[SoilType];
         }
-        //---------------------------------------------------------------------
+
         public static float GetCTheta(string SoilType)
         {
             return cTheta[SoilType];
         }
-        //---------------------------------------------------------------------
     }
 }

@@ -231,8 +231,8 @@ namespace Landis.Library.PnETCohorts
             float Rs_W = (float)(_Rads / (2.02f)); // convert PAR (umol/m2*s) to total solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
             float Rs = Rs_W * 0.0864F; // convert Rs_W (W/m2) to Rs (MJ/m2*d) [Reis and Ribeiro 2019 (eq. 13)]
             float Gamma = 0.062F; // kPa/C; [Cabrera et al. 2016 (Table 1)]
-            float es = Weather.CalcVaporPressure(_Tair); // water vapor saturation pressure (kPa); [Cabrera et al. 2016 (Table 1)]
-            float S = Weather.CalcVaporPressureCurveSlope(_Tair); // slope of curve of water pressure and air temp; [Cabrera et al. 2016 (Table 1)]
+            float es = Weather.CalcVaporPressure((float)_Tair); // water vapor saturation pressure (kPa); [Cabrera et al. 2016 (Table 1)]
+            float S = Weather.CalcVaporPressureCurveSlope((float)_Tair); // slope of curve of water pressure and air temp; [Cabrera et al. 2016 (Table 1)]
             //float PETmm = (S / (S + Gamma)) * (0.4755F + 0.3773F * Rs); // Stewart & Rouse 1976 (mm/d); [Cabrera et al. 2016 (Table 1)]
             float PEMJ = (S / (S + Gamma)) * (1.624F + 0.9265F * Rs); // MJ/m2 day; Stewart & Rouse 1976 (eq. 11)
             PE = PEMJ * 0.408F; // convert MJ/m2 day to mm/day http://www.fao.org/3/x0490e/x0490e0i.htm

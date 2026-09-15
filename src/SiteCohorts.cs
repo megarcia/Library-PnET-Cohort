@@ -1641,52 +1641,46 @@ namespace Landis.Library.PnETCohorts
                 {
                     daysOfWinter = 0;
                 }
-                float Psno_kg_m3 = Globals.bulkIntercept + (Globals.bulkSlope * daysOfWinter); //kg/m3
+                float Psno_kg_m3 = Constants.DensitySnow_intercept + (Constants.DensitySnow_slope * daysOfWinter); //kg/m3
                 float Psno_g_cm3 = Psno_kg_m3 / 1000; //g/cm3
-                float sno_dep = Globals.Pwater * (snowPack / 1000) / Psno_kg_m3; //m
+                float sno_dep = Globals.DensityWater * (snowPack / 1000) / Psno_kg_m3; //m
 
                 if (lastTempBelowSnow == float.MaxValue)
                 {
-                    float lambda_Snow = (float)(Globals.lambAir + ((0.0000775 * Psno_kg_m3) + (0.000001105 * Math.Pow(Psno_kg_m3, 2))) * (Globals.lambIce - Globals.lambAir)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
-                    float vol_heat_capacity_snow = Globals.snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
-                    float Ks_snow = 1000000F / 86400F * (lambda_Snow / vol_heat_capacity_snow); //thermal diffusivity (mm2/s)
-                    float damping = (float)Math.Sqrt((2.0F * Ks_snow) / Constants.omega);
+                    float lambda_Snow = (float)(Constants.ThermalConductivityAir_Watts + ((0.0000775 * Psno_kg_m3) + (0.000001105 * Math.Pow(Psno_kg_m3, 2))) * (Constants.ThermalConductivityIce_Watts - Constants.ThermalConductivityAir_Watts)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
+                    float vol_heat_capacity_snow = Constants.HeatCapacitySnow_Jperkg * Psno_kg_m3 / 1000f; // kJ/m3/K
+                    float Ks_snow = Constants.Million / Constants.SecondsPerDay * (lambda_Snow / vol_heat_capacity_snow); //thermal diffusivity (mm2/s)
+                    float damping = (float)Math.Sqrt(2.0F * Ks_snow / Constants.omega);
                     float DRz_snow = 1F;
                     if (sno_dep > 0)
                         DRz_snow = (float)Math.Exp(-1.0F * sno_dep * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
 
                     float mossDepth = this.SiteMossDepth;
 
-                    float cv = 2500; // heat capacity moss - kJ/m3/K (Sazonova and Romanovsky 2003)
-                    float lambda_moss = 432; // kJ/m/d/K - converted from 0.2 W/mK (Sazonova and Romanovsky 2003)
-                    float moss_diffusivity = lambda_moss / cv;
+                    float moss_diffusivity = Constants.ThermalConductivityMoss / Constants.HeatCapacityMoss;
                     float damping_moss = (float)Math.Sqrt((2.0F * moss_diffusivity) / Constants.omega);
                     float DRz_moss = (float)Math.Exp(-1.0F * mossDepth * damping_moss); // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
 
-                    //float waterContent = (float)Math.Min(1.0, hydrology.Water / Ecoregion.RootingDepth);  //m3/m3
-                    //float waterContent = hydrology.Water/1000;
                     float waterContent = hydrology.Water;// volumetric m/m
-                                                         // Permafrost calculations - from "Soil thawing worksheet.xlsx"
-                                                         // 
-                                                         //if (data[m].Tave < minMonthlyAvgTemp)
-                                                         //    minMonthlyAvgTemp = data[m].Tave;
-                                                         //Calculations of diffusivity from soil properties 
-                                                         //float porosity = Ecoregion.Porosity / Ecoregion.RootingDepth;  //m3/m3                    
-                                                         //float porosity = Ecoregion.Porosity/1000;  // m/m   
+                    // Permafrost calculations - from "Soil thawing worksheet.xlsx"
+                    // 
+                    //if (data[m].Tave < minMonthlyAvgTemp)
+                    //    minMonthlyAvgTemp = data[m].Tave;
+                    //Calculations of diffusivity from soil properties 
+                    //float porosity = Ecoregion.Porosity / Ecoregion.RootingDepth;  //m3/m3                    
+                    //float porosity = Ecoregion.Porosity/1000;  // m/m   
                     float porosity = Ecoregion.Porosity;  // volumetric m/m 
                     float ga = 0.035F + 0.298F * (waterContent / porosity);
-                    float Fa = ((2.0F / 3.0F) / (1.0F + ga * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))) + ((1.0F / 3.0F) / (1.0F + (1.0F - 2.0F * ga) * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))); // ratio of air temp gradient
+                    float Fa = ((2.0F / 3.0F) / (1.0F + ga * ((Constants.ThermalConductivityAir_Watts / Constants.ThermalConductivityWater_Watts) - 1.0F))) + ((1.0F / 3.0F) / (1.0F + (1.0F - 2.0F * ga) * ((Constants.ThermalConductivityAir_Watts / Constants.ThermalConductivityWater_Watts) - 1.0F))); // ratio of air temp gradient
                     float Fs = PressureHeadSaxton_Rawls.GetFs(Ecoregion.SoilType);
                     float lambda_s = PressureHeadSaxton_Rawls.GetLambda_s(Ecoregion.SoilType);
-                    float lambda_theta = (Fs * (1.0F - porosity) * lambda_s + Fa * (porosity - waterContent) * Constants.lambda_a + waterContent * Constants.lambda_w) / (Fs * (1.0F - porosity) + Fa * (porosity - waterContent) + waterContent); //soil thermal conductivity (kJ/m/d/K)
+                    float lambda_theta = (Fs * (1.0F - porosity) * lambda_s + Fa * (porosity - waterContent) * Constants.ThermalConductivityAir_Watts + waterContent * Constants.ThermalConductivityWater_Watts) / (Fs * (1.0F - porosity) + Fa * (porosity - waterContent) + waterContent); //soil thermal conductivity (kJ/m/d/K)
                     float D = lambda_theta / PressureHeadSaxton_Rawls.GetCTheta(Ecoregion.SoilType);  //m2/day
-                    float Dmms = D * 1000000 / 86400; //mm2/s
+                    float Dmms = D * Constants.Million / Constants.SecondsPerDay; //mm2/s
                     soilDiffusivity = Dmms;
                     float Dmonth = D * data[m].DaySpan; // m2/month
-                    float ks = Dmonth * 1000000F / (data[m].DaySpan * (Constants.SecondsPerHour * 24)); // mm2/s
-                                                                                                        //float d = (float)Math.Pow((Constants.omega / (2.0F * Dmonth)), (0.5));
+                    float ks = Dmonth * Constants.Million / (data[m].DaySpan * Constants.SecondsPerDay); // mm2/s
                     float d = (float)Math.Sqrt(2 * Dmms / Constants.omega);
-
                     float maxDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
                     float lastBelowZeroDepth = 0;
                     float bottomFreezeDepth = maxDepth / 1000;

@@ -64,9 +64,9 @@ namespace Landis.Library.PnETCohorts
         { 
             double tension = 0.0;
 
-            if (watercontent <= (porosity_OM_comp[soiltype]))
+            if (watercontent <= porosity_OM_comp[soiltype])
             {
-                tension = tensionA[soiltype] * Math.Pow((watercontent), (-tensionB[soiltype]));
+                tension = tensionA[soiltype] * Math.Pow(watercontent, -tensionB[soiltype]);
             }
 
             float pressureHead;
@@ -136,15 +136,15 @@ namespace Landis.Library.PnETCohorts
                         double satSandAdj = -0.097 * sand + 0.043;
                         double sandAdjSat = satPor33 + satSandAdj;
                         double density_OM = (1.0 - sandAdjSat) * 2.65;
-                        double density_comp = density_OM * (densFactor);
+                        double density_comp = density_OM * densFactor;
                         porosity_OM_comp.Add(SoilType[ecoregion], (float)(1.0 - (density_comp / 2.65)));
                         double porosity_change_comp = (1.0 - density_comp / 2.65) - (1.0 - density_OM / 2.65);
                         double moist33_comp = predMoist33Adj + 0.2 * porosity_change_comp;
                         double porosity_moist33_comp = porosity_OM_comp[SoilType[ecoregion]] - moist33_comp;
                         double lambda = (Math.Log(moist33_comp) - Math.Log(predMoist1500adj)) / (Math.Log(1500) - Math.Log(33));
                         double gravel_red_sat_cond = (1.0 - gravel) / (1.0 - gravel * (1.0 - 1.5 * (density_comp / 2.65)));
-                        double satcond_mmhr = 1930 * Math.Pow((porosity_moist33_comp), (3.0 - lambda)) * gravel_red_sat_cond;
-                        double gravels_vol = ((density_comp / 2.65) * gravel) / (1 - gravel * (1 - density_comp / 2.65));
+                        double satcond_mmhr = 1930 * Math.Pow(porosity_moist33_comp, 3.0 - lambda) * gravel_red_sat_cond;
+                        double gravels_vol = density_comp / 2.65 * gravel / (1 - gravel * (1 - density_comp / 2.65));
                         double bulk_density = gravels_vol * 2.65 + (1 - gravels_vol) * density_comp; // g/cm3                      
 
                         tensionB.Add(SoilType[ecoregion], (float)((Math.Log(1500) - Math.Log(33.0)) / (Math.Log(moist33_comp) - Math.Log(predMoist1500adj))));
@@ -152,11 +152,11 @@ namespace Landis.Library.PnETCohorts
 
                         // For Permafrost
                         clayProp.Add(SoilType[ecoregion], (float)clay);
-                        double cTheta_temp = Constants.cs * (1.0 - porosity_OM_comp[SoilType[ecoregion]]) + Constants.cw * porosity_OM_comp[SoilType[ecoregion]];  //specific heat of soil	kJ/m3/K
+                        double cTheta_temp = Constants.HeatCapacitySoil * (1.0 - porosity_OM_comp[SoilType[ecoregion]]) + Constants.HeatCapacityWater_Jperkg * porosity_OM_comp[SoilType[ecoregion]];  //specific heat of soil	kJ/m3/K
                         cTheta.Add(SoilType[ecoregion], (float)cTheta_temp);
-                        double lambda_s_temp = (1.0 - clay) * Constants.lambda_0 + clay * Constants.lambda_clay;   //thermal conductivity soil	kJ/m/d/K
+                        double lambda_s_temp = (1.0 - clay) * Constants.ThermalConductivitySandstone + clay * Constants.ThermalConductivityClay;   //thermal conductivity soil	kJ/m/d/K
                         lambda_s.Add(SoilType[ecoregion], (float)lambda_s_temp);
-                        double Fs_temp = ((2.0 / 3.0) / (1.0 + Constants.gs * ((lambda_s_temp / Constants.lambda_w) - 1.0))) + ((1.0 / 3.0) / (1.0 + (1.0 - 2.0 * Constants.gs) * ((lambda_s_temp / Constants.lambda_w) - 1.0)));  //ratio of solid temp gradient
+                        double Fs_temp = ((2.0 / 3.0) / (1.0 + Constants.gs * ((lambda_s_temp / Constants.ThermalConductivityWater_kJperday) - 1.0))) + ((1.0 / 3.0) / (1.0 + (1.0 - 2.0 * Constants.gs) * ((lambda_s_temp / Constants.ThermalConductivityWater_kJperday) - 1.0)));  //ratio of solid temp gradient
                         Fs.Add(SoilType[ecoregion], (float)Fs_temp);
                     }
                     double watercontent = 0.0;

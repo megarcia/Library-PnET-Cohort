@@ -1404,7 +1404,7 @@ namespace Landis.Library.PnETCohorts
                 float GrossAmax = AmaxAdj + BaseFolResp; //nmole CO2/g Fol/s
 
                 //Reference gross Psn (lab conditions) in gC/g Fol/month
-                float RefGrossPsn = variables.DaySpan * (GrossAmax * variables[species.Name].DVPD * variables.Daylength * Constants.MC) / Constants.billion;
+                float RefGrossPsn = variables.DaySpan * GrossAmax * variables[species.Name].DVPD * variables.Daylength * Constants.MC / Constants.Billion;
 
                 // Compute gross psn from stress factors and reference gross psn (gC/g Fol/month)
                 // Reduction factors include temperature (FTempPSN), water (FWater), light (FRad), age (Fage)
@@ -1484,7 +1484,7 @@ namespace Landis.Library.PnETCohorts
 
                 // Net foliage respiration depends on reference psn (BaseFolResp)
                 // Substitute 24 hours in place of DayLength because foliar respiration does occur at night.  BaseFolResp and Q10Factor use Tave temps reflecting both day and night temperatures.
-                float RefFolResp = BaseFolResp * variables[species.Name].Q10Factor * variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion; // gC/g Fol/month
+                float RefFolResp = BaseFolResp * variables[species.Name].Q10Factor * variables.DaySpan * Constants.SecondsPerDay * Constants.MC / Constants.Billion; // gC/g Fol/month
 
                 // Actual foliage respiration (growth respiration) 
                 //FolResp[index] = FWater[index] * RefFolResp * Fol / (float)Globals.IMAX; // gC/m2 ground/mo  - uncertain why FWater limiter was included here, inconsistent with PnET, revised below
@@ -1495,7 +1495,7 @@ namespace Landis.Library.PnETCohorts
 
                 // Convert Psn gC/m2 ground/mo to umolCO2/m2 fol/s
                 // netPsn_ground = LayerNestPsn*1000000umol*(1mol/12gC) * (1/(60s*60min*14hr*30day))
-                float netPsn_ground = nonOzoneNetPsn * 1000000F * (1F / 12F) * (1F / (variables.Daylength * variables.DaySpan));
+                float netPsn_ground = nonOzoneNetPsn * Constants.Million * (1F / 12F) * (1F / (variables.Daylength * variables.DaySpan));
                 float netPsn_leaf_s = 0;
                 if (netPsn_ground > 0 && LAI[index] > 0)
                 {
@@ -1509,9 +1509,9 @@ namespace Landis.Library.PnETCohorts
 
                 //Calculate water vapor conductance (gwv) from Psn and Ci; Kubiske Conductance_5.xlsx
                 //gwv_mol = NetPsn_leaf_s /(Ca-Ci) {umol/mol} * 1.6(molH20/molCO2)*1000 {mmol/mol}
-                float gwv_mol = (float)(netPsn_leaf_s / (Ca_Ci) * 1.6 * 1000);
+                float gwv_mol = (float)(netPsn_leaf_s / Ca_Ci * 1.6 * 1000);
                 //gwv = gwv_mol / (444.5 - 1.3667*Tc)*10    {denominator is from Koerner et al. 1979 (Sheet 3),  Tc = temp in degrees C, * 10 converts from cm to mm.  
-                float gwv = (float) (gwv_mol / (444.5 - 1.3667 * variables.Tave) * 10);
+                float gwv = (float)(gwv_mol / (444.5 - 1.3667 * variables.Tave) * 10);
 
                 // Calculate gwv from Psn using Ollinger equation
                 // g = -0.3133+0.8126*NetPsn_leaf_s

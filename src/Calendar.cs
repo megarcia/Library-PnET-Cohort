@@ -105,5 +105,39 @@ namespace Landis.Library.PnETCohorts
             float daylight_h = 2.0f * (h * 24.0f) / (2.0f * (float)Math.PI);
             return daylight_h;
         }
+
+        private bool Summer(byte month)
+        {
+            switch (month)
+            {
+                case 5:
+                    return true;
+                case 6:
+                    return true;
+                case 7:
+                    return true;
+                case 8:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private bool Winter(byte month)
+        {
+            switch (month)
+            {
+                case 1:
+                    return true;
+                case 2:
+                    return true;
+                case 3:
+                    return true;
+                case 12:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 }

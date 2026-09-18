@@ -13,9 +13,7 @@ namespace Landis.Library.PnETCohorts
     public class BiomassUtil
     {       
         private float[] biomassData;
-
         private int biomassNum;
-
         private float biomassThreshold;
 
         public BiomassUtil()

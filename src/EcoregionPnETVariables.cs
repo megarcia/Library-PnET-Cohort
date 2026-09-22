@@ -1,4 +1,9 @@
-﻿using System;
+﻿//MG20260922 This class circumvents use of the LANDIS Climate Library.
+//           Some methods will be moved to ClimateRegionPnETVariables.cs
+//           and related classes, then this class/file will be deprecated
+//           and removed.
+
+using System;
 using System.Collections.Generic;
 
 namespace Landis.Library.PnETCohorts
@@ -248,15 +253,15 @@ namespace Landis.Library.PnETCohorts
             float AmaxB_CO2 = AmaxB_slope * climate_dataset.CO2 + AmaxB_int;
             speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
 
-            //-------------------FTempPSN (public for output file)
+            //-------------------FTempPsn (public for output file)
             if (DTemp)
             {
-                speciespnetvars.FTempPSN = EcoregionPnETVariables.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
+                speciespnetvars.FTempPsn = EcoregionPnETVariables.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
             }
             else
             {
-                //speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Original PnET-Succession
-                speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax); // Modified 051216(BRM)
+                //speciespnetvars.FTempPsn = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Original PnET-Succession
+                speciespnetvars.FTempPsn = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax); // Modified 051216(BRM)
             }
 
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)

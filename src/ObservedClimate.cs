@@ -1,4 +1,7 @@
-﻿using Landis.Core;
+﻿//MG20260922 This class circumvents use of the LANDIS Climate Library.
+//           It will be deprecated and removed.
+
+using Landis.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;

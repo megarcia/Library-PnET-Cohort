@@ -1,4 +1,7 @@
-﻿
+﻿//MG20260922 This interface circumvents use of the LANDIS Climate Library.
+//           It will be deprecated and removed.
+
+
 namespace Landis.Library.PnETCohorts
 {
     public interface IEcoregionPnETVariables

@@ -66,7 +66,7 @@ namespace Landis.Library.PnETCohorts
         public const string fRad = "fRad(-)";          
         public const string fTemp_psn = "fTemp_psn(-)";              
         public const string fTemp_resp = "fTemp_resp(-)";                 
-        public const string fage = "fage(-)";     
+        public const string fAge = "fAge(-)";     
         public const string LeafOn = "LeafOn(-)";          
         public const string FActiveBiom = "FActiveBiom(gDW_gDW)";
         public const string Interception = "Interception(mm)";

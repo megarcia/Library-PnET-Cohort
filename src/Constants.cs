@@ -30,6 +30,12 @@ namespace Landis.Library.PnETCohorts
         public const float MC = 12.0f;
 
         /// <summary>
+        /// Mass density of H2O in g/mol
+        /// </summary>
+        public const float MH2O = 18.0f;
+
+
+        /// <summary>
         /// Mass density of CO2 in g/mol
         /// </summary>
         public const float MCO2 = 44.0f;

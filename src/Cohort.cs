@@ -139,7 +139,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return (int)((Math.Round(1 - speciesPnET.FracBelowG) * data.TotalBiomass) + data.Fol);
+                return (int)(Math.Round((1 - speciesPnET.FracBelowG) * data.TotalBiomass) + data.Fol);
             }
         }
 

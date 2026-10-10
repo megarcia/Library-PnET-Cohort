@@ -9,8 +9,8 @@ namespace Landis.Library.PnETCohorts
 {
     public static class SiteVars
     {
-        public static ISiteVar<SiteCohorts> SiteCohorts;
-        public static ISiteVar<UniversalCohorts.SiteCohorts> UniversalCohorts;
+        public static ISiteVar<PnETCohorts.SiteCohorts> SiteCohorts;
+        public static ISiteVar<Library.UniversalCohorts.SiteCohorts> UniversalCohorts;
         public static ISiteVar<Pool> WoodyDebris;
         public static ISiteVar<Pool> Litter;
         public static ISiteVar<double> FineFuels;
@@ -26,8 +26,8 @@ namespace Landis.Library.PnETCohorts
 
         public static void Initialize()
         {
-            SiteCohorts = Globals.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
-            UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<UniversalCohorts.SiteCohorts>();
+            SiteCohorts = Globals.ModelCore.Landscape.NewSiteVar<PnETCohorts.SiteCohorts>();
+            UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<Library.UniversalCohorts.SiteCohorts>();
             WoodyDebris = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             Litter = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             FineFuels = Globals.ModelCore.Landscape.NewSiteVar<double>();
@@ -57,6 +57,7 @@ namespace Landis.Library.PnETCohorts
             Globals.ModelCore.RegisterSiteVar(FieldCapacity, "Succession.SoilFieldCapacity");
         }
 
+        /*
         //MG20260911 moved here from PlugIn.cs and modified accordingly
         public static void UpdateUniversalCohorts()
         {
@@ -75,5 +76,6 @@ namespace Landis.Library.PnETCohorts
                     throw new Exception("Cannot convert PnET SiteCohorts to Universal Cohorts");
             }
         }
+        */
     }
 }

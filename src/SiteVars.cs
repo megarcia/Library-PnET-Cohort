@@ -57,6 +57,7 @@ namespace Landis.Library.PnETCohorts
             Globals.ModelCore.RegisterSiteVar(FieldCapacity, "Succession.SoilFieldCapacity");
         }
 
+        /*
         //MG20261012
         public static bool FindMatchingSite(ActiveSite site, Library.UniversalCohorts.ICohort cohort)
         {
@@ -118,5 +119,6 @@ namespace Landis.Library.PnETCohorts
                     throw new Exception("Cannot convert PnET SiteCohorts to Universal Cohorts");
             }
         }
+        */
     }
 }

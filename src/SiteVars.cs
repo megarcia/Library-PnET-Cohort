@@ -57,7 +57,6 @@ namespace Landis.Library.PnETCohorts
             Globals.ModelCore.RegisterSiteVar(FieldCapacity, "Succession.SoilFieldCapacity");
         }
 
-        /*
         //MG20260911 moved here from PlugIn.cs and modified accordingly
         public static void UpdateUniversalCohorts()
         {
@@ -76,6 +75,5 @@ namespace Landis.Library.PnETCohorts
                     throw new Exception("Cannot convert PnET SiteCohorts to Universal Cohorts");
             }
         }
-        */
     }
 }

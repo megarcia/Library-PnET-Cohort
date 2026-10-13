@@ -1,3 +1,10 @@
+//MG20261013 This Interface is just a copy of UniversalCohorts.ICalculator
+//           and may be obscuring proper interaction with UniversalCohorts,
+//           and might just be a leftover from pre-UCL Landis. Deprecating
+//           this Interface in PnETCohorts and redirecting any invocations
+//           in PnETCohorts and the PnET-Succession extension to the
+//           UCL interface instead.
+
 //  Authors:  Robert M. Scheller, James B. Domingo
 
 using Landis.Core;

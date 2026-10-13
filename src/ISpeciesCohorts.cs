@@ -1,3 +1,8 @@
+//MG20261013 This just points to the UniversalCohorts.ISpeciesCohorts
+//           interface, so I'm deprecating this interface and redirecting
+//           the PnETCohorts.SpeciesCohorts class to the equivalent
+//           UniversalCohorts interface.
+
 //  Authors:  Robert M. Scheller, James B. Domingo
 
 using Landis.Core;

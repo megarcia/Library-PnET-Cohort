@@ -1,10 +1,6 @@
-// uses dominance to allocate psn and subtract transpiration from soil water, average cohort vars over layer
-
 using System;
 using System.Collections.Generic;
-// using System.Dynamic;
 using System.Linq;
-// using System.Runtime.CompilerServices;
 using Landis.Core;
 using Landis.Library.UniversalCohorts;
 using Landis.SpatialModeling;
@@ -23,11 +19,36 @@ namespace Landis.Library.PnETCohorts
         private LocalOutput cohortoutput;
 
         // Age (years)
+        // NOTE: draws from UniversalCohort representation of Cohort
         public ushort Age
         {
             get
             {
                 return data.UniversalData.Age;
+            }
+        }
+
+        // Aboveground Biomass (g/m2) scaled to the site
+        // NOTE: draws from UniversalCohort representation of Cohort
+        public int Biomass
+        {
+            get
+            {
+                return data.UniversalData.Biomass;
+            }
+        }
+
+        // Annual net primary productivity
+        // NOTE: draws from UniversalCohort representation of Cohort
+        public double ANPP
+        {
+            get
+            {
+                return data.UniversalData.ANPP;
+            }
+            set
+            {
+                data.UniversalData.ANPP = value;
             }
         }
 
@@ -75,31 +96,20 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 float albedo = 0;
-                if ((!string.IsNullOrEmpty(SpeciesPnET.Lifeform))
-                        && (SpeciesPnET.Lifeform.ToLower().Contains("ground")
-                            || SpeciesPnET.Lifeform.ToLower().Contains("open")
-                            || SumLAI == 0))
+                if (!string.IsNullOrEmpty(SpeciesPnET.Lifeform))
                 {
-                    albedo = 0.20F;
+                    if (SpeciesPnET.Lifeform.ToLower().Contains("ground")
+                        || SpeciesPnET.Lifeform.ToLower().Contains("open")
+                        || SumLAI == 0)
+                        albedo = 0.20f;
+                    else if (SpeciesPnET.Lifeform.ToLower().Contains("dark"))
+                        albedo = -0.067f * (float)Math.Log(SumLAI < 0.7 ? 0.7 : SumLAI) + 0.2095f;
+                    else if (SpeciesPnET.Lifeform.ToLower().Contains("light"))
+                        albedo = -0.054f * (float)Math.Log(SumLAI < 0.7 ? 0.7 : SumLAI) + 0.2082f;
+                    else if (SpeciesPnET.Lifeform.ToLower().Contains("decid"))
+                        albedo = -0.0073f * SumLAI + 0.231f;
                 }
-                else if ((!string.IsNullOrEmpty(SpeciesPnET.Lifeform))
-                    && SpeciesPnET.Lifeform.ToLower().Contains("dark"))
-                {
-                    albedo = (float)((-0.067 * Math.Log(SumLAI < 0.7 ? 0.7 : SumLAI)) + 0.2095);
-                }
-                else if ((!string.IsNullOrEmpty(SpeciesPnET.Lifeform))
-                        && SpeciesPnET.Lifeform.ToLower().Contains("light"))
-                {
-                    albedo = (float)((-0.054 * Math.Log(SumLAI < 0.7 ? 0.7 : SumLAI)) + 0.2082);
-                }
-                else if ((!string.IsNullOrEmpty(SpeciesPnET.Lifeform))
-                        && SpeciesPnET.Lifeform.ToLower().Contains("decid"))
-                {
-                    albedo = (float)((-0.0073 * SumLAI) + 0.231);
-                }
-
-                // Do not allow albedo to be negative
-                return albedo > 0 ? albedo : 0;
+                return albedo > 0 ? albedo : 0.0f;
             }
         }
 
@@ -113,15 +123,6 @@ namespace Landis.Library.PnETCohorts
             set
             {
                 data.Fol = value;
-            }
-        }
-
-        // Aboveground Biomass (g/m2) scaled to the site
-        public int Biomass
-        {
-            get
-            {
-                return (int)(data.AGBiomass * data.CanopyLayerProp);
             }
         }
 
@@ -575,18 +576,6 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public double ANPP
-        {
-            get
-            {
-                return data.UniversalData.ANPP;
-            }
-            set
-            {
-                data.UniversalData.ANPP = value;
-            }
-        }
-
         // List of DisturbanceTypes that have had ReduceDeadPools applied
         public List<ExtensionType> ReducedTypes = null;
 
@@ -684,7 +673,6 @@ namespace Landis.Library.PnETCohorts
             data.Fol += cohort.Fol;
             data.MaxFolYear = Math.Max(MaxFolYear, data.Fol);
             data.AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
-
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
             data.UniversalData.ANPP += cohort.ANPP;
         }
@@ -706,7 +694,6 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass = Math.Max(0, newTotalBiomass);
             data.AGBiomass = (1 - SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
-
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
         }
 
@@ -715,7 +702,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public void ChangeANPP(double delta)
         {            
-            data.UniversalData.ANPP = data.UniversalData.ANPP + delta;
+            data.UniversalData.ANPP += delta;
         }
 
         public Cohort(ISpecies species, ISpeciesPnET speciesPnET, ushort year_of_birth, string SiteName, double propBiomass, bool cohortStacking) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
@@ -810,7 +797,6 @@ namespace Landis.Library.PnETCohorts
             data.LastSeasonFRad = new List<float>();
             data.adjFracFol = speciesPnET.MaxFracFol;
             data.ColdKill = int.MaxValue;
-            data.UniversalData.Age = age;
             float cohortLAI = 0;
             float cohortIdealFol = speciesPnET.MaxFracFol * FActiveBiom * data.TotalBiomass;
             
@@ -838,7 +824,9 @@ namespace Landis.Library.PnETCohorts
             data.LastAGBio = data.AGBiomass;
             data.NSC = this.speciesPnET.DNSC * FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
 
+            data.UniversalData.Age = age;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            data.UniversalData.ANPP = 0.0f;
 
             if (SiteName != null)
                 InitializeOutput(SiteName, firstYear);
@@ -884,6 +872,7 @@ namespace Landis.Library.PnETCohorts
 
             data.UniversalData.Age = age;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            data.UniversalData.ANPP = 0.0f;
 
             if (SiteName != null)
                 InitializeOutput(SiteName, firstYear);

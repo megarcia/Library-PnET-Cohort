@@ -19,7 +19,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// UniversalCohort data fields (Age, Biomass, and ANPP)
         /// </summary>
-        public UniversalCohorts.CohortData UniversalData;
+        public Library.UniversalCohorts.CohortData UniversalData;
 
         /// <summary>
         /// The cohort's live aboveground biomass (g/m2).
@@ -232,12 +232,16 @@ namespace Landis.Library.PnETCohorts
         /// The existing cohort instance we are extracting data from.
         public CohortData(Cohort cohort)
         {
+            Cohort = cohort;
+            UniversalData.Age = cohort.Age;
+            AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
+            UniversalData.Biomass = (int)(AGBiomass * cohort.CanopyLayerProp);
+            UniversalData.ANPP = cohort.ANPP;
             AdjFolN = cohort.AdjFolN;
             adjFolN = cohort.adjFolN;
             AdjFracFol = cohort.AdjFracFol;
             adjFracFol = cohort.adjFracFol;
             AdjHalfSat = cohort.AdjHalfSat;
-            AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
             TotalBiomass = cohort.TotalBiomass;
             BiomassMax = cohort.BiomassMax;
             CiModifier = cohort.CiModifier;
@@ -271,12 +275,7 @@ namespace Landis.Library.PnETCohorts
             Water = cohort.Water;
             BiomassLayerProp = cohort.BiomassLayerProp;
             CanopyLayerProp = cohort.CanopyLayerProp;
-            Cohort = cohort;
             CanopyGrowingSpace = cohort.CanopyGrowingSpace;
-
-            UniversalData.Age = cohort.Age;
-            UniversalData.Biomass = (int)(AGBiomass * cohort.CanopyLayerProp);
-            UniversalData.ANPP = cohort.ANPP;
         }
 
         /// <summary>
@@ -284,22 +283,25 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public CohortData(ushort age, float totalBiomass, double totalANPP, ISpecies species, bool cohortStacking)
         {            
-            AdjFolN = new float[Globals.IMAX];
-            adjFolN = 0; ;
-            AdjFracFol = new float[Globals.IMAX];
-            adjFracFol = 0;
-            AdjHalfSat = 0;
             ISpeciesPnET spc = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
             Cohort = new Cohort(species, spc, 0, "", 1, cohortStacking);
+            UniversalData.Age = age;
             AGBiomass = (1 - spc.FracBelowG) * totalBiomass;
+            UniversalData.Biomass = (int)AGBiomass;
+            UniversalData.ANPP = totalANPP;
+            AdjFolN = new float[Globals.IMAX];
+            adjFolN = 0.0f;
+            AdjFracFol = new float[Globals.IMAX];
+            adjFracFol = 0.0f;
+            AdjHalfSat = 0.0f;
             TotalBiomass = totalBiomass;
             BiomassMax = totalBiomass;
             CiModifier = new float[Globals.IMAX];
             ColdKill = int.MaxValue;
-            DeFolProp = 0;
+            DeFolProp = 0.0f;
             DelAmax = new float[Globals.IMAX];
-            Fol = 0;
-            MaxFolYear = 0;
+            Fol = 0.0f;
+            MaxFolYear = 0.0f;
             FolResp = new float[Globals.IMAX];
             FOzone = new float[Globals.IMAX];
             FRad = new float[Globals.IMAX];
@@ -308,34 +310,31 @@ namespace Landis.Library.PnETCohorts
             Interception = new float[Globals.IMAX];
             LAI = new float[Globals.IMAX];
             LastFoliageSenescence = 0;
-            LastFRad = 0;
+            LastFRad = 0.0f;
             LastSeasonFRad = new List<float>();
-            LastWoodySenescence = 0;
+            LastWoodySenescence = 0.0f;
             LastAGBio = AGBiomass;
             Layer = 0;
             Leaf_On = false;
             MaintenanceRespiration = new float[Globals.IMAX];
             NetPsn = new float[Globals.IMAX];
-            NSC = 0;
+            NSC = 0.0f;
             PressHead = new float[Globals.IMAX];
             NumEvents = new int[Globals.IMAX];
             Transpiration = new float[Globals.IMAX];
             PotentialTranspiration = new float[Globals.IMAX];
             Water = new float[Globals.IMAX];
             BiomassLayerProp = 1.0f;
-            float cohortLAI = 0;
+            float cohortLAI = 0.0f;
             float cohortIdealFol = spc.FracFol * (float)Math.Exp(-spc.FrActWd * BiomassMax) * TotalBiomass;
             for (int i = 0; i < Globals.IMAX; i++)
               cohortLAI += Cohort.CalculateLAI(spc, cohortIdealFol, i, cohortLAI);
             LastLAI = cohortLAI;
-            CanopyLayerProp = LastLAI / spc.MaxLAI;
             if (cohortStacking)
                 CanopyLayerProp = 1.0f;
+            else
+                CanopyLayerProp = LastLAI / spc.MaxLAI;
             CanopyGrowingSpace = 1.0f;
-
-            UniversalData.Age = age;
-            UniversalData.Biomass = (int)AGBiomass;
-            UniversalData.ANPP = totalANPP;
         }
     }
 }

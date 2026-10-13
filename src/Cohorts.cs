@@ -1,3 +1,11 @@
+//MG20261013 This Class is just a copy of UniversalCohorts.Cohorts and
+//           acts as a pass-through to that class. It may be obscuring 
+//           proper initialization and interaction with UniversalCohorts,
+//           and might just be a leftover from pre-UCL Landis. Deprecating
+//           this Class in PnETCohorts and redirecting any invocations
+//           in PnETCohorts and the PnET-Succession extension to the
+//           UCL class instead.
+
 //  Authors:  Robert M. Scheller, James B. Domingo
 
 using System;
@@ -48,8 +56,8 @@ namespace Landis.Library.PnETCohorts
             Cohorts.successionTimeStep = successionTimeStep;
         }
 
-        //MG20260911 Is this an endlessly recursive function??? 
-        //MG20260911 Good thing it doesn't appear to be called from anywhere else!
+        //MG20261013 Calls UniversalCohorts.ComputeBiomass, but still
+        //           is not used anywhere in PnETCohorts or PnET-Succession.
         /// <summary>
         /// Computes the total biomass for all the cohorts at a site.
         /// </summary>

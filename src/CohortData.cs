@@ -17,7 +17,8 @@ namespace Landis.Library.PnETCohorts
         public Cohort Cohort;
 
         /// <summary>
-        /// UniversalCohort data fields (Age, Biomass, and ANPP)
+        /// UniversalCohort data fields
+        /// Age, Biomass, ANPP
         /// </summary>
         public Library.UniversalCohorts.CohortData UniversalData;
 
@@ -309,7 +310,7 @@ namespace Landis.Library.PnETCohorts
             GrossPsn = new float[Globals.IMAX];
             Interception = new float[Globals.IMAX];
             LAI = new float[Globals.IMAX];
-            LastFoliageSenescence = 0;
+            LastFoliageSenescence = 0.0f;
             LastFRad = 0.0f;
             LastSeasonFRad = new List<float>();
             LastWoodySenescence = 0.0f;

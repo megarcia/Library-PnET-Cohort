@@ -7,7 +7,7 @@ namespace Landis.Library.PnETCohorts
     /// PnET Cohort interface
     /// Inherits from UniversalCohorts ICohort interface
     /// </summary>
-    public interface ICohort : UniversalCohorts.ICohort
+    public interface ICohort : Library.UniversalCohorts.ICohort
     {
         new CohortData Data { get; }
         int AGBiomass { get; }

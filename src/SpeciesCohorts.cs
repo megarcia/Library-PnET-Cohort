@@ -38,7 +38,8 @@ namespace Landis.Library.PnETCohorts
 
         public int Count
         {
-            get {
+            get 
+            {
                 return cohortData.Count;
             }
         }
@@ -145,8 +146,8 @@ namespace Landis.Library.PnETCohorts
         /// </remarks>
         public void CombineYoungCohorts()
         {
-            //  Work from the end of cohort data since the array is in old-to-
-            //  young order.
+            // Work from the end of cohort data since the array is in old-to-
+            // young order.
             int youngCount = 0;
             float totalBiomass = 0;
             double totalANPP = 0;
@@ -162,7 +163,6 @@ namespace Landis.Library.PnETCohorts
                 else
                     break;
             }
-
             if (youngCount > 0)
             {
                 cohortData.RemoveRange(cohortData.Count - youngCount, youngCount);

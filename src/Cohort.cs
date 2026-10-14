@@ -19,22 +19,30 @@ namespace Landis.Library.PnETCohorts
         private LocalOutput cohortoutput;
 
         // Age (years)
-        // NOTE: draws from UniversalCohort representation of Cohort
+        // NOTE: draws from and writes to UniversalCohort representation of Cohort
         public ushort Age
         {
             get
             {
                 return data.UniversalData.Age;
             }
+            set
+            {
+                data.UniversalData.Age = value;
+            }
         }
 
         // Aboveground Biomass (g/m2) scaled to the site
-        // NOTE: draws from UniversalCohort representation of Cohort
+        // NOTE: draws from and writes to UniversalCohort representation of Cohort
         public int Biomass
         {
             get
             {
                 return data.UniversalData.Biomass;
+            }
+            set
+            {
+                data.UniversalData.Biomass = value;
             }
         }
 

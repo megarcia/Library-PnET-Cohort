@@ -728,9 +728,9 @@ namespace Landis.Library.PnETCohorts
         }
 
         /// <summary>
-        /// Changes the cohort's biomass.
+        /// Changes the cohort's Biomass.
         /// </summary>
-        public void ChangeBiomass(int delta)
+        public int ChangeBiomass(int delta)
         {
             float newTotalBiomass = data.TotalBiomass + delta;
             data.TotalBiomass = Math.Max(0.0f, newTotalBiomass);
@@ -742,7 +742,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Changes the cohort's ANPP.
         /// </summary>
-        public void ChangeANPP(double delta)
+        public double ChangeANPP(double delta)
         {            
             data.UniversalData.ANPP += delta;
         }

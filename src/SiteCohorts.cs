@@ -3459,7 +3459,7 @@ namespace Landis.Library.PnETCohorts
                        OutputHeaders.Transpiration + "," + 
                        OutputHeaders.Interception + "," +
                        OutputHeaders.SurfaceRunoff + "," +
-                       OutputHeaders.water + "," +
+                       OutputHeaders.Water + "," +
                        OutputHeaders.PressureHead + "," + 
                        OutputHeaders.SurfaceWater + "," +
                        OutputHeaders.availableWater + "," +

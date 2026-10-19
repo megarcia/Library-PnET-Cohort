@@ -50,5 +50,7 @@ namespace Landis.Library.PnETCohorts
         float BiomassLayerProp { get; }
         float CanopyLayerProp { get; }
         float CanopyGrowingSpace { get; }
+        int LastBiomassDelta { get; set; }  //MG20261016 new variable 
+        double LastANPPDelta { get; set; }  //MG20261016 new variable 
     }
 }

@@ -149,7 +149,7 @@ namespace Landis.Library.PnETCohorts
             // Work from the end of cohort data since the array is in old-to-
             // young order.
             int youngCount = 0;
-            float totalBiomass = 0;
+            float totalBiomass = 0.0f;
             double totalANPP = 0;
             for (int i = cohortData.Count - 1; i >= 0; i--)
             {
@@ -204,10 +204,11 @@ namespace Landis.Library.PnETCohorts
             }
 
             cohort.IncrementAge();
-            int biomassChange = (int)Library.UniversalCohorts.Cohorts.BiomassCalculator.ComputeChange(cohort, site, out double ANPP, out otherChanges);
+            // int biomassChange = (int)Library.UniversalCohorts.Cohorts.BiomassCalculator.ComputeChange(cohort, site, out double ANPP, out otherChanges);
+            // int biomassChange = cohort.LastBiomassDelta;
             // Cohort can't lose more biomass than it has
-            Debug.Assert(-cohort.TotalBiomass <= biomassChange);  
-            cohort.ChangeBiomass(biomassChange);
+            Debug.Assert(-cohort.TotalBiomass <= cohort.LastBiomassDelta);  
+            cohort.ChangeBiomass(cohort.LastBiomassDelta);
             if (cohort.TotalBiomass > 0)
             {
                 cohortData[index] = cohort.Data;

@@ -17,11 +17,23 @@ namespace Landis.Library.PnETCohorts
         public Cohort Cohort;
 
         /// <summary>
-        /// UniversalCohort data fields
-        /// Age, Biomass, ANPP
+        /// UniversalCohort data fields:
+        /// int Age, int Biomass, double ANPP
         /// </summary>
         public Library.UniversalCohorts.CohortData UniversalData;
 
+        /// <summary>
+        /// The last biomass change calculated for the cohort.
+        /// New variable introduced by MG on 20261016.
+        /// </summary>
+        public int LastBiomassDelta;
+
+        /// <summary>
+        /// The last ANPP change calculated for the cohort.
+        /// New variable introduced by MG on 20261016.
+        /// </summary>
+        public double LastANPPDelta;
+ 
         /// <summary>
         /// The cohort's live aboveground biomass (g/m2).
         /// </summary>
@@ -227,17 +239,15 @@ namespace Landis.Library.PnETCohorts
         public float CanopyGrowingSpace;
 
         /// <summary>
-        /// Initializes a new instance.
+        /// Initializes a new cohort using information from an existing cohort.
         /// </summary>
         /// <param name="cohort">
         /// The existing cohort instance we are extracting data from.
+        /// </param>
         public CohortData(Cohort cohort)
         {
             Cohort = cohort;
-            UniversalData.Age = cohort.Age;
             AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * cohort.TotalBiomass + cohort.Fol;
-            UniversalData.Biomass = (int)(AGBiomass * cohort.CanopyLayerProp);
-            UniversalData.ANPP = cohort.ANPP;
             AdjFolN = cohort.AdjFolN;
             adjFolN = cohort.adjFolN;
             AdjFracFol = cohort.AdjFracFol;
@@ -277,19 +287,21 @@ namespace Landis.Library.PnETCohorts
             BiomassLayerProp = cohort.BiomassLayerProp;
             CanopyLayerProp = cohort.CanopyLayerProp;
             CanopyGrowingSpace = cohort.CanopyGrowingSpace;
+            LastBiomassDelta = cohort.LastBiomassDelta;  //MG20261016 new variable 
+            LastANPPDelta = cohort.LastANPPDelta;  //MG20261016 new variable 
+            UniversalData.Age = cohort.Age;
+            UniversalData.Biomass = (int)(AGBiomass * CanopyLayerProp);
+            UniversalData.ANPP = cohort.ANPP;
         }
 
         /// <summary>
-        /// Initializes a new instance.
+        /// Initializes a new cohort.
         /// </summary>
         public CohortData(ushort age, float totalBiomass, double totalANPP, ISpecies species, bool cohortStacking)
         {            
             ISpeciesPnET spc = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
             Cohort = new Cohort(species, spc, 0, "", 1, cohortStacking);
-            UniversalData.Age = age;
             AGBiomass = (1 - spc.FracBelowG) * totalBiomass;
-            UniversalData.Biomass = (int)AGBiomass;
-            UniversalData.ANPP = totalANPP;
             AdjFolN = new float[Globals.IMAX];
             adjFolN = 0.0f;
             AdjFracFol = new float[Globals.IMAX];
@@ -336,6 +348,11 @@ namespace Landis.Library.PnETCohorts
             else
                 CanopyLayerProp = LastLAI / spc.MaxLAI;
             CanopyGrowingSpace = 1.0f;
+            LastBiomassDelta = 0;  //MG20261016 new variable 
+            LastANPPDelta = 0.0;  //MG20261016 new variable 
+            UniversalData.Age = age;
+            UniversalData.Biomass = (int)(AGBiomass * CanopyLayerProp);
+            UniversalData.ANPP = totalANPP;
         }
     }
 }

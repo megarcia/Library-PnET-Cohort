@@ -62,7 +62,7 @@ namespace Landis.Library.PnETCohorts
 
         public float Evaporation;
         public float Leakage;
-        public float RunOff;
+        public float Runoff;
         public float PE;  // Potential Evaporation (mm)
         public float PET;  // Potential Evapotranspiration (mm)
         public static float DeliveryPotential;
@@ -329,7 +329,7 @@ namespace Landis.Library.PnETCohorts
                 Evaporation = Math.Min(AEmax, (Water - sitecohorts.Ecoregion.WiltPnt) * evapSoilDepth);// mm/month
 
                 float AET = Evaporation + sitecohorts.Transpiration;
-                sitecohorts.SetAet(AET, variables.Month);                
+                sitecohorts.SetAET(AET, variables.Month);                
                 float PET = PE + sitecohorts.PotentialTranspiration;
                 sitecohorts.SetPET(PET);
                 SiteVars.ClimaticWaterDeficit[sitecohorts.Site] += (PET - AET);

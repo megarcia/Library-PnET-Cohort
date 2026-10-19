@@ -33,17 +33,16 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        //MG20260911 Doesn't appear to be called from anywhere else
         /// <summary>
         /// Initializes the cohorts module.
         /// </summary>
-        /// <param name="successionTimeStep">
-        /// The time step for the succession extension.  Unit: years
+        /// <param name="timestep">
+        /// The time step for the Succession extension.  Unit: years
         /// </param>
 
-        public static void Initialize(int successionTimeStep)
+        public static void Initialize(int timestep)
         {
-            Cohorts.successionTimeStep = successionTimeStep;
+            successionTimeStep = timestep;
         }
 
         /// <summary>

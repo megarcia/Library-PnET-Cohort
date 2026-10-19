@@ -1872,7 +1872,7 @@ namespace Landis.Library.PnETCohorts
                                 mainLayerLAIweightedSum += LAISum * Math.Min(c.LastLAI / c.SpeciesPnET.MaxLAI, c.CanopyGrowingSpace);
                                 mainLayerBioSum += c.AGBiomass;
                                 c.LastANPPDelta = c.AGBiomass - c.LastAGBio - c.ANPP;  // ANPP = change in biomass; ANPPDelta = change in ANPP
-                                c.ANPP = c.ChangeANPP(c.LastANPPDelta);  // update cohort ANPP value
+                                c.ChangeANPP(c.LastANPPDelta);  // update cohort ANPP value
                                 if (CohortStacking)
                                     mainLayerCanopyProp += 1.0f;
                                 else

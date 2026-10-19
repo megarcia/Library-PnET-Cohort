@@ -88,7 +88,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         //MG20261016 new variable to track ANPP changes by timestep
-        public int LastANPPDelta
+        public double LastANPPDelta
         {
             get
             {

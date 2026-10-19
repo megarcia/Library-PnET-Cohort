@@ -1,13 +1,3 @@
-//MG20261013 This Class is just a copy of UniversalCohorts.Cohorts and
-//           acts as a pass-through to that class. It may be obscuring 
-//           proper initialization and interaction with UniversalCohorts,
-//           and might just be a leftover from pre-UCL Landis. Deprecating
-//           this Class in PnETCohorts and redirecting any invocations
-//           in PnETCohorts and the PnET-Succession extension to the
-//           UCL class instead.
-
-//  Authors:  Robert M. Scheller, James B. Domingo
-
 using System;
 using Landis.Library.UniversalCohorts;
 
@@ -35,7 +25,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// The calculator for computing how a cohort's biomass changes.
         /// </summary>
-        public static ICalculator BiomassCalculator
+        public static ICalculator Calculator
         {
             get 
             {
@@ -56,8 +46,6 @@ namespace Landis.Library.PnETCohorts
             Cohorts.successionTimeStep = successionTimeStep;
         }
 
-        //MG20261013 Calls UniversalCohorts.ComputeBiomass, but still
-        //           is not used anywhere in PnETCohorts or PnET-Succession.
         /// <summary>
         /// Computes the total biomass for all the cohorts at a site.
         /// </summary>
@@ -66,7 +54,6 @@ namespace Landis.Library.PnETCohorts
             return ComputeBiomass(siteCohorts);
         }
         
-        //MG20260911 Doesn't appear to be called from anywhere else
         /// <summary>
         /// Computes the total aboveground live biomass for all the cohorts at a site, and the
         /// total aboveground live biomass for all the young cohorts.
@@ -87,7 +74,6 @@ namespace Landis.Library.PnETCohorts
             return totalBiomass;
         }
 
-        //MG20260911 Doesn't appear to be called from anywhere else
         /// <summary>
         /// Computes the total aboveground live biomass for all the cohorts, not including young cohorts.
         /// </summary>

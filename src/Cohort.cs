@@ -12,8 +12,7 @@ using Landis.Utilities;
 
 namespace Landis.Library.PnETCohorts
 {
-    // public class Cohort : Library.UniversalCohorts.Cohort, ICohort  //MG20261021
-    public class Cohort : ICohort  //MG20261021
+    public class Cohort : Library.UniversalCohorts.Cohort, ICohort
     { 
         public delegate void SubtractTranspiration(float transpiration, ISpeciesPnET Species);
         public ushort index;

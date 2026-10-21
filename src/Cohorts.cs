@@ -66,12 +66,12 @@ namespace Landis.Library.PnETCohorts
                 foreach (ICohort cohort in speciesCohorts)
                 {
                     // totalBiomass += (int)cohort.Data.UniversalData.Biomass;  //MG20261021
-                    totalBiomass += (int)cohort.Data.Biomass;  //MG20261021
+                    totalBiomass += (int)cohort.Data.UnivCohort.Data.Biomass;  //MG20261021
                     // if (cohort.Data.UniversalData.Age < successionTimeStep)  //MG20261021
-                    if (cohort.Data.Age < successionTimeStep)  //MG20261021
+                    if (cohort.Data.UnivCohort.Data.Age < successionTimeStep)  //MG20261021
                     {
                         // youngBiomass += (int)cohort.Data.UniversalData.Biomass;  //MG20261021
-                        youngBiomass += (int)cohort.Data.Biomass;  //MG20261021
+                        youngBiomass += (int)cohort.Data.UnivCohort.Data.Biomass;  //MG20261021
                     }
                 }
             }
@@ -91,8 +91,8 @@ namespace Landis.Library.PnETCohorts
                 {
                     // if (cohort.Data.UniversalData.Age >= successionTimeStep)  //MG20261021
                     //     totalBiomass += (int)cohort.Data.UniversalData.Biomass;  //MG20261021
-                    if (cohort.Data.Age >= successionTimeStep)  //MG20261021
-                        totalBiomass += (int)cohort.Data.Biomass;  //MG20261021
+                    if (cohort.Data.UnivCohort.Data.Age >= successionTimeStep)  //MG20261021
+                        totalBiomass += (int)cohort.Data.UnivCohort.Data.Biomass;  //MG20261021
                 }
             return totalBiomass;
         }

@@ -3447,7 +3447,7 @@ namespace Landis.Library.PnETCohorts
                     if (isSpeciesCohortDamaged[c])
                     {
                         // totalReduction += (int) speciescohort[c].Data.UniversalData.Biomass;  //MG20261021
-                        totalReduction += (int) speciescohort[c].Data.Biomass;  //MG20261021
+                        totalReduction += (int) speciescohort[c].Data.UnivCohort.Data.Biomass;  //MG20261021
                         ToRemove.Add(cohorts[spc][c]);
                     }
                 }

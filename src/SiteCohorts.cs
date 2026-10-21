@@ -1373,11 +1373,11 @@ namespace Landis.Library.PnETCohorts
                         coldKillMonth[spc] = extremeMonth;
                 }
             }
-            //Clear pressurehead site values
+            // Clear pressurehead site values
             sumPressureHead = 0;
             countPressureHead = 0;
-            SiteVars.MonthlyPressureHead[this.Site] = new float[data.Count()];
-            SiteVars.MonthlySoilTemp[this.Site] = new SortedList<float, float>[data.Count()];
+            SiteVars.MonthlyPressureHead[Site] = new float[data.Count()];
+            SiteVars.MonthlySoilTemp[Site] = new SortedList<float, float>[data.Count()];
             for (int m = 0; m < data.Count(); m++)
             {
                 Ecoregion.Variables = data[m];
@@ -1415,6 +1415,8 @@ namespace Landis.Library.PnETCohorts
                     }
                 }
 
+                //MG20261021 TODO ozone calculations --> Ozone class?
+                //
                 float ozoneD40 = 0;
                 if (m > 0)
                     ozoneD40 = Math.Max(0, data[m].O3 - data[m - 1].O3);
@@ -1422,6 +1424,8 @@ namespace Landis.Library.PnETCohorts
                     ozoneD40 = data[m].O3;
                 float O3_D40_ppmh = ozoneD40 / 1000; // convert D40 units to ppm h
 
+                //MG20261021 TODO move snow melt/depth calculations to Snow class
+                //
                 // Melt snow
                 float snowmelt = Math.Min(snowPack, ComputeMaxSnowMelt(data[m].Tave, data[m].DaySpan)); // mm
                 if (snowmelt < 0)
@@ -1440,8 +1444,6 @@ namespace Landis.Library.PnETCohorts
                 leakageFrac = Ecoregion.LeakageFrac;
                 float propThawed = 0;
 
-                //MG20261014 TODO move snow melt/depth calculations to Snow class
-                //
                 // Soil temp calculations - need for permafrost and Root Rot
                 // snow calculations - from "Soil thawing worksheet with snow.xlsx"
                 if (data[m].Tave <= 0)
@@ -1456,7 +1458,8 @@ namespace Landis.Library.PnETCohorts
 
                 if (lastTempBelowSnow == float.MaxValue)
                 {
-                    //MG20261014 TODO snow thermal calculations
+                    //MG20261021 TODO snow thermal calculations --> Snow class
+                    //
                     float lambda_Snow = (float)(Globals.lambAir + ((0.0000775 * Psno_kg_m3) + (0.000001105 * Math.Pow(Psno_kg_m3, 2))) * (Globals.lambIce - Globals.lambAir)) * 3.6F * 24F; //(kJ/m/d/K) includes unit conversion from W to kJ
                     float vol_heat_capacity_snow = Globals.snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
                     float Ks_snow = 1000000F / 86400F * (lambda_Snow / vol_heat_capacity_snow); //thermal diffusivity (mm2/s)
@@ -1465,7 +1468,8 @@ namespace Landis.Library.PnETCohorts
                     if (sno_dep > 0)
                         DRz_snow = (float)Math.Exp(-1.0F * sno_dep * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
 
-                    //MG20261014 TODO moss thermal calculations
+                    //MG20261021 TODO moss thermal calculations --> Moss class?
+                    //
                     float mossDepth = this.SiteMossDepth;
                     float cv = 2500; // heat capacity moss - kJ/m3/K (Sazonova and Romanovsky 2003)
                     float lambda_moss = 432; // kJ/m/d/K - converted from 0.2 W/mK (Sazonova and Romanovsky 2003)
@@ -1473,7 +1477,8 @@ namespace Landis.Library.PnETCohorts
                     float damping_moss = (float)Math.Sqrt((2.0F * moss_diffusivity) / Constants.omega);
                     float DRz_moss = (float)Math.Exp(-1.0F * mossDepth * damping_moss); // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
 
-                    //MG20261014 TODO soil thermal calculations
+                    //MG20261021 TODO soil thermal calculations --> Soil class
+                    //
                     float waterContent = hydrology.Water;// volumetric m/m
                     float porosity = Ecoregion.Porosity;  // volumetric m/m 
                     float ga = 0.035F + 0.298F * (waterContent / porosity);
@@ -1748,6 +1753,8 @@ namespace Landis.Library.PnETCohorts
                 float TransCumulative = 0;
                 float InterceptCumulative = 0;
 
+                //MG20261021 TODO ozone calculations --> Ozone class?
+                //
                 float O3_ppmh = data[m].O3 / 1000; // convert AOT40 units to ppm h
                 float lastO3 = 0;
                 if (m > 0)
@@ -2080,14 +2087,14 @@ namespace Landis.Library.PnETCohorts
                 monthlyPotentialTrans[data[m].Month - 1] += potentialTranspiration;
                 monthlyAET[data[m].Month - 1] = monthlyActualTrans[data[m].Month - 1] + monthlyEvap[data[m].Month - 1] + monthlyInterception[data[m].Month - 1];
 
-                //MG20261016 TODO there are dedicated and detailed calculations for this
+                //MG20261021 TODO there are dedicated and detailed calculations for this --> new Albedo class
                 float groundAlbedo = 0.20F;
                 if (sno_dep > 0)
                 {
                     float snowMultiplier = sno_dep >= Globals.snowReflectanceThreshold ? 1 : sno_dep / Globals.snowReflectanceThreshold;
                     groundAlbedo = (float)(groundAlbedo + (groundAlbedo * (2.125 * snowMultiplier)));
                 }
-                //MG20261016 end
+                //MG20261021 end
 
                 for (int layer = 0; layer < tempMaxCanopyLayers; layer++)
                 {
@@ -2219,7 +2226,7 @@ namespace Landis.Library.PnETCohorts
                     // Calculate AdjFolFrac
                     AllCohorts.ForEach(x => x.CalcAdjFracFol());
 
-                    // Filter monthly pest values
+                    // Filter monthly PEst values
                     // This assumes up to 3 months of growing season are relevant for establishment
                     // When > 3 months of growing season, exlcude 1st month, assuming trees focus on foliage growth in first month
                     // When > 4 months, ignore the 4th month and beyond as not primarily relevant for establishment
@@ -2307,6 +2314,8 @@ namespace Landis.Library.PnETCohorts
             return success;
         }
 
+        //MG20261021 move to Utilities?
+        //
         // Finds the maximum value from an array of floats
         private float Max(float[] values)
         {
@@ -2317,6 +2326,9 @@ namespace Landis.Library.PnETCohorts
             return maximum;
         }
 
+        //MG20261021 move to Calendar class
+        //           adjust for latitude?
+        //
         private bool isSummer(byte month)
         {
             switch (month)
@@ -2334,6 +2346,9 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 move to Calendar class
+        //           adjust for latitude?
+        //
         private bool isWinter(byte month)
         {
             switch (month)
@@ -2351,8 +2366,9 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        //MG20261014 TODO move this to an Albedo class, along with the
-        //           counterpart calculation without snow (see Cohort.Albedo)
+        //MG20261021 TODO move this to an Albedo class, along with counterpart 
+        //           calculation without snow (see Cohort.Albedo method)
+        //
         // Does the final bits of Albedo calculation by adding snow consideration in
         private float CalculateAlbedoWithSnow(Cohort cohort, float albedo, float snowDepth)
         {
@@ -2401,6 +2417,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to a Respiration class
+        //
         public float[] MaintResp
         {
             get
@@ -2417,6 +2435,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to a Respiration class
+        //
         public float[] FolResp
         {
             get
@@ -2433,6 +2453,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
  
+        //MG20261021 TODO move this to a Photosynthesis class
+        //
         public float[] GrossPsn
         {
             get
@@ -2449,6 +2471,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Snow class
+        //
         public float[] MonthlyAvgSnowPack
         {
             get
@@ -2472,6 +2496,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Hydrology class
+        //
         public float[] MonthlyAvgWater
         {
             get
@@ -2494,6 +2520,9 @@ namespace Landis.Library.PnETCohorts
                 }
             }
         }
+
+        //MG20261021 TODO move this to a Canopy class?
+        //
         public float[] MonthlyAvgLAI
         {
             get
@@ -2517,6 +2546,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Hydrology class?
+        //
         public float[] MonthlyEvap
         {
             get
@@ -2540,6 +2571,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Hydrology or Canopy class
+        //
         public float[] MonthlyInterception
         {
             get
@@ -2563,6 +2596,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Hydrology or Canopy class
+        //
         public float[] MonthlyActualTrans
         {
             get
@@ -2586,6 +2621,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Hydrology class
+        //
         public float[] MonthlyLeakage
         {
             get
@@ -2609,6 +2646,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Hydrology class
+        //
         public float[] MonthlyRunoff
         {
             get
@@ -2632,6 +2671,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Hydrology or Canopy class
+        //
         public float[] MonthlyAET
         {
             get
@@ -2655,6 +2696,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Hydrology class
+        //
         public float[] MonthlyPotentialEvap
         {
             get
@@ -2678,6 +2721,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Hydrology or Canopy class
+        //
         public float[] MonthlyPotentialTrans
         {
             get
@@ -2701,6 +2746,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Albedo class
+        //
         public float[] AverageAlbedo
         {
             get
@@ -2717,6 +2764,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Soil class
+        //
         public float[] ActiveLayerDepth
         {
             get
@@ -2733,6 +2782,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Soil class
+        //
         public float[] FrostDepth
         {
             get
@@ -2749,6 +2800,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Photosynthesis class
+        //
         public float NetPsnSum
         {
             get
@@ -2765,6 +2818,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Canopy class
+        //
         public float CanopyLAImax
         {
             get
@@ -2773,6 +2828,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Canopy class
+        //
         public float[] MonthlyLAI
         {
             get
@@ -2781,6 +2838,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Moss class?
+        //
         public float SiteMossDepth
         {
             get
@@ -3228,6 +3287,8 @@ namespace Landis.Library.PnETCohorts
             cohorts.Clear();
         }
 
+        //MG20261021 TODO move this to Disturbance class?
+        //
         public override void ReduceOrKillCohorts(Library.UniversalCohorts.IDisturbance disturbance)
         {
             List<double> reduction = new List<double>();
@@ -3280,12 +3341,16 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Disturbance class?
+        //
         public override void RemoveMarkedCohorts(Library.UniversalCohorts.ICohortDisturbance disturbance)
         {
             base.RemoveMarkedCohorts(disturbance);
             ReduceOrKillCohorts(disturbance);
         }
 
+        //MG20261021 TODO move this to Disturbance class?
+        //
         public override void RemoveMarkedCohorts(ISpeciesCohortsDisturbance disturbance)
         {
             //  Go through list of species cohorts from back to front so that
@@ -3315,6 +3380,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Disturbance class?
+        //
         private void RemoveMarkedCohorts()
         {
             for (int c = cohorts.Values.Count - 1; c >= 0; c--)
@@ -3334,6 +3401,8 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261021 TODO move this to Disturbance class?
+        //
         public void RemoveCohort(Cohort cohort, ExtensionType disturbanceType)
         {
             if (disturbanceType.Name == Names.ExtensionName)
@@ -3569,7 +3638,8 @@ namespace Landis.Library.PnETCohorts
              
         }
 
-        //MG20261014 TODO move this struct to a new Canopy class for such calculations
+        //MG20261021 TODO move this struct to a new Canopy class for such calculations
+        //
         public struct CumulativeLeafAreas
         {
             public float DarkConifer;

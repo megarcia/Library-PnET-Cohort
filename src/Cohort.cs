@@ -192,7 +192,8 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return data.UniversalData.Biomass * speciesPnET.MossScalar;
+                // return data.UniversalData.Biomass * speciesPnET.MossScalar;  //MG20261021
+                return data.UnivCohort.Data.Biomass * speciesPnET.MossScalar;
             }
         }
 
@@ -745,7 +746,8 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public void IncrementAge()
         {
-            data.UniversalData.Age += 1;
+            // data.UniversalData.Age += 1;  //MG20261021
+            data.UnivCohort.Data.Age += 1;  //MG20261021
         }
 
         /// <summary>
@@ -1160,12 +1162,14 @@ namespace Landis.Library.PnETCohorts
                     float Allocation = Math.Max(NSC - (speciesPnET.DNSC * FActiveBiom * data.TotalBiomass * speciesPnET.CFracBiomass), 0.0f);
                     data.TotalBiomass += Allocation / speciesPnET.CFracBiomass;  // convert gC to gDW
                     data.AGBiomass = (1 - speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
-                    data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+                    // data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261021
+                    data.UnivCohort.Data.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261021
                     data.BiomassMax = Math.Max(BiomassMax, data.TotalBiomass);
                     data.NSC -= Allocation;
                     if (data.NSC < 0)
                         data.NSC = 0f;
-                    data.UniversalData.Age++;
+                    // data.UniversalData.Age++;  //MG20261021
+                    data.UnivCohort.Data.Age++;  //MG20261021
                 }
             }
             // Phenology: do once per cohort per month, using the first sublayer 
@@ -1807,7 +1811,8 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass -= senescence;
             data.AGBiomass = (1 - speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            // data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261021
+            data.UnivCohort.Data.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261021
             return senescence;
         }
 
@@ -1835,7 +1840,8 @@ namespace Landis.Library.PnETCohorts
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
             Fol *= (float)(1.0f - fraction);
             data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            // data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261021
+            data.UnivCohort.Data.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261021
         }
 
         public float CalculateLAI(ISpeciesPnET species, float fol, int index)

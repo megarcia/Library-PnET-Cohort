@@ -29,7 +29,7 @@ namespace Landis.Library.PnETCohorts
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly bool isDebugEnabled = log.IsDebugEnabled;
-
+        private ActiveSite site;  //MG20261021
         private ISpecies species;
         private bool isMaturePresent;
 
@@ -65,7 +65,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return new Cohort(species, cohortData[index]);
+                return new Cohort(site, species, cohortData[index]);  //MG20261021
             }
         }
 
@@ -85,10 +85,11 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public SpeciesCohorts(Cohort cohort)
         {
+            this.site = cohort.Site;  //MG20261021
             this.species = cohort.Species;
             this.cohortData = new List<CohortData>();
             this.isMaturePresent = false;
-            AddNewCohort(cohort);
+            AddNewCohort(cohort);  //MG20261021 calls SpeciesCohorts.AddNewCohort method below, no return value
         }
 
         /// <summary>
@@ -96,7 +97,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public SpeciesCohorts Clone()
         {
-            SpeciesCohorts clone = new SpeciesCohorts(this.species);
+            SpeciesCohorts clone = new SpeciesCohorts(this.site, this.species);  //MG20261021
             clone.cohortData = new List<CohortData>(this.cohortData);
             clone.isMaturePresent = this.isMaturePresent;
             return clone;
@@ -108,8 +109,9 @@ namespace Landis.Library.PnETCohorts
         /// <remarks>
         /// Private constructor used by Clone method.
         /// </remarks>
-        private SpeciesCohorts(ISpecies species)
+        private SpeciesCohorts(ActiveSite site, ISpecies species)
         {
+            this.site = site;  //MG20261021
             this.species = species;
         }
 
@@ -118,7 +120,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public void AddNewCohort(Cohort cohort)
         {
-            this.cohortData.Add(new CohortData(cohort));
+            this.cohortData.Add(new CohortData(cohort));  //MG20261021 adds a new PnETCohorts.CohortData listing 
         }
 
         /// <summary>
@@ -126,7 +128,8 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public int GetAge(int index)
         {
-            return cohortData[index].UniversalData.Age;
+            // return cohortData[index].UniversalData.Age;  //MG20261021
+            return cohortData[index].UnivCohort.Data.Age;  //MG20261021
         }
 
         /// <summary>
@@ -154,11 +157,13 @@ namespace Landis.Library.PnETCohorts
             for (int i = cohortData.Count - 1; i >= 0; i--)
             {
                 CohortData data = cohortData[i];
-                if (data.UniversalData.Age <= Cohorts.SuccessionTimeStep)
+                // if (data.UniversalData.Age <= Cohorts.SuccessionTimeStep)  //MG20261021
+                if (data.UnivCohort.Data.Age <= Cohorts.SuccessionTimeStep)  //MG20261021
                 {
                     youngCount++;
                     totalBiomass += data.TotalBiomass;
-                    totalANPP += data.UniversalData.ANPP;
+                    // totalANPP += data.UniversalData.ANPP;  //MG20261021
+                    totalANPP += data.UnivCohort.Data.ANPP;  //MG20261021
                 }
                 else
                     break;
@@ -167,7 +172,7 @@ namespace Landis.Library.PnETCohorts
             {
                 cohortData.RemoveRange(cohortData.Count - youngCount, youngCount);
                 bool cohortStacking = ((Parameter<bool>)Names.GetParameter(Names.CohortStacking)).Value;
-                cohortData.Add(new CohortData((ushort)(Cohorts.SuccessionTimeStep - 1), totalBiomass, totalANPP, this.Species, cohortStacking));
+                cohortData.Add(new CohortData(this.site, this.species, (ushort)(Cohorts.SuccessionTimeStep - 1), totalBiomass, totalANPP, cohortStacking));  //MG20261021 added site and reordered variables
             }
         }
 
@@ -190,7 +195,7 @@ namespace Landis.Library.PnETCohorts
             Debug.Assert(0 <= index && index <= cohortData.Count);
             Debug.Assert(site != null);
 
-            Cohort cohort = new Cohort(species, cohortData[index]);
+            Cohort cohort = new Cohort(site, species, cohortData[index]);  //MG20261021 added site variable
 
             if (isDebugEnabled)
                 log.DebugFormat("  grow cohort: {0}, {1} yrs, {2} Mg/ha",
@@ -274,7 +279,7 @@ namespace Landis.Library.PnETCohorts
             int totalReduction = 0;
             for (int i = cohortData.Count - 1; i >= 0; i--)
             {
-                Cohort cohort = new Cohort(species, cohortData[i]);
+                Cohort cohort = new Cohort(disturbance.CurrentSite, species, cohortData[i]);  //MG20261021 added site variable
                 double reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
                 int intReduction = (int)reduction;
                 //Console.WriteLine("  Reduction: {0}, {1} yrs, {2} g/m2, reduction={3}", cohort.Species.Name, cohort.Age, cohort.Biomass, reduction);
@@ -326,7 +331,7 @@ namespace Landis.Library.PnETCohorts
             {
                 if (isSpeciesCohortDamaged[i])
                 {
-                    Cohort cohort = new Cohort(species, cohortData[i]);
+                    Cohort cohort = new Cohort(disturbance.CurrentSite, species, cohortData[i]);  //MG20261021 added site variable
                     totalReduction += cohort.Biomass;
                     RemoveCohort(i, cohort, disturbance.CurrentSite, disturbance.Type);
                     Cohort.KilledByAgeOnlyDisturbance(this, cohort, disturbance.CurrentSite, disturbance.Type);
@@ -341,7 +346,7 @@ namespace Landis.Library.PnETCohorts
         IEnumerator<PnETCohorts.ICohort> GetEnumerator()
         {
             foreach (CohortData data in cohortData)
-                yield return new Cohort(species, data);
+                yield return new Cohort(site, species, data);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

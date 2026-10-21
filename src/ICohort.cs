@@ -9,6 +9,7 @@ namespace Landis.Library.PnETCohorts
     /// </summary>
     public interface ICohort : Library.UniversalCohorts.ICohort
     {
+        new ActiveSite Site { get; }  //MG20261021
         new CohortData Data { get; }
         int AGBiomass { get; }
         int TotalBiomass { get; }

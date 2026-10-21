@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using Landis.Core;
 using Landis.Library.UniversalCohorts;
@@ -11,15 +12,28 @@ using Landis.Utilities;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class Cohort : Library.UniversalCohorts.Cohort, ICohort
+    // public class Cohort : Library.UniversalCohorts.Cohort, ICohort  //MG20261021
+    public class Cohort : ICohort  //MG20261021
     { 
         public delegate void SubtractTranspiration(float transpiration, ISpeciesPnET Species);
         public ushort index;
         private ISpecies species;
+        private ActiveSite site;
         private ISpeciesPnET speciesPnET;
         private CohortData data;
         private bool firstYear;
         private LocalOutput cohortoutput;
+
+        /// <summary>
+        /// The site in which the cohort resides  //MG20261021
+        /// </summary>
+        public ActiveSite Site
+        {
+            get
+            {
+                return site;
+            }
+        }
 
         /// <summary>
         /// The cohort's data
@@ -38,11 +52,13 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return data.UniversalData.Age;
+                // return data.UniversalData.Age;
+                return data.UnivCohort.Data.Age; //MG20261021 trying something weird
             }
             set
             {
-                data.UniversalData.Age = value;
+                // data.UniversalData.Age = value;
+                data.UnivCohort.Data.Age = value;  //MG20261021 trying something weird
             }
         }
 
@@ -52,11 +68,13 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return data.UniversalData.Biomass;
+                // return data.UniversalData.Biomass;
+                return data.UnivCohort.Data.Biomass; //MG20261021 trying something weird
             }
             set
             {
-                data.UniversalData.Biomass = value;
+                // data.UniversalData.Biomass = value;
+                data.UnivCohort.Data.Biomass = value;  //MG20261021 trying something weird
             }
         }
 
@@ -79,11 +97,13 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return data.UniversalData.ANPP;
+                // return data.UniversalData.ANPP;
+                return data.UnivCohort.Data.ANPP; //MG20261021 trying something weird
             }
             set
             {
-                data.UniversalData.ANPP = value;
+                // data.UniversalData.ANPP = value;
+                data.UnivCohort.Data.ANPP = value;  //MG20261021 trying something weird
             }
         }
 
@@ -277,12 +297,12 @@ namespace Landis.Library.PnETCohorts
         }
 
         // LANDIS species (without PnET parameter additions)
-        public Landis.Core.ISpecies Species
+        public ISpecies Species
         {
             get
             {
                 int sppIndex = species.Index;
-                return (Landis.Core.ISpecies)Globals.ModelCore.Species[sppIndex];
+                return (ISpecies)Globals.ModelCore.Species[sppIndex];
             }
         }
 
@@ -715,8 +735,10 @@ namespace Landis.Library.PnETCohorts
             data.Fol += cohort.Fol;
             data.MaxFolYear = Math.Max(MaxFolYear, data.Fol);
             data.AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
-            data.UniversalData.ANPP += cohort.ANPP;
+            // data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261021
+            data.UnivCohort.Data.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261021
+            // data.UniversalData.ANPP += cohort.ANPP;  //MG20261021
+            data.UnivCohort.Data.ANPP += cohort.ANPP;  //MG20261021
         }
 
         /// <summary>
@@ -736,7 +758,8 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass = Math.Max(0.0f, newTotalBiomass);
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
             data.AGBiomass = (1 - SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            // data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261021
+            data.UnivCohort.Data.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261021
         }
 
         /// <summary>
@@ -744,11 +767,16 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public void ChangeANPP(double delta)
         {            
-            data.UniversalData.ANPP += delta;
+            // data.UniversalData.ANPP += delta;  //MG20261021
+            data.UnivCohort.Data.ANPP += delta;  //MG20261021
         }
 
-        public Cohort(ISpecies species, ISpeciesPnET speciesPnET, ushort year_of_birth, string SiteName, double propBiomass, bool cohortStacking)
+        //MG20261021 trying something weird to get PnET to communicate properly with UCL;
+        //           added ActiveSite site argument in order to spawn a corresponding 
+        //           UniversalCohort whenever a new PnET Cohort is instantiated.
+        public Cohort(ActiveSite site, ISpecies species, ISpeciesPnET speciesPnET, ushort cohort_start_year, string SiteName, double propBiomass, bool cohortStacking)
         {
+            this.site = site;  //MG20261021
             this.species = species;
             this.speciesPnET = speciesPnET;
             data.ColdKill = int.MaxValue;
@@ -766,31 +794,46 @@ namespace Landis.Library.PnETCohorts
             data.LastLAI = cohortLAI;
             data.LastAGBio = data.AGBiomass;
             data.CanopyLayerProp = data.LastLAI / speciesPnET.MaxLAI;
-            if(cohortStacking)
+            if (cohortStacking)
                 data.CanopyLayerProp = 1.0f;
             data.CanopyGrowingSpace = 1.0f;
             data.LastSeasonFRad = new List<float>();
-
             firstYear = true;
-            data.UniversalData.Age = 1;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
-            data.LastBiomassDelta = data.UniversalData.Biomass;  //MG20261016 new variable
-            data.UniversalData.ANPP = data.UniversalData.Biomass;
-            data.LastANPPDelta = data.UniversalData.Biomass;  //MG20261016 new variable
+
+            //MG20261021 begin changes to spawn new UniversalCohort within PnET Cohort
+            //           note that this process needs the site variable now added to invocation
+            int _age = 1;
+            int _biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            double _anpp = _biomass;
+            ExpandoObject AddlParams = new ExpandoObject();
+            data.UnivCohort = SiteVars.UnivCohorts[site].AddNewCohort(species, _age, _biomass, _anpp, AddlParams);  
+            // data.UniversalData.Age = 1;
+            // data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            // data.UniversalData.ANPP = data.UniversalData.Biomass;
+            //MG20261021 end changes -- I told you it was weird...
+
+            data.LastBiomassDelta = Biomass;  //MG20261016 new variable
+            data.LastANPPDelta = Biomass;  //MG20261016 new variable
 
             if (SiteName != null)
-                InitializeOutput(SiteName, year_of_birth);
+                InitializeOutput(SiteName, cohort_start_year);
         }
 
-        public Cohort(ISpecies species, CohortData cohortData)
+        //MG20261021 trying something weird to get PnET to communicate properly with UCL;
+        //           added ActiveSite site argument since that information is not in cohortData
+        public Cohort(ActiveSite site, ISpecies species, CohortData cohortData)
         {
+            this.site = site;  //MG20261021
             this.species = species;
             speciesPnET = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
-            data = cohortData;
+            data = cohortData;  //MG20261021 I think since the cohortData already exists,
+                                //           already has a UniversalCohort in it, so no
+                                //           need to spawn a new one... right?
         }
 
         public Cohort(Cohort cohort)
         {
+            site = cohort.Site;  //MG20261021
             species = cohort.Species;
             speciesPnET = cohort.speciesPnET;
             data.NSC = cohort.NSC;
@@ -802,15 +845,25 @@ namespace Landis.Library.PnETCohorts
             data.LastSeasonFRad = cohort.data.LastSeasonFRad;
             data.ColdKill = int.MaxValue;
 
-            data.UniversalData.Age = cohort.Age;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * cohort.CanopyLayerProp);
+            //MG20261021 begin changes to spawn new UniversalCohort within PnET Cohort
+            //           note that this process needs the site variable now added to invocation
+            int _age = cohort.Age;
+            int _biomass = (int)(data.AGBiomass * cohort.CanopyLayerProp);
+            double _anpp = cohort.ANPP;
+            ExpandoObject AddlParams = new ExpandoObject();
+            data.UnivCohort = SiteVars.UnivCohorts[site].AddNewCohort(species, _age, _biomass, _anpp, AddlParams);  
+            // data.UniversalData.Age = cohort.Age;
+            // data.UniversalData.Biomass = (int)(data.AGBiomass * cohort.CanopyLayerProp);
+            // data.UniversalData.ANPP = cohort.ANPP;
+            //MG20261021 end changes -- I told you it was weird...
+
             data.LastBiomassDelta = cohort.LastBiomassDelta;  //MG20261016 new variable
-            data.UniversalData.ANPP = cohort.ANPP;
             data.LastANPPDelta = cohort.LastANPPDelta;  //MG20261016 new variable
         }
 
-        public Cohort(Cohort cohort, ushort firstYear, string SiteName)
+        public Cohort(Cohort cohort, ushort FirstYear, string SiteName)
         {
+            site = cohort.Site;  //MG20261021
             species = cohort.Species;
             speciesPnET = cohort.speciesPnET;
             data.NSC = cohort.NSC;
@@ -821,21 +874,34 @@ namespace Landis.Library.PnETCohorts
             data.MaxFolYear = cohort.MaxFolYear;
             data.LastSeasonFRad = cohort.data.LastSeasonFRad;
             data.ColdKill = int.MaxValue;
+            firstYear = FirstYear;  //MG20261021 was ignored? otherwise unused...
 
-            data.UniversalData.Age = cohort.Age;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * cohort.CanopyLayerProp);
+            //MG20261021 begin changes to spawn new UniversalCohort within PnET Cohort
+            //           note that this process needs the site variable now added to invocation
+            int _age = cohort.Age;
+            int _biomass = (int)(data.AGBiomass * cohort.CanopyLayerProp);
+            double _anpp = cohort.ANPP;
+            ExpandoObject AddlParams = new ExpandoObject();
+            data.UnivCohort = SiteVars.UnivCohorts[site].AddNewCohort(species, _age, _biomass, _anpp, AddlParams);  
+            // data.UniversalData.Age = cohort.Age;
+            // data.UniversalData.Biomass = (int)(data.AGBiomass * cohort.CanopyLayerProp);
+            // data.UniversalData.ANPP = cohort.ANPP;
+            //MG20261021 end changes -- I told you it was weird...
+
             data.LastBiomassDelta = cohort.LastBiomassDelta;  //MG20261016 new variable
-            data.UniversalData.ANPP = cohort.ANPP;
             data.LastANPPDelta = cohort.LastANPPDelta;  //MG20261016 new variable
 
             if (SiteName != null)
                 InitializeOutput(SiteName, firstYear);
         }
 
-        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, string SiteName, ushort firstYear, bool cohortStacking)
+        //MG20261021 trying something weird to get PnET to communicate properly with UCL;
+        //           added ActiveSite site argument in order to spawn a corresponding 
+        //           UniversalCohort whenever a new PnET Cohort is instantiated.
+        public Cohort(ActiveSite site, ISpeciesPnET speciesPnET, ushort age, int woodBiomass, string SiteName, ushort FirstYear, bool cohortStacking)
         {
             InitializeSubLayers();
-
+            this.site = site;  //MG20261021
             species = (ISpecies)speciesPnET;
             this.speciesPnET = speciesPnET;
             float biomass = woodBiomass / (1 - speciesPnET.FracBelowG);
@@ -846,7 +912,6 @@ namespace Landis.Library.PnETCohorts
             data.ColdKill = int.MaxValue;
             float cohortLAI = 0;
             float cohortIdealFol = speciesPnET.MaxFracFol * FActiveBiom * data.TotalBiomass;
-            
             for (int i = 0; i < Globals.IMAX; i++)
             {
                 float subLayerLAI = CalculateLAI(SpeciesPnET, cohortIdealFol, i);
@@ -854,36 +919,47 @@ namespace Landis.Library.PnETCohorts
                 if (Leaf_On)
                     LAI[index] = subLayerLAI;
             }
-            
             if (Leaf_On)
             {
                 data.Fol = cohortIdealFol;
                 data.MaxFolYear = cohortIdealFol;
             }
-            
             data.LastLAI = cohortLAI;
             data.CanopyLayerProp = data.LastLAI / speciesPnET.MaxLAI;
             if (cohortStacking)
                 data.CanopyLayerProp = 1.0f;
-
             data.CanopyGrowingSpace = 1.0f;
             data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             data.LastAGBio = data.AGBiomass;
             data.NSC = this.speciesPnET.DNSC * FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
+            firstYear = FirstYear;  //MG20261021 was ignored? otherwise unused...
 
-            data.UniversalData.Age = age;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            //MG20261021 begin changes to spawn new UniversalCohort within PnET Cohort
+            //           note that this process needs the site variable now added to invocation
+            int _age = age;
+            int _biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            double _anpp = 0.0;
+            ExpandoObject AddlParams = new ExpandoObject();
+            data.UnivCohort = SiteVars.UnivCohorts[site].AddNewCohort(species, _age, _biomass, _anpp, AddlParams);  
+            // data.UniversalData.Age = age;
+            // data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            // data.UniversalData.ANPP = 0.0;
+            //MG20261021 end changes -- I told you it was weird...
+
             data.LastBiomassDelta = 0;  //MG20261016 new variable
-            data.UniversalData.ANPP = 0.0;
             data.LastANPPDelta = 0.0;  //MG20261016 new variable
 
             if (SiteName != null)
                 InitializeOutput(SiteName, firstYear);
         }
 
-        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear, bool cohortStacking, float lastSeasonAvgFrad)
+        //MG20261021 trying something weird to get PnET to communicate properly with UCL;
+        //           added ActiveSite site argument in order to spawn a corresponding 
+        //           UniversalCohort whenever a new PnET Cohort is instantiated.
+        public Cohort(ActiveSite site, ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort FirstYear, bool cohortStacking, float lastSeasonAvgFrad)
         {
             InitializeSubLayers();
+            this.site = site;  //MG20261021
             species = (ISpecies)speciesPnET;
             this.speciesPnET = speciesPnET;
             float biomass = woodBiomass / (1 - speciesPnET.FracBelowG);
@@ -891,7 +967,6 @@ namespace Landis.Library.PnETCohorts
             data.BiomassMax = Math.Max(biomass,maxBiomass);
             data.LastSeasonFRad = new List<float>();
             data.LastSeasonFRad.Add(lastSeasonAvgFrad);
-            
             CalcAdjFracFol();
             data.ColdKill = int.MaxValue;
             float cohortLAI = 0;
@@ -903,13 +978,11 @@ namespace Landis.Library.PnETCohorts
                 if (Leaf_On)
                     LAI[index] = subLayerLAI;
             }
-
             if (Leaf_On)
             {
                 data.Fol = cohortIdealFol;
                 data.MaxFolYear = cohortIdealFol;
             }
-
             data.LastLAI = cohortLAI;
             data.CanopyLayerProp = data.LastLAI / speciesPnET.MaxLAI;
             if (cohortStacking)
@@ -918,11 +991,21 @@ namespace Landis.Library.PnETCohorts
             data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             data.LastAGBio = data.AGBiomass;
             data.NSC = this.speciesPnET.DNSC * FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
+            firstYear = FirstYear;  //MG20261021 was ignored? otherwise unused...
 
-            data.UniversalData.Age = age;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            //MG20261021 begin changes to spawn new UniversalCohort within PnET Cohort
+            //           note that this process needs the site variable now added to invocation
+            int _age = age;
+            int _biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            double _anpp = 0.0;
+            ExpandoObject AddlParams = new ExpandoObject();
+            data.UnivCohort = SiteVars.UnivCohorts[site].AddNewCohort(species, _age, _biomass, _anpp, AddlParams);  
+            // data.UniversalData.Age = age;
+            // data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            // data.UniversalData.ANPP = 0.0;
+            //MG20261021 end changes -- I told you it was weird...
+
             data.LastBiomassDelta = 0;  //MG20261016 new variable
-            data.UniversalData.ANPP = 0.0;
             data.LastANPPDelta = 0.0;  //MG20261016 new variable
 
             if (SiteName != null)

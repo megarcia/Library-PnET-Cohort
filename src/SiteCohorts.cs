@@ -61,7 +61,6 @@ namespace Landis.Library.PnETCohorts
 
         public ActiveSite Site;
         public Dictionary<ISpecies, List<Cohort>> cohorts = null;
-        // public List<Library.UniversalCohorts.ICohort> univCohorts = null;  //MG20261021 trying something weird;
         public List<ISpecies> SpeciesEstablishedByPlant = null;
         public List<ISpecies> SpeciesEstablishedBySerotiny = null;
         public List<ISpecies> SpeciesEstablishedByResprout = null;
@@ -88,7 +87,8 @@ namespace Landis.Library.PnETCohorts
         private int nlayers;
         private static int MaxLayer;
         private static bool soilIceDepth;
-        private static bool permafrost;  //MG20261021 rename to "frozenSoil"
+        //MG20261021 TODO rename "permafrost" to "frozenSoil"
+        private static bool permafrost;  
         private static bool invertPest;
         public SortedList<float, float> depthTempDict = new SortedList<float, float>();
         float lastTempBelowSnow = float.MaxValue;
@@ -349,7 +349,6 @@ namespace Landis.Library.PnETCohorts
             this.Ecoregion = EcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[site]);
             this.Site = site;
             cohorts = new Dictionary<ISpecies, List<Cohort>>();
-            SiteVars.UnivCohorts[Site] = new Library.UniversalCohorts.SiteCohorts();  //MG20261021 trying something weird
             SpeciesEstablishedByPlant = new List<ISpecies>();
             SpeciesEstablishedBySerotiny = new List<ISpecies>();
             SpeciesEstablishedByResprout = new List<ISpecies>();
@@ -419,7 +418,7 @@ namespace Landis.Library.PnETCohorts
                         foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
                         {
                             // TODO: Add warning if biomass is 0
-                            bool addCohort = AddNewCohort(new Cohort(site, SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking));  //MG20261021 calls SiteCohorts.AddNewCohort method below, returns bool; added site variable
+                            bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking));
                             CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
                             CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
                         }
@@ -476,7 +475,7 @@ namespace Landis.Library.PnETCohorts
                             if (initialCommunitiesSpinup.ToLower() == "spinuplayersrescale")
                                 inputMaxBiomass = cohortMaxBiomass * (cohort.Data.Biomass / cohortSpinupBiomass);
                             float cohortCanopyGrowingSpace = 1.0f;
-                            bool addCohort = AddNewCohort(new Cohort(site, SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking, lastSeasonAvgFrad));  //MG20261021 calls SiteCohorts.AddNewCohort method below, returns bool; added site variable
+                            bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking, lastSeasonAvgFrad));
                             CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
                             CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
                         }
@@ -954,7 +953,7 @@ namespace Landis.Library.PnETCohorts
                                     float inputMaxBiomass = Math.Max(cohortMaxBiomass, cohort.Data.Biomass);
                                     inputMaxBiomass = cohortMaxBiomass * (cohort.Data.Biomass / cohortSpinupBiomass);
                                     float cohortCanopyGrowingSpace = 1f;
-                                    bool addCohort = AddNewCohort(new Cohort(site, SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking, lastSeasonAvgFrad));  //MG20261021 calls SiteCohorts.AddNewCohort method below, returns bool; added site variable
+                                    bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking, lastSeasonAvgFrad));
                                     CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
                                     CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
                                     AllCohorts.Last().SetAvgFRad(lastSeasonAvgFrad);
@@ -1011,7 +1010,7 @@ namespace Landis.Library.PnETCohorts
                                     float lastSeasonAvgFrad = values[2];
                                     float inputMaxBiomass = Math.Max(cohortMaxBiomass, cohort.Data.Biomass);
                                     float cohortCanopyGrowingSpace = 1f;
-                                    bool addCohort = AddNewCohort(new Cohort(site, SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking, lastSeasonAvgFrad));  //MG20261021 calls SiteCohorts.AddNewCohort method below, returns bool; added site variable
+                                    bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking, lastSeasonAvgFrad));
                                     CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
                                     CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
                                     AllCohorts.Last().SetAvgFRad(lastSeasonAvgFrad);
@@ -1034,7 +1033,7 @@ namespace Landis.Library.PnETCohorts
                                 foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
                                 {
                                     // TODO: Add warning if biomass is 0
-                                    bool addCohort = AddNewCohort(new Cohort(site, SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking));  //MG20261021 calls SiteCohorts.AddNewCohort method below, returns bool; added site variable
+                                    bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking));
                                     CohortBiomassList.Add(AllCohorts.Last().AGBiomass);
                                     CohortMaxBiomassList.Add(AllCohorts.Last().BiomassMax);
                                 }
@@ -1064,7 +1063,6 @@ namespace Landis.Library.PnETCohorts
             this.Ecoregion = EcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[site]);
             this.Site = site;
             cohorts = new Dictionary<ISpecies, List<Cohort>>();
-            SiteVars.UnivCohorts[Site] = new Library.UniversalCohorts.SiteCohorts();  //MG20261021 trying something weird; not sure if this is the right syntax in this constructor: does it have an initialSite to clone from, as for the SiteVars below?
             SpeciesEstablishedByPlant = new List<ISpecies>();
             SpeciesEstablishedBySerotiny = new List<ISpecies>();
             SpeciesEstablishedByResprout = new List<ISpecies>();
@@ -1110,9 +1108,9 @@ namespace Landis.Library.PnETCohorts
                     {
                         bool addCohort = false;
                         if (SiteOutputName != null)
-                            addCohort = AddNewCohort(new Cohort(cohort, (ushort)(StartDate.Year - cohort.Age), SiteOutputName));  //MG20261021 calls SiteCohorts.AddNewCohort method below, returns bool
+                            addCohort = AddNewCohort(new Cohort(cohort, (ushort)(StartDate.Year - cohort.Age), SiteOutputName));
                         else
-                            addCohort = AddNewCohort(new Cohort(cohort));  //MG20261021 calls SiteCohorts.AddNewCohort method below, returns bool
+                            addCohort = AddNewCohort(new Cohort(cohort));
                         float biomassLayerProp = cohort.BiomassLayerProp;
                         cohortBiomassLayerProp.Add(biomassLayerProp);
                         float canopyLayerProp = cohort.CanopyLayerProp;
@@ -1174,13 +1172,13 @@ namespace Landis.Library.PnETCohorts
                 //  Add those cohorts that were born at the current year
                 while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == (sortedAgeCohorts[0].Data.Age - 1))
                 {
-                    Cohort cohort = new Cohort(site, sortedAgeCohorts[0].Species, SpeciesParameters.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName, 1, CohortStacking);  //MG20261021 added site variable
+                    Cohort cohort = new Cohort(sortedAgeCohorts[0].Species, SpeciesParameters.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName, 1, CohortStacking);
                     if (CohortStacking)
                     {
                         cohort.CanopyLayerProp = 1.0f;
                         cohort.CanopyGrowingSpace = 1.0f;
                     }
-                    bool addCohort = AddNewCohort(cohort);  //MG20261021 calls SiteCohorts.AddNewCohort method below, returns bool
+                    bool addCohort = AddNewCohort(cohort);
                     sortedAgeCohorts.Remove(sortedAgeCohorts[0]);
                 }
 
@@ -2110,7 +2108,7 @@ namespace Landis.Library.PnETCohorts
                     float snowMultiplier = sno_dep >= Globals.snowReflectanceThreshold ? 1 : sno_dep / Globals.snowReflectanceThreshold;
                     groundAlbedo = (float)(groundAlbedo + (groundAlbedo * (2.125 * snowMultiplier)));
                 }
-                //MG20261021 end
+                //MG20261021 TODO end
 
                 for (int layer = 0; layer < tempMaxCanopyLayers; layer++)
                 {
@@ -2330,7 +2328,7 @@ namespace Landis.Library.PnETCohorts
             return success;
         }
 
-        //MG20261021 move to Utilities?
+        //MG20261021 TODO move to Utilities?
         //
         // Finds the maximum value from an array of floats
         private float Max(float[] values)
@@ -2342,7 +2340,7 @@ namespace Landis.Library.PnETCohorts
             return maximum;
         }
 
-        //MG20261021 move to Calendar class
+        //MG20261021 TODO move to Calendar class
         //           adjust for latitude?
         //
         private bool isSummer(byte month)
@@ -2362,7 +2360,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        //MG20261021 move to Calendar class
+        //MG20261021 TODO move to Calendar class
         //           adjust for latitude?
         //
         private bool isWinter(byte month)
@@ -3446,8 +3444,7 @@ namespace Landis.Library.PnETCohorts
                 {
                     if (isSpeciesCohortDamaged[c])
                     {
-                        // totalReduction += (int) speciescohort[c].Data.UniversalData.Biomass;  //MG20261021
-                        totalReduction += (int) speciescohort[c].Data.UnivCohort.Data.Biomass;  //MG20261021
+                        totalReduction += (int) speciescohort[c].Data.UniversalData.Biomass;
                         ToRemove.Add(cohorts[spc][c]);
                     }
                 }
@@ -3459,8 +3456,6 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        //MG20261021 TODO move this to Disturbance class?
-        //
         private void RemoveMarkedCohorts()
         {
             for (int c = cohorts.Values.Count - 1; c >= 0; c--)
@@ -3480,8 +3475,6 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        //MG20261021 TODO move this to Disturbance class?
-        //
         public void RemoveCohort(Cohort cohort, ExtensionType disturbanceType)
         {
             if (disturbanceType.Name == Names.ExtensionName)
@@ -3516,9 +3509,6 @@ namespace Landis.Library.PnETCohorts
             return IsMaturePresent;
         }
 
-        //MG20261021 adds a PnET Cohort to a site, which now has
-        //           a UniversalCohort for the same site inside
-        //           its CohortData structure
         public bool AddNewCohort(Cohort newCohort)
         {
             bool addCohort = false;
@@ -3533,26 +3523,15 @@ namespace Landis.Library.PnETCohorts
                 if (Cohorts.Count() > 0)
                 {
                     Cohorts[0].Accumulate(newCohort);
-                    //MG20261021 unsure if accumulation to SiteVars.UnivCohorts[Site] needed
-                    //           but it looks like the Cohort.Accumulate function will take
-                    //           care of it through the data.UnivCohort.Data connection.
                 }
                 else
                 {
                     cohorts[newCohort.Species].Add(newCohort);
-                    //MG20261021 trying something weird
-                    // SiteVars.UnivCohorts[Site].AddNewCohort(newCohort.Species, newCohort.Data.Age,
-                    //                                         newCohort.Data.Biomass, newCohort.Data.ANPP,
-                    //                                         newCohort.Data.AdditionalParameters);
                     addCohort = true;
                 }
                 return addCohort;
             }
             cohorts.Add(newCohort.Species, new List<Cohort>(new Cohort[] { newCohort }));
-            //MG20261021 trying something weird
-            // SiteVars.UnivCohorts[Site].AddNewCohort(newCohort.Species, newCohort.Data.Age,
-            //                                         newCohort.Data.Biomass, newCohort.Data.ANPP,
-            //                                         newCohort.Data.AdditionalParameters);
             addCohort = true;
             return addCohort;
         }
@@ -3561,7 +3540,7 @@ namespace Landis.Library.PnETCohorts
         {
             PnETCohorts.SpeciesCohorts spc = new PnETCohorts.SpeciesCohorts(cohorts[0]);
             for (int c = 1; c < cohorts.Count; c++)
-                spc.AddNewCohort(cohorts[c]);  //MG20261021 calls PnETCohorts.SpeciesCohorts.AddNewCohort method, no return value
+                spc.AddNewCohort(cohorts[c]);
             return spc;
         }
 
@@ -3710,7 +3689,7 @@ namespace Landis.Library.PnETCohorts
                        averageAlbedo[monthdata.Month - 1] + "," +
                        frostDepth[monthdata.Month - 1] * 1000 + ","+
                        monthdata.SPEI;
-            this.siteoutput.Add(s);
+            siteoutput.Add(s);
         }
  
         public override IEnumerator<Library.UniversalCohorts.ISpeciesCohorts> GetEnumerator()

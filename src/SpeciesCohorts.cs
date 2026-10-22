@@ -29,7 +29,6 @@ namespace Landis.Library.PnETCohorts
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly bool isDebugEnabled = log.IsDebugEnabled;
-        private ActiveSite site;  //MG20261021
         private ISpecies species;
         private bool isMaturePresent;
 
@@ -65,7 +64,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return new Cohort(site, species, cohortData[index]);  //MG20261021
+                return new Cohort(species, cohortData[index]);
             }
         }
 
@@ -85,11 +84,10 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public SpeciesCohorts(Cohort cohort)
         {
-            this.site = cohort.Site;  //MG20261021
-            this.species = cohort.Species;
-            this.cohortData = new List<CohortData>();
-            this.isMaturePresent = false;
-            AddNewCohort(cohort);  //MG20261021 calls SpeciesCohorts.AddNewCohort method below, no return value
+            species = cohort.Species;
+            cohortData = new List<CohortData>();
+            isMaturePresent = false;
+            AddNewCohort(cohort);
         }
 
         /// <summary>
@@ -97,9 +95,9 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public SpeciesCohorts Clone()
         {
-            SpeciesCohorts clone = new SpeciesCohorts(this.site, this.species);  //MG20261021
-            clone.cohortData = new List<CohortData>(this.cohortData);
-            clone.isMaturePresent = this.isMaturePresent;
+            SpeciesCohorts clone = new SpeciesCohorts(species);
+            clone.cohortData = new List<CohortData>(cohortData);
+            clone.isMaturePresent = isMaturePresent;
             return clone;
         }
 
@@ -109,9 +107,8 @@ namespace Landis.Library.PnETCohorts
         /// <remarks>
         /// Private constructor used by Clone method.
         /// </remarks>
-        private SpeciesCohorts(ActiveSite site, ISpecies species)
+        private SpeciesCohorts(ISpecies species)
         {
-            this.site = site;  //MG20261021
             this.species = species;
         }
 
@@ -120,7 +117,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public void AddNewCohort(Cohort cohort)
         {
-            this.cohortData.Add(new CohortData(cohort));  //MG20261021 adds a new PnETCohorts.CohortData listing 
+            cohortData.Add(new CohortData(cohort));
         }
 
         /// <summary>
@@ -128,8 +125,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public int GetAge(int index)
         {
-            // return cohortData[index].UniversalData.Age;  //MG20261021
-            return cohortData[index].UnivCohort.Data.Age;  //MG20261021
+            return cohortData[index].UniversalData.Age;
         }
 
         /// <summary>
@@ -157,13 +153,11 @@ namespace Landis.Library.PnETCohorts
             for (int i = cohortData.Count - 1; i >= 0; i--)
             {
                 CohortData data = cohortData[i];
-                // if (data.UniversalData.Age <= Cohorts.SuccessionTimeStep)  //MG20261021
-                if (data.UnivCohort.Data.Age <= Cohorts.SuccessionTimeStep)  //MG20261021
+                if (data.UniversalData.Age <= Cohorts.SuccessionTimeStep)
                 {
                     youngCount++;
                     totalBiomass += data.TotalBiomass;
-                    // totalANPP += data.UniversalData.ANPP;  //MG20261021
-                    totalANPP += data.UnivCohort.Data.ANPP;  //MG20261021
+                    totalANPP += data.UniversalData.ANPP;
                 }
                 else
                     break;
@@ -172,7 +166,7 @@ namespace Landis.Library.PnETCohorts
             {
                 cohortData.RemoveRange(cohortData.Count - youngCount, youngCount);
                 bool cohortStacking = ((Parameter<bool>)Names.GetParameter(Names.CohortStacking)).Value;
-                cohortData.Add(new CohortData(this.site, this.species, (ushort)(Cohorts.SuccessionTimeStep - 1), totalBiomass, totalANPP, cohortStacking));  //MG20261021 added site and reordered variables
+                cohortData.Add(new CohortData(species, (ushort)(Cohorts.SuccessionTimeStep - 1), totalBiomass, totalANPP, cohortStacking));  //MG20261021 reordered variables, species first
             }
         }
 
@@ -194,9 +188,7 @@ namespace Landis.Library.PnETCohorts
         {
             Debug.Assert(0 <= index && index <= cohortData.Count);
             Debug.Assert(site != null);
-
-            Cohort cohort = new Cohort(site, species, cohortData[index]);  //MG20261021 added site variable
-
+            Cohort cohort = new Cohort(species, cohortData[index]);
             if (isDebugEnabled)
                 log.DebugFormat("  grow cohort: {0}, {1} yrs, {2} Mg/ha",
                                 cohort.Species.Name, cohort.Age, cohort.TotalBiomass);
@@ -207,7 +199,6 @@ namespace Landis.Library.PnETCohorts
                 RemoveCohort(index, cohort, site, null);
                 return index;
             }
-
             cohort.IncrementAge();
             // int biomassChange = (int)Library.UniversalCohorts.Cohorts.BiomassCalculator.ComputeChange(cohort, site, out double ANPP, out otherChanges);
             // int biomassChange = cohort.LastBiomassDelta;
@@ -230,22 +221,13 @@ namespace Landis.Library.PnETCohorts
         {
             if (isDebugEnabled)
             {
-                // log.DebugFormat("  cohort removed: {0}, {1} yrs, {2} g/m2 ({3})",                                       //MG20261021
-                //                 cohort.Species.Name, cohort.Data.UniversalData.Age, cohort.Data.UniversalData.Biomass,  //MG20261021
-                //                 disturbanceType != null                                                                 //MG20261021
-                //                     ? disturbanceType.Name                                                              //MG20261021
-                //                     : cohort.Data.UniversalData.Age >= species.Longevity                                //MG20261021
-                //                         ? "senescence"                                                                  //MG20261021
-                //                         : cohort.Data.UniversalData.Biomass == 0                                        //MG20261021
-                //                             ? "attrition"                                                               //MG20261021
-                //                             : "UNKNOWN");                                                               //MG20261021
                 log.DebugFormat("  cohort removed: {0}, {1} yrs, {2} g/m2 ({3})",
-                                cohort.Species.Name, cohort.Data.UnivCohort.Data.Age, cohort.Data.UnivCohort.Data.Biomass,  //MG20261021
+                                cohort.Species.Name, cohort.Data.UniversalData.Age, cohort.Data.UniversalData.Biomass,
                                 disturbanceType != null
                                     ? disturbanceType.Name
-                                    : cohort.Data.UnivCohort.Data.Age >= species.Longevity  //MG20261021
+                                    : cohort.Data.UniversalData.Age >= species.Longevity
                                         ? "senescence"
-                                        : cohort.Data.UnivCohort.Data.Biomass == 0  //MG20261021
+                                        : cohort.Data.UniversalData.Biomass == 0
                                             ? "attrition"
                                             : "UNKNOWN");
             }
@@ -268,14 +250,11 @@ namespace Landis.Library.PnETCohorts
         {
             isMaturePresent = false;
             for (int i = 0; i < cohortData.Count; i++)
-            {
-                // if (cohortData[i].UniversalData.Age >= species.Maturity)  //MG20261021
-                if (cohortData[i].UnivCohort.Data.Age >= species.Maturity)  //MG20261021
+                if (cohortData[i].UniversalData.Age >= species.Maturity)
                 {
                     isMaturePresent = true;
                     break;
                 }
-            }
         }
         
         /// <summary>
@@ -293,7 +272,7 @@ namespace Landis.Library.PnETCohorts
             int totalReduction = 0;
             for (int i = cohortData.Count - 1; i >= 0; i--)
             {
-                Cohort cohort = new Cohort(disturbance.CurrentSite, species, cohortData[i]);  //MG20261021 added site variable
+                Cohort cohort = new Cohort(species, cohortData[i]);
                 double reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
                 int intReduction = (int)reduction;
                 //Console.WriteLine("  Reduction: {0}, {1} yrs, {2} g/m2, reduction={3}", cohort.Species.Name, cohort.Age, cohort.Biomass, reduction);
@@ -345,14 +324,13 @@ namespace Landis.Library.PnETCohorts
             {
                 if (isSpeciesCohortDamaged[i])
                 {
-                    Cohort cohort = new Cohort(disturbance.CurrentSite, species, cohortData[i]);  //MG20261021 added site variable
+                    Cohort cohort = new Cohort(species, cohortData[i]);
                     totalReduction += cohort.Biomass;
                     RemoveCohort(i, cohort, disturbance.CurrentSite, disturbance.Type);
                     Cohort.KilledByAgeOnlyDisturbance(this, cohort, disturbance.CurrentSite, disturbance.Type);
                     cohort = null;
                 }
-                // else if (cohortData[i].UniversalData.Age >= species.Maturity)  //MG20261021
-                else if (cohortData[i].UnivCohort.Data.Age >= species.Maturity)  //MG20261021
+                else if (cohortData[i].UniversalData.Age >= species.Maturity)
                     isMaturePresent = true;
             }
             return totalReduction;
@@ -373,8 +351,7 @@ namespace Landis.Library.PnETCohorts
         {
             foreach (CohortData data in cohortData)
             {
-                // yield return new Library.UniversalCohorts.Cohort(species, data.UniversalData.Age, data.UniversalData.Biomass, new ExpandoObject());  //MG20261021
-                yield return new Library.UniversalCohorts.Cohort(species, data.UnivCohort.Data.Age, data.UnivCohort.Data.Biomass, new ExpandoObject());  //MG20261021
+                yield return new Library.UniversalCohorts.Cohort(species, data.UniversalData.Age, data.UniversalData.Biomass, new ExpandoObject());
             }
         }
     }

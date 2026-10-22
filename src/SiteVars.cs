@@ -10,7 +10,7 @@ namespace Landis.Library.PnETCohorts
     public static class SiteVars
     {
         public static ISiteVar<PnETCohorts.SiteCohorts> SiteCohorts;
-        public static ISiteVar<Library.UniversalCohorts.SiteCohorts> UnivCohorts;
+        // public static ISiteVar<Library.UniversalCohorts.SiteCohorts> UnivCohorts;
         public static ISiteVar<Pool> WoodyDebris;
         public static ISiteVar<Pool> Litter;
         public static ISiteVar<double> FineFuels;
@@ -27,7 +27,7 @@ namespace Landis.Library.PnETCohorts
         public static void Initialize()
         {
             SiteCohorts = Globals.ModelCore.Landscape.NewSiteVar<PnETCohorts.SiteCohorts>();
-            UnivCohorts = Globals.ModelCore.Landscape.NewSiteVar<Library.UniversalCohorts.SiteCohorts>();
+            // UnivCohorts = Globals.ModelCore.Landscape.NewSiteVar<Library.UniversalCohorts.SiteCohorts>();
             WoodyDebris = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             Litter = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             FineFuels = Globals.ModelCore.Landscape.NewSiteVar<double>();
@@ -42,7 +42,7 @@ namespace Landis.Library.PnETCohorts
             FieldCapacity = Globals.ModelCore.Landscape.NewSiteVar<float>();
 
             Globals.ModelCore.RegisterSiteVar(SiteCohorts, "Succession.CohortsPnET");  //MG20260909 moved here from PlugIn.cs
-            Globals.ModelCore.RegisterSiteVar(UnivCohorts, "Succession.UniversalCohorts");  //MG20260908, 20260909 moved here from PlugIn.cs  //MG20261021 trying something weird
+            // Globals.ModelCore.RegisterSiteVar(UnivCohorts, "Succession.UniversalCohorts");  //MG20260908, 20260909 moved here from PlugIn.cs  //MG20261021 trying something weird
             Globals.ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
             Globals.ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
             Globals.ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");

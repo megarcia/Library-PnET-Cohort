@@ -17,25 +17,20 @@ namespace Landis.Library.PnETCohorts
         public Cohort Cohort;
 
         /// <summary>
-        /// Cohort-internal representation of UniversalCohort instance
-        /// </summary>
-        public Library.UniversalCohorts.Cohort UnivCohort;  //MG20261021 trying something weird
-
-        /// <summary>
         /// UniversalCohort data fields:
         /// int Age, int Biomass, double ANPP
         /// </summary>
-        // public Library.UniversalCohorts.CohortData UniversalData;  //MG20261021 trying something weird, see above
+        public Library.UniversalCohorts.CohortData UniversalData;
 
+        //MG20261016 new variable.
         /// <summary>
         /// The last biomass change calculated for the cohort.
-        /// New variable introduced by MG on 20261016.
         /// </summary>
         public int LastBiomassDelta;
 
+        //MG20261016 new variable.
         /// <summary>
         /// The last ANPP change calculated for the cohort.
-        /// New variable introduced by MG on 20261016.
         /// </summary>
         public double LastANPPDelta;
  
@@ -294,21 +289,18 @@ namespace Landis.Library.PnETCohorts
             CanopyGrowingSpace = cohort.CanopyGrowingSpace;
             LastBiomassDelta = cohort.LastBiomassDelta;  //MG20261016 new variable 
             LastANPPDelta = cohort.LastANPPDelta;  //MG20261016 new variable 
-            UnivCohort.Data.Age = cohort.Age;  //MG20261021
-            UnivCohort.Data.Biomass = (int)(AGBiomass * CanopyLayerProp);  //MG20261021
-            UnivCohort.Data.ANPP = cohort.ANPP;  //MG20261021
+            UniversalData.Age = cohort.Age;
+            UniversalData.Biomass = (int)(AGBiomass * CanopyLayerProp);
+            UniversalData.ANPP = cohort.ANPP;
         }
 
         /// <summary>
-        /// Initializes a new cohort.
+        /// Initializes a new cohort with the given data.
         /// </summary>
-        //MG20261021 trying something weird to get PnET to communicate properly with UCL;
-        //           added ActiveSite site argument, moved ISpecies species argument in
-        //           calling order 
-        public CohortData(ActiveSite site, ISpecies species, ushort age, float totalBiomass, double totalANPP, bool cohortStacking)
+        public CohortData(ISpecies species, ushort age, float totalBiomass, double totalANPP, bool cohortStacking)  //MG20261021 reordered variables, species first
         {            
             ISpeciesPnET spc = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
-            Cohort = new Cohort(site, species, spc, 0, "", 1, cohortStacking);  //MG20261021
+            Cohort = new Cohort(species, spc, 0, "", 1, cohortStacking);
             AGBiomass = (1 - spc.FracBelowG) * totalBiomass;
             AdjFolN = new float[Globals.IMAX];
             adjFolN = 0.0f;
@@ -358,9 +350,9 @@ namespace Landis.Library.PnETCohorts
             CanopyGrowingSpace = 1.0f;
             LastBiomassDelta = 0;  //MG20261016 new variable 
             LastANPPDelta = 0.0;  //MG20261016 new variable 
-            UnivCohort.Data.Age = age;  //MG20261021
-            UnivCohort.Data.Biomass = (int)(AGBiomass * CanopyLayerProp);  //MG20261021
-            UnivCohort.Data.ANPP = totalANPP;  //MG20261021
+            UniversalData.Age = age;
+            UniversalData.Biomass = (int)(AGBiomass * CanopyLayerProp);
+            UniversalData.ANPP = totalANPP;
         }
     }
 }

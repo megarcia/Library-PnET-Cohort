@@ -813,7 +813,7 @@ namespace Landis.Library.PnETCohorts
             data.LastANPPDelta = cohort.LastANPPDelta;  //MG20261016 new variable
         }
 
-        public Cohort(Cohort cohort, ushort FirstYear, string SiteName)
+        public Cohort(Cohort cohort, ushort firstYear, string SiteName)
         {
             species = cohort.Species;
             speciesPnET = cohort.speciesPnET;
@@ -837,7 +837,7 @@ namespace Landis.Library.PnETCohorts
                 InitializeOutput(SiteName, firstYear);
         }
 
-        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, string SiteName, ushort FirstYear, bool cohortStacking)
+        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, string SiteName, ushort firstYear, bool cohortStacking)
         {
             InitializeSubLayers();
             species = (ISpecies)speciesPnET;
@@ -882,7 +882,7 @@ namespace Landis.Library.PnETCohorts
                 InitializeOutput(SiteName, firstYear);
         }
 
-        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort FirstYear, bool cohortStacking, float lastSeasonAvgFrad)
+        public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear, bool cohortStacking, float lastSeasonAvgFrad)
         {
             InitializeSubLayers();
             species = (ISpecies)speciesPnET;

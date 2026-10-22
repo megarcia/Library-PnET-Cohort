@@ -34,30 +34,32 @@ namespace Landis.Library.PnETCohorts
         }
 
         // Age (years)
-        // NOTE: draws from and writes to UniversalCohort representation of Cohort
         public ushort Age
         {
             get
             {
-                return data.UniversalData.Age;
+                // return data.UniversalData.Age;  //MG20261022
+                return data.Age;  //MG20261022 replacing UniversalData.Age
             }
             set
             {
-                data.UniversalData.Age = value;
+                // data.UniversalData.Age = value;  //MG20261022
+                data.Age = value;  //MG20261022 replacing UniversalData.Age
             }
         }
 
         // Aboveground Biomass (g/m2) scaled to the site
-        // NOTE: draws from and writes to UniversalCohort representation of Cohort
         public int Biomass
         {
             get
             {
-                return data.UniversalData.Biomass;
+                // return data.UniversalData.Biomass;  //MG20261022
+                return data.SiteBiomass;  //MG20261022 replacing UniversalData.Biomass
             }
             set
             {
-                data.UniversalData.Biomass = value;
+                // data.UniversalData.Biomass = value;  //MG20261022
+                data.SiteBiomass = value;  //MG20261022 replacing UniversalData.Biomass
             }
         }
 
@@ -75,17 +77,17 @@ namespace Landis.Library.PnETCohorts
         }
 
         // Annual net primary productivity
-        // NOTE: draws from and writes to UniversalCohort representation of Cohort
         public double ANPP
         {
             get
             {
-                return data.UniversalData.ANPP;
-                
+                // return data.UniversalData.ANPP;  //MG20261022
+                return data.ANPP;  //MG20261022 replacing UniversalData.ANPP
             }
             set
             {
-                data.UniversalData.ANPP = value;
+                // data.UniversalData.ANPP = value;  //MG20261022
+                data.ANPP = value;  //MG20261022 replacing UniversalData.ANPP
             }
         }
 
@@ -175,7 +177,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return data.UniversalData.Biomass * speciesPnET.MossScalar;
+                return data.SiteBiomass * speciesPnET.MossScalar;  //MG20261022 replacing UniversalData
             }
         }
 
@@ -717,8 +719,8 @@ namespace Landis.Library.PnETCohorts
             data.Fol += cohort.Fol;
             data.MaxFolYear = Math.Max(MaxFolYear, data.Fol);
             data.AGBiomass = (1 - cohort.SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
-            data.UniversalData.ANPP += cohort.ANPP;
+            data.SiteBiomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261022 replacing UniversalData
+            data.ANPP += cohort.ANPP;  //MG20261022 replacing UniversalData
         }
 
         /// <summary>
@@ -726,7 +728,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public void IncrementAge()
         {
-            data.UniversalData.Age += 1;
+            data.Age += 1;  //MG20261022 replacing UniversalData
         }
 
         /// <summary>
@@ -738,7 +740,7 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass = Math.Max(0.0f, newTotalBiomass);
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
             data.AGBiomass = (1 - SpeciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            data.SiteBiomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261022 replacing UniversalData
         }
 
         /// <summary>
@@ -746,7 +748,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public void ChangeANPP(double delta)
         {            
-            data.UniversalData.ANPP += delta;
+            data.ANPP += delta;  //MG20261022 replacing UniversalData
         }
 
         public Cohort(ISpecies species, ISpeciesPnET speciesPnET, ushort cohort_start_year, string SiteName, double propBiomass, bool cohortStacking)
@@ -774,12 +776,12 @@ namespace Landis.Library.PnETCohorts
             data.LastSeasonFRad = new List<float>();
             firstYear = true;
 
-            data.UniversalData.Age = 1;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
-            data.UniversalData.ANPP = data.UniversalData.Biomass;
+            data.Age = 1;  //MG20261022 replacing UniversalData
+            data.SiteBiomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261022 replacing UniversalData
+            data.ANPP = data.SiteBiomass;  //MG20261022 replacing UniversalData
 
-            data.LastBiomassDelta = Biomass;  //MG20261016 new variable
-            data.LastANPPDelta = Biomass;  //MG20261016 new variable
+            data.LastBiomassDelta = data.SiteBiomass;  //MG20261016 new variable
+            data.LastANPPDelta = data.SiteBiomass;  //MG20261016 new variable
 
             if (SiteName != null)
                 InitializeOutput(SiteName, cohort_start_year);
@@ -805,9 +807,9 @@ namespace Landis.Library.PnETCohorts
             data.LastSeasonFRad = cohort.data.LastSeasonFRad;
             data.ColdKill = int.MaxValue;
 
-            data.UniversalData.Age = cohort.Age;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * cohort.CanopyLayerProp);
-            data.UniversalData.ANPP = cohort.ANPP;
+            data.Age = cohort.Age;  //MG20261022 replacing UniversalData
+            data.SiteBiomass = (int)(data.AGBiomass * cohort.CanopyLayerProp);  //MG20261022 replacing UniversalData
+            data.ANPP = cohort.ANPP;  //MG20261022 replacing UniversalData
 
             data.LastBiomassDelta = cohort.LastBiomassDelta;  //MG20261016 new variable
             data.LastANPPDelta = cohort.LastANPPDelta;  //MG20261016 new variable
@@ -826,9 +828,9 @@ namespace Landis.Library.PnETCohorts
             data.LastSeasonFRad = cohort.data.LastSeasonFRad;
             data.ColdKill = int.MaxValue;
 
-            data.UniversalData.Age = cohort.Age;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * cohort.CanopyLayerProp);
-            data.UniversalData.ANPP = cohort.ANPP;
+            data.Age = cohort.Age;  //MG20261022 replacing UniversalData
+            data.SiteBiomass = (int)(data.AGBiomass * cohort.CanopyLayerProp);  //MG20261022 replacing UniversalData
+            data.ANPP = cohort.ANPP;  //MG20261022 replacing UniversalData
 
             data.LastBiomassDelta = cohort.LastBiomassDelta;  //MG20261016 new variable
             data.LastANPPDelta = cohort.LastANPPDelta;  //MG20261016 new variable
@@ -871,9 +873,9 @@ namespace Landis.Library.PnETCohorts
             data.LastAGBio = data.AGBiomass;
             data.NSC = this.speciesPnET.DNSC * FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
 
-            data.UniversalData.Age = age;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
-            data.UniversalData.ANPP = 0.0;
+            data.Age = age;  //MG20261022 replacing UniversalData
+            data.SiteBiomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261022 replacing UniversalData
+            data.ANPP = 0.0;  //MG20261022 replacing UniversalData
 
             data.LastBiomassDelta = 0;  //MG20261016 new variable
             data.LastANPPDelta = 0.0;  //MG20261016 new variable
@@ -917,9 +919,9 @@ namespace Landis.Library.PnETCohorts
             data.LastAGBio = data.AGBiomass;
             data.NSC = this.speciesPnET.DNSC * FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
 
-            data.UniversalData.Age = age;
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
-            data.UniversalData.ANPP = 0.0;
+            data.Age = age;  //MG20261022 replacing UniversalData
+            data.SiteBiomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261022 replacing UniversalData
+            data.ANPP = 0.0;  //MG20261022 replacing UniversalData
 
             data.LastBiomassDelta = 0;  //MG20261016 new variable
             data.LastANPPDelta = 0.0;  //MG20261016 new variable
@@ -1077,12 +1079,12 @@ namespace Landis.Library.PnETCohorts
                     float Allocation = Math.Max(NSC - (speciesPnET.DNSC * FActiveBiom * data.TotalBiomass * speciesPnET.CFracBiomass), 0.0f);
                     data.TotalBiomass += Allocation / speciesPnET.CFracBiomass;  // convert gC to gDW
                     data.AGBiomass = (1 - speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
-                    data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+                    data.SiteBiomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261022 replacing UniversalData
                     data.BiomassMax = Math.Max(BiomassMax, data.TotalBiomass);
                     data.NSC -= Allocation;
                     if (data.NSC < 0)
                         data.NSC = 0f;
-                    data.UniversalData.Age++;
+                    data.Age++;  //MG20261022 replacing UniversalData
                 }
             }
             // Phenology: do once per cohort per month, using the first sublayer 
@@ -1724,7 +1726,7 @@ namespace Landis.Library.PnETCohorts
             data.TotalBiomass -= senescence;
             data.AGBiomass = (1 - speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            data.SiteBiomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261022 replacing UniversalData
             return senescence;
         }
 
@@ -1752,7 +1754,7 @@ namespace Landis.Library.PnETCohorts
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
             Fol *= (float)(1.0f - fraction);
             data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
-            data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
+            data.SiteBiomass = (int)(data.AGBiomass * data.CanopyLayerProp);  //MG20261022 replacing UniversalData
         }
 
         public float CalculateLAI(ISpeciesPnET species, float fol, int index)

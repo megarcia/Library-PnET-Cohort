@@ -339,7 +339,7 @@ namespace Landis.Library.PnETCohorts
         IEnumerator<PnETCohorts.ICohort> GetEnumerator()
         {
             foreach (CohortData data in cohortData)
-                yield return new Cohort(site, species, data);
+                yield return new Cohort(species, data);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

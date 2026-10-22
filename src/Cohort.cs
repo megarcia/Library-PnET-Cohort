@@ -825,7 +825,6 @@ namespace Landis.Library.PnETCohorts
             data.MaxFolYear = cohort.MaxFolYear;
             data.LastSeasonFRad = cohort.data.LastSeasonFRad;
             data.ColdKill = int.MaxValue;
-            firstYear = FirstYear;  //MG20261021 was ignored? otherwise unused...
 
             data.UniversalData.Age = cohort.Age;
             data.UniversalData.Biomass = (int)(data.AGBiomass * cohort.CanopyLayerProp);
@@ -871,7 +870,6 @@ namespace Landis.Library.PnETCohorts
             data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             data.LastAGBio = data.AGBiomass;
             data.NSC = this.speciesPnET.DNSC * FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
-            firstYear = FirstYear;  //MG20261021 was ignored? otherwise unused...
 
             data.UniversalData.Age = age;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
@@ -918,7 +916,6 @@ namespace Landis.Library.PnETCohorts
             data.AGBiomass = (1 - this.speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             data.LastAGBio = data.AGBiomass;
             data.NSC = this.speciesPnET.DNSC * FActiveBiom * (data.TotalBiomass + data.Fol) * speciesPnET.CFracBiomass;
-            firstYear = FirstYear;  //MG20261021 was ignored? otherwise unused...
 
             data.UniversalData.Age = age;
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);

@@ -5,7 +5,7 @@ namespace Landis.Library.PnETCohorts
 {
     public class Soils
     {
-        public static UpdateTestDepth(float testDepth)
+        public float UpdateTestDepth(float testDepth)
         {
             if (testDepth == 0.0)
                 testDepth = 0.10f;
@@ -16,7 +16,7 @@ namespace Landis.Library.PnETCohorts
             return testDepth;
         }
 
-        public static SortedList<float, float> CalcMonthlySoilTemps(SortedList<float, float> depthTempDict, IPnETEcoregionData Ecoregion, int daysOfWinter, float snowpack, IHydrology hydrology, float lastTempBelowSnow)
+        public static SortedList<float, float> CalcMonthlySoilTemps(SortedList<float, float> depthTempDict, IEcoregionPnET Ecoregion, int daysOfWinter, float snowpack, IHydrology hydrology, float lastTempBelowSnow)
         {
             // Snow calculations, now handled in Snow class
             float densitySnow_kg_m3 = Snow.CalcDensity(daysOfWinter);

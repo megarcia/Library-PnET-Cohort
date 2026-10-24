@@ -1,5 +1,5 @@
 ﻿// John McNabb: This is a copy of EcoregionPnETVariables substituting
-// MonthlyClimateRecord _monthlyClimateRecord for IObservedClimate obs_clim
+// MonthlyClimateRecord monthlyClimRec for IObservedClimate obs_clim
 
 using System;
 using System.Collections.Generic;
@@ -10,175 +10,165 @@ namespace Landis.Library.PnETCohorts
     public class ClimateRegionPnETVariables : IEcoregionPnETVariables
     {
         private Dictionary<string, SpeciesPnETVariables> speciesVariables;
-        private MonthlyClimateRecord _monthlyClimateRecord;
-        private DateTime _date;
-        private float _vpd;
-        private float _dayspan;
-        private float _tave;
-        private float _tday;
-        private float _daylength;
+        private MonthlyClimateRecord monthlyClimRec;
+        private DateTime date;
+        private float vpd;
+        private float dayspan;
+        private float tave;
+        private float tday;
+        private float daylength;
 
-        public SpeciesPnETVariables this[string species] => speciesVariables[species];
+        public SpeciesPnETVariables this[string species]
+        {
+            get
+            {
+                return speciesVariables[species];
+            }
+        }
 
-        // public float O3 => (float)_monthlyClimateRecord.O3;
         public float O3
         {
             get
             {
-                return (float)_monthlyClimateRecord.O3;
+                return (float)monthlyClimRec.O3;
             }
         }
 
-        // public float CO2 => (float)_monthlyClimateRecord.CO2;
         public float CO2
         {
             get
             {
-                return (float)_monthlyClimateRecord.CO2;
+                return (float)monthlyClimRec.CO2;
             }
         }
 
-        // public float PAR0 => (float)_monthlyClimateRecord.PAR0;
         public float PAR0
         {
             get
             {
-                return (float)_monthlyClimateRecord.PAR0;
+                return (float)monthlyClimRec.PAR0;
             }
         }
 
-        // public float Prec => (float)_monthlyClimateRecord.Prec;
         public float Prec
         {
             get
             {
-                return (float)_monthlyClimateRecord.Prec;
+                return (float)monthlyClimRec.Prec;
             }
         }
 
-        // public float Tmax => (float)_monthlyClimateRecord.Tmax;
         public float Tmax
         {
             get
             {
-                return (float)_monthlyClimateRecord.Tmax;
+                return (float)monthlyClimRec.Tmax;
             }
         }
 
-        // public float Tmin => (float)_monthlyClimateRecord.Tmin;
         public float Tmin
         {
             get
             {
-                return (float)_monthlyClimateRecord.Tmin;
+                return (float)monthlyClimRec.Tmin;
             }
         }
 
-        // public float SPEI => (float)_monthlyClimateRecord.SPEI;
         public float SPEI
         {
             get
             {
-                return (float)_monthlyClimateRecord.SPEI;
+                return (float)monthlyClimRec.SPEI;
             }
         }
 
-        // public DateTime Date => _date;
         public DateTime Date
         {
             get
             {
-                return _date;
+                return date;
             }
         }
 
-        // public int Year => _date.Year;
         public int Year
         {
             get
             {
-                return _date.Year;
+                return date.Year;
             }
         }
 
-        // public byte Month => (byte)_date.Month;
         public byte Month
         {
             get
             {
-                return (byte)_date.Month;
+                return (byte)date.Month;
             }
         }
 
-        // public float Time => _date.Year + 1.0f / 12.0f * (_date.Month - 1);
         public float Time
         {
             get
             {
-                return _date.Year + 1.0f / 12.0f * (_date.Month - 1);
+                return date.Year + 1.0f / 12.0f * (_date.Month - 1);
             }
         }
 
-        // public float VPD => _vpd;
         public float VPD
         {
             get
             {
-                return _vpd;
+                return vpd;
             }
         }
 
-        // public float DaySpan => _dayspan;
         public float DaySpan
         {
             get
             {
-                return _dayspan;
+                return dayspan;
             }
         }
 
-        // public float Tave => _tave;
         public float Tave
         {
             get
             {
-                return _tave;
+                return tave;
             }
         }
 
-        // public float Tday => _tday;
         public float Tday
         {
             get
             {
-                return Tday;
+                return tday;
             }
         }
 
-        // public float Daylength => _daylength;
         public float Daylength
         {
             get
             {
-                return _daylength;
+                return daylength;
             }
         }
 
-        public ClimateRegionPnETVariables(MonthlyClimateRecord monthlyClimateRecord, DateTime date, bool wythers, bool dTemp, List<ISpeciesPnET> Species, float latitude)
+        public ClimateRegionPnETVariables(MonthlyClimateRecord monthlyClimateRecord, DateTime modeldate, bool wythers, bool dTemp, List<ISpeciesPnET> Species, float latitude)
         {
-            _monthlyClimateRecord = monthlyClimateRecord;
-            _date = date;
+            monthlyClimRec = monthlyClimateRecord;
+            date = modeldate;
             speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
-            _tave = Weather.CalcTavg((float)monthlyClimateRecord.Tmin, (float)monthlyClimateRecord.Tmax);
-            _dayspan = Calendar.CalcDaySpan(date.Month);
+            tave = Weather.CalcTavg(monthlyClimateRecord.Tmin, monthlyClimateRecord.Tmax);
+            dayspan = Calendar.CalcDaySpan(date.Month);
             float hr = Calendar.CalcDaylightHrs(date.DayOfYear, latitude);
-            _daylength = Calendar.CalcDayLength(hr);
+            daylength = Calendar.CalcDayLength(hr);
             float nightlength = Calendar.CalcNightLength(hr);
-            _tday = Weather.CalcTday(_tave, (float)monthlyClimateRecord.Tmax);
-            _vpd = Weather.CalcVPD(_tday, (float)monthlyClimateRecord.Tmin);
+            tday = Weather.CalcTday(tave, monthlyClimateRecord.Tmax);
+            vpd = Weather.CalcVPD(tday, monthlyClimateRecord.Tmin);
             foreach (ISpeciesPnET spc in Species)
             {
-                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, Daylength, nightlength, spc);
+                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(monthlyClimateRecord, wythers, dTemp, daylength, nightlength, spc);
                 speciesVariables.Add(spc.Name, speciespnetvars);
             }
         }

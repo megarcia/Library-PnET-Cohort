@@ -147,7 +147,7 @@ namespace Landis.Library.PnETCohorts
         }
 
         // public float Tday => _tday;
-        public float SPEI
+        public float Tday
         {
             get
             {

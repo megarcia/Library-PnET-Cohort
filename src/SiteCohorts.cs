@@ -16,6 +16,7 @@ using Landis.Library.Parameters;
 using Landis.Library.UniversalCohorts;
 using Landis.SpatialModeling;
 using Landis.Utilities;
+using Microsoft.VisualBasic;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -1448,7 +1449,7 @@ namespace Landis.Library.PnETCohorts
                     float porosity = Ecoregion.Porosity;  // volumetric m/m 
                     string soilType = Ecoregion.SoilType;
                     float lambda_theta = Soils.CalcThermalConductivitySoil_Watts(waterContent, porosity, soilType) / Constants.Convert_kJperday_to_Watts;
-                    float D = lambda_theta / PressureHeadSaxton_Rawls.GetCTheta(Ecoregion.SoilType);  //m2/day
+                    float D = lambda_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  //m2/day
                     float Dmms = D * Constants.Million / Constants.SecondsPerDay; //mm2/s
                     soilDiffusivity = Dmms;
                     float Dmonth = D * data[m].DaySpan; // m2/month
@@ -1544,7 +1545,7 @@ namespace Landis.Library.PnETCohorts
                     if (zTemp <= 0 && !foundBottomIce && !permafrost)
                         frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                 }
-                depthTempDict = Soils.CalculateMonthlySoilTemps(depthTempDict, Ecoregion, daysOfWinter, snowPack, hydrology, lastTempBelowSnow);
+                depthTempDict = Soils.CalcMonthlySoilTemps(depthTempDict, Ecoregion, daysOfWinter, snowPack, hydrology, lastTempBelowSnow);
                 SortedList<float, float> monthlyDepthTempDict = new SortedList<float, float>();
                 monthlyDepthTempDict.Add(0.1f, depthTempDict[0.1f]);
                 lastTempBelowSnow = depthTempDict[0];
@@ -2223,10 +2224,10 @@ namespace Landis.Library.PnETCohorts
                 return -1;
             float finalAlbedo = 0.0f;
             float snowMultiplier;
-            if (snowDepth >= Globals.snowReflectanceThreshold)
+            if (snowDepth >= Constants.SnowReflectanceThreshold)
                 snowMultiplier = 1.0f;
             else
-                snowMultiplier = snowDepth / Globals.snowReflectanceThreshold;
+                snowMultiplier = snowDepth / Constants.SnowReflectanceThreshold;
             if (!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
             {
                 if (cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground")

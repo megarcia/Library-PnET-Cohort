@@ -22,7 +22,7 @@ namespace Landis.Library.PnETCohorts
         {
             StartDate = startDate;
             ModelCore = mCore;
-            this.IMAX = IMAX;
+            Globals.IMAX = IMAX;
         }
     }
 }

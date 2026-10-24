@@ -1263,7 +1263,7 @@ namespace Landis.Library.PnETCohorts
             data.adjFolN = Photosynthesis.CalcAdjFolN(speciesPnET.FolNShape, speciesPnET.MaxFolN, speciesPnET.FolN, FRad[index]);
             AdjFolN[index] = data.adjFolN;
             AdjFracFol[index] = adjFracFol;
-            ciModifier = Photosynthesis.CalcCiModifier(o3_cum, speciesPnET.O3StomataSens, fWaterOzone);
+            float ciModifier = Photosynthesis.CalcCiModifier(o3_cum, speciesPnET.O3StomataSens, fWaterOzone);
             CiModifier[index] = ciModifier;
             // If trees are physiologically active
             if (Leaf_On)
@@ -1273,7 +1273,7 @@ namespace Landis.Library.PnETCohorts
                 // Elevated leaf internal co2 concentration
                 float ciElev = Photosynthesis.CalcCiElev(cicaRatio, ciModifier, variables.CO2);
                 float Ca_Ci = variables.CO2 - ciElev;
-                delamaxCi = Photosynthesis.CalcDelAmaxCi(ciElev);  // Modified Franks
+                float delamaxCi = Photosynthesis.CalcDelAmaxCi(ciElev);  // Modified Franks
                 DelAmax[index] = delamaxCi;
                 // M. Kubiske method for wue calculation
                 float JCO2_JH2O = Photosynthesis.CalcJCO2_JH2O(variables[species.Name].JH2O,
@@ -1486,11 +1486,11 @@ namespace Landis.Library.PnETCohorts
                 limitingFactor = "ColdTol (" + ColdKill.ToString() + ")";
             else
             {
-               List<float> factorList = new List<float>(new float[]{fWaterAvg,fRadAvg,fOzoneAvg,fAge,fTemp});
+               List<float> factorList = new List<float>(new float[]{ fWaterAvg, fRadAvg, fOzoneAvg, FAge, fTemp});
                float minFactor = factorList.Min();
                 if (minFactor == fTemp)
                     limitingFactor = "fTemp";
-                else if (minFactor == fAge)
+                else if (minFactor == FAge)
                     limitingFactor = "fAge";
                 else if (minFactor == fWaterAvg)
                 {

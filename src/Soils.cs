@@ -7,13 +7,14 @@ namespace Landis.Library.PnETCohorts
     {
         public float UpdateTestDepth(float testDepth)
         {
-            if (testDepth == 0.0)
-                testDepth = 0.10f;
-            else if (testDepth == 0.10)
-                testDepth = 0.25f;
+            float newTestDepth = 0.0f;
+            if (testDepth == 0.0f)
+                newTestDepth = 0.10f;
+            else if (testDepth == 0.10f)
+                newTestDepth = 0.25f;
             else
-                testDepth += 0.25f;
-            return testDepth;
+                newTestDepth += 0.25f;
+            return newTestDepth;
         }
 
         public static SortedList<float, float> CalcMonthlySoilTemps(SortedList<float, float> depthTempDict, IEcoregionPnET Ecoregion, int daysOfWinter, float snowpack, IHydrology hydrology, float lastTempBelowSnow)
@@ -105,10 +106,10 @@ namespace Landis.Library.PnETCohorts
         public static float CalcThermalConductivitySoil_Watts(float WaterContent, float Porosity, string SoilType)
         {
             float ga = CalcAirShapeFactor(WaterContent, Porosity);
-            float ClayFrac = Hydrology_SaxtonRawls.GetClayFrac(SoilType);
+            float ClayFrac = Hydrology_SaxtonRawls.GetClay(SoilType);
             float ThermalConductivityFluid = CalcThermalConductivityFluid(WaterContent, ClayFrac);
             float Kair = CalcDeVriesWeight(ga, Constants.ThermalConductivityAir_Watts, ThermalConductivityFluid);
-            float ThermalConductivitySoil_Watts = Hydrology_SaxtonRawls.GetThermalConductivitySoil(SoilType) * Constants.Convert_kJperday_to_Watts;
+            float ThermalConductivitySoil_Watts = Hydrology_SaxtonRawls.GetLambda_s(SoilType) * Constants.Convert_kJperday_to_Watts;
             float Ksoil = CalcDeVriesWeight(ga, ThermalConductivitySoil_Watts, ThermalConductivityFluid);
             float Kwater = CalcDeVriesWeight(ga, Constants.ThermalConductivityWater_Watts, ThermalConductivityFluid);
             float AirContent = Porosity - WaterContent;

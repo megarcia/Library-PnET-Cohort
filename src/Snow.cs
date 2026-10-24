@@ -98,7 +98,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcDampingRatio(float SnowDepth, float ThermalDamping)
         {
-            float dampingratio = (float)Math.Exp(-1.0 * SnowDepth / ThermalDamping);
+            float dampingratio = (float)Math.Exp(-1.0f * SnowDepth / ThermalDamping);
             return dampingratio;
         }
 
@@ -112,7 +112,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcMaxSnowMelt(float Tavg, float DaySpan)
         {
-            float maxsnowmelt = 2.74 * (float)Math.Max(0.0, Tavg) * DaySpan;
+            float maxsnowmelt = 2.74f * (float)Math.Max(0.0f, Tavg) * DaySpan;
             return maxsnowmelt;
         }
 
@@ -141,7 +141,7 @@ namespace Landis.Library.PnETCohorts
         /// <returns></returns>
         public static float CalcSnowFrac(float Tavg)
         {
-            float snowfrac = (float)Math.Max(0.0, Math.Min(1.0, (Tavg - 2.0) / -7.0));
+            float snowfrac = (float)Math.Max(0.0f, Math.Min(1.0f, (Tavg - 2.0f) / -7.0f));
             return snowfrac;
         }
 
@@ -149,8 +149,8 @@ namespace Landis.Library.PnETCohorts
         public static float CalcNewSnowDepth(float Tavg, float Prec, float SublimationFrac)
         {
             float NewSnow = CalcSnowFrac(Tavg) * Prec;
-            float NewSnowDepth = NewSnow * (1.0 - SublimationFrac); // (mm) Account for sublimation here
-            if (NewSnowDepth < 0.0 || NewSnowDepth > Prec)
+            float NewSnowDepth = NewSnow * (1.0f - SublimationFrac); // (mm) Account for sublimation here
+            if ((NewSnowDepth < 0.0f) || (NewSnowDepth > Prec))
                 throw new Exception("Error, newSnowDepth = " + NewSnowDepth + " availablePrecipitation = " + Prec);
             return NewSnowDepth;
         }

@@ -31,11 +31,11 @@ namespace Landis.Library.PnETCohorts
         /// <param name="date"></param>
         public MonthlyClimateRecord(IEcoregion ecoregion, DateTime date)
         {
-            var month = date.Month - 1;
+            int month = date.Month - 1;
             O3 = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyOzone[month];
             CO2 = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyCO2[month];
             PAR0 = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyPAR[month];
-            Prec = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyPrecip[month] * 10.0; 
+            Prec = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyPrecip[month] * 10.0f; 
             Tmax = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyMaxTemp[month];
             Tmin = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyMinTemp[month];
             SPEI = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlySpei[month];

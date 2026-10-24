@@ -19,22 +19,150 @@ namespace Landis.Library.PnETCohorts
         private float _daylength;
 
         public SpeciesPnETVariables this[string species] => speciesVariables[species];
-        public float O3 => (float)_monthlyClimateRecord.O3;
-        public float CO2 => (float)_monthlyClimateRecord.CO2;
-        public float PAR0 => (float)_monthlyClimateRecord.PAR0;
-        public float Prec => (float)_monthlyClimateRecord.Prec;
-        public float Tmax => (float)_monthlyClimateRecord.Tmax;
-        public float Tmin => (float)_monthlyClimateRecord.Tmin;
-        public float SPEI => (float)_monthlyClimateRecord.SPEI;
-        public DateTime Date => _date;
-        public int Year => _date.Year;
-        public byte Month => (byte)_date.Month;
-        public float Time => _date.Year + 1.0f / 12.0f * (_date.Month - 1);
-        public float VPD => _vpd;
-        public float DaySpan => _dayspan;
-        public float Tave => _tave;
-        public float Tday => _tday;
-        public float Daylength => _daylength;
+
+        // public float O3 => (float)_monthlyClimateRecord.O3;
+        public float O3
+        {
+            get
+            {
+                return (float)_monthlyClimateRecord.O3;
+            }
+        }
+
+        // public float CO2 => (float)_monthlyClimateRecord.CO2;
+        public float CO2
+        {
+            get
+            {
+                return (float)_monthlyClimateRecord.CO2;
+            }
+        }
+
+        // public float PAR0 => (float)_monthlyClimateRecord.PAR0;
+        public float PAR0
+        {
+            get
+            {
+                return (float)_monthlyClimateRecord.PAR0;
+            }
+        }
+
+        // public float Prec => (float)_monthlyClimateRecord.Prec;
+        public float Prec
+        {
+            get
+            {
+                return (float)_monthlyClimateRecord.Prec;
+            }
+        }
+
+        // public float Tmax => (float)_monthlyClimateRecord.Tmax;
+        public float Tmax
+        {
+            get
+            {
+                return (float)_monthlyClimateRecord.Tmax;
+            }
+        }
+
+        // public float Tmin => (float)_monthlyClimateRecord.Tmin;
+        public float Tmin
+        {
+            get
+            {
+                return (float)_monthlyClimateRecord.Tmin;
+            }
+        }
+
+        // public float SPEI => (float)_monthlyClimateRecord.SPEI;
+        public float SPEI
+        {
+            get
+            {
+                return (float)_monthlyClimateRecord.SPEI;
+            }
+        }
+
+        // public DateTime Date => _date;
+        public DateTime Date
+        {
+            get
+            {
+                return _date;
+            }
+        }
+
+        // public int Year => _date.Year;
+        public int Year
+        {
+            get
+            {
+                return _date.Year;
+            }
+        }
+
+        // public byte Month => (byte)_date.Month;
+        public byte Month
+        {
+            get
+            {
+                return (byte)_date.Month;
+            }
+        }
+
+        // public float Time => _date.Year + 1.0f / 12.0f * (_date.Month - 1);
+        public float Time
+        {
+            get
+            {
+                return _date.Year + 1.0f / 12.0f * (_date.Month - 1);
+            }
+        }
+
+        // public float VPD => _vpd;
+        public float VPD
+        {
+            get
+            {
+                return _vpd;
+            }
+        }
+
+        // public float DaySpan => _dayspan;
+        public float DaySpan
+        {
+            get
+            {
+                return _dayspan;
+            }
+        }
+
+        // public float Tave => _tave;
+        public float Tave
+        {
+            get
+            {
+                return _tave;
+            }
+        }
+
+        // public float Tday => _tday;
+        public float SPEI
+        {
+            get
+            {
+                return Tday;
+            }
+        }
+
+        // public float Daylength => _daylength;
+        public float Daylength
+        {
+            get
+            {
+                return _daylength;
+            }
+        }
 
         public ClimateRegionPnETVariables(MonthlyClimateRecord monthlyClimateRecord, DateTime date, bool wythers, bool dTemp, List<ISpeciesPnET> Species, float latitude)
         {
@@ -90,7 +218,7 @@ namespace Landis.Library.PnETCohorts
                 // Computed Base foliar respiration based on temp
                 BaseFolRespFrac = Respiration.CalcBaseFolRespFrac_Wythers(Tavg);
                 // Base parameter in Q10 temperature dependency calculation
-                Q10base = Respiration.CalcQ10_Wythers(Tave, spc.PsnTopt);
+                Q10base = Respiration.CalcQ10_Wythers(Tave, spc.PsnTOpt);
             }
             else
             {
@@ -101,7 +229,7 @@ namespace Landis.Library.PnETCohorts
             speciespnetvars.BaseFolRespFrac = BaseFolRespFrac;
             speciespnetvars.Q10Factor = Respiration.CalcFQ10(Q10base, Tave, spc.PsnTOpt);
             // Unitless respiration adjustment based on temperature: public for output file only
-            float FTempRespWeightedDayAndNight = Respiration.CalcWeightedFTemp(Q10base, Tday, Tmin, spc.PsnTopt, daylength, nightlength);
+            float FTempRespWeightedDayAndNight = Respiration.CalcWeightedFTemp(Q10base, Tday, Tmin, spc.PsnTOpt, daylength, nightlength);
             speciespnetvars.FTempRespWeightedDayAndNight = FTempRespWeightedDayAndNight;
             // Scaling factor of respiration given day and night temperature and day and night length
             speciespnetvars.MaintRespFTempResp = spc.MaintResp * FTempRespWeightedDayAndNight;

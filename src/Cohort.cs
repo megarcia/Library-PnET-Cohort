@@ -787,7 +787,7 @@ namespace Landis.Library.PnETCohorts
                 InitializeOutput(SiteName, cohort_start_year);
         }
 
-        public Cohort(ISpecies species, CohortData cohortData)
+        public Cohort(Landis.Core.ISpecies species, CohortData cohortData)
         {
             this.species = species;
             speciesPnET = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
@@ -842,7 +842,7 @@ namespace Landis.Library.PnETCohorts
         public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, string SiteName, ushort firstYear, bool cohortStacking)
         {
             InitializeSubLayers();
-            species = (ISpecies)speciesPnET;
+            species = (Landis.Core.ISpecies)speciesPnET;
             this.speciesPnET = speciesPnET;
             float biomass = woodBiomass / (1 - speciesPnET.FracBelowG);
             data.TotalBiomass = biomass;
@@ -887,7 +887,7 @@ namespace Landis.Library.PnETCohorts
         public Cohort(ISpeciesPnET speciesPnET, ushort age, int woodBiomass, int maxBiomass, float canopyGrowingSpace, string SiteName, ushort firstYear, bool cohortStacking, float lastSeasonAvgFrad)
         {
             InitializeSubLayers();
-            species = (ISpecies)speciesPnET;
+            species = (Landis.Core.ISpecies)speciesPnET;
             this.speciesPnET = speciesPnET;
             float biomass = woodBiomass / (1 - speciesPnET.FracBelowG);
             data.TotalBiomass = biomass;
@@ -930,7 +930,7 @@ namespace Landis.Library.PnETCohorts
                 InitializeOutput(SiteName, firstYear);
         }
 
-        public void CalculateDefoliation(ActiveSite site, int SiteAboveGroundBiomass)
+        public void CalculateDefoliation(Landis.SpatialModeling.ActiveSite site, int SiteAboveGroundBiomass)
         {
             lock (Globals.distributionThreadLock)
             {
@@ -1515,7 +1515,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public static void Died(object sender,
                                 ICohort cohort,
-                                ActiveSite site,
+                                Landis.SpatialModeling.ActiveSite site,
                                 ExtensionType disturbanceType)
         {
             if (DeathEvent != null)
@@ -1527,7 +1527,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public static void PartialMortality(object sender,
                                             ICohort cohort,
-                                            ActiveSite site,
+                                            Landis.SpatialModeling.ActiveSite site,
                                             ExtensionType disturbanceType,
                                             float reduction)
         {
@@ -1553,7 +1553,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public static void KilledByAgeOnlyDisturbance(object sender,
                                                       ICohort cohort,
-                                                      ActiveSite site,
+                                                      Landis.SpatialModeling.ActiveSite site,
                                                       ExtensionType disturbanceType)
         {
             if (AgeOnlyDeathEvent != null)
@@ -1800,7 +1800,7 @@ namespace Landis.Library.PnETCohorts
         /// </summary>
         public static void RaiseDeathEvent(object sender,
                                            Cohort cohort, 
-                                           ActiveSite site,
+                                           Landis.SpatialModeling.ActiveSite site,
                                            ExtensionType disturbanceType)
         {
             if (DeathEvent != null)

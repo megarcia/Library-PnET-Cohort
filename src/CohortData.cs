@@ -318,7 +318,7 @@ namespace Landis.Library.PnETCohorts
         /// <summary>
         /// Initializes a new cohort with the given data.
         /// </summary>
-        public CohortData(ISpecies species, ushort age, float totalBiomass, double totalANPP, bool cohortStacking)  //MG20261021 reordered variables, species first
+        public CohortData(Landis.Core.ISpecies species, ushort age, float totalBiomass, double totalANPP, bool cohortStacking)  //MG20261021 reordered variables, species first
         {            
             ISpeciesPnET spc = SpeciesParameters.SpeciesPnET.AllSpecies[species.Index];
             Cohort = new Cohort(species, spc, 0, "", 1, cohortStacking);

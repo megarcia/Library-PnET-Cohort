@@ -51,23 +51,23 @@ namespace Landis.Library.PnETCohorts
         float NetPsnSum { get; }
         float PET { get; }
         IEstablishmentProbability EstablishmentProbability { get; }
-        Parameters.Species.AuxParm<int> CohortCountPerSpecies { get; }
-        Parameters.Species.AuxParm<bool> SpeciesPresent { get; }
-        Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies { get; }
-        Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
-        Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies { get; }
-        Parameters.Species.AuxParm<int> WoodBiomassPerSpecies { get; }
-        Parameters.Species.AuxParm<int> BelowGroundBiomassPerSpecies { get; }
-        Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies { get; }
-        Parameters.Species.AuxParm<int> NSCPerSpecies { get; }
-        Parameters.Species.AuxParm<float> LAIPerSpecies { get; }
-        Parameters.Species.AuxParm<int> WoodySenescencePerSpecies { get; }
-        Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies { get; }
-        Parameters.Species.AuxParm<List<ushort>> CohortAges { get; }
-        List<ISpecies> SpeciesByPlant { get; set; }
-        List<ISpecies> SpeciesBySerotiny { get; set; }
-        List<ISpecies> SpeciesByResprout { get; set; }
-        List<ISpecies> SpeciesBySeed { get; set; }
+        Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<bool> SpeciesPresent { get; }
+        Library.Parameters.Species.AuxParm<int> MaxFoliageYearPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> WoodBiomassPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> BelowGroundBiomassPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> FoliageBiomassPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> NSCPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<float> LAIPerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies { get; }
+        Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies { get; }
+        Library.Parameters.Species.AuxParm<List<ushort>> CohortAges { get; }
+        List<Landis.Core.ISpecies> SpeciesByPlant { get; set; }
+        List<Landis.Core.ISpecies> SpeciesBySerotiny { get; set; }
+        List<Landis.Core.ISpecies> SpeciesByResprout { get; set; }
+        List<Landis.Core.ISpecies> SpeciesBySeed { get; set; }
         List<int> CohortsBySuccession { get; set; }
         List<int> CohortsByCold { get; set; }
         List<int> CohortsByHarvest { get; set; }

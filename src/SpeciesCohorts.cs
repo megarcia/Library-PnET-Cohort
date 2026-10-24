@@ -18,7 +18,7 @@ using System.Reflection;
 using Landis.Core;
 using Landis.Library.UniversalCohorts;
 using Landis.SpatialModeling;
-using log4net;
+// using log4net;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -27,8 +27,8 @@ namespace Landis.Library.PnETCohorts
     /// </summary>
     public class SpeciesCohorts : Library.UniversalCohorts.ISpeciesCohorts
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private static readonly bool isDebugEnabled = log.IsDebugEnabled;
+        // private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        // private static readonly bool isDebugEnabled = log.IsDebugEnabled;  //MG20261024
         private ISpecies species;
         private bool isMaturePresent;
 
@@ -189,10 +189,8 @@ namespace Landis.Library.PnETCohorts
             Debug.Assert(0 <= index && index <= cohortData.Count);
             Debug.Assert(site != null);
             Cohort cohort = new Cohort(species, cohortData[index]);
-            if (isDebugEnabled)
-                log.DebugFormat("  grow cohort: {0}, {1} yrs, {2} Mg/ha",
-                                cohort.Species.Name, cohort.Age, cohort.TotalBiomass);
-
+            Console.WriteLine("  growing cohort: {0}, {1} yrs, {2} g/m2",
+                              cohort.Species.Name, cohort.Age, cohort.TotalBiomass);
             //  Check for senescence
             if (cohort.Age >= species.Longevity)
             {
@@ -219,18 +217,15 @@ namespace Landis.Library.PnETCohorts
 
         private void RemoveCohort(int index, ICohort cohort, ActiveSite site, ExtensionType disturbanceType)
         {
-            if (isDebugEnabled)
-            {
-                log.DebugFormat("  cohort removed: {0}, {1} yrs, {2} g/m2 ({3})",
-                                cohort.Species.Name, cohort.Data.Age, cohort.Data.SiteBiomass,  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
-                                disturbanceType != null
-                                    ? disturbanceType.Name
-                                    : cohort.Data.Age >= species.Longevity  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
-                                        ? "senescence"
-                                        : cohort.Data.SiteBiomass == 0  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
-                                            ? "attrition"
-                                            : "UNKNOWN");
-            }
+            Console.WriteLine("  removing cohort: {0}, {1} y, {2} g/m2, because of {3}",
+                              cohort.Species.Name, cohort.Data.Age, cohort.Data.SiteBiomass,  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
+                              disturbanceType != null
+                                  ? disturbanceType.Name
+                                  : cohort.Data.Age >= species.Longevity  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
+                                      ? "senescence"
+                                      : cohort.Data.SiteBiomass == 0  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
+                                          ? "attrition"
+                                          : "UNKNOWN");
             cohortData.RemoveAt(index);
             Cohort.Died(this, cohort, site, disturbanceType);
         }
@@ -275,7 +270,8 @@ namespace Landis.Library.PnETCohorts
                 Cohort cohort = new Cohort(species, cohortData[i]);
                 double reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
                 int intReduction = (int)reduction;
-                //Console.WriteLine("  Reduction: {0}, {1} yrs, {2} g/m2, reduction={3}", cohort.Species.Name, cohort.Age, cohort.Biomass, reduction);
+                Console.WriteLine("  reducing cohort: {0}, {1} y, {2} g/m2, reduction={3}",
+                                  cohort.Species.Name, cohort.Age, cohort.Biomass, reduction);
                 if (reduction > 0)
                 {
                     totalReduction += intReduction;
@@ -284,7 +280,8 @@ namespace Landis.Library.PnETCohorts
                         ReduceCohort(cohort, disturbance.CurrentSite, disturbance.Type, intReduction);
                         cohort.ChangeBiomass(-intReduction);
                         cohortData[i] = cohort.Data;
-                        //Console.WriteLine("  Partial Reduction: {0}, {1} yrs, {2} Mg/ha", cohort.Species.Name, cohort.Age, cohort.Biomass);
+                        Console.WriteLine("  reducing cohort: {0}, {1} y, {2} g/m2, reduction={3}",
+                                          cohort.Species.Name, cohort.Age, cohort.Biomass, intReduction);
                     }
                     else
                     {

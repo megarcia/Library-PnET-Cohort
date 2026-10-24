@@ -1,8 +1,7 @@
-﻿using Landis.Core;
+﻿using System;
 using System.Collections.Generic;
+using Landis.Core;
 using Landis.Utilities;
-using System;
-
 
 namespace Landis.Library.PnETCohorts
 {
@@ -81,7 +80,7 @@ namespace Landis.Library.PnETCohorts
             {
                 if (AtEndOfInput)
                     throw NewParseException("Expected a line here");
-                Utilities.StringReader currentLine = new Utilities.StringReader(CurrentLine);
+                Landis.Utilities.StringReader currentLine = new Landis.Utilities.StringReader(CurrentLine);
                 ReadValue(float_val, currentLine);
                 SpeciesParameters.biomass_util.SetBiomassData(i, 1, float_val.Value.Actual);
                 ReadValue(float_val, currentLine);

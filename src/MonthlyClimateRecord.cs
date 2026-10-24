@@ -32,13 +32,13 @@ namespace Landis.Library.PnETCohorts
         public MonthlyClimateRecord(IEcoregion ecoregion, DateTime date)
         {
             var month = date.Month - 1;
-            O3 = ClimateRegionData.AnnualClimate[ecoregion].MonthlyOzone[month];
-            CO2 = ClimateRegionData.AnnualClimate[ecoregion].MonthlyCO2[month];
-            PAR0 = ClimateRegionData.AnnualClimate[ecoregion].MonthlyPAR[month];
-            Prec = ClimateRegionData.AnnualClimate[ecoregion].MonthlyPrecip[month] * 10.0; 
-            Tmax = ClimateRegionData.AnnualClimate[ecoregion].MonthlyMaxTemp[month];
-            Tmin = ClimateRegionData.AnnualClimate[ecoregion].MonthlyMinTemp[month];
-            SPEI = ClimateRegionData.AnnualClimate[ecoregion].MonthlySpei[month];
+            O3 = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyOzone[month];
+            CO2 = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyCO2[month];
+            PAR0 = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyPAR[month];
+            Prec = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyPrecip[month] * 10.0; 
+            Tmax = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyMaxTemp[month];
+            Tmin = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlyMinTemp[month];
+            SPEI = (float)ClimateRegionData.AnnualClimate[ecoregion].MonthlySpei[month];
         }
     }
 }

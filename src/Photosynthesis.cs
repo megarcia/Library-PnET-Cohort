@@ -30,8 +30,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="PsnTmin"></param>
         /// <param name="PsnTmax"></param>
         /// <returns></returns>
-        public static float CurvilinearTempResponse(float Tday, float PsnTopt,
-                                                    float PsnTmin, float PsnTmax)
+        public static float CurvilinearTempResponse(float Tday, float PsnTopt, float PsnTmin, float PsnTmax)
         {
             if (Tday < PsnTmin)
                 return 0.0f;
@@ -49,8 +48,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="PsnTmin"></param>
         /// <param name="PsnTmax"></param>
         /// <returns></returns>
-        public static float DTempResponse(float Tday, float PsnTopt, float PsnTmin,
-                                          float PsnTmax)
+        public static float DTempResponse(float Tday, float PsnTopt, float PsnTmin, float PsnTmax)
         {
             if (Tday < PsnTmin || Tday > PsnTmax)
                 return 0.0f;
@@ -124,8 +122,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="FWaterOzone"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static float CalcCiModifier(float CumulativeO3, string StomataO3Sens,
-                                           float FWaterOzone)
+        public static float CalcCiModifier(float CumulativeO3, string StomataO3Sens, float FWaterOzone)
         {
             float CiModifier = 1.0f; // if no ozone, ciModifier defaults to 1
             if (CumulativeO3 > 0)
@@ -203,14 +200,12 @@ namespace Landis.Library.PnETCohorts
         /// <param name="FAge"></param>
         /// <param name="Fol"></param>
         /// <returns></returns>
-        public static float CalcPotentialGrossPsn(float AmaxAdj, float BaseFolResp,
-                                                  float DaySpan, float DVPD, float DayLength,
-                                                  float PsnFTemp, float FRad, float FAge,
-                                                  float Fol)
+        public static float CalcPotentialGrossPsn(float AmaxAdj, float BaseFolResp, float DaySpan, float DVPD,
+                                                  float DayLength, float PsnFTemp, float FRad, float FAge, float Fol)
         {
             float GrossAmax = AmaxAdj + BaseFolResp;
             // Reference gross Psn (lab conditions) in gC/g Fol/month
-            float RefGrossPsn = DaySpan * (GrossAmax * DVPD * DayLength * Constants.MC) / Constants.billion;
+            float RefGrossPsn = DaySpan * (GrossAmax * DVPD * DayLength * Constants.MC) / Constants.Billion;
             // Calculate gross psn from stress factors and reference gross psn (gC/g Fol/month)
             // Reduction factors include temperature (PsnFTemp), water (FWater), light (FRad), age (FAge)
             // Remove FWater from psn reduction because it is accounted for in WUE through ciModifier [mod2, mod3]
@@ -227,8 +222,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="H4"></param>
         /// <param name="pressureHead"></param>
         /// <returns></returns>
-        public static float CalcFWater(float H1, float H2, float H3, float H4,
-                                       float pressureHead)
+        public static float CalcFWater(float H1, float H2, float H3, float H4, float pressureHead)
         {
             float minThreshold = H1;
             if (H2 <= H1)
@@ -257,9 +251,8 @@ namespace Landis.Library.PnETCohorts
         /// <param name="WVConductance"></param>
         /// <param name="FOzone_slope"></param>
         /// <returns></returns>
-        public static float CalcO3effect(float O3, int Layer, int nLayers, 
-                                         float FolMass, float LastFOzone, 
-                                         float WVConductance, float FOzone_slope)
+        public static float CalcO3effect(float O3, int Layer, int nLayers, float FolMass, 
+                                         float LastFOzone, float WVConductance, float FOzone_slope)
         {
             float DroughtO3Frac = 1.0f; // Not using DroughtO3Frac from PnET code per M. Kubiske and A. Chappelka
             float kO3Eff = 0.0026f * FOzone_slope;  // Scaled by species using input parameters
@@ -294,8 +287,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="FRad"></param>
         /// <returns></returns>
         /// via non-linear reduction in FolN with canopy depth via FRad
-        public static float CalcAdjFolN(float FolN_shape, float FolN_intercept,
-                                        float FolN, float FRad)
+        public static float CalcAdjFolN(float FolN_shape, float FolN_intercept, float FolN, float FRad)
         {
             float adjFolN = FolN + ((FolN_intercept - FolN) * (float)Math.Pow(FRad, FolN_shape));
             return adjFolN;
@@ -310,8 +302,7 @@ namespace Landis.Library.PnETCohorts
         /// <param name="JH2O"></param>
         /// <param name="CiModifier"></param>
         /// <returns></returns>
-        public static float CalcJCO2_JH2O(float JH2O, float Tmin, float CO2,
-                                          float CiElev, float CiModifier)
+        public static float CalcJCO2_JH2O(float JH2O, float Tmin, float CO2, float CiElev, float CiModifier)
         {
             float V = Constants.GasConst_JperkmolK * (Tmin + Constants.Tref_K) / Constants.Pref_kPa;
             float JCO2 = (float)(0.139 * ((CO2 - CiElev) / V) / Constants.Million);

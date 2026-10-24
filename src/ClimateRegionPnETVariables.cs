@@ -64,12 +64,12 @@ namespace Landis.Library.PnETCohorts
             speciespnetvars.DVPD = Photosynthesis.CalcDVPD(VPD, spc.DVPD1, spc.DVPD2);
             speciespnetvars.JH2O = Photosynthesis.CalcJH2O(monthlyClimateRecord.Tmin, VPD);
             // Modify AmaxB based on CO2 level
-            speciespnetvars.AmaxB_CO2 = Photosynthesis.CalcAmaxB_CO2(monthlyClimateRecord, spc);
+            speciespnetvars.AmaxB_CO2 = Photosynthesis.CalcAmaxB_CO2(monthlyClimateRecord.CO2, spc.AmaxB, spc.CO2AMaxBEff);
             // FTempPsn: reduction factor due to temperature (public for output file)
             if (dTemp)
                 speciespnetvars.FTempPsn = Photosynthesis.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
             else
-                speciespnetvars.FTempPsn = Photosynthesis.CurvilinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax); // Modified 051216(BRM)
+                speciespnetvars.FTempPsn = Photosynthesis.CurvilinearTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
 
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
             // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.

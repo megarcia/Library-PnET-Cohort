@@ -65,7 +65,7 @@ namespace Landis.Library.PnETCohorts
                 ReadVar(landisData);
                 if (landisData.Value.Actual != this.KeyWord)
                     throw new InputValueException(landisData.Value.String, "Landis Keyword expected " + this.KeyWord + " but read \"{0}\"" + this.FileName, landisData.Value.Actual);
-                string line = new StringReader(CurrentLine).ReadLine().Trim();                
+                string line = new Landis.Utilities.StringReader(CurrentLine).ReadLine().Trim();                
                 while (line.Length == 0)
                     GetNextLine();
                 List<string> ReadHeaderLabels  = new List<string>(line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries));
@@ -82,8 +82,8 @@ namespace Landis.Library.PnETCohorts
                 while (!AtEndOfInput)
                 {
                     InputVar<string> RowLabel = new InputVar<string>("RowLabel");
-                    StringReader s = new StringReader(CurrentLine);
-                    CheckHeaderCount(new StringReader(CurrentLine), ReadHeaderLabels.Count);                    
+                    Landis.Utilities.StringReader s = new Landis.Utilities.StringReader(CurrentLine);
+                    CheckHeaderCount(new Landis.Utilities.StringReader(CurrentLine), ReadHeaderLabels.Count);                    
                     for (int column = 0; column < ReadHeaderLabels.Count; column++)
                     {
                         Parameter<string> parameter = null;

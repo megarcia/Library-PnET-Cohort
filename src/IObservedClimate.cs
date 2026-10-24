@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿//MG20260922 This interface circumvents use of the LANDIS Climate Library.
+//           It will be deprecated and removed.
+
+using System.Collections.Generic;
 
 namespace Landis.Library.PnETCohorts 
 {

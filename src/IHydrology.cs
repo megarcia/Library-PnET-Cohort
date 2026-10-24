@@ -14,6 +14,6 @@ namespace Landis.Library.PnETCohorts
         bool SetFrozenWaterContent(float water);  // Change FrozenWaterContent
         bool SetFrozenDepth(float depth); // Change FrozenDepth
         float Calculate_RET_Hamon(float T, float dayLength); // Calculate reference ET
-        PressureHeadSaxton_Rawls PressureHeadTable { get; } // Get the PressureHeadTable object
+        Hydrology_SaxtonRawls PressureHeadTable { get; } // Get the PressureHeadTable object
     }
 }

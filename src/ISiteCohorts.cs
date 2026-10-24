@@ -39,7 +39,7 @@ namespace Landis.Library.PnETCohorts
         float FoliageSenescenceSum { get; }
         int CohortCount { get; }
         float JulySubcanopyPAR { get; }
-        float SubCanopyParMAX { get; }
+        float SubcanopyPARmax { get; }
         double Litter{ get; }
         double WoodyDebris { get; }
         int AgeMax { get; }

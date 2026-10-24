@@ -21,7 +21,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return Names.ExtensionName ;
+                return Names.ExtensionName;
             }
         }
 
@@ -75,7 +75,7 @@ namespace Landis.Library.PnETCohorts
                 {
                     ExpectedColumnHeaders.Add(KeyWord);
                     foreach (string label in ReadHeaderLabels) if (ListContains(ExpectedColumnHeaders, label) == false)
-                        throw new PnetSpeciesParameterFileFormatException("Unrecognized column header " + label + " in " + FileName + "./nExpected headers are: " + string.Join(",", ExpectedColumnHeaders.ToArray()));
+                        throw new PnETSpeciesParameterFileFormatException("Unrecognized column header " + label + " in " + FileName + "./nExpected headers are: " + string.Join(",", ExpectedColumnHeaders.ToArray()));
                 }
                 GetNextLine();
                 speciesLineNums.Clear();
@@ -95,7 +95,7 @@ namespace Landis.Library.PnETCohorts
                         {
                             RowLabel = var;
                             if (ExpectedRowLabels != null && ListContains(ExpectedRowLabels, RowLabel.Value) == false)
-                                throw new PnetSpeciesParameterFileFormatException("Unknown parameter label [" + var.Value + "] in "+ FileName + ".\nExpected labels are: [" + string.Join(" ,", ExpectedRowLabels.ToArray())+"].");
+                                throw new PnETSpeciesParameterFileFormatException("Unknown parameter label [" + var.Value + "] in "+ FileName + ".\nExpected labels are: [" + string.Join(" ,", ExpectedRowLabels.ToArray())+"].");
                             continue;
                         }
                         switch (transposed)
@@ -124,7 +124,7 @@ namespace Landis.Library.PnETCohorts
             }
             catch (Exception e)
             {
-                if (e is PnetSpeciesParameterFileFormatException)
+                if (e is PnETSpeciesParameterFileFormatException)
                     throw e;
                 else
                 {
@@ -137,13 +137,13 @@ namespace Landis.Library.PnETCohorts
         }
     }
 
-    class PnetSpeciesParameterFileFormatException : Exception
+    class PnETSpeciesParameterFileFormatException : Exception
     {
-        public PnetSpeciesParameterFileFormatException()
+        public PnETSpeciesParameterFileFormatException()
         {
         }
 
-        public PnetSpeciesParameterFileFormatException(string msg) : base(msg)
+        public PnETSpeciesParameterFileFormatException(string msg) : base(msg)
         {
         }
     }

@@ -3,14 +3,14 @@
 
 using System;
 using System.Collections.Generic;
-//using System.Text;
+// using System.Text;
 
 namespace Landis.Library.PnETCohorts
 {
     public class ClimateRegionPnETVariables : IEcoregionPnETVariables
     {
         private Dictionary<string, SpeciesPnETVariables> speciesVariables;
-        private MonthlyClimateRecord _monthlyClimateRecord;
+        public MonthlyClimateRecord _monthlyClimateRecord;
         private DateTime _date;
         private float _vpd;
         private float _dayspan;

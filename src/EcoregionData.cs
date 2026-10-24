@@ -1,8 +1,8 @@
 
 using System;
 using System.Collections.Generic;
-//using System.Linq;
-//using System.Runtime.CompilerServices;
+using System.Linq;
+// using System.Runtime.CompilerServices;
 using Landis.Core;
 using Landis.Library.Climate;
 
@@ -13,7 +13,6 @@ namespace Landis.Library.PnETCohorts
     /// </summary>
     public class EcoregionData : IEcoregionPnET
     {
-        #region private variables
         private Landis.Core.IEcoregion ecoregion;
         private float _precintconst;
         private float _preclossfrac;
@@ -33,9 +32,7 @@ namespace Landis.Library.PnETCohorts
         IEcoregionPnETVariables _variables;
         private float _evapDepth;
         private float _frostFactor;
-        #endregion
 
-        #region private static variables
         private static bool wythers;
         private static bool dtemp;
         private static float etExtCoeff;
@@ -58,9 +55,7 @@ namespace Landis.Library.PnETCohorts
         private static Library.Parameters.Ecoregions.AuxParm<float> mossDepth;
         private static Library.Parameters.Ecoregions.AuxParm<float> evapDepth;
         private static Library.Parameters.Ecoregions.AuxParm<float> frostFactor;
-        #endregion
 
-        #region accessors for private static variables
         public static List<IEcoregionPnET> Ecoregions
         {
             get 
@@ -77,9 +72,6 @@ namespace Landis.Library.PnETCohorts
         {
             return AllEcoregions[landisCoreEcoregion];
         }
-        #endregion
-
-        #region accessors for private variables
 
         public IEcoregionPnETVariables Variables
         {
@@ -264,7 +256,6 @@ namespace Landis.Library.PnETCohorts
                 return _frostFactor; ;
             }
         }
-        #endregion
 
         public static List<string> ParameterNames
         {

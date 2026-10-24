@@ -3,7 +3,6 @@ namespace Landis.Library.PnETCohorts
 {
     public class SpeciesPnETVariables
     {
-       
         public float FTempRespWeightedDayAndNight; // Unitless respiration adjustment based on temperature: for output only
         public float MaintRespFTempResp; // Scaling factor of respiration given day and night temperature and day and night length
         public float Q10Factor;  // Respiration Q10 factor

@@ -1,4 +1,5 @@
- 
+using Landis.Core;
+
 namespace Landis.Library.PnETCohorts 
 {
     /// <summary>
@@ -137,6 +138,7 @@ namespace Landis.Library.PnETCohorts
 
         // Slope coefficient for O3Effect
         float O3GrowthSens { get; }
+
         // Cold tolerance
         float ColdTol { get; }
 

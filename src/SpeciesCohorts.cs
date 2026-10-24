@@ -31,10 +31,10 @@ namespace Landis.Library.PnETCohorts
         // private static readonly bool isDebugEnabled = log.IsDebugEnabled;  //MG20261024
         private ISpecies species;
         private bool isMaturePresent;
+        private static SpeciesCohortBoolArray isSpeciesCohortDamaged;
+        private List<CohortData> cohortData;  //  Cohort data is in oldest to youngest order.
 
-        //  Cohort data is in oldest to youngest order.
-        private List<CohortData> cohortData;
-
+        //MG20261024 getter referenced only in unused method
         public int Count
         {
             get 
@@ -43,6 +43,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261024 unused getter
         public Landis.Core.ISpecies Species
         {
             get
@@ -52,6 +53,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261024 unused getter
         public bool IsMaturePresent
         {
             get
@@ -68,6 +70,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261024 unused getter
         /// <summary>
         /// An iterator from the oldest cohort to the youngest.
         /// </summary>
@@ -79,6 +82,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261024 unused constructor
         /// <summary>
         /// Initializes a new instance with one young cohort (age = 1).
         /// </summary>
@@ -90,6 +94,7 @@ namespace Landis.Library.PnETCohorts
             AddNewCohort(cohort);
         }
 
+        //MG20261024 unused constructor
         /// <summary>
         /// Creates a copy of a species' cohorts.
         /// </summary>
@@ -101,6 +106,7 @@ namespace Landis.Library.PnETCohorts
             return clone;
         }
 
+        //MG20261024 only referenced above in unused constructor
         /// <summary>
         /// Initializes a new instance with no cohorts.
         /// </summary>
@@ -112,6 +118,13 @@ namespace Landis.Library.PnETCohorts
             this.species = species;
         }
 
+        //MG20261024 unused constructor
+        static SpeciesCohorts()
+        {
+            isSpeciesCohortDamaged = new SpeciesCohortBoolArray();
+        }
+
+        //MG20261024 only referenced above in unused constructor
         /// <summary>
         /// Adds a new cohort.
         /// </summary>
@@ -120,6 +133,7 @@ namespace Landis.Library.PnETCohorts
             cohortData.Add(new CohortData(cohort));
         }
 
+        //MG20261024 unused method
         /// <summary>
         /// Gets the age of a cohort at a specific index.
         /// </summary>
@@ -128,6 +142,7 @@ namespace Landis.Library.PnETCohorts
             return cohortData[index].Age;  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
         }
 
+        //MG20261024 unused method
         /// <summary>
         /// Combines all young cohorts into a single cohort whose age is the
         /// succession timestep - 1 and whose biomass is the sum of all the
@@ -170,6 +185,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        //MG20261024 unused method
         /// <summary>
         /// Grows an individual cohort for a year, incrementing its age by 1
         /// and updating its biomass for annual growth and mortality.
@@ -215,26 +231,7 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        private void RemoveCohort(int index, ICohort cohort, ActiveSite site, ExtensionType disturbanceType)
-        {
-            Console.WriteLine("  removing cohort: {0}, {1} y, {2} g/m2, because of {3}",
-                              cohort.Species.Name, cohort.Data.Age, cohort.Data.SiteBiomass,  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
-                              disturbanceType != null
-                                  ? disturbanceType.Name
-                                  : cohort.Data.Age >= species.Longevity  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
-                                      ? "senescence"
-                                      : cohort.Data.SiteBiomass == 0  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
-                                          ? "attrition"
-                                          : "UNKNOWN");
-            cohortData.RemoveAt(index);
-            Cohort.Died(this, cohort, site, disturbanceType);
-        }
-
-        private void ReduceCohort(ICohort cohort, ActiveSite site, ExtensionType disturbanceType, float reduction)
-        {
-            Cohort.PartialMortality(this, cohort, site, disturbanceType, reduction);
-        }
-
+        //MG20261024 unused method
         /// <summary>
         /// Updates the IsMaturePresent property.
         /// </summary>
@@ -252,6 +249,7 @@ namespace Landis.Library.PnETCohorts
                 }
         }
         
+        //MG20261024 unused method
         /// <summary>
         /// Computes how much a disturbance damages the cohorts by reducing
         /// their biomass.
@@ -295,13 +293,13 @@ namespace Landis.Library.PnETCohorts
             return totalReduction;
         }
 
-        private static SpeciesCohortBoolArray isSpeciesCohortDamaged;
-
-        static SpeciesCohorts()
+        //MG20261024 only referenced above in unused method
+        private void ReduceCohort(ICohort cohort, ActiveSite site, ExtensionType disturbanceType, float reduction)
         {
-            isSpeciesCohortDamaged = new SpeciesCohortBoolArray();
+            Cohort.PartialMortality(this, cohort, site, disturbanceType, reduction);
         }
 
+        //MG20261024 unused method
         /// <summary>
         /// Removes the cohorts that are completed removed by disturbance.
         /// </summary>
@@ -333,17 +331,36 @@ namespace Landis.Library.PnETCohorts
             return totalReduction;
         }
 
+        //MG20261024 only referenced above in unused methods
+        private void RemoveCohort(int index, ICohort cohort, ActiveSite site, ExtensionType disturbanceType)
+        {
+            Console.WriteLine("  removing cohort: {0}, {1} y, {2} g/m2, because of {3}",
+                              cohort.Species.Name, cohort.Data.Age, cohort.Data.SiteBiomass,  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
+                              disturbanceType != null
+                                  ? disturbanceType.Name
+                                  : cohort.Data.Age >= species.Longevity  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
+                                      ? "senescence"
+                                      : cohort.Data.SiteBiomass == 0  //MG20261022 replacing PnETCohorts.SiteVars.UniversalData
+                                          ? "attrition"
+                                          : "UNKNOWN");
+            cohortData.RemoveAt(index);
+            Cohort.Died(this, cohort, site, disturbanceType);
+        }
+
+        //MG20261024 unused method
         IEnumerator<PnETCohorts.ICohort> GetEnumerator()
         {
             foreach (CohortData data in cohortData)
                 yield return new Cohort(species, data);
         }
 
+        //MG20261024 unused method
         IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IEnumerable<ICohort>)this).GetEnumerator();
         }
 
+        //MG20261024 unused method
         IEnumerator<Library.UniversalCohorts.ICohort> IEnumerable<Library.UniversalCohorts.ICohort>.GetEnumerator()
         {
             foreach (CohortData data in cohortData)

@@ -16,7 +16,7 @@ namespace Landis.Library.PnETCohorts
     { 
         public delegate void SubtractTranspiration(float transpiration, ISpeciesPnET Species);
         public ushort index;
-        private ISpecies species;
+        private Landis.Core.ISpecies species;
         private ISpeciesPnET speciesPnET;
         private CohortData data;
         private bool firstYear;
@@ -281,12 +281,12 @@ namespace Landis.Library.PnETCohorts
         }
 
         // LANDIS species (without PnET parameter additions)
-        public ISpecies Species
+        public Landis.Core.ISpecies Species
         {
             get
             {
                 int sppIndex = species.Index;
-                return (ISpecies)Globals.ModelCore.Species[sppIndex];
+                return (Landis.Core.ISpecies)Globals.ModelCore.Species[sppIndex];
             }
         }
 
@@ -751,7 +751,7 @@ namespace Landis.Library.PnETCohorts
             data.ANPP += delta;  //MG20261022 replacing UniversalData
         }
 
-        public Cohort(ISpecies species, ISpeciesPnET speciesPnET, ushort cohort_start_year, string SiteName, double propBiomass, bool cohortStacking)
+        public Cohort(Landis.Core.ISpecies species, ISpeciesPnET speciesPnET, ushort cohort_start_year, string SiteName, double propBiomass, bool cohortStacking)
         {
             this.species = species;
             this.speciesPnET = speciesPnET;

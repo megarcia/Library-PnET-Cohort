@@ -1,13 +1,10 @@
-﻿// John McNabb: This is a copy of EcoregionPnETVariables substituting
-// MonthlyClimateRecord monthlyClimRec for IObservedClimate obs_clim
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Landis.Library.PnETCohorts
 {
-    public class ClimateRegionPnETVariables : IEcoregionPnETVariables
+    public class ClimateRegionPnETVariables : IClimateRegionPnETVariables
     {
         private Dictionary<string, SpeciesPnETVariables> speciesVariables;
         private MonthlyClimateRecord monthlyClimRec;

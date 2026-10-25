@@ -14,9 +14,9 @@ namespace Landis.Library.PnETCohorts
         public static void Initialize()
         {
             AnnualClimate = new Library.Parameters.Ecoregions.AuxParm<AnnualClimate>(Globals.ModelCore.Ecoregions);
-            Climate.Climate.GenerateEcoregionClimateData(((Parameter<float>)Names.GetParameter(Names.Latitude)).Value);
+            Library.Climate.Climate.GenerateEcoregionClimateData(((Parameter<float>)Names.GetParameter(Names.Latitude)).Value);
             // grab the first year's spinup climate
-            foreach (var ecoregion in Globals.ModelCore.Ecoregions.Where(x => x.Active))
+            foreach (Landis.Core.IEcoregion ecoregion in Globals.ModelCore.Ecoregions.Where(x => x.Active))
                 AnnualClimate[ecoregion] = Climate.Climate.SpinupEcoregionYearClimate[ecoregion.Index][1];      // Climate data year index is 1-based
             ClimateInput.SetMinMaxClimateYears();
         }
@@ -26,7 +26,7 @@ namespace Landis.Library.PnETCohorts
             if (Names.TryGetParameter(Names.ClimateConfigFile, out var climateLibraryFileName))
             {
                 // grab the year's future climate
-                foreach (var ecoregion in Globals.ModelCore.Ecoregions.Where(x => x.Active))
+                foreach (Landis.Core.IEcoregion ecoregion in Globals.ModelCore.Ecoregions.Where(x => x.Active))
                     AnnualClimate[ecoregion] = Climate.Climate.FutureEcoregionYearClimate[ecoregion.Index][year];      // Climate data year index is 1-based
             }
         }

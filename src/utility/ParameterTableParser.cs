@@ -129,7 +129,7 @@ namespace Landis.Library.PnETCohorts
                 else
                 {
                     throw new Exception("Unexpected file format (dir,file) (" +
-                        Landis.Utilities.Directory.GetCurrentDirectory() + "," +
+                        System.IO.Directory.GetCurrentDirectory() + "," +
                         this.FileName + ")" +
                         " " + e.Message + "\n\nNOTE header line is mandatory");
                 }

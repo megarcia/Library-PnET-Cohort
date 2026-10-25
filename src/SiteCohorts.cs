@@ -366,7 +366,11 @@ namespace Landis.Library.PnETCohorts
                 if (initialSites.ContainsKey(key) == false)
                     initialSites.Add(key, this);
             }
-            List<IEcoregionPnETVariables> ecoregionInitializer = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, StartDate, StartDate.AddMonths(1)) : EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
+            //MG20261024 TODO the LANDIS Climate Library will soon be the default operation
+            if (usingClimateLibrary)
+                List<IClimateRegionPnETVariables> ecoregionInitializer = EcoregionData.GetClimateRegionData(Ecoregion, StartDate, StartDate.AddMonths(1));
+            else
+                List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
             hydrology = new Hydrology(Ecoregion.FieldCap);
             wateravg = hydrology.Water;
             subcanopyPAR = ecoregionInitializer[0].PAR0;

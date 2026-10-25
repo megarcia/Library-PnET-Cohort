@@ -269,10 +269,10 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        public static List<IEcoregionPnETVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
+        public static List<IClimateRegionPnETVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
         {
             // Monthly simulation data untill but not including end
-            List<IEcoregionPnETVariables> data = new List<IEcoregionPnETVariables>();
+            List<IClimateRegionPnETVariables> data = new List<IClimateRegionPnETVariables>();
             // Date: the last date in the collection of running data
             DateTime date = new DateTime(start.Ticks);
             var oldYear = -1;
@@ -300,7 +300,7 @@ namespace Landis.Library.PnETCohorts
                         }
                         var monthlyData = new MonthlyClimateRecord(ecoregion, date);
                         List<ISpeciesPnET> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
-                        IEcoregionPnETVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
+                        IClimateRegionPnETVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
                         all_values[ecoregion].Add(date, ecoregion_variables);
                     }
                     data.Add(all_values[ecoregion][date]);

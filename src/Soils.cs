@@ -5,7 +5,7 @@ namespace Landis.Library.PnETCohorts
 {
     public class Soils
     {
-        public float UpdateTestDepth(float testDepth)
+        public static float UpdateTestDepth(float testDepth)
         {
             float newTestDepth = 0.0f;
             if (testDepth == 0.0f)
@@ -22,7 +22,7 @@ namespace Landis.Library.PnETCohorts
             // Snow calculations, now handled in Snow class
             float densitySnow_kg_m3 = Snow.CalcDensity(daysOfWinter);
             float snowDepth = Snow.CalcDepth(densitySnow_kg_m3, snowpack);
-            if (Ecoregion.Variables.Tavg >= 0)
+            if (Ecoregion.Variables.Tave >= 0)
             {
                 float fracAbove0 = Ecoregion.Variables.Tmax / (Ecoregion.Variables.Tmax - Ecoregion.Variables.Tmin);
                 snowDepth *= fracAbove0;
@@ -30,11 +30,11 @@ namespace Landis.Library.PnETCohorts
             //Soil thermal oscillation damping
             float snowThermalDamping = Snow.CalcThermalDamping(densitySnow_kg_m3);
             float snowDampingRatio = Snow.CalcDampingRatio(snowDepth, snowThermalDamping);
-            float tempBelowSnow = Ecoregion.Variables.Tavg;
+            float tempBelowSnow = Ecoregion.Variables.Tave;
             if (snowDepth > 0)
                 tempBelowSnow = lastTempBelowSnow + (tempBelowSnow - lastTempBelowSnow) * snowDampingRatio;
             // Soil thermal conductivity via De Vries model (converted to kJ/m.d.K) (see below)
-            float ThermalConductivity_theta = CalcThermalConductivitySoil_Watts(hydrology.SoilWaterContent, Ecoregion.Porosity, Ecoregion.SoilType) / Constants.Convert_kJperday_to_Watts;
+            float ThermalConductivity_theta = CalcThermalConductivitySoil_Watts(hydrology.Water, Ecoregion.Porosity, Ecoregion.SoilType) / Constants.Convert_kJperday_to_Watts;
             float Diffusivity = ThermalConductivity_theta / Hydrology_SaxtonRawls.GetCTheta(Ecoregion.SoilType);  //m2/day
             float Diffusivity_month = Diffusivity * Ecoregion.Variables.DaySpan; // m2/month
             float damping = (float)Math.Sqrt(2.0f * Diffusivity_month / Constants.omega);  //MG20260915 corrected

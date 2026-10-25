@@ -110,7 +110,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return date.Year + 1.0f / 12.0f * (_date.Month - 1);
+                return Year + 1.0f / 12.0f * (Month - 1);
             }
         }
 
@@ -206,7 +206,7 @@ namespace Landis.Library.PnETCohorts
             if (wythers)
             {
                 // Computed Base foliar respiration based on temp
-                BaseFolRespFrac = Respiration.CalcBaseFolRespFrac_Wythers(Tavg);
+                BaseFolRespFrac = Respiration.CalcBaseFolRespFrac_Wythers(Tave);
                 // Base parameter in Q10 temperature dependency calculation
                 Q10base = Respiration.CalcQ10_Wythers(Tave, spc.PsnTOpt);
             }
@@ -219,10 +219,10 @@ namespace Landis.Library.PnETCohorts
             speciespnetvars.BaseFolRespFrac = BaseFolRespFrac;
             speciespnetvars.Q10Factor = Respiration.CalcFQ10(Q10base, Tave, spc.PsnTOpt);
             // Unitless respiration adjustment based on temperature: public for output file only
-            float FTempRespWeightedDayAndNight = Respiration.CalcWeightedFTemp(Q10base, Tday, Tmin, spc.PsnTOpt, daylength, nightlength);
-            speciespnetvars.FTempRespWeightedDayAndNight = FTempRespWeightedDayAndNight;
+            float fTempRespWeightedDayAndNight = Respiration.CalcWeightedFTemp(Q10base, Tday, Tmin, spc.PsnTOpt, daylength, nightlength);
+            speciespnetvars.FTempRespWeightedDayAndNight = fTempRespWeightedDayAndNight;
             // Scaling factor of respiration given day and night temperature and day and night length
-            speciespnetvars.MaintRespFTempResp = spc.MaintResp * FTempRespWeightedDayAndNight;
+            speciespnetvars.MaintRespFTempResp = spc.MaintResp * fTempRespWeightedDayAndNight;
             return speciespnetvars;
         }
     }

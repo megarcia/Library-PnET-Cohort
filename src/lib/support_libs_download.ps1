@@ -20,6 +20,7 @@ $dlls = "Landis.Library.UniversalCohorts-v2.dll",
 $current = Get-Location
 $outpath = $current.toString() + "/"
 
+"$outpath"
 try {
 	ForEach ($item in $dlls) {
 		$dll = $outpath + $item

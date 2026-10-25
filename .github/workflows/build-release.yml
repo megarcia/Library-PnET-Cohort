@@ -1,0 +1,172 @@
+name: Build DLL and Publish Release
+
+permissions:
+  contents: write
+  actions: write
+  id-token: write
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+      notes:
+        type: string
+        required: false
+
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
+      notes:
+        type: string
+        required: false
+
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+
+    steps:
+      # ---------------------------
+      # CHECKOUT with commit rights
+      # ---------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      # ---------------------------
+      # DETERMINE VERSION
+      # ---------------------------
+      - name: Determine version
+        id: version
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch" -or "${{ github.event_name }}" -eq "workflow_call") {
+              echo "v=${{ inputs.version }}" >> $env:GITHUB_OUTPUT
+              exit 0
+          }
+
+          if ("${{ github.ref }}".StartsWith("refs/tags/")) {
+              $clean = "${{ github.ref_name }}".TrimStart("v")
+              echo "v=$clean" >> $env:GITHUB_OUTPUT
+              exit 0
+          }
+
+          Write-Error "No valid version source found."
+
+      # ---------------------------
+      # ADD MYGET FEED (Landis.Core)
+      # ---------------------------
+      - name: Add MyGet LANDIS-II feed
+        run: dotnet nuget add source "https://www.myget.org/F/landis-ii-v8/api/v3/index.json" --name LANDIS-II-V8
+
+      - name: List NuGet sources
+        run: dotnet nuget list source
+
+      # ---------------------------
+      # DOWNLOAD LANDIS-II SUPPORT DLLs INTO src/lib
+      # ---------------------------
+      - name: Download LANDIS-II Support Libraries
+        run: |
+          $base = "https://github.com/LANDIS-II-Foundation/Support-Library-Dlls-v8/raw/main/"
+
+          $dlls = @(
+            "Landis.Library.Climate-v6.dll",
+            "Landis.Library.InitialCommunity.Universal-v2.dll",
+            "Landis.Library.UniversalCohorts-v2.dll",
+            "Landis.Library.Parameters-v2.dll",
+            "Landis.Library.Metadata-v2.dll",
+            "Landis.Library.Succession-v10.dll",
+            "Landis.Library.PnETCohorts-v2.dll"
+          )
+
+          $target = "./src/lib"
+          if (!(Test-Path $target)) {
+              New-Item -ItemType Directory -Path $target | Out-Null
+          }
+
+          foreach ($name in $dlls) {
+              $url = $base + $name
+              $dest = "$target/$name"
+              Write-Host "Downloading $name ..."
+              Invoke-WebRequest -Uri $url -OutFile $dest
+          }
+
+      # ---------------------------
+      # UPDATE VERSION IN CSPROJ
+      # ---------------------------
+      - name: Update csproj version fields
+        run: |
+          $v = "${{ steps.version.outputs.v }}"
+          $csproj = Get-ChildItem -Path . -Filter *.csproj -Recurse | Select-Object -First 1
+
+          $xml = Get-Content $csproj.FullName
+
+          $xml = $xml -replace '<Version>.*?</Version>', "<Version>$v</Version>"
+          $xml = $xml -replace '<AssemblyVersion>.*?</AssemblyVersion>', "<AssemblyVersion>$v</AssemblyVersion>"
+          $xml = $xml -replace '<FileVersion>.*?</FileVersion>', "<FileVersion>$v</FileVersion>"
+
+          Set-Content $csproj.FullName $xml
+          Write-Host "Updated version fields to $v"
+
+      # ---------------------------
+      # INSTALL .NET SDK
+      # ---------------------------
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # ---------------------------
+      # BUILD DLL
+      # ---------------------------
+      - name: Restore
+        run: |
+          $csproj = Get-ChildItem -Path . -Filter *.csproj -Recurse | Select-Object -First 1
+          dotnet restore $csproj.FullName
+
+      - name: Build
+        run: |
+          $csproj = Get-ChildItem -Path . -Filter *.csproj -Recurse | Select-Object -First 1
+          dotnet build $csproj.FullName --configuration Release
+
+      # ---------------------------
+      # CREATE RELEASE AND UPLOAD DLL
+      # ---------------------------
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', steps.version.outputs.v) || github.ref_name }}
+          name: "Release v${{ steps.version.outputs.v }}"
+          body: ${{ inputs.notes }}
+
+          # IMPORTANT: UNIVERSAL DLL PATTERN
+          files: |
+            **/bin/Release/**/*.dll
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ---------------------------
+      # COMMIT VERSION UPDATES BACK TO REPO
+      # ---------------------------
+      - name: Commit version updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+
+          if (git diff --cached --quiet) {
+              Write-Host "No changes to commit."
+          } else {
+              git commit -m "Update DLL project version to ${{ steps.version.outputs.v }}"
+              git push
+          }

@@ -10,7 +10,8 @@ namespace Landis.Library.PnETCohorts
     public static class SiteVars
     {
         public static ISiteVar<SiteCohorts> SiteCohorts;
-        public static ISiteVar<UniversalCohorts.SiteCohorts> UniversalCohorts;
+        // public static ISiteVar<UniversalCohorts.SiteCohorts> UniversalCohorts;  //MG20261026
+        public static ISiteVar<Library.UniversalCohorts.SiteCohorts> UniversalCohorts;  //MG20261026
         public static ISiteVar<Pool> WoodyDebris;
         public static ISiteVar<Pool> Litter;
         public static ISiteVar<double> FineFuels;
@@ -27,7 +28,8 @@ namespace Landis.Library.PnETCohorts
         public static void Initialize()
         {
             SiteCohorts = Globals.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
-            UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<UniversalCohorts.SiteCohorts>();
+            // UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<UniversalCohorts.SiteCohorts>();  //MG20261026
+            UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<Library.UniversalCohorts.ISiteCohorts>();  //MG20261026
             WoodyDebris = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             Litter = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             FineFuels = Globals.ModelCore.Landscape.NewSiteVar<double>();
@@ -41,8 +43,8 @@ namespace Landis.Library.PnETCohorts
             MonthlySoilTemp = Globals.ModelCore.Landscape.NewSiteVar<SortedList<float, float>[]>();
             FieldCapacity = Globals.ModelCore.Landscape.NewSiteVar<float>();
 
-            Globals.ModelCore.RegisterSiteVar(SiteCohorts, "Succession.CohortsPnET");
-            Globals.ModelCore.RegisterSiteVar(UniversalCohorts, "Succession.UniversalCohorts");
+            // Globals.ModelCore.RegisterSiteVar(SiteCohorts, "Succession.CohortsPnET");  //MG20261026 moved back to PlugIn
+            // Globals.ModelCore.RegisterSiteVar(UniversalCohorts, "Succession.UniversalCohorts");  //MG20261026 moved back to PlugIn
             Globals.ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
             Globals.ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
             Globals.ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
@@ -64,6 +66,7 @@ namespace Landis.Library.PnETCohorts
         /// steps. Creates new UniversalCohorts and overwrites whatever
         /// existed previously in that variable space.
         /// </summary>
+        /*
         public static void UpdateUniversalCohorts()
         {
             Globals.ModelCore.UI.WriteLine("Updating UniversalCohorts with PnET SiteCohorts data.");
@@ -81,5 +84,6 @@ namespace Landis.Library.PnETCohorts
                     throw new Exception("Cannot convert PnET SiteCohorts to Universal Cohorts");
             }
         }
+        */
     }
 }

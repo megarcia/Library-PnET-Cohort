@@ -4436,26 +4436,32 @@ namespace Landis.Library.PnETCohorts
             if(disturbanceType.Name == Names.ExtensionName)
             {
                 CohortsKilledBySuccession[cohort.Species.Index] += 1;
+                Globals.ModelCore.UI.WriteLine($"   Removing cohort of {cohort.Species.Name} by succession.");
             }
             else if(disturbanceType.Name == (Names.ExtensionName+":Cold"))
             { 
                 CohortsKilledByCold[cohort.Species.Index] += 1;
+                Globals.ModelCore.UI.WriteLine($"   Removing cohort of {cohort.Species.Name} by succession.");
             }
             else if(disturbanceType.Name == "disturbance:harvest")
             {
                 CohortsKilledByHarvest[cohort.Species.Index] += 1;
+                Globals.ModelCore.UI.WriteLine($"   Removing cohort of {cohort.Species.Name} by harvest.");
             }
             else if(disturbanceType.Name == "disturbance:fire")
             {
                 CohortsKilledByFire[cohort.Species.Index] += 1;
+                Globals.ModelCore.UI.WriteLine($"   Removing cohort of {cohort.Species.Name} by fire.");
             }
             else if (disturbanceType.Name == "disturbance:wind")
             {
                 CohortsKilledByWind[cohort.Species.Index] += 1;
+                Globals.ModelCore.UI.WriteLine($"   Removing cohort of {cohort.Species.Name} by wind disturbance.");
             }
             else
             {
                 CohortsKilledByOther[cohort.Species.Index] += 1;
+                Globals.ModelCore.UI.WriteLine($"   Removing cohort of {cohort.Species.Name} by other disturbance.");
             }
 
             if (disturbanceType.Name != Names.ExtensionName)

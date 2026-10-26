@@ -16,7 +16,7 @@ namespace Landis.Library.PnETCohorts
         public static ISiteVar<double> FineFuels;
         public static ISiteVar<float> PressureHead;
         public static ISiteVar<float> ExtremeMinTemp;
-        public static ISiteVar<double> AnnualPE;  //Annual Potential Evaporation
+        public static ISiteVar<double> AnnualPE;
         public static ISiteVar<double> ClimaticWaterDeficit;
         public static ISiteVar<double> SmolderConsumption;
         public static ISiteVar<double> FlamingConsumption;
@@ -41,14 +41,14 @@ namespace Landis.Library.PnETCohorts
             MonthlySoilTemp = Globals.ModelCore.Landscape.NewSiteVar<SortedList<float, float>[]>();
             FieldCapacity = Globals.ModelCore.Landscape.NewSiteVar<float>();
 
-            Globals.ModelCore.RegisterSiteVar(SiteCohorts, "Succession.CohortsPnET");  //MG20260909 moved here from PlugIn.cs
-            Globals.ModelCore.RegisterSiteVar(UniversalCohorts, "Succession.UniversalCohorts");  //MG20260908, 20260909 moved here from PlugIn.cs
+            Globals.ModelCore.RegisterSiteVar(SiteCohorts, "Succession.CohortsPnET");
+            Globals.ModelCore.RegisterSiteVar(UniversalCohorts, "Succession.UniversalCohorts");
             Globals.ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
             Globals.ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
             Globals.ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
             Globals.ModelCore.RegisterSiteVar(PressureHead, "Succession.PressureHead");
             Globals.ModelCore.RegisterSiteVar(ExtremeMinTemp, "Succession.ExtremeMinTemp");
-            Globals.ModelCore.RegisterSiteVar(AnnualPE, "Succession.PET"); //FIXME  //MG20260911 Fix what?
+            Globals.ModelCore.RegisterSiteVar(AnnualPE, "Succession.PET");
             Globals.ModelCore.RegisterSiteVar(ClimaticWaterDeficit, "Succession.CWD");
             Globals.ModelCore.RegisterSiteVar(SmolderConsumption, "Succession.SmolderConsumption");
             Globals.ModelCore.RegisterSiteVar(FlamingConsumption, "Succession.FlamingConsumption");
@@ -57,7 +57,13 @@ namespace Landis.Library.PnETCohorts
             Globals.ModelCore.RegisterSiteVar(FieldCapacity, "Succession.SoilFieldCapacity");
         }
 
-        //MG20260911 moved here from PlugIn.cs and modified accordingly
+        /// <summary>
+        /// Copy basic PnET Cohort information (Age, Biomass, ANPP)
+        /// to *new* Universal Cohorts for use in other extensions.
+        /// Called at the end of PlugIn.Initialize() and PlugIn.Run()
+        /// steps. Creates new UniversalCohorts and overwrites whatever
+        /// existed previously in that variable space.
+        /// </summary>
         public static void UpdateUniversalCohorts()
         {
             Globals.ModelCore.UI.WriteLine("Updating UniversalCohorts with PnET SiteCohorts data.");

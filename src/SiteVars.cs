@@ -29,7 +29,7 @@ namespace Landis.Library.PnETCohorts
         {
             SiteCohorts = Globals.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
             // UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<UniversalCohorts.SiteCohorts>();  //MG20261026
-            UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<Library.UniversalCohorts.ISiteCohorts>();  //MG20261026
+            UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<Library.UniversalCohorts.SiteCohorts>();  //MG20261026
             WoodyDebris = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             Litter = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             FineFuels = Globals.ModelCore.Landscape.NewSiteVar<double>();

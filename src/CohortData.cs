@@ -20,25 +20,7 @@ namespace Landis.Library.PnETCohorts
         /// UniversalCohort data fields:
         /// int Age, int Biomass, double ANPP
         /// </summary>
-        // public Library.UniversalCohorts.CohortData UniversalData;  //MG20261022
-
-        //MG20261022 replacing UniversalData.Age
-        /// <summary>
-        /// The cohort's age (years).
-        /// </summary>
-        public ushort Age;
-
-        //MG20261022 replacing UniversalData.Biomass
-        /// <summary>
-        /// The cohort's biomass (g/m2), normalized to the site area.
-        /// </summary>
-        public int SiteBiomass;
-
-        //MG20261022 replacing UniversalData.ANPP
-        /// <summary>
-        /// The cohort's annual NPP (g/m2).
-        /// </summary>
-        public double ANPP;
+        public Library.UniversalCohorts.CohortData UniversalData;
 
         //MG20261016 new variable.
         /// <summary>
@@ -307,12 +289,9 @@ namespace Landis.Library.PnETCohorts
             CanopyGrowingSpace = cohort.CanopyGrowingSpace;
             LastBiomassDelta = cohort.LastBiomassDelta;  //MG20261016 new variable 
             LastANPPDelta = cohort.LastANPPDelta;  //MG20261016 new variable 
-            // UniversalData.Age = cohort.Age;  //MG20261022
-            Age = cohort.Age;  //MG20261022 replacing UniversalData.Age
-            // UniversalData.Biomass = (int)(AGBiomass * CanopyLayerProp);  //MG20261022
-            SiteBiomass = (int)(AGBiomass * CanopyLayerProp);  //MG20261022 replacing UniversalData.Biomass
-            // UniversalData.ANPP = cohort.ANPP;  //MG20261022
-            ANPP = cohort.ANPP;  //MG20261022 replacing UniversalData.ANPP
+            UniversalData.Age = cohort.Age;
+            UniversalData.Biomass = (int)(AGBiomass * CanopyLayerProp);
+            UniversalData.ANPP = cohort.ANPP;
         }
 
         /// <summary>
@@ -371,12 +350,9 @@ namespace Landis.Library.PnETCohorts
             CanopyGrowingSpace = 1.0f;
             LastBiomassDelta = 0;  //MG20261016 new variable 
             LastANPPDelta = 0.0;  //MG20261016 new variable 
-            // UniversalData.Age = age;  //MG20261022
-            Age = age;  //MG20261022 replacing UniversalData.Age
-            // UniversalData.Biomass = (int)(AGBiomass * CanopyLayerProp);  //MG20261022
-            SiteBiomass = (int)(AGBiomass * CanopyLayerProp);  //MG20261022 replacing UniversalData.Biomass
-            // UniversalData.ANPP = totalANPP;  //MG20261022
-            ANPP = totalANPP;  //MG20261022 replacing UniversalData.ANPP
+            UniversalData.Age = age;
+            UniversalData.Biomass = (int)(AGBiomass * CanopyLayerProp);
+            UniversalData.ANPP = totalANPP;
         }
     }
 }

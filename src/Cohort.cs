@@ -182,12 +182,6 @@ namespace Landis.Library.PnETCohorts
         }
 
         // Aboveground Biomass (g/m2)
-        // MG20260922 I think 
-        // (Math.Round(1 - speciesPnET.FracBelowG) * data.TotalBiomass)
-        // should actually be
-        // Math.Round((1 - speciesPnET.FracBelowG) * data.TotalBiomass)
-        // as in the calculation for Wood biomass below.
-        // --> reported as https://github.com/LANDIS-II-Foundation/Library-PnET-Cohort/issues/12
         public int AGBiomass
         {
             get

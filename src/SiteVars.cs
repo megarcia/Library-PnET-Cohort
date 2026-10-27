@@ -9,14 +9,14 @@ namespace Landis.Library.PnETCohorts
 {
     public static class SiteVars
     {
-        public static ISiteVar<PnETCohorts.SiteCohorts> SiteCohorts;
-        // public static ISiteVar<Library.UniversalCohorts.SiteCohorts> UnivCohorts;
+        public static ISiteVar<SiteCohorts> SiteCohorts;
+        public static ISiteVar<Library.UniversalCohorts.SiteCohorts> UniversalCohorts;
         public static ISiteVar<Pool> WoodyDebris;
         public static ISiteVar<Pool> Litter;
         public static ISiteVar<double> FineFuels;
         public static ISiteVar<float> PressureHead;
         public static ISiteVar<float> ExtremeMinTemp;
-        public static ISiteVar<double> AnnualPE;  //Annual Potential Evaporation
+        public static ISiteVar<double> AnnualPE;
         public static ISiteVar<double> ClimaticWaterDeficit;
         public static ISiteVar<double> SmolderConsumption;
         public static ISiteVar<double> FlamingConsumption;
@@ -26,8 +26,8 @@ namespace Landis.Library.PnETCohorts
 
         public static void Initialize()
         {
-            SiteCohorts = Globals.ModelCore.Landscape.NewSiteVar<PnETCohorts.SiteCohorts>();
-            // UnivCohorts = Globals.ModelCore.Landscape.NewSiteVar<Library.UniversalCohorts.SiteCohorts>();
+            SiteCohorts = Globals.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
+            UniversalCohorts = Globals.ModelCore.Landscape.NewSiteVar<Library.UniversalCohorts.SiteCohorts>();
             WoodyDebris = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             Litter = Globals.ModelCore.Landscape.NewSiteVar<Pool>();
             FineFuels = Globals.ModelCore.Landscape.NewSiteVar<double>();
@@ -41,14 +41,17 @@ namespace Landis.Library.PnETCohorts
             MonthlySoilTemp = Globals.ModelCore.Landscape.NewSiteVar<SortedList<float, float>[]>();
             FieldCapacity = Globals.ModelCore.Landscape.NewSiteVar<float>();
 
-            Globals.ModelCore.RegisterSiteVar(SiteCohorts, "Succession.CohortsPnET");  //MG20260909 moved here from PlugIn.cs
-            // Globals.ModelCore.RegisterSiteVar(UnivCohorts, "Succession.UniversalCohorts");  //MG20260908, 20260909 moved here from PlugIn.cs  //MG20261021 trying something weird
+            //MG20261027 NOTE TO SELF registration of SiteCohorts and UniversalCohorts  
+            //           is handled in Extension PlugIn.cs and needs to stay there!
+            //           Declare here (above), register there to make available to other
+            //           extensions through Universal Cohorts Library.
+            
             Globals.ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
             Globals.ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
             Globals.ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
             Globals.ModelCore.RegisterSiteVar(PressureHead, "Succession.PressureHead");
             Globals.ModelCore.RegisterSiteVar(ExtremeMinTemp, "Succession.ExtremeMinTemp");
-            Globals.ModelCore.RegisterSiteVar(AnnualPE, "Succession.PET"); //FIXME  //MG20260911 Fix what?
+            Globals.ModelCore.RegisterSiteVar(AnnualPE, "Succession.PET");
             Globals.ModelCore.RegisterSiteVar(ClimaticWaterDeficit, "Succession.CWD");
             Globals.ModelCore.RegisterSiteVar(SmolderConsumption, "Succession.SmolderConsumption");
             Globals.ModelCore.RegisterSiteVar(FlamingConsumption, "Succession.FlamingConsumption");
@@ -56,69 +59,5 @@ namespace Landis.Library.PnETCohorts
             Globals.ModelCore.RegisterSiteVar(MonthlySoilTemp, "Succession.MonthlySoilTemp");
             Globals.ModelCore.RegisterSiteVar(FieldCapacity, "Succession.SoilFieldCapacity");
         }
-
-        /*
-        //MG20261012
-        public static bool FindMatchingSite(ActiveSite site, Library.UniversalCohorts.ICohort cohort)
-        {
-            bool foundMatch = false;
-            foreach (Library.UniversalCohorts.ISpeciesCohorts speciesUnivCohort in UniversalCohorts[site])
-            {
-                foreach (Library.UniversalCohorts.ICohort univCohort in speciesUnivCohort)
-                {
-                    if ((univCohort.Species == cohort.Species)
-                        && (univCohort.Data.Age == cohort.Data.Age)
-                        && (univCohort.Data.ANPP == cohort.Data.ANPP))
-                        Globals.ModelCore.UI.WriteLine("    PnET SiteCohort for site {0}, species {1}, age {2}, biomass {3} --> {4}.",
-                                                       site.DataIndex, cohort.Species, cohort.Data.Age, cohort.Data.Biomass, univCohort.Data.Biomass);
-                        cohort.Data.Biomass = univCohort.Data.Biomass;
-                        foundMatch = true;
-                        return foundMatch;
-                }
-            }
-            return foundMatch;
-        }
-
-        //MG20261012
-        public static void UpdatePnETCohorts()
-        {
-            Globals.ModelCore.UI.WriteLine("Updating PnET SiteCohorts with UniversalCohorts data.");
-            foreach (ActiveSite site in Globals.ModelCore.Landscape)
-            {
-                foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohort in SiteCohorts[site])
-                {
-                    foreach (Library.UniversalCohorts.ICohort cohort in speciesCohort)
-                    {
-                        bool foundMatch = FindMatchingSite(site, cohort);
-                        if (!foundMatch)
-                        {
-                            Globals.ModelCore.UI.WriteLine("    No matching UniversalCohort found for site {0}, species {1}, age {2} --> removing PnET SiteCohort",
-                                                           site.DataIndex, cohort.Species, cohort.Data.Age);
-                            Cohort(cohort, new ExtensionType(Names.ExtensionName+":external"));
-                        }
-                    }
-                }
-            }
-        }
-
-        //MG20260911 moved here from PlugIn.cs and modified accordingly
-        public static void UpdateUniversalCohorts()
-        {
-            Globals.ModelCore.UI.WriteLine("Updating UniversalCohorts with PnET SiteCohorts data.");
-            foreach (ActiveSite site in Globals.ModelCore.Landscape)
-            {
-                UniversalCohorts[site] = new Library.UniversalCohorts.SiteCohorts();
-                foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohort in SiteCohorts[site])
-                {
-                    foreach (Library.UniversalCohorts.ICohort cohort in speciesCohort)
-                        UniversalCohorts[site].AddNewCohort(cohort.Species, cohort.Data.Age,
-                                                            (int)cohort.Data.Biomass, cohort.Data.ANPP,
-                                                            cohort.Data.AdditionalParameters);
-                }
-                if (SiteCohorts[site] != null && UniversalCohorts[site] == null)
-                    throw new Exception("Cannot convert PnET SiteCohorts to Universal Cohorts");
-            }
-        }
-        */
     }
 }

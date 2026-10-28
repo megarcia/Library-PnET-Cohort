@@ -1562,7 +1562,7 @@ namespace Landis.Library.PnETCohorts
         {
             float fRad = 0.0f;
             if (HalfSat > 0)
-                fRad = (float)(1.0 - Math.Exp(-1.0 * Radiation * Math.Log(2.0) / HalfSat));
+                fRad = (float)(1.0f - Math.Exp(-1.0f * Radiation * Math.Log(2.0) / HalfSat));
             else
                 throw new Exception("HalfSat <= 0. Cannot calculate fRad.");
             return fRad;
@@ -1575,15 +1575,15 @@ namespace Landis.Library.PnETCohorts
                 minThreshold = H2;
             // Compute water stress
             if (pressurehead <= H1)
-                return 0;
+                return 0.0f;
             else if (pressurehead < minThreshold || pressurehead >= H4)
-                return 0;
+                return 0.0f;
             else if (pressurehead > H3)
-                return 1 - ((pressurehead - H3) / (H4 - H3));
+                return 1.0f - ((pressurehead - H3) / (H4 - H3));
             else if (pressurehead < H2)
                 return 1.0f / (H2 - H1) * pressurehead - (H1 / (H2 - H1));
             else
-                return 1;
+                return 1.0f;
         }
 
         public static float ComputeO3Effect_PnET(float o3, int Layer, int nLayers, float FolMass, float lastO3Effect, float gwv, float o3Coeff)
@@ -1592,7 +1592,7 @@ namespace Landis.Library.PnETCohorts
             float kO3Eff = 0.0026f * o3Coeff;  // Scaled by species using input parameters            
             float O3Prof = 0.6163f + (0.00105f * FolMass);
             float RelLayer = (float)Layer / (float)nLayers;
-            float relO3 = (float)Math.Min(1, 1 - (float)Math.Pow(RelLayer * O3Prof, 3));
+            float relO3 = (float)Math.Min(1.0f, 1.0f - (float)Math.Pow(RelLayer * O3Prof, 3));
             // Kubiske method (using gwv in place of conductance
             float currentO3Effect = (float)Math.Min(1, (lastO3Effect * droughtO3Frac) + (kO3Eff * gwv * o3 * relO3));
             return currentO3Effect;

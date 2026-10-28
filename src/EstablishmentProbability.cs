@@ -22,10 +22,10 @@ namespace Landis.Library.PnETCohorts
             get
             {
                 Library.Parameters.Species.AuxParm<float> probability = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
-                foreach (ISpecies spc in Globals.ModelCore.Species)
+                foreach (ISpecies species in Globals.ModelCore.Species)
                 {
-                    ISpeciesPnET speciespnet = SpeciesParameters.SpeciesPnET[spc];
-                    probability[spc] = _pest[speciespnet];
+                    ISpeciesPnET speciespnet = SpeciesParameters.SpeciesPnET[species];
+                    probability[species] = _pest[speciespnet];
                 }
                 return probability; // 0.0-1.0 index
             }
@@ -57,30 +57,30 @@ namespace Landis.Library.PnETCohorts
         {
             Dictionary<ISpeciesPnET, float> estabDict = new Dictionary<ISpeciesPnET, float>();
             float halfSatRange = maxHalfSat - minHalfSat;
-            foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
+            foreach (ISpeciesPnET species in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
-                if ((pnetvars.Tmin > spc.PsnTMin )
-                    && (pnetvars.Tmax < spc.PsnTMax) 
+                if ((pnetvars.Tmin > species.PsnTMin )
+                    && (pnetvars.Tmax < species.PsnTMax) 
                     && (propRootAboveFrost > 0))
                 {
                     // Adjust HalfSat for CO2 effect
-                    float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
-                    float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
-                    float frad = (float)Math.Min(1.0, Math.Pow(Cohort.ComputeFrad(PAR, adjHalfSat), 2) / Math.Pow(spc.EstRad, 2));
+                    float halfSatIntercept = species.HalfSat - 350 * species.CO2HalfSatEff;
+                    float adjHalfSat = species.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
+                    float frad = (float)Math.Min(1.0, Math.Pow(Cohort.ComputeFrad(PAR, adjHalfSat), 2) / Math.Pow(species.EstRad, 2));
                     float adjFrad = frad;
                     // Optional adjustment to invert Pest based on relative halfSat
                     if (invertPest && (halfSatRange > 0))
                     {
-                        float frad_adj_int = (spc.HalfSat - minHalfSat) / halfSatRange;
+                        float frad_adj_int = (species.HalfSat - minHalfSat) / halfSatRange;
                         float frad_slope = (frad_adj_int * 2) - 1;
                         adjFrad = 1 - frad_adj_int + frad * frad_slope;
                     }
                     float PressureHead = hydrology.PressureHeadTable.CalculateWaterContent(hydrology.Water, ecoregion.SoilType);
-                    float fwater = (float)Math.Min(1.0, Math.Pow(Cohort.ComputeFWater(spc.H1, spc.H2, spc.H3, spc.H4, PressureHead), 2) / Math.Pow(spc.EstMoist, 2));
+                    float fwater = (float)Math.Min(1.0, Math.Pow(Cohort.ComputeFWater(species.H1, species.H2, species.H3, species.H4, PressureHead), 2) / Math.Pow(species.EstMoist, 2));
                     float pest = (float) Math.Min(1.0, adjFrad * fwater);
-                    estabDict[spc] = pest;
-                    _fwater[spc] = fwater;
-                    _frad[spc] = adjFrad;
+                    estabDict[species] = pest;
+                    _fwater[species] = fwater;
+                    _frad[species] = adjFrad;
                 }
             }
             return estabDict;
@@ -92,11 +92,11 @@ namespace Landis.Library.PnETCohorts
             _fwater = new Dictionary<ISpeciesPnET, float>();
             _frad = new Dictionary<ISpeciesPnET, float>();
             _hasEstablished = new List<ISpeciesPnET>();
-            foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
+            foreach (ISpeciesPnET species in SpeciesParameters.SpeciesPnET.AllSpecies)
             {
-                _pest.Add(spc, 0);
-                _fwater.Add(spc, 0);
-                _frad.Add(spc, 0);
+                _pest.Add(species, 0);
+                _fwater.Add(species, 0);
+                _frad.Add(species, 0);
             }
         }
 

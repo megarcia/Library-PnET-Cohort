@@ -54,5 +54,30 @@ namespace Landis.Library.PnETCohorts
             Globals.ModelCore.RegisterSiteVar(MonthlySoilTemp, "Succession.MonthlySoilTemp");
             Globals.ModelCore.RegisterSiteVar(FieldCapacity, "Succession.SoilFieldCapacity");
         }
+
+        /// <summary>
+        /// Copy basic PnET Cohort information (Age, Biomass, ANPP)
+        /// to *new* Universal Cohorts for use in other extensions.
+        /// Called at the end of PlugIn.Initialize() and PlugIn.Run()
+        /// steps. Creates new UniversalCohorts and overwrites whatever
+        /// existed previously in that variable space.
+        /// </summary>
+        public static void UpdateUniversalCohorts()
+        {
+            Globals.ModelCore.UI.WriteLine("Updating UniversalCohorts with PnET SiteCohorts data.");
+            foreach (ActiveSite site in Globals.ModelCore.Landscape)
+            {
+                UniversalCohorts[site] = new Library.UniversalCohorts.SiteCohorts();
+                foreach(Library.UniversalCohorts.ISpeciesCohorts speciesCohort in SiteCohorts[site])
+                {
+                    foreach (Library.UniversalCohorts.ICohort cohort in speciesCohort)
+                        UniversalCohorts[site].AddNewCohort(cohort.Species, cohort.Data.Age,
+                                                            (int)cohort.Data.Biomass, cohort.Data.ANPP,
+                                                            cohort.Data.AdditionalParameters);
+                }
+                if (SiteCohorts[site] != null && UniversalCohorts[site] == null)
+                    throw new Exception("Cannot convert PnET SiteCohorts to Universal Cohorts");
+            }
+        }
     }
 }

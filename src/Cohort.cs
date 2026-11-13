@@ -1036,7 +1036,7 @@ namespace Landis.Library.PnETCohorts
             }
                 
             //MG20261014 TODO move this calculation to new Respiration class
-            // Maintenance respiration depends on biomass,  non soluble carbon and temperature
+            // Maintenance respiration depends on biomass, NSC, and temperature
             data.MaintenanceRespiration[index] = 1.0f / (float)Globals.IMAX * (float)Math.Min(NSC, variables[Species.Name].MaintRespFTempResp * data.TotalBiomass * speciesPnET.CFracBiomass); //gC //IMAXinverse
             // Subtract mainenance respiration (gC/mo)
             data.NSC -= MaintenanceRespiration[index];
@@ -1053,15 +1053,11 @@ namespace Landis.Library.PnETCohorts
                     {
                         // Check if nscfrac is below threshold to determine if cohort is alive
                         if (!IsAlive)
-                            data.NSC = 0.0f;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
+                            data.NSC = 0.0f;  // if cohort is dead, nsc goes to zero and becomes functionally dead, but cohort is not removed until end of timestep
                         else if (Globals.ModelCore.CurrentTime > 0 && TotalBiomass < (uint)speciesPnET.InitBiomass)  // Check if biomass < Initial Biomass -> cohort dies
                         {
-                            data.NSC = 0.0f;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
-                            data.Leaf_On = false;
-                            data.NSC = 0.0f;
-                            float foliageSenescence = FoliageSenescence();
-                            data.LastFoliageSenescence = foliageSenescence;
-                            siteCohort.AddLitter(foliageSenescence * data.CanopyLayerProp, SpeciesPnET); // Using Canopy proportioning
+                            data.NSC = 0.0f;  // if cohort is dead, nsc goes to zero and becomes functionally dead, but cohort is not removed until end of timestep
+                            FoliageSenescence(siteCohort);
                         }
                     }
                     float woodSenescence = Senescence();
@@ -1087,11 +1083,8 @@ namespace Landis.Library.PnETCohorts
                 if (coldKillBoolean)
                 {
                     data.ColdKill = (int)Math.Floor(variables.Tave - (3.0f * siteCohort.Ecoregion.WinterSTD));
-                    data.Leaf_On = false;
                     data.NSC = 0.0f;
-                    float foliageSenescence = FoliageSenescence();
-                    data.LastFoliageSenescence = foliageSenescence;
-                    siteCohort.AddLitter(foliageSenescence * data.CanopyLayerProp, SpeciesPnET); // Using Canopy proportioning
+                    FoliageSenescence(siteCohort);
                 }
                 else
                 {
@@ -1099,12 +1092,7 @@ namespace Landis.Library.PnETCohorts
                     if (variables.Tmin <= SpeciesPnET.LeafOnMinT)
                     {
                         if (data.Leaf_On == true)
-                        {
-                            data.Leaf_On = false;
-                            float foliageSenescence = FoliageSenescence();
-                            data.LastFoliageSenescence = foliageSenescence;
-                            siteCohort.AddLitter(foliageSenescence * data.CanopyLayerProp, SpeciesPnET); // Using Canopy proportioning
-                        }
+                            FoliageSenescence(siteCohort);
                         growMonth = -1;
                     }
                     else
@@ -1600,15 +1588,26 @@ namespace Landis.Library.PnETCohorts
             cohortoutput.Write();
         }
 
-        public float FoliageSenescence()
+        public void ReduceFoliage(double fraction)
         {
-            // If it is fall 
+            Fol *= 1.0f - (float)fraction;
+            data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
+        }
+
+        public float FoliageSenescence(SiteCohorts siteCohort)
+        {
+            data.Leaf_On = false;
             float Litter = speciesPnET.TOfol * Fol;
-            // If cohort is dead, then all foliage is lost to litter
-            if (NSCfrac <= 0.01f)
-                Litter = Fol;
+            if (NSCfrac <= 0.01f)  // If cohort is dead,
+                Litter = Fol;      // all foliage --> litter
             Fol -= Litter;
-            return Litter;
+            data.LastFoliageSenescence = Litter; 
+            siteCohort.AddLitter(Litter * data.CanopyLayerProp, SpeciesPnET); // using canopy proportioning
+        }
+
+        public void ResetFoliageMax()
+        {
+            data.MaxFolYear = 0;
         }
 
         public float Senescence()
@@ -1619,17 +1618,6 @@ namespace Landis.Library.PnETCohorts
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
             return senescence;
-        }
-
-        public void ReduceFoliage(double fraction)
-        {
-            Fol *= 1.0f - (float)fraction;
-            data.MaxFolYear = Math.Max(data.MaxFolYear, Fol);
-        }
-
-        public void ResetFoliageMax()
-        {
-            data.MaxFolYear = 0;
         }
 
         public void ReduceBiomass(object sitecohorts, double fraction, ExtensionType disturbanceType)

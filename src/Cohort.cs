@@ -1060,10 +1060,7 @@ namespace Landis.Library.PnETCohorts
                             FoliageSenescence(siteCohort);
                         }
                     }
-                    float woodSenescence = Senescence();
-                    data.LastWoodySenescence = woodSenescence;
-                    siteCohort.AddWoodyDebris(woodSenescence * data.CanopyLayerProp, speciesPnET.KWdLit); // Using Canopy proportioning
-                    
+                    WoodSenescence(siteCohort);                    
                     // Release of NSC, will be added to biomass components next year
                     // Assumed that NSC will have a minimum concentration, excess is allocated to biomass
                     float Allocation = Math.Max(NSC - (speciesPnET.DNSC * FActiveBiom * data.TotalBiomass * speciesPnET.CFracBiomass), 0.0f);
@@ -1610,14 +1607,15 @@ namespace Landis.Library.PnETCohorts
             data.MaxFolYear = 0;
         }
 
-        public float Senescence()
+        public float WoodSenescence(SiteCohorts siteCohort)
         {
-            float senescence = (Root * speciesPnET.TOroot) + (Wood * speciesPnET.TOwood);
-            data.TotalBiomass -= senescence;
+            float woodSenescence = (Root * speciesPnET.TOroot) + (Wood * speciesPnET.TOwood);
+            data.TotalBiomass -= woodSenescence;
+            data.LastWoodySenescence = woodSenescence;
+            siteCohort.AddWoodyDebris(woodSenescence * data.CanopyLayerProp, speciesPnET.KWdLit); // using canopy proportioning
             data.AGBiomass = (1 - speciesPnET.FracBelowG) * data.TotalBiomass + data.Fol;
             data.BiomassMax = Math.Max(data.BiomassMax, data.TotalBiomass);
             data.UniversalData.Biomass = (int)(data.AGBiomass * data.CanopyLayerProp);
-            return senescence;
         }
 
         public void ReduceBiomass(object sitecohorts, double fraction, ExtensionType disturbanceType)

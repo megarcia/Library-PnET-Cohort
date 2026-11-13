@@ -897,7 +897,7 @@ namespace Landis.Library.PnETCohorts
                                 {
                                     if (cohortDictionary[spp].ContainsKey(age))
                                     {
-                                        // FIXME - message duplicate species and age
+                                        // TODO - message duplicate species and age
                                     }
                                     else
                                     {
@@ -954,7 +954,7 @@ namespace Landis.Library.PnETCohorts
                                 {
                                     if (cohortDictionary[spp].ContainsKey(age))
                                     {
-                                        // FIXME - message duplicate species and age
+                                        // TODO - message duplicate species and age
                                     }
                                     else
                                     {
@@ -1205,21 +1205,6 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        //MG20261019 TODO move this to Snow class
-        private static float ComputeMaxSnowMelt(float Tave, float DaySpan)
-        {
-            // Snowmelt rate can range between 1.6 to 6.0 mm/degree day
-            // default should be 2.74 according to NRCS Part 630 Hydrology 
-            // National Engineering Handbook (Chapter 11: Snowmelt)
-            return 2.74f * Math.Max(0.0f, Tave) * DaySpan;
-        }
-
-        //MG20261019 TODO move this to Snow class
-        private static float ComputeSnowFraction(float Tave)
-        {
-            return Math.Max(0.0f, Math.Min(1.0f, (Tave - 2.0f) / -7.0f));
-        }
-
         public bool Grow(List<IEcoregionPnETVariables> data, bool AllowMortality = true, bool outputCohortData = true)
         {
             bool success = true;
@@ -1397,10 +1382,10 @@ namespace Landis.Library.PnETCohorts
                 //MG20261021 TODO move snow melt/depth calculations to Snow class
                 //
                 // Melt snow
-                float snowmelt = Math.Min(snowPack, ComputeMaxSnowMelt(data[m].Tave, data[m].DaySpan)); // mm
+                float snowmelt = Math.Min(snowPack, Snow.CalcMaxSnowMelt(data[m].Tave, data[m].DaySpan)); // mm
                 if (snowmelt < 0)
                     throw new Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                float newsnow = ComputeSnowFraction(data[m].Tave) * data[m].Prec;
+                float newsnow = Snow.CalcSnowFrac(data[m].Tave) * data[m].Prec;
                 float newsnowpack = newsnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
                 if (newsnowpack < 0 || newsnowpack > data[m].Prec)
                     throw new Exception("Error, newsnowpack = " + newsnowpack + " availablePrecipitation = " + data[m].Prec);

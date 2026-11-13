@@ -1642,7 +1642,8 @@ namespace Landis.Library.PnETCohorts
             if (LAI != null)
                 for (int i = 0; i < index; i++)
                     LAISum += LAI[i];
-            float LAIlayerMax = (float)Math.Max(0.01f, 25.0f - LAISum); // Cohort LAI is capped at 25; once LAI reaches 25 subsequent sublayers get LAI of 0.01
+            // Cohort LAI is capped at 25; once LAI reaches 25 subsequent sublayers get LAI of 0.01
+            float LAIlayerMax = (float)Math.Max(0.01f, Constants.LAImax - LAISum);
             float LAIlayer = 1 / (float)Globals.IMAX * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)Globals.IMAX) * fol);
             if (fol > 0 && LAIlayer <= 0)
             {
@@ -1660,7 +1661,7 @@ namespace Landis.Library.PnETCohorts
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
             float LAISum = cumulativeLAI;
             // Cohort LAI is capped at 25; once LAI reaches 25 subsequent sublayers get LAI of 0.01
-            float LAIlayerMax = Math.Max(0.01f, 25.0f - LAISum);
+            float LAIlayerMax = Math.Max(0.01f, Constants.LAImax - LAISum);
             float LAIlayer = 1 / (float)Globals.IMAX * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)Globals.IMAX) * fol);
             if (fol > 0 && LAIlayer <= 0)
             {

@@ -194,5 +194,11 @@ namespace Landis.Library.PnETCohorts
         /// full snow cover for albedo calculations
         /// </summary>
         public const float SnowReflectanceThreshold = 0.1f;
+
+        /// <summary>
+        /// maximum cohort LAI
+        /// </summary>
+        public const float LAImax = 25.0f;
+
     }
 }

@@ -1,7 +1,4 @@
-﻿//  Copyright ...
-//  Authors:  Arjan de Bruijn
-
-//MG20261014 TODO move getters and setters to separate file --> "partial class"
+﻿//MG20261014 TODO move getters and setters to separate file --> "partial class"
 //           see https://www.google.com/search?q=csharp+move+getters+to+another+file&sca_esv=a80c92513419f584&biw=1792&bih=904&sxsrf=APpeQnsgP3gkJavBOnl29PxZv6nEzTiezg%3A1791998198402&ei=9rjPatWEF_LXruEPi6uHiAg&uact=5&oq=csharp+move+getters+to+another+file&gs_lp=Egxnd3Mtd2l6LXNlcnAiI2NzaGFycCBtb3ZlIGdldHRlcnMgdG8gYW5vdGhlciBmaWxlMgUQIRigATIFECEYoAEyBRAhGKABMgUQIRigATIFECEYoAEyBRAhGKsCSLt0UJEQWP9qcAN4AZABAJgBgQGgAbgXqgEEMzMuM7gBA8gBAPgBAZgCJ6ACiBnCAgoQABhHGNYEGLADwgIOEAAY5AIY1gQYsAPYAQHCAhcQLhjcBhi4BhjaBhjYAhjIAxiwA9gBAcICBBAjGCfCAgsQABiABBiKBRiRAsICBhAAGBYYHsICBRAAGO8FwgIKEAAYgAQYigUYQ8ICBRAAGIAEwgIHEAAYgAQYCsICChAAGIAEGBQYhwLCAgsQABiABBiKBRiGA8ICCBAAGIkFGKIEwgIFECEYnwWYAwCIBgGQBg26BgYIARABGAmSBwQzMi43oAet2wGyBwQyOS43uAfwGMIHBzAuMTQuMjXIB4UBgAgB&sclient=gws-wiz-serp
 using System;
 using System.Collections;
@@ -85,8 +82,7 @@ namespace Landis.Library.PnETCohorts
         private int nlayers;
         private static int MaxLayer;
         private static bool soilIceDepth;
-        //MG20261021 TODO rename "permafrost" to "frozenSoil"
-        private static bool permafrost;  
+        private static bool frozenSoils;  
         private static bool invertPest;
         public SortedList<float, float> depthTempDict = new SortedList<float, float>();
         float lastTempBelowSnow = float.MaxValue;
@@ -305,7 +301,7 @@ namespace Landis.Library.PnETCohorts
             invertPest = ((Parameter<bool>)Names.GetParameter(Names.InvertPest)).Value;
             CohortStacking = ((Parameter<bool>)Names.GetParameter(Names.CohortStacking)).Value;
             CanopySumScale = ((Parameter<float>)Names.GetParameter(Names.CanopySumScale, 0f, 1f)).Value;
-            permafrost = false;
+            frozenSoils = false;
             Parameter<string> CohortBinSizeParm = null;
             if (Names.TryGetParameter(Names.CohortBinSize, out CohortBinSizeParm))
             {
@@ -512,14 +508,9 @@ namespace Landis.Library.PnETCohorts
                         }
                         int layer = cohort.Layer;
                         int layerCount = cohortBins[layer].Count();
-
-                        //MG20262014 TODO move this calculation of newWoodBiomass to its own function
-                        // Estimate new wood biomass from FracBelowG and FrActWs (see Estimate_WoodBio.xlsx)
-                        float estSlope = -8.236285f + 27.768424f * cohort.SpeciesPnET.FracBelowG + 191053.281571f * cohort.SpeciesPnET.FrActWd + 312.812679f * cohort.SpeciesPnET.FracFol + -594492.216284f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd + -941.447695f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FracFol + -6490254.134756f * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol + 19879995.810771f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol;
-                        float estInt = 1735.179f + 2994.393f * cohort.SpeciesPnET.FracBelowG + 10167232.544f * cohort.SpeciesPnET.FrActWd + 53598.871f * cohort.SpeciesPnET.FracFol + -92028081.987f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd + -168141.498f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FracFol + -1104139533.563f * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol + 3507005746.011f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol;
-                        float newWoodBiomass = estInt + estSlope * cohort.AGBiomass * layerCount; // Inflate AGBiomass by # of cohorts in layer, assuming equal space among them
-                        float newTotalBiomass = newWoodBiomass / (1 - cohort.SpeciesPnET.FracBelowG);
-                        cohort.CanopyLayerProp = 1f / layerCount;
+                        float newWoodBiomass = CalcNewWoodBiomass(cohort, layerCount);
+                        float newTotalBiomass = newWoodBiomass / (1.0f - cohort.SpeciesPnET.FracBelowG);
+                        cohort.CanopyLayerProp = 1.0f / layerCount;
                         if (CohortStacking)
                             cohort.CanopyLayerProp = 1.0f;
                         float cohortFol = cohort.adjFracFol * cohort.FActiveBiom * cohort.TotalBiomass;
@@ -1419,7 +1410,7 @@ namespace Landis.Library.PnETCohorts
                 propRootAboveFrost = 1;
                 leakageFrac = Ecoregion.LeakageFrac;
                 float propThawed = 0;
-                // Soil temp calculations - need for permafrost and Root Rot
+                // Soil temp calculations - need for frozenSoils and Root Rot
                 // snow calculations - from "Soil thawing worksheet with snow.xlsx"
                 if (data[m].Tave <= 0)
                     daysOfWinter += (int)data[m].DaySpan;
@@ -1524,7 +1515,7 @@ namespace Landis.Library.PnETCohorts
                     if (sno_dep > 0)
                         tempBelowSnow = annualTavg + (Ecoregion.Variables.Tave - annualTavg) * DRz_snow;
                     lastTempBelowSnow = tempBelowSnow;
-                    // Regardless of permafrost, need to fill the tempDict with values
+                    // Regardless of frozenSoils, need to fill the tempDict with values
                     bool foundBottomIce = false;
                     // Calculate depth to bottom of ice lens with FrostDepth
                     while (testDepth <= bottomFreezeDepth)
@@ -1539,9 +1530,9 @@ namespace Landis.Library.PnETCohorts
                         float lagAvg = (lagMax + lagMin) / 2.0f;
                         zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * lagAvg - testDepth / d));
                         depthTempDict[testDepth] = zTemp;
-                        if (zTemp <= 0 && !permafrost)
+                        if (zTemp <= 0 && !frozenSoils)
                             lastBelowZeroDepth = testDepth;
-                        if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !permafrost)
+                        if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !frozenSoils)
                         {
                             frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
                             foundBottomIce = true;
@@ -1552,7 +1543,7 @@ namespace Landis.Library.PnETCohorts
                         testDepth = Soils.UpdateTestDepth(testDepth);
                     }
                     // The ice lens is deeper than the max depth
-                    if (zTemp <= 0 && !foundBottomIce && !permafrost)
+                    if (zTemp <= 0 && !foundBottomIce && !frozenSoils)
                         frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                 }
                 depthTempDict = Soils.CalcMonthlySoilTemps(depthTempDict, Ecoregion, daysOfWinter, snowPack, hydrology, lastTempBelowSnow);
@@ -1572,9 +1563,9 @@ namespace Landis.Library.PnETCohorts
                     while (testDepth <= bottomFreezeDepth)
                     {
                         zTemp = depthTempDict[testDepth];
-                        if (zTemp <= 0 && !permafrost)
+                        if (zTemp <= 0 && !frozenSoils)
                             lastBelowZeroDepth = testDepth;
-                        if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !permafrost)
+                        if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !frozenSoils)
                         {
                             frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
                             foundBottomIce = true;
@@ -1585,7 +1576,7 @@ namespace Landis.Library.PnETCohorts
                         testDepth = Soils.UpdateTestDepth(testDepth);
                     }
                     // The ice lens is deeper than the max depth
-                    if (zTemp <= 0 && !foundBottomIce && !permafrost)
+                    if (zTemp <= 0 && !foundBottomIce && !frozenSoils)
                         frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                     propRootAboveFrost = Math.Min(1, activeLayerDepth[data[m].Month - 1] * 1000 / Ecoregion.RootingDepth);
                     float propRootBelowFrost = 1 - propRootAboveFrost;
@@ -2210,6 +2201,31 @@ namespace Landis.Library.PnETCohorts
                 RemoveMarkedCohorts();
             return success;
         }
+
+        // Estimate new wood biomass from FracBelowG and FrActWs (see Estimate_WoodBio.xlsx)
+        public static float CalcNewWoodBiomass(Cohort cohort, int layerCount)
+        {
+            float estSlope = -8.236285f 
+                             + 27.768424f * cohort.SpeciesPnET.FracBelowG
+                             + 191053.281571f * cohort.SpeciesPnET.FrActWd 
+                             + 312.812679f * cohort.SpeciesPnET.FracFol 
+                             + -594492.216284f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd 
+                             + -941.447695f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FracFol 
+                             + -6490254.134756f * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol 
+                             + 19879995.810771f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol;
+            float estInt = 1735.179f 
+                           + 2994.393f * cohort.SpeciesPnET.FracBelowG
+                           + 10167232.544f * cohort.SpeciesPnET.FrActWd
+                           + 53598.871f * cohort.SpeciesPnET.FracFol
+                           + -92028081.987f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd
+                           + -168141.498f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FracFol
+                           + -1104139533.563f * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol
+                           + 3507005746.011f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol;
+            // Inflate AGBiomass by # of cohorts in layer, assuming equal space among them
+            float newWoodBiomass = estInt + estSlope * cohort.AGBiomass * layerCount; 
+            return newWoodBiomass;            
+        }
+
 
         //MG20261021 TODO move to Utilities?
         //

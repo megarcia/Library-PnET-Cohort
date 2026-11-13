@@ -1458,13 +1458,11 @@ namespace Landis.Library.PnETCohorts
             float netPsnSum = NetPsn.Sum();
             float grossPsnSum = GrossPsn.Sum();
             float transpirationSum = Transpiration.Sum();
-            //MG20261016 TODO this has an existing calculation elsewhere
+            //MG20261016 TODO this has an existing but dissimilar calculation in Photosynthesis class
             float JCO2_JH2O = 0;
             if (transpirationSum > 0)
                 JCO2_JH2O = 0.0015f * grossPsnSum * CanopyLayerProp / transpirationSum;
-            //MG20261016 TODO this will be in Constants.cs
-            float WUE = JCO2_JH2O * (44.0f / 18.0f); 
-            //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
+            float WUE = JCO2_JH2O * Constants.MCO2 / Constants.MH2O; 
 
             // determine the limiting factor 
             float fWaterAvg = FWater.Average();

@@ -101,7 +101,7 @@ namespace Landis.Library.PnETCohorts
         // volumetric water content (mm/m) of the frozen soil
         public bool SetFrozenWaterContent (float water)
         {
-            this.frozenWaterContent = water;
+            frozenWaterContent = water;
             if (water >= 0)
                 return true;
             else
@@ -111,7 +111,7 @@ namespace Landis.Library.PnETCohorts
         // Depth at which soil is frozen (mm); Rooting zone soil below this depth is frozen
         public bool SetFrozenDepth(float depth)
         {
-            this.frozenDepth = depth;
+            frozenDepth = depth;
             if (depth >= 0)
                 return true;
             else
@@ -137,12 +137,10 @@ namespace Landis.Library.PnETCohorts
             {
                 // Volumetric water content (mm/m) at field capacity
                 //  −33 kPa (or −0.33 bar)        
-                // Convert kPA to mH2o (/9.804139432) = 3.37
                 eco.FieldCap = (float)pressureheadtable.CalculateWaterContent(33, eco.SoilType);
 
                 // Volumetric water content (mm/m) at wilting point
                 //  −1500 kPa (or −15 bar)  
-                // Convert kPA to mH2o (/9.804139432) = 153.00
                 eco.WiltPnt = (float)pressureheadtable.CalculateWaterContent(1500, eco.SoilType);
 
                 // Volumetric water content (mm/m) at porosity

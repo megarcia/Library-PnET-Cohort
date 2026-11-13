@@ -1260,10 +1260,9 @@ namespace Landis.Library.PnETCohorts
                 // It is possible for transpiration to calculate to exceed available water
                 // In this case, we cap transpiration at available water, and back-calculate GrossPsn and NetPsn to downgrade those as well
                 // Volumetric water content (mm/m) at species wilting point (h4) 
-                // Convert kPA to mH2o (/9.804139432)
-                float wiltPtWater = (float)hydrology.PressureHeadTable.CalculateWaterContent(speciesPnET.H4 * 9.804139432f, siteCohort.Ecoregion.SoilType);
+                // Convert kPA to mH2o (/gravity)
+                float wiltPtWater = (float)hydrology.PressureHeadTable.CalculateWaterContent(speciesPnET.H4 * Constants.gravity, siteCohort.Ecoregion.SoilType);
                 float availableWater = (hydrology.Water - wiltPtWater) * siteCohort.Ecoregion.RootingDepth * frostFreeProp;
-
                 if (PotentialTranspiration[index] > availableWater)
                 {
                     Transpiration[index] = Math.Max(availableWater, 0f); //mm

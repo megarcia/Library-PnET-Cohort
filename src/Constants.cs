@@ -175,6 +175,11 @@ namespace Landis.Library.PnETCohorts
         public const float omega = 2.0f * (float)Math.PI;
 
         /// <summary>
+        /// gravity in m/s2
+        /// </summary>
+        public const float gravity = 9.80665f;
+
+        /// <summary>
         /// length of temperature record in months
         /// </summary>
         public const float tau = 12.0f;

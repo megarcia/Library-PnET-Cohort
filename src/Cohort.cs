@@ -1565,10 +1565,10 @@ namespace Landis.Library.PnETCohorts
                              OutputHeaders.NetPsn + "," +
                              OutputHeaders.Transpiration + "," +
                              OutputHeaders.WUE + "," +
-                             Biomass + "," +  //MG20261016 more detail
-                             LastBiomassDelta + "," +  //MG20261016 new variable
-                             ANPP + "," +  //MG20261016 more detail
-                             LastANPPDelta + "," +  //MG20261016 new variable
+                             OutputHeaders.Biomass + "," +  //MG20261016 more detail
+                             OutputHeaders.LastBiomassDelta + "," +  //MG20261016 new variable
+                             OutputHeaders.ANPP + "," +  //MG20261016 more detail
+                             OutputHeaders.LastANPPDelta + "," +  //MG20261016 new variable
                              OutputHeaders.Fol + "," +
                              OutputHeaders.Root + "," +
                              OutputHeaders.Wood + "," +

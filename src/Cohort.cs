@@ -133,26 +133,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                //MG20261014 TODO move this to an Albedo class, along with the
-                //           counterpart calculation when snow is present (see
-                //           SiteCohorts.CalculateAlbedoWithSnow)
-                float albedo = 0.0f;
-                if (!string.IsNullOrEmpty(SpeciesPnET.Lifeform))
-                {
-                    if (SpeciesPnET.Lifeform.ToLower().Contains("ground")
-                        || SpeciesPnET.Lifeform.ToLower().Contains("open")
-                        || SumLAI == 0)
-                        albedo = 0.20f;
-                    else if (SpeciesPnET.Lifeform.ToLower().Contains("dark"))
-                        albedo = -0.067f * (float)Math.Log(SumLAI < 0.7 ? 0.7 : SumLAI) + 0.2095f;
-                    else if (SpeciesPnET.Lifeform.ToLower().Contains("light"))
-                        albedo = -0.054f * (float)Math.Log(SumLAI < 0.7 ? 0.7 : SumLAI) + 0.2082f;
-                    else if (SpeciesPnET.Lifeform.ToLower().Contains("decid"))
-                        albedo = -0.0073f * SumLAI + 0.231f;
-                }
-                if (albedo < 0)
-                    albedo = 0.0f;
-                return albedo;
+                return Albedo.AlbedoNoSnow(SpeciesPnET, SumLAI);
             }
         }
 

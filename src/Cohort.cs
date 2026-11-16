@@ -133,7 +133,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return Albedo.AlbedoNoSnow(SpeciesPnET, SumLAI);
+                return Albedo.CalcAlbedoNoSnow(SpeciesPnET, SumLAI);
             }
         }
 

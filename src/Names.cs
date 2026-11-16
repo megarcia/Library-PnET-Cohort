@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Landis.Library.PnETCohorts
 {
@@ -18,7 +19,6 @@ namespace Landis.Library.PnETCohorts
         public const string StartYear = "StartYear";
         public const string Timestep = "Timestep";
         public const string SeedingAlgorithm = "SeedingAlgorithm";
-        //public const string MaxDevLyrAv = "MaxDevLyrAv";
         public const string LayerThreshRatio = "LayerThreshRatio";
         public const string MaxCanopyLayers = "MaxCanopyLayers";
         public const string IMAX = "IMAX";
@@ -45,12 +45,10 @@ namespace Landis.Library.PnETCohorts
         public const string PrecipEventsWithReplacement = "PrecipEventsWithReplacement";
         public const string Parallel = "Parallel";
         public const string CohortStacking = "CohortStacking";
-        //public const string ETMethod = "ETMethod";
         public const string ETExtCoeff = "ETExtCoeff";
         public const string RETCropCoeff = "RETCropCoeff";
         public const string CanopySumScale = "CanopySumScale";
        
-
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";
         public const string RunoffCapture = "RunoffCapture";
@@ -79,28 +77,27 @@ namespace Landis.Library.PnETCohorts
         public const string RefoliationMaximum = "RefolMaximum";
         public const string RefoliationCost = "RefolCost";
         public const string NonRefoliationCost = "NonRefolCost";
-        //---------------------------------------------------------------------
-        // Does not appear this function is used anywhere
+
         public static void AssureIsName(string name)
         {
-            if (IsName(name) == false)
+            if (!IsName(name))
             {
                 string msg = name + " is not a keyword keywords are /n"+ string.Join("\n\t", AllNames.ToArray());
-                throw new System.Exception(msg);
+                throw new Exception(msg);
             }
         }
-        //---------------------------------------------------------------------
-        // Does not appear this function is used anywhere
+
         public static bool IsName(string name)
         {
             List<string> Names = AllNames;
             foreach (string _name in AllNames)
             {
-                if (System.String.Compare(_name, name, System.StringComparison.OrdinalIgnoreCase) == 0) return true;
+                if (String.Compare(_name, name, StringComparison.OrdinalIgnoreCase) == 0)
+                    return true;
             }
             return false;
         }
-        //---------------------------------------------------------------------
+
         public static List<string> AllNames
         {
             get
@@ -109,100 +106,78 @@ namespace Landis.Library.PnETCohorts
                 foreach (var name in typeof(Names).GetFields())
                 {
                     string value = name.GetValue(name).ToString();
-                   
                     Names.Add(value);
-                    //Console.WriteLine(value);
                 }
                 return Names;
             }
         }
-        //---------------------------------------------------------------------
+
         public static void LoadParameters(SortedDictionary<string, Parameter<string>> modelParameters)
         {
             parameters = modelParameters;
         }
-        //---------------------------------------------------------------------
+
         public static bool TryGetParameter(string label, out Parameter<string> parameter)
         {
             parameter = null;
             if (label == null)
-            {
                 return false;
-            }
-
-            if (parameters.ContainsKey(label) == false) return false;
-
+            if (!parameters.ContainsKey(label))
+                return false;
             else
             {
                 parameter = parameters[label];
                 return true;
             }
         }
-        //---------------------------------------------------------------------
+
         public static Dictionary<string, Parameter<string>> LoadTable(string label, List<string> RowLabels, List<string> Columnheaders, bool transposed = false)
         {
             string filename = GetParameter(label).Value;
-            if (System.IO.File.Exists(filename) == false) throw new System.Exception("File not found " + filename);
+            if (!File.Exists(filename))
+                throw new Exception("File not found " + filename);
             ParameterTableParser parser = new ParameterTableParser(filename, label, RowLabels, Columnheaders, transposed);
             Dictionary<string, Parameter<string>> parameters = Landis.Data.Load<Dictionary<string, Parameter<string>>>(filename, parser);
             return parameters;
         }
-        //---------------------------------------------------------------------
+
         public static Parameter<string> GetParameter(string label)
         {
-            if (parameters.ContainsKey(label) == false)
-            {
-                throw new System.Exception("No value provided for parameter " + label);
-            }
-
+            if (!parameters.ContainsKey(label))
+                throw new Exception("No value provided for parameter " + label);
             return parameters[label];
-
         }
-        //---------------------------------------------------------------------
+
         public static Parameter<string> GetParameter(string label, float min, float max)
         {
-            if (parameters.ContainsKey(label) == false)
-            {
-                throw new System.Exception("No value provided for parameter " + label);
-            }
-
+            if (!parameters.ContainsKey(label))
+                throw new Exception("No value provided for parameter " + label);
             Parameter<string> p = parameters[label];
-
             foreach (KeyValuePair<string, string> value in p)
             {
                 float f;
-                if (float.TryParse(value.Value, out f) == false)
-                {
-                    throw new System.Exception("Unable to parse value " + value.Value + " for parameter " + label + " unexpected format.");
-                }
+                if (!float.TryParse(value.Value, out f))
+                    throw new Exception("Unable to parse value " + value.Value + " for parameter " + label + " unexpected format.");
                 if (f > max || f < min)
-                {
-                    throw new System.Exception("Parameter value " + value.Value + " for parameter " + label + " is out of range. [" + min + "," + max + "]");
-                }
+                    throw new Exception("Parameter value " + value.Value + " for parameter " + label + " is out of range. [" + min + "," + max + "]");
             }
             return p;
         }
-        //---------------------------------------------------------------------
+
         public static bool HasMultipleMatches(string lifeForm, ref string[] matches)
         {
             int matchCount = 0;
-
-            foreach (string type in Names.MutuallyExclusiveCanopyTypes)
+            foreach (string type in MutuallyExclusiveCanopyTypes)
             {
                 if (!string.IsNullOrEmpty(lifeForm) && lifeForm.ToLower().Contains(type.ToLower()))
                 {
                     matches[matchCount] = type;
                     matchCount += 1;
                 }
-
                 if (matchCount > 1)
-                {
                     return true;
-                }
             }
-
             return false;
         }
-        //---------------------------------------------------------------------
     }
 }

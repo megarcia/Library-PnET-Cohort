@@ -445,7 +445,7 @@ namespace Landis.Library.PnETCohorts
                         }
                     }
                     ClearAllCohorts();
-                    bool addedCohorts = MergeCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, initialCommunitiesSpinup.ToLower() == "spinuplayersrescale");
+                    bool mergedCohorts = MergeCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, initialCommunitiesSpinup.ToLower() == "spinuplayersrescale");
                     /*
                     foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                     {
@@ -905,7 +905,7 @@ namespace Landis.Library.PnETCohorts
                                 }
                             }
                             ClearAllCohorts();
-                            bool addedCohorts = MergeCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, true);
+                            bool mergedCohorts = MergeCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, true);
                             /*
                             foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                             {
@@ -963,7 +963,7 @@ namespace Landis.Library.PnETCohorts
 
                             }
                             ClearAllCohorts();
-                            bool addedCohorts = MergeCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, false);
+                            bool mergedCohorts = MergeCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, false);
                             /*
                             foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                             {

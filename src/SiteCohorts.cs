@@ -609,6 +609,8 @@ namespace Landis.Library.PnETCohorts
                             layerIndex++;
                         }
                     }
+                    MainLayerCanopyProp = CalcCanopyProp(tempMaxCanopyLayers);
+                    /*
                     // Calculate new layer prop
                     float[] MainLayerCanopyProp = new float[tempMaxCanopyLayers];
                     foreach (Cohort cohort in AllCohorts)
@@ -623,6 +625,7 @@ namespace Landis.Library.PnETCohorts
                         else
                             MainLayerCanopyProp[layerIndex] += Math.Min(cohort.LastLAI / cohort.SpeciesPnET.MaxLAI, cohort.CanopyGrowingSpace);
                     }
+                    */
                     int cohortIndex = 0;
                     float canopySumScale = CanopySumScale;
                     foreach (Cohort cohort in AllCohorts)
@@ -735,6 +738,8 @@ namespace Landis.Library.PnETCohorts
                             layerIndex++;
                         }
                     }
+                    MainLayerCanopyProp = CalcCanopyProp(tempMaxCanopyLayers);
+                    /*
                     // Calculate new layer prop
                     MainLayerCanopyProp = new float[tempMaxCanopyLayers];
                     foreach (Cohort c in AllCohorts)
@@ -749,6 +754,7 @@ namespace Landis.Library.PnETCohorts
                         else
                             MainLayerCanopyProp[layerIndex] += Math.Min(c.LastLAI / c.SpeciesPnET.MaxLAI, c.CanopyGrowingSpace);
                     }
+                    */
                     CanopyLayerSum = new float[tempMaxCanopyLayers];
                     cohortIndex = 0;
                     foreach (Cohort cohort in AllCohorts)
@@ -1040,6 +1046,25 @@ namespace Landis.Library.PnETCohorts
                 CohortBiomassList.Add(cohort.BiomassMax);
             return CohortMaxBiomassList;
         }
+
+        // Calculate new layer prop
+        public float[] CalcCanopyProp(int maxCanopyLayers)
+        {            
+            float[] MainLayerCanopyProp = new float[maxCanopyLayers];
+            foreach (Cohort cohort in AllCohorts)
+            {
+                int layerIndex = cohort.Layer;
+                float LAISum = cohort.LAI.Sum();
+                if (cohort.Leaf_On)
+                    if (LAISum > cohort.LastLAI)
+                        cohort.LastLAI = LAISum;
+                if (CohortStacking)
+                    MainLayerCanopyProp[layerIndex] += 1.0f;
+                else
+                    MainLayerCanopyProp[layerIndex] += Math.Min(cohort.LastLAI / cohort.SpeciesPnET.MaxLAI, cohort.CanopyGrowingSpace);
+            }
+            return MainLayerCanopyProp;
+        }   
 
         // species-age key to store maxbiomass, biomass, and LastSeasonFRad values
         public Dictionary<ISpecies, Dictionary<int, float[]>> BuildCohortDictionary()

@@ -331,7 +331,16 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        // Constructor for initialization of SiteCohorts with no initialSite entry yet        
+        /// <summary>
+        /// Constructor for SiteCohorts that have no initialSite entry
+        /// </summary>
+        /// <param name="StartDate"></param>
+        /// <param name="site"></param>
+        /// <param name="initialCommunity"></param>
+        /// <param name="usingClimateLibrary"></param>
+        /// <param name="initialCommunitiesSpinup"></param>
+        /// <param name="minFolRatioFactor"></param>
+        /// <param name="SiteOutputName"></param>
         public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string initialCommunitiesSpinup, float minFolRatioFactor, string SiteOutputName = null)
         {
             this.Ecoregion = EcoregionData.GetPnETEcoregion(Globals.ModelCore.Ecoregion[site]);
@@ -419,7 +428,7 @@ namespace Landis.Library.PnETCohorts
                         {
                             if (cohortDictionary[spp].ContainsKey(age))
                             {
-                                // message duplicate species and age
+                                Globals.ModelCore.UI.WriteLine("Warning: cohortDictionary for species " + spp.Name + " already contains a cohort of age " + age);
                             }
                             else
                             {
@@ -436,6 +445,8 @@ namespace Landis.Library.PnETCohorts
                         }
                     }
                     ClearAllCohorts();
+                    bool addedCohorts = PopulateSiteCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, initialCommunitiesSpinup.ToLower() == "spinuplayersrescale", true);
+                    /*
                     foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                     {
                         foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
@@ -456,6 +467,7 @@ namespace Landis.Library.PnETCohorts
                             bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[cohort.Species], cohort.Data.Age, cohort.Data.Biomass, (int)inputMaxBiomass, cohortCanopyGrowingSpace, SiteOutputName, (ushort)(StartDate.Year - cohort.Data.Age), CohortStacking, lastSeasonAvgFrad));
                         }
                     }
+                    */
                 }
                 List<double> CohortBiomassList = BuildCohortAGBiomassList();
                 List<double> CohortMaxBiomassList = BuildCohortMaxBiomassList();
@@ -893,6 +905,8 @@ namespace Landis.Library.PnETCohorts
                                 }
                             }
                             ClearAllCohorts();
+                            bool addedCohorts = PopulateSiteCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, true, true);
+                            /*
                             foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                             {
                                 foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
@@ -912,6 +926,7 @@ namespace Landis.Library.PnETCohorts
                                     AllCohorts.Last().SetAvgFRad(lastSeasonAvgFrad);
                                 }
                             }
+                            */
                             badSpinup = false;
                         }
                         else if ((initialCommunitiesSpinup.ToLower() == "spinuplayersrescale") && (attempts < 2))
@@ -948,6 +963,8 @@ namespace Landis.Library.PnETCohorts
 
                             }
                             ClearAllCohorts();
+                            bool addedCohorts = PopulateSiteCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, false, true);
+                            /*
                             foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                             {
                                 foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
@@ -966,6 +983,7 @@ namespace Landis.Library.PnETCohorts
                                     AllCohorts.Last().SetAvgFRad(lastSeasonAvgFrad);
                                 }
                             }
+                            */
                             badSpinup = false;
                         }
                         else // NoSpinup or secondAttempt
@@ -1013,6 +1031,37 @@ namespace Landis.Library.PnETCohorts
             foreach (Cohort cohort in AllCohorts)
                 CohortBiomassList.Add(cohort.BiomassMax);
             return CohortMaxBiomassList;
+        }
+
+        public bool PopulateSiteCohorts(ICommunity initialCommunity, Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary, string SiteOutputName, DateTime StartDate, bool rescaleMaxBiomass, bool setAvgFRad)
+        {
+            foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+            {
+                foreach (Library.UniversalCohorts.ICohort cohort in speciesCohorts)
+                {
+                    int age = cohort.Data.Age;
+                    ISpecies spp = cohort.Species;
+                    if (!cohortDictionary[spp].TryGetValue(age, out float[] values))
+                        values = cohortDictionary[spp].OrderBy(x => Math.Abs(x.Key - age)).First().Value;
+                    int cohortMaxBiomass = (int)values[0];
+                    float cohortSpinupBiomass = values[1];
+                    float lastSeasonAvgFrad = values[2];
+                    float inputMaxBiomass = Math.Max(cohortMaxBiomass, cohort.Data.Biomass);
+                    if (rescaleMaxBiomass)
+                        inputMaxBiomass = cohortMaxBiomass * (cohort.Data.Biomass / cohortSpinupBiomass);
+                    float cohortCanopyGrowingSpace = 1f;
+                    bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[spp],
+                                                             age, cohort.Data.Biomass, (int)inputMaxBiomass,
+                                                             cohortCanopyGrowingSpace, SiteOutputName,
+                                                             (ushort)(StartDate.Year - cohort.Data.Age), 
+                                                             CohortStacking, lastSeasonAvgFrad));
+                    if (!addCohort)
+                        throw new Exception("Unable to add new " + spp.Name + " cohort at site " + SiteOutputName);
+                    if (setAvgFRad)
+                        AllCohorts.Last().SetAvgFRad(lastSeasonAvgFrad);
+                }
+            }
+            return true;
         }
 
         // Constructor for SiteCohorts that have an initial site already set up

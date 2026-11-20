@@ -1538,10 +1538,10 @@ namespace Landis.Library.PnETCohorts
                     {
                         float DRz = (float)Math.Exp(-1.0F * testDepth * d * Ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
                         // Calculate lag months from both max and min temperature months
-                        int lagMax = (data[m].Month + (3 - maxMonth));
-                        int lagMin = (data[m].Month + (minMonth - 5));
+                        int lagMax = data[m].Month + (3 - maxMonth);
+                        int lagMin = data[m].Month + (minMonth - 5);
                         if (minMonth >= 9)
-                            lagMin = (data[m].Month + (minMonth - 12 - 5));
+                            lagMin = data[m].Month + (minMonth - 12 - 5);
                         float lagAvg = ((float)lagMax + (float)lagMin) / 2f;
                         zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * lagAvg - testDepth / d));
                         depthTempDict[testDepth] = zTemp;
@@ -1603,10 +1603,10 @@ namespace Landis.Library.PnETCohorts
                     // The ice lens is deeper than the max depth
                     if (zTemp <= 0 && !foundBottomIce && !frozenSoils)
                         frostDepth[data[m].Month - 1] = bottomFreezeDepth;
-                    propRootAboveFrost = Math.Min(1, (activeLayerDepth[data[m].Month - 1] * 1000) / Ecoregion.RootingDepth);
-                    float propRootBelowFrost = 1 - propRootAboveFrost;
-                    propThawed = Math.Max(0, propRootAboveFrost - (1 - lastPropBelowFrost));
-                    float propNewFrozen = Math.Max(0, propRootBelowFrost - lastPropBelowFrost);
+                    propRootAboveFrost = Math.Min(1.0f, activeLayerDepth[data[m].Month - 1] * 1000.0f / Ecoregion.RootingDepth);
+                    float propRootBelowFrost = 1.0f - propRootAboveFrost;
+                    propThawed = Math.Max(0.0f, propRootAboveFrost - (1.0f - lastPropBelowFrost));
+                    float propNewFrozen = Math.Max(0.0f, propRootBelowFrost - lastPropBelowFrost);
                     if (propRootAboveFrost < 1) // If part of the rooting zone is frozen
                     {
                         if (propNewFrozen > 0)  // freezing
@@ -1626,7 +1626,7 @@ namespace Landis.Library.PnETCohorts
                         hydrology.AddWater(newWaterContent - hydrology.Water, Ecoregion.RootingDepth * propRootBelowFrost);
                         bool successdepth = hydrology.SetFrozenDepth(Ecoregion.RootingDepth * propRootBelowFrost);  // Volume of rooting soil that is frozen
                     }
-                    float leakageFrostReduction = 1.0F;
+                    float leakageFrostReduction = 1.0f;
                     if ((activeLayerDepth[data[m].Month - 1] * 1000) < (Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth))
                         if ((activeLayerDepth[data[m].Month - 1] * 1000) < Ecoregion.RootingDepth)
                             leakageFrostReduction = 0.0f;
@@ -1704,7 +1704,7 @@ namespace Landis.Library.PnETCohorts
                 float O3_ppmh = data[m].O3 / 1000; // convert AOT40 units to ppm h
                 float lastO3 = 0;
                 if (m > 0)
-                    lastO3 = (data[m - 1].O3 / 1000f);
+                    lastO3 = data[m - 1].O3 / 1000.0f;
                 float O3_ppmh_month = Math.Max(0, O3_ppmh - lastO3);
                 List<ISpeciesPnET> species = SpeciesParameters.SpeciesPnET.AllSpecies.ToList();
                 Dictionary<string, float> DelAmax_spp = new Dictionary<string, float>();
@@ -1838,7 +1838,6 @@ namespace Landis.Library.PnETCohorts
                                 index_List.Add(index);
                                 c.BiomassLayerProp = c.AGBiomass / layerSumBio[b];
                                 c.CanopyLayerProp = Math.Min(c.LastLAI / c.SpeciesPnET.MaxLAI, c.CanopyGrowingSpace);
-
                                 if (layerSumCanopyProp[b] > 1)
                                 {
                                     if (c.growMonth == 1)
@@ -2124,7 +2123,7 @@ namespace Landis.Library.PnETCohorts
                     sumPressureHead += hydrology.PressureHeadTable.CalculateWaterPressure(hydrology.Water,Ecoregion.SoilType);
                     countPressureHead += 1;
                 }
-                if (data[m].Month == 7)
+                if (data[m].Month == (int)Constants.Months.July)
                     julysubcanopypar = subcanopypar;
                 // Store growing season FRad values                
                 AllCohorts.ForEach(x => x.StoreFRad());
@@ -2230,13 +2229,13 @@ namespace Landis.Library.PnETCohorts
         {
             switch (month)
             {
-                case 5:
+                case (int)Constants.Months.May:
                     return true;
-                case 6:
+                case (int)Constants.Months.June:
                     return true;
-                case 7:
+                case (int)Constants.Months.July:
                     return true;
-                case 8:
+                case (int)Constants.Months.August:
                     return true;
                 default:
                     return false;
@@ -2248,13 +2247,13 @@ namespace Landis.Library.PnETCohorts
         {
             switch (month)
             {
-                case 1:
+                case (int)Constants.Months.January:
                     return true;
-                case 2:
+                case (int)Constants.Months.February:
                     return true;
-                case 3:
+                case (int)Constants.Months.March:
                     return true;
-                case 12:
+                case (int)Constants.Months.December:
                     return true;
                 default:
                     return false;
@@ -3077,8 +3076,8 @@ namespace Landis.Library.PnETCohorts
             foreach (double cohortBio in CohortBiomassList)
             {
                 double smallestThisLayer = CohortBins[0][0];
-                double ratio = (cohortBio / smallestThisLayer);
-                if (ratio < (diffProp))
+                double ratio = cohortBio / smallestThisLayer;
+                if (ratio < diffProp)
                 {
                     if (topLayerIndex < (tempMaxCanopyLayers - 1))
                     {
@@ -3093,7 +3092,7 @@ namespace Landis.Library.PnETCohorts
                 // Add a negligable value [-1e-10; + 1e-10] to ratio in order to prevent duplicate keys
                 double k = 1e-10 * 2.0 * (Statistics.ContinuousUniformRandom() - 0.5);
                 layerThreshRatio.Add(ratio + k);
-                if (!(CohortBins[0].Contains(cohortBio)))
+                if (!CohortBins[0].Contains(cohortBio))
                     CohortBins[0].Add(cohortBio);
             }
             bool tooManyLayers = false;

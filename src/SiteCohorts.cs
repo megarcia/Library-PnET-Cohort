@@ -415,6 +415,8 @@ namespace Landis.Library.PnETCohorts
                     if ((initialCommunitiesSpinup.ToLower() != "spinuplayers") && (initialCommunitiesSpinup.ToLower() != "spinuplayersrescale"))
                         Globals.ModelCore.UI.WriteLine("Warning:  InitialCommunitiesSpinup parameter is not 'Spinup', 'SpinupLayers','SpinupLayersRescale' or 'NoSpinup'.  Biomass is provided so using 'SpinupLayers' by default.");
                     SpinUp(StartDate, site, initialCommunity, usingClimateLibrary, SiteOutputName, false);
+                    Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary = BuildCohortDictionary();
+                    /*
                     // species-age key to store maxbiomass values
                     Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary = new Dictionary<ISpecies, Dictionary<int, float[]>>();
                     foreach (Cohort cohort in AllCohorts)
@@ -444,6 +446,7 @@ namespace Landis.Library.PnETCohorts
                             cohortDictionary.Add(spp, ageDictionary);
                         }
                     }
+                    */
                     ClearAllCohorts();
                     bool mergedCohorts = MergeCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, initialCommunitiesSpinup.ToLower() == "spinuplayersrescale");
                     /*
@@ -877,6 +880,8 @@ namespace Landis.Library.PnETCohorts
                             Globals.ModelCore.UI.WriteLine("Warning: initial community " + initialCommunity.MapCode + " could not initialize properly using SpinupLayers.  Processing with SpinupLayersRescale option instead.");
                             ClearAllCohorts();
                             SpinUp(StartDate, site, initialCommunity, usingClimateLibrary, null, false);
+                            Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary = BuildCohortDictionary();
+                            /*
                             // species-age key to store maxbiomass values and canopy growing space
                             Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary = new Dictionary<ISpecies, Dictionary<int, float[]>>();
                             foreach (Cohort cohort in AllCohorts)
@@ -904,6 +909,7 @@ namespace Landis.Library.PnETCohorts
                                     cohortDictionary.Add(spp, ageDictionary);
                                 }
                             }
+                            */
                             ClearAllCohorts();
                             bool mergedCohorts = MergeCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, true);
                             /*
@@ -934,6 +940,8 @@ namespace Landis.Library.PnETCohorts
                             Globals.ModelCore.UI.WriteLine("Warning: initial community " + initialCommunity.MapCode + " could not initialize properly using SpinupLayersRescale.  Processing with SpinupLayers option instead.");
                             ClearAllCohorts();
                             SpinUp(StartDate, site, initialCommunity, usingClimateLibrary, null, false);
+                            Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary = BuildCohortDictionary();
+                            /*
                             // species-age key to store maxbiomass values, biomass, LastSeasonFRad
                             Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary = new Dictionary<ISpecies, Dictionary<int, float[]>>();
                             foreach (Cohort cohort in AllCohorts)
@@ -960,8 +968,8 @@ namespace Landis.Library.PnETCohorts
                                     ageDictionary.Add(age, values);
                                     cohortDictionary.Add(spp, ageDictionary);
                                 }
-
                             }
+                            */
                             ClearAllCohorts();
                             bool mergedCohorts = MergeCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, false);
                             /*
@@ -1031,6 +1039,40 @@ namespace Landis.Library.PnETCohorts
             foreach (Cohort cohort in AllCohorts)
                 CohortBiomassList.Add(cohort.BiomassMax);
             return CohortMaxBiomassList;
+        }
+
+        // species-age key to store maxbiomass, biomass, and LastSeasonFRad values
+        public Dictionary<ISpecies, Dictionary<int, float[]>> BuildCohortDictionary()
+        {
+            Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary = new Dictionary<ISpecies, Dictionary<int, float[]>>();
+            foreach (Cohort cohort in AllCohorts)
+            {
+                ISpecies spp = cohort.Species;
+                int age = cohort.Age;
+                float lastSeasonAvgFrad = 0.0f;
+                if (cohort.LastSeasonFRad.Count() > 0)
+                    lastSeasonAvgFrad = cohort.LastSeasonFRad.ToArray().Average();
+                if (cohortDictionary.ContainsKey(spp))
+                {
+                    if (cohortDictionary[spp].ContainsKey(age))
+                    {
+                        Globals.ModelCore.UI.WriteLine("Warning: cohortDictionary for species " + spp.Name + " already contains a cohort of age " + age);
+                    }
+                    else
+                    {
+                        float[] values = new float[] { (int)cohort.BiomassMax, cohort.Biomass, lastSeasonAvgFrad };
+                        cohortDictionary[spp].Add(age, values);
+                    }
+                }
+                else
+                {
+                    Dictionary<int, float[]> ageDictionary = new Dictionary<int, float[]>();
+                    float[] values = new float[] { (int)cohort.BiomassMax, cohort.Biomass, lastSeasonAvgFrad };
+                    ageDictionary.Add(age, values);
+                    cohortDictionary.Add(spp, ageDictionary);
+                }
+            }
+            return cohortDictionary;            
         }
 
         public bool MergeCohorts(ICommunity initialCommunity, Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary, string SiteOutputName, DateTime StartDate, bool rescaleMaxBiomass)

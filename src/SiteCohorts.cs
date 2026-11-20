@@ -3201,17 +3201,6 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
-        // MG20261110
-        // After removal of an erroneous and redundant ReduceOrKillCohorts call,
-        // this method now simply redirects to the base (Universal Cohorts Library)
-        // RemoveMarkedCohorts method, which calls to RemoveMarkedCohorts would find
-        // without this override method here. This method is therefore deprecated 
-        // and removed.
-        // public override void RemoveMarkedCohorts(Library.UniversalCohorts.ICohortDisturbance disturbance)
-        // {
-        //     base.RemoveMarkedCohorts(disturbance);
-        // }
-
         public override void RemoveMarkedCohorts(ISpeciesCohortsDisturbance disturbance)
         {
             //  Go through list of species cohorts from back to front so that

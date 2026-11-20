@@ -445,7 +445,7 @@ namespace Landis.Library.PnETCohorts
                         }
                     }
                     ClearAllCohorts();
-                    bool addedCohorts = PopulateSiteCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, initialCommunitiesSpinup.ToLower() == "spinuplayersrescale", true);
+                    bool addedCohorts = MergeCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, initialCommunitiesSpinup.ToLower() == "spinuplayersrescale");
                     /*
                     foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                     {
@@ -905,7 +905,7 @@ namespace Landis.Library.PnETCohorts
                                 }
                             }
                             ClearAllCohorts();
-                            bool addedCohorts = PopulateSiteCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, true, true);
+                            bool addedCohorts = MergeCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, true);
                             /*
                             foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                             {
@@ -963,7 +963,7 @@ namespace Landis.Library.PnETCohorts
 
                             }
                             ClearAllCohorts();
-                            bool addedCohorts = PopulateSiteCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, false, true);
+                            bool addedCohorts = MergeCohorts(initialCommunity, cohortDictionary, SiteOutputName, StartDate, false);
                             /*
                             foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                             {
@@ -1033,7 +1033,7 @@ namespace Landis.Library.PnETCohorts
             return CohortMaxBiomassList;
         }
 
-        public bool PopulateSiteCohorts(ICommunity initialCommunity, Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary, string SiteOutputName, DateTime StartDate, bool rescaleMaxBiomass, bool setAvgFRad)
+        public bool MergeCohorts(ICommunity initialCommunity, Dictionary<ISpecies, Dictionary<int, float[]>> cohortDictionary, string SiteOutputName, DateTime StartDate, bool rescaleMaxBiomass)
         {
             foreach (Library.UniversalCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
             {
@@ -1057,8 +1057,6 @@ namespace Landis.Library.PnETCohorts
                                                              CohortStacking, lastSeasonAvgFrad));
                     if (!addCohort)
                         throw new Exception("Unable to add new " + spp.Name + " cohort at site " + SiteOutputName);
-                    if (setAvgFRad)
-                        AllCohorts.Last().SetAvgFRad(lastSeasonAvgFrad);
                 }
             }
             return true;

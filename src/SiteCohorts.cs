@@ -88,9 +88,9 @@ namespace Landis.Library.PnETCohorts
         private int nlayers;
         private static int MaxLayer;
         private static bool soilIceDepth;
-        private static bool permafrost;
+        private static bool frozenSoils;
         private static bool invertPest;
-        public SortedList<float, float> depthTempDict = new SortedList<float, float>();  //for permafrost
+        public SortedList<float, float> depthTempDict = new SortedList<float, float>();  //for frozenSoils
         float lastTempBelowSnow = float.MaxValue;
         private static float maxHalfSat;
         private static float minHalfSat;
@@ -307,7 +307,7 @@ namespace Landis.Library.PnETCohorts
             invertPest = ((Parameter<bool>)Names.GetParameter(Names.InvertPest)).Value;
             CohortStacking = ((Parameter<bool>)Names.GetParameter(Names.CohortStacking)).Value;
             CanopySumScale = ((Parameter<float>)Names.GetParameter(Names.CanopySumScale, 0f, 1f)).Value;
-            permafrost = false;
+            frozenSoils = false;
             Parameter<string> CohortBinSizeParm = null;
             if (Names.TryGetParameter(Names.CohortBinSize, out CohortBinSizeParm))
             {
@@ -1433,7 +1433,7 @@ namespace Landis.Library.PnETCohorts
                 propRootAboveFrost = 1;
                 leakageFrac = Ecoregion.LeakageFrac;
                 float propThawed = 0;
-                // Soil temp calculations - need for permafrost and Root Rot
+                // Soil temp calculations - need for frozenSoils and Root Rot
                 // snow calculations - from "Soil thawing worksheet with snow.xlsx"
                 if (data[m].Tave <= 0)
                     daysOfWinter += (int)data[m].DaySpan;
@@ -1531,7 +1531,7 @@ namespace Landis.Library.PnETCohorts
                     if (sno_dep > 0)
                         tempBelowSnow = annualTavg + (Ecoregion.Variables.Tave - annualTavg) * DRz_snow;
                     lastTempBelowSnow = tempBelowSnow;
-                    // Regardless of permafrost, need to fill the tempDict with values
+                    // Regardless of frozenSoils, need to fill the tempDict with values
                     bool foundBottomIce = false;
                     // Calculate depth to bottom of ice lens with FrostDepth
                     while (testDepth <= bottomFreezeDepth)
@@ -1545,9 +1545,9 @@ namespace Landis.Library.PnETCohorts
                         float lagAvg = ((float)lagMax + (float)lagMin) / 2f;
                         zTemp = (float)(annualTavg + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * lagAvg - testDepth / d));
                         depthTempDict[testDepth] = zTemp;
-                        if (zTemp <= 0 && !permafrost)
+                        if (zTemp <= 0 && !frozenSoils)
                             lastBelowZeroDepth = testDepth;
-                        if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !permafrost)
+                        if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !frozenSoils)
                         {
                             frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
                             foundBottomIce = true;
@@ -1563,7 +1563,7 @@ namespace Landis.Library.PnETCohorts
                             testDepth += 0.25F;
                     }
                     // The ice lens is deeper than the max depth
-                    if (zTemp <= 0 && !foundBottomIce && !permafrost)
+                    if (zTemp <= 0 && !foundBottomIce && !frozenSoils)
                         frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                 }
                 depthTempDict = Permafrost.CalculateMonthlySoilTemps(depthTempDict, Ecoregion, daysOfWinter, snowPack, hydrology, lastTempBelowSnow);
@@ -1583,9 +1583,9 @@ namespace Landis.Library.PnETCohorts
                     while (testDepth <= bottomFreezeDepth)
                     {
                         zTemp = depthTempDict[testDepth];
-                        if (zTemp <= 0 && !permafrost)
+                        if (zTemp <= 0 && !frozenSoils)
                             lastBelowZeroDepth = testDepth;
-                        if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !permafrost)
+                        if (zTemp > 0 && lastBelowZeroDepth > 0 && !foundBottomIce && !frozenSoils)
                         {
                             frostDepth[data[m].Month - 1] = lastBelowZeroDepth;
                             foundBottomIce = true;
@@ -1601,7 +1601,7 @@ namespace Landis.Library.PnETCohorts
                             testDepth += 0.25F;
                     }
                     // The ice lens is deeper than the max depth
-                    if (zTemp <= 0 && !foundBottomIce && !permafrost)
+                    if (zTemp <= 0 && !foundBottomIce && !frozenSoils)
                         frostDepth[data[m].Month - 1] = bottomFreezeDepth;
                     propRootAboveFrost = Math.Min(1, (activeLayerDepth[data[m].Month - 1] * 1000) / Ecoregion.RootingDepth);
                     float propRootBelowFrost = 1 - propRootAboveFrost;

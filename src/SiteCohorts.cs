@@ -592,6 +592,8 @@ namespace Landis.Library.PnETCohorts
                     cohortBins = GetBinsByCohort(NewCohortMaxBiomassList);
                     float[] CanopyLayerSum = new float[tempMaxCanopyLayers];
                     List<double> FinalCohortMaxBiomassList = new List<double>();
+                    AssignCanopyLayers(cohortBins);
+                    /*
                     // Assign new layers
                     foreach (Cohort cohort in AllCohorts)
                     {
@@ -609,6 +611,7 @@ namespace Landis.Library.PnETCohorts
                             layerIndex++;
                         }
                     }
+                    */
                     MainLayerCanopyProp = CalcCanopyProp(tempMaxCanopyLayers);
                     /*
                     // Calculate new layer prop
@@ -719,8 +722,10 @@ namespace Landis.Library.PnETCohorts
                         cohortIndex++;
                         FinalCohortMaxBiomassList.Add(cohort.BiomassMax);
                     }
-                    //Re-sort layers
+                    // Re-sort layers
                     cohortBins = GetBinsByCohort(FinalCohortMaxBiomassList);
+                    AssignCanopyLayers(cohortBins);
+                    /*
                     // Assign new layers
                     foreach (Cohort cohort in AllCohorts)
                     {
@@ -738,6 +743,7 @@ namespace Landis.Library.PnETCohorts
                             layerIndex++;
                         }
                     }
+                    */
                     MainLayerCanopyProp = CalcCanopyProp(tempMaxCanopyLayers);
                     /*
                     // Calculate new layer prop
@@ -1045,6 +1051,27 @@ namespace Landis.Library.PnETCohorts
             foreach (Cohort cohort in AllCohorts)
                 CohortBiomassList.Add(cohort.BiomassMax);
             return CohortMaxBiomassList;
+        }
+
+        // Assign new canopy layers
+        public void AssignCanopyLayers(List<List<double>> cohortBins)
+        {
+            foreach (Cohort cohort in AllCohorts)
+            {
+                int layerIndex = 0;
+                foreach (List<double> layerBiomassList in cohortBins)
+                {
+                    if (layerBiomassList.Contains(cohort.BiomassMax))
+                    {
+                        cohort.Layer = (byte)layerIndex;
+                        // if "ground" then ensure cohort.Layer = 0
+                        if (cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground"))
+                            cohort.Layer = 0;
+                        break;
+                    }
+                    layerIndex++;
+                }
+            }
         }
 
         // Calculate new layer prop

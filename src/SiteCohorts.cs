@@ -380,7 +380,7 @@ namespace Landis.Library.PnETCohorts
             List<float> cohortCanopyLayerProp = new List<float>();
             if (SiteOutputName != null)
             {
-                this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", Header(site));
+                this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", OutputHeader());
                 establishmentProbability = new EstablishmentProbability(SiteOutputName, "Establishment.csv");
             }
             else
@@ -1172,7 +1172,7 @@ namespace Landis.Library.PnETCohorts
             {
                 if (SiteOutputName != null)
                 {
-                    this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", Header(site));
+                    this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", OutputHeader());
                     establishmentProbability = new EstablishmentProbability(SiteOutputName, "Establishment.csv");
                 }
                 else
@@ -3465,7 +3465,7 @@ namespace Landis.Library.PnETCohorts
         {
             lock (Globals.litterThreadLock)
             {
-                double KNwdLitter = Math.Max(0.3, (-0.5365 + (0.00241 * AET.Sum())) - (((-0.01586 + (0.000056 * AET.Sum())) * spc.FolLignin * 100)));
+                double KNwdLitter = Math.Max(0.3, -0.5365 + (0.00241 * AET.Sum()) - ((-0.01586 + (0.000056 * AET.Sum())) * spc.FolLignin * 100));
                 SiteVars.Litter[Site].AddMass(AddLitter, KNwdLitter);
             }
         }
@@ -3478,69 +3478,72 @@ namespace Landis.Library.PnETCohorts
             }
         }
         
-        string Header(Landis.SpatialModeling.ActiveSite site)
+        string OutputHeader()
         {   
-            string s = OutputHeaders.Time +  "," +
-                       OutputHeaders.Year + "," +
-                       OutputHeaders.Month + "," +
-                       OutputHeaders.Ecoregion + "," + 
-                       OutputHeaders.SoilType + "," +
-                       OutputHeaders.NrOfCohorts + "," +
-                       OutputHeaders.MaxLayerRatio + "," +
-                       OutputHeaders.Layers + "," +
-                       OutputHeaders.SumCanopyProp + "," +
-                       OutputHeaders.PAR0 + "," +
-                       OutputHeaders.Tmin + "," +
-                       OutputHeaders.Tave + "," +
-                       OutputHeaders.Tday + "," +
-                       OutputHeaders.Tmax + "," +
-                       OutputHeaders.Precip + "," +
-                       OutputHeaders.CO2 + "," +
-                       OutputHeaders.O3 + "," +
-                       OutputHeaders.RunOff + "," + 
-                       OutputHeaders.Leakage + "," + 
-                       OutputHeaders.PET + "," +
-                       OutputHeaders.PE + "," +
-                       OutputHeaders.Evaporation + "," +
-                       OutputHeaders.PotentialTranspiration + "," +
-                       OutputHeaders.Transpiration + "," + 
-                       OutputHeaders.Interception + "," +
-                       OutputHeaders.SurfaceRunOff + "," +
-                       OutputHeaders.water + "," +
-                       OutputHeaders.PressureHead + "," + 
-                       OutputHeaders.SurfaceWater + "," +
-                       OutputHeaders.availableWater + "," +
-                       OutputHeaders.SnowPack + "," +
-                       OutputHeaders.LAI + "," + 
-                       OutputHeaders.VPD + "," + 
-                       OutputHeaders.GrossPsn + "," + 
-                       OutputHeaders.NetPsn + "," +
-                       OutputHeaders.MaintResp + "," +
-                       OutputHeaders.Wood + "," + 
-                       OutputHeaders.Root + "," + 
-                       OutputHeaders.Fol + "," + 
-                       OutputHeaders.NSC + "," + 
-                       OutputHeaders.HeteroResp + "," +
-                       OutputHeaders.Litter + "," + 
-                       OutputHeaders.CWD + "," +
-                       OutputHeaders.WoodySenescence + "," + 
-                       OutputHeaders.FoliageSenescence + "," +
-                       OutputHeaders.SubCanopyPAR + ","+
-                       OutputHeaders.SoilDiffusivity + "," +
-                       OutputHeaders.ActiveLayerDepth + "," +
-                       OutputHeaders.LeakageFrac + "," +
-                       OutputHeaders.AverageAlbedo + "," +
-                       OutputHeaders.FrostDepth + "," +
-                       OutputHeaders.SPEI;
+            string s;
+            s = OutputHeaders.Time +  "," +
+                OutputHeaders.Year + "," +
+                OutputHeaders.Month + "," +
+                OutputHeaders.Ecoregion + "," + 
+                OutputHeaders.SoilType + "," +
+                OutputHeaders.NrOfCohorts + "," +
+                OutputHeaders.MaxLayerRatio + "," +
+                OutputHeaders.Layers + "," +
+                OutputHeaders.SumCanopyProp + "," +
+                OutputHeaders.PAR0 + "," +
+                OutputHeaders.Tmin + "," +
+                OutputHeaders.Tave + "," +
+                OutputHeaders.Tday + "," +
+                OutputHeaders.Tmax + "," +
+                OutputHeaders.Precip + "," +
+                OutputHeaders.CO2 + "," +
+                OutputHeaders.O3 + "," +
+                OutputHeaders.RunOff + "," + 
+                OutputHeaders.Leakage + "," + 
+                OutputHeaders.PET + "," +
+                OutputHeaders.PE + "," +
+                OutputHeaders.Evaporation + "," +
+                OutputHeaders.PotentialTranspiration + "," +
+                OutputHeaders.Transpiration + "," + 
+                OutputHeaders.Interception + "," +
+                OutputHeaders.SurfaceRunOff + "," +
+                OutputHeaders.water + "," +
+                OutputHeaders.PressureHead + "," + 
+                OutputHeaders.SurfaceWater + "," +
+                OutputHeaders.availableWater + "," +
+                OutputHeaders.SnowPack + "," +
+                OutputHeaders.LAI + "," + 
+                OutputHeaders.VPD + "," + 
+                OutputHeaders.GrossPsn + "," + 
+                OutputHeaders.NetPsn + "," +
+                OutputHeaders.MaintResp + "," +
+                OutputHeaders.Wood + "," + 
+                OutputHeaders.Root + "," + 
+                OutputHeaders.Fol + "," + 
+                OutputHeaders.NSC + "," + 
+                OutputHeaders.HeteroResp + "," +
+                OutputHeaders.Litter + "," + 
+                OutputHeaders.CWD + "," +
+                OutputHeaders.WoodySenescence + "," + 
+                OutputHeaders.FoliageSenescence + "," +
+                OutputHeaders.SubCanopyPAR + ","+
+                OutputHeaders.SoilDiffusivity + "," +
+                OutputHeaders.ActiveLayerDepth + "," +
+                OutputHeaders.LeakageFrac + "," +
+                OutputHeaders.AverageAlbedo + "," +
+                OutputHeaders.FrostDepth + "," +
+                OutputHeaders.SPEI;
             return s;
         }
 
         private void AddSiteOutput(IEcoregionPnETVariables monthdata)
         {
-            double maxLayerRatio = 0;
+            double maxLayerRatio = 0.0;
             if (layerThreshRatio.Count() > 0)
                 maxLayerRatio = layerThreshRatio.Max();
-            string s = monthdata.Time + "," +
+            int monthidx = monthdata.Month - 1;
+            string s;
+            s = monthdata.Time + "," +
                 monthdata.Year + "," +
                 monthdata.Month + "," +
                 Ecoregion.Name + "," +
@@ -3548,7 +3551,7 @@ namespace Landis.Library.PnETCohorts
                 cohorts.Values.Sum(o => o.Count) + "," +
                 maxLayerRatio + "," +
                 nlayers + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.CanopyLayerProp))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.CanopyLayerProp)) + "," +
                 monthdata.PAR0 + "," +
                 monthdata.Tmin + "," +
                 monthdata.Tave + "," +
@@ -3562,35 +3565,35 @@ namespace Landis.Library.PnETCohorts
                 hydrology.PET + "," +
                 hydrology.PE + "," +
                 hydrology.Evaporation + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.PotentialTranspiration.Sum()))) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.Transpiration.Sum()))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.PotentialTranspiration.Sum())) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.Transpiration.Sum())) + "," +
                 interception + "," +
                 precLoss + "," +
                 hydrology.Water + "," +
                 hydrology.PressureHeadTable.CalculateWaterPressure(hydrology.Water,Ecoregion.SoilType)+ "," +
                 hydrology.SurfaceWater + "," +
-                ((hydrology.Water - Ecoregion.WiltPnt) * Ecoregion.RootingDepth * propRootAboveFrost + hydrology.SurfaceWater) + "," +  // mm of avialable water
+                (hydrology.Water - Ecoregion.WiltPnt) * Ecoregion.RootingDepth * propRootAboveFrost + hydrology.SurfaceWater + "," +  // mm of avialable water
                 snowPack + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.LAI.Sum() * x.CanopyLayerProp))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.LAI.Sum() * x.CanopyLayerProp)) + "," +
                 monthdata.VPD + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.GrossPsn.Sum() * x.CanopyLayerProp))) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.NetPsn.Sum() * x.CanopyLayerProp))) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.MaintenanceRespiration.Sum() * x.CanopyLayerProp))) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.Wood * x.CanopyLayerProp))) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.Root * x.CanopyLayerProp))) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.Fol * x.CanopyLayerProp))) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.NSC * x.CanopyLayerProp))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.GrossPsn.Sum() * x.CanopyLayerProp)) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.NetPsn.Sum() * x.CanopyLayerProp)) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.MaintenanceRespiration.Sum() * x.CanopyLayerProp)) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.Wood * x.CanopyLayerProp)) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.Root * x.CanopyLayerProp)) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.Fol * x.CanopyLayerProp)) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.NSC * x.CanopyLayerProp)) + "," +
                 HeterotrophicRespiration + "," +
                 SiteVars.Litter[Site].Mass + "," +
                 SiteVars.WoodyDebris[Site].Mass + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.LastWoodySenescence * x.CanopyLayerProp))) + "," +
-                cohorts.Values.Sum(o => o.Sum(x => (x.LastFoliageSenescence * x.CanopyLayerProp))) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.LastWoodySenescence * x.CanopyLayerProp)) + "," +
+                cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence * x.CanopyLayerProp)) + "," +
                 subcanopypar + "," +
                 soilDiffusivity + "," +
-                activeLayerDepth[monthdata.Month - 1] * 1000 + "," +
+                activeLayerDepth[monthidx] * 1000 + "," +
                 leakageFrac + "," +
-                averageAlbedo[monthdata.Month - 1] + "," +
-                frostDepth[monthdata.Month - 1] * 1000 + ","+
+                averageAlbedo[monthidx] + "," +
+                frostDepth[monthidx] * 1000 + "," +
                 monthdata.SPEI;
             this.siteoutput.Add(s);
         }

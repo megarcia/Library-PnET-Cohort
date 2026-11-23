@@ -8,7 +8,7 @@ using Landis.Library.Climate;
 namespace Landis.Library.PnETCohorts
 {
     /// <summary>
-    /// The information for a tree species (its index and parameters).
+    /// The information for a PnET ecoregion.
     /// </summary>
     public class EcoregionData : IEcoregionPnET
     {
@@ -281,9 +281,10 @@ namespace Landis.Library.PnETCohorts
             }
         }
 
+        // uses ClimateRegionData class and Climate Library
         public static List<IEcoregionPnETVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
         {
-            // Monthly simulation data untill but not including end
+            // Monthly simulation data until but not including end
             List<IEcoregionPnETVariables> data = new List<IEcoregionPnETVariables>();
             // Date: the last date in the collection of running data
             DateTime date = new DateTime(start.Ticks);
@@ -322,9 +323,11 @@ namespace Landis.Library.PnETCohorts
             return data;
         }
 
+        // uses ObservedClimate class
+        // bypasses ClimateRegionData class and use of Climate Library
         public static List<IEcoregionPnETVariables> GetData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
         {
-            // Monthly simulation data untill but not including end
+            // Monthly simulation data until but not including end
             List<IEcoregionPnETVariables> data = new List<IEcoregionPnETVariables>();
             // Date: the last date in the collection of running data
             DateTime date = new DateTime(start.Ticks);
@@ -378,7 +381,7 @@ namespace Landis.Library.PnETCohorts
             foreach (IEcoregion ecoregion in Globals.ModelCore.Ecoregions)
                 AllEcoregions.Add(ecoregion, new EcoregionData(ecoregion));
             all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
-            foreach (IEcoregionPnET ecoregion in EcoregionData.AllEcoregions.Values)
+            foreach (IEcoregionPnET ecoregion in AllEcoregions.Values)
                 all_values[ecoregion] = new Dictionary<DateTime, IEcoregionPnETVariables>();
         }
 
@@ -404,9 +407,9 @@ namespace Landis.Library.PnETCohorts
         public static bool TryGetParameter(string label, out Parameter<string> parameter)
         {
             parameter = null;
-            if (label == null)
+            if (label is null)
                 return false;
-            if (Names.parameters.ContainsKey(label) == false)
+            if (!Names.parameters.ContainsKey(label))
                 return false;
             else
             {

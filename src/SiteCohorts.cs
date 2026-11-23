@@ -2406,34 +2406,23 @@ namespace Landis.Library.PnETCohorts
             return finalAlbedo;
         }
 
+        //MG20261123 TODO move this to a new Canopy class with LAI calculations, etc.
         private void CalculateCumulativeLeafArea(ref CumulativeLeafAreas leafAreas, Cohort cohort)
         {
-            if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
-                    && cohort.SpeciesPnET.Lifeform.ToLower().Contains("dark"))
+            if (!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
             {
-                leafAreas.DarkConifer += cohort.SumLAI;
-            }
-            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
-                    && cohort.SpeciesPnET.Lifeform.ToLower().Contains("light"))
-            {
-                leafAreas.LightConifer += cohort.SumLAI;
-            }
-            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
-                    && cohort.SpeciesPnET.Lifeform.ToLower().Contains("decid"))
-            {
-                leafAreas.Deciduous += cohort.SumLAI;
-            }
-            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
-                    && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground")
-                        || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open")))
-            {
-                leafAreas.GrassMossOpen += cohort.SumLAI;
-            }
-            else if ((!string.IsNullOrEmpty(cohort.SpeciesPnET.Lifeform))
-                    && (cohort.SpeciesPnET.Lifeform.ToLower().Contains("tree")
-                        || cohort.SpeciesPnET.Lifeform.ToLower().Contains("shrub")))
-            {
-                leafAreas.Deciduous += cohort.SumLAI;
+                if (cohort.SpeciesPnET.Lifeform.ToLower().Contains("dark"))
+                    leafAreas.DarkConifer += cohort.SumLAI;
+                else if (cohort.SpeciesPnET.Lifeform.ToLower().Contains("light"))
+                    leafAreas.LightConifer += cohort.SumLAI;
+                else if (cohort.SpeciesPnET.Lifeform.ToLower().Contains("decid"))
+                    leafAreas.Deciduous += cohort.SumLAI;
+                else if (cohort.SpeciesPnET.Lifeform.ToLower().Contains("ground")
+                         || cohort.SpeciesPnET.Lifeform.ToLower().Contains("open"))
+                    leafAreas.GrassMossOpen += cohort.SumLAI;
+                else if (cohort.SpeciesPnET.Lifeform.ToLower().Contains("tree")
+                         || cohort.SpeciesPnET.Lifeform.ToLower().Contains("shrub"))
+                    leafAreas.Deciduous += cohort.SumLAI;
             }
         }
 
@@ -3626,7 +3615,7 @@ namespace Landis.Library.PnETCohorts
             }  
         }
 
-        //MG20261103 TODO move to a new Canopy class with LAI calculations, etc.
+        //MG20261103 TODO move this to a new Canopy class with LAI calculations, etc.
         public struct CumulativeLeafAreas
         {
             public float DarkConifer;

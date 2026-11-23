@@ -1463,7 +1463,7 @@ namespace Landis.Library.PnETCohorts
                 subcanopypar = data[m].PAR0;
                 interception = 0;
                 // Reset monthly variables that get reported as single year snapshots
-                if (data[m].Month == Constants.Months.January)
+                if (data[m].Month == (byte)Constants.Months.January)
                 {
                     folresp = new float[13];
                     netpsn = new float[13];
@@ -2198,14 +2198,14 @@ namespace Landis.Library.PnETCohorts
                     sumPressureHead += hydrology.PressureHeadTable.CalculateWaterPressure(hydrology.Water,Ecoregion.SoilType);
                     countPressureHead += 1;
                 }
-                if (data[m].Month == (int)Constants.Months.July)
+                if (data[m].Month == (byte)Constants.Months.July)
                     julysubcanopypar = subcanopypar;
                 // Store growing season FRad values                
                 AllCohorts.ForEach(x => x.StoreFRad());
                 // Reset all cohort values
                 AllCohorts.ForEach(x => x.NullSubLayers());
                 //  Processes that happen only once per year
-                if (data[m].Month == (int)Constants.Months.December)
+                if (data[m].Month == (byte)Constants.Months.December)
                 {
                     //  Decompose litter
                     HeterotrophicRespiration = (ushort)(SiteVars.Litter[Site].Decompose() + SiteVars.WoodyDebris[Site].Decompose());
@@ -2246,7 +2246,7 @@ namespace Landis.Library.PnETCohorts
                         annualFwater[spc].Clear();
                         annualFrad[spc].Clear();
                     } // foreach (ISpeciesPnET spc in SpeciesParameters.SpeciesPnET.AllSpecies)
-                } // if (data[m].Month == (int)Constants.Months.December)
+                } // if (data[m].Month == (byte)Constants.Months.December)
                 wateravg += hydrology.Water;
             } // for (int m = 0; m < data.Count(); m++ )
             // Above is monthly loop     
@@ -2328,13 +2328,13 @@ namespace Landis.Library.PnETCohorts
         {
             switch (month)
             {
-                case (int)Constants.Months.May:
+                case (byte)Constants.Months.May:
                     return true;
-                case (int)Constants.Months.June:
+                case (byte)Constants.Months.June:
                     return true;
-                case (int)Constants.Months.July:
+                case (byte)Constants.Months.July:
                     return true;
-                case (int)Constants.Months.August:
+                case (byte)Constants.Months.August:
                     return true;
                 default:
                     return false;
@@ -2346,13 +2346,13 @@ namespace Landis.Library.PnETCohorts
         {
             switch (month)
             {
-                case (int)Constants.Months.January:
+                case (byte)Constants.Months.January:
                     return true;
-                case (int)Constants.Months.February:
+                case (byte)Constants.Months.February:
                     return true;
-                case (int)Constants.Months.March:
+                case (byte)Constants.Months.March:
                     return true;
-                case (int)Constants.Months.December:
+                case (byte)Constants.Months.December:
                     return true;
                 default:
                     return false;

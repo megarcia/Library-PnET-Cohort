@@ -507,13 +507,7 @@ namespace Landis.Library.PnETCohorts
                         }
                         int layer = cohort.Layer;
                         int layerCount = cohortBins[layer].Count();
-
-                        //MG20261103 TODO move this calculation to its own function
-                        // Estimate new wood biomass from FracBelowG and FrActWs (see Estimate_WoodBio.xlsx)
-                        float estSlope = -8.236285f + 27.768424f * cohort.SpeciesPnET.FracBelowG + 191053.281571f * cohort.SpeciesPnET.FrActWd + 312.812679f * cohort.SpeciesPnET.FracFol + -594492.216284f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd + -941.447695f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FracFol + -6490254.134756f * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol + 19879995.810771f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol;
-                        float estInt = 1735.179f + 2994.393f * cohort.SpeciesPnET.FracBelowG + 10167232.544f * cohort.SpeciesPnET.FrActWd + 53598.871f * cohort.SpeciesPnET.FracFol + -92028081.987f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd + -168141.498f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FracFol + -1104139533.563f * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol + 3507005746.011f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol;
-                        float newWoodBiomass = estInt + estSlope * cohort.AGBiomass * layerCount; // Inflate AGBiomass by # of cohorts in layer, assuming equal space among them
-                        //MG20261103 end TODO
+                        float newWoodBiomass = CalcNewWoodBiomass(cohort, layerCount);
                         float newTotalBiomass = newWoodBiomass / (1 - cohort.SpeciesPnET.FracBelowG);
                         cohort.CanopyLayerProp = 1.0f / layerCount;
                         if (CohortStacking)
@@ -2303,6 +2297,30 @@ namespace Landis.Library.PnETCohorts
             if ((Globals.ModelCore.CurrentTime > 0) || AllowMortality)
                 RemoveMarkedCohorts();
             return success;
+        }
+
+        // Estimate new wood biomass from FracBelowG and FrActWs (see Estimate_WoodBio.xlsx)
+        public static float CalcNewWoodBiomass(Cohort cohort, int layerCount)
+        {
+            float estSlope = -8.236285f 
+                             + 27.768424f * cohort.SpeciesPnET.FracBelowG
+                             + 191053.281571f * cohort.SpeciesPnET.FrActWd 
+                             + 312.812679f * cohort.SpeciesPnET.FracFol 
+                             + -594492.216284f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd 
+                             + -941.447695f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FracFol 
+                             + -6490254.134756f * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol 
+                             + 19879995.810771f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol;
+            float estInt = 1735.179f 
+                           + 2994.393f * cohort.SpeciesPnET.FracBelowG
+                           + 10167232.544f * cohort.SpeciesPnET.FrActWd
+                           + 53598.871f * cohort.SpeciesPnET.FracFol
+                           + -92028081.987f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd
+                           + -168141.498f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FracFol
+                           + -1104139533.563f * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol
+                           + 3507005746.011f * cohort.SpeciesPnET.FracBelowG * cohort.SpeciesPnET.FrActWd * cohort.SpeciesPnET.FracFol;
+            // Inflate AGBiomass by # of cohorts in layer, assuming equal space among them
+            float newWoodBiomass = estInt + estSlope * cohort.AGBiomass * layerCount; 
+            return newWoodBiomass;            
         }
 
         //MG20261103 TODO move this to new Arrays class and make a version for int[]

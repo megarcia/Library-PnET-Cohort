@@ -278,7 +278,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (netpsn == null)
+                if (netpsn is null)
                 {
                     float[] netpsn_array = new float[12];
                     for (int i = 0; i < netpsn_array.Length; i++)
@@ -365,7 +365,7 @@ namespace Landis.Library.PnETCohorts
                 tempMaxCanopyLayers = initialCommunity.Cohorts.Count();
             lock (Globals.initialSitesThreadLock)
             {
-                if (initialSites.ContainsKey(key) == false)
+                if (!initialSites.ContainsKey(key))
                     initialSites.Add(key, this);
             }
             List<IEcoregionPnETVariables> ecoregionInitializer = usingClimateLibrary ? EcoregionData.GetClimateRegionData(Ecoregion, StartDate, StartDate.AddMonths(1)) : EcoregionData.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
@@ -525,7 +525,7 @@ namespace Landis.Library.PnETCohorts
                         canopyProportions.Add(cohort, cohortLAIRatio);
                         cohort.NSC = cohort.SpeciesPnET.DNSC * cohort.FActiveBiom * (cohort.TotalBiomass + cohort.Fol) * cohort.SpeciesPnET.CFracBiomass;
                         cohort.Fol = cohortFol * (1 - cohort.SpeciesPnET.TOfol);
-                        if (LayerFoliagePotentialValues[layer] == null)
+                        if (LayerFoliagePotentialValues[layer] is null)
                             LayerFoliagePotentialValues[layer] = new List<float>();
                         LayerFoliagePotentialValues[layer].Add(cohortLAIRatio);
                         LayerFoliagePotential[layer] += cohortLAIRatio;
@@ -1729,7 +1729,7 @@ namespace Landis.Library.PnETCohorts
                 float RET = hydrology.Calculate_RET_Hamon(data[m].Tave, data[m].Daylength); //mm/day
                 float newrain = data[m].Prec - newsnow;
                 // Reduced by interception
-                if (CanopyLAI == null)
+                if (CanopyLAI is null)
                     CanopyLAI = new float[tempMaxCanopyLayers];
                 interception = newrain * (float)(1 - Math.Exp(-1 * Ecoregion.PrecIntConst * CanopyLAI.Sum()));
                 float surfaceRain = newrain - interception;
@@ -2430,7 +2430,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (maintresp == null)
+                if (maintresp is null)
                 {
                     float[] maintresp_array = new float[12];
                     for (int i = 0; i < maintresp_array.Length; i++)
@@ -2446,7 +2446,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (folresp == null)
+                if (folresp is null)
                 {
                     float[] folresp_array = new float[12];
                     for (int i = 0; i < folresp_array.Length; i++)
@@ -2462,7 +2462,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (grosspsn == null)
+                if (grosspsn is null)
                 {
                     float[] grosspsn_array = new float[12];
                     for (int i = 0; i < grosspsn_array.Length; i++)
@@ -2478,7 +2478,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (monthlySnowPack == null)
+                if (monthlySnowPack is null)
                 {
                     float[] snowPack_array = new float[12];
                     for (int i = 0; i < snowPack_array.Length; i++)
@@ -2501,7 +2501,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (monthlyWater == null)
+                if (monthlyWater is null)
                 {
                     float[] water_array = new float[12];
                     for (int i = 0; i < water_array.Length; i++)
@@ -2524,7 +2524,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (monthlyLAICumulative == null)
+                if (monthlyLAICumulative is null)
                 {
                     float[] lai_array = new float[12];
                     for (int i = 0; i < lai_array.Length; i++)
@@ -2547,7 +2547,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (monthlyEvap == null)
+                if (monthlyEvap is null)
                 {
                     float[] evap_array = new float[12];
                     for (int i = 0; i < evap_array.Length; i++)
@@ -2570,7 +2570,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (monthlyInterception == null)
+                if (monthlyInterception is null)
                 {
                     float[] interception_array = new float[12];
                     for (int i = 0; i < interception_array.Length; i++)
@@ -2593,7 +2593,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (monthlyActualTrans == null)
+                if (monthlyActualTrans is null)
                 {
                     float[] actualTrans_array = new float[12];
                     for (int i = 0; i < actualTrans_array.Length; i++)
@@ -2616,7 +2616,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (monthlyLeakage == null)
+                if (monthlyLeakage is null)
                 {
                     float[] leakage_array = new float[12];
                     for (int i = 0; i < leakage_array.Length; i++)
@@ -2639,7 +2639,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (monthlyRunoff == null)
+                if (monthlyRunoff is null)
                 {
                     float[] runoff_array = new float[12];
                     for (int i = 0; i < runoff_array.Length; i++)
@@ -2662,7 +2662,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (monthlyAET == null)
+                if (monthlyAET is null)
                 {
                     float[] aet_array = new float[12];
                     for (int i = 0; i < aet_array.Length; i++)
@@ -2685,7 +2685,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (monthlyPotentialEvap == null)
+                if (monthlyPotentialEvap is null)
                 {
                     float[] potentialEvap_array = new float[12];
                     for (int i = 0; i < potentialEvap_array.Length; i++)
@@ -2708,7 +2708,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (monthlyPotentialTrans == null)
+                if (monthlyPotentialTrans is null)
                 {
                     float[] potentialTrans_array = new float[12];
                     for (int i = 0; i < potentialTrans_array.Length; i++)
@@ -2731,7 +2731,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (averageAlbedo == null)
+                if (averageAlbedo is null)
                 {
                     float[] averageAlbedo_array = new float[12];
                     for (int i = 0; i < averageAlbedo_array.Length; i++)
@@ -2747,7 +2747,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (activeLayerDepth == null)
+                if (activeLayerDepth is null)
                 {
                     float[] activeLayerDepth_array = new float[12];
                     for (int i = 0; i < activeLayerDepth_array.Length; i++)
@@ -2763,7 +2763,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (frostDepth == null)
+                if (frostDepth is null)
                 {
                     float[] frostDepth_array = new float[12];
                     for (int i = 0; i < frostDepth_array.Length; i++)
@@ -2779,7 +2779,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                if (netpsn == null)
+                if (netpsn is null)
                 {
                     float[] netpsn_array = new float[12];
                     for (int i = 0; i < netpsn_array.Length; i++)
@@ -2929,7 +2929,7 @@ namespace Landis.Library.PnETCohorts
             {
                 Library.Parameters.Species.AuxParm<float> LAIPerSpecies = new Library.Parameters.Species.AuxParm<float>(Globals.ModelCore.Species);
                 foreach (ISpecies spc in cohorts.Keys)
-                    LAIPerSpecies[spc] = cohorts[spc].Sum(o => (o.LastLAI * o.CanopyLayerProp));
+                    LAIPerSpecies[spc] = cohorts[spc].Sum(o => o.LastLAI * o.CanopyLayerProp);
                 return LAIPerSpecies;
             }
         }
@@ -3064,7 +3064,7 @@ namespace Landis.Library.PnETCohorts
         {
             get
             {
-                return (int) cohorts.Values.Average(o => o.Average(x=>x.Age));
+                return (int) cohorts.Values.Average(o => o.Average(x => x.Age));
             }
         }
 
@@ -3334,7 +3334,7 @@ namespace Landis.Library.PnETCohorts
                 List<Cohort> species_cohort = cohorts.Values.ElementAt(c);
                 for (int cc = species_cohort.Count - 1; cc >= 0; cc--)
                 {
-                    if (species_cohort[cc].IsAlive == false)
+                    if (!species_cohort[cc].IsAlive)
                     {
                         bool coldKill = species_cohort[cc].ColdKill < int.MaxValue;
                         if (coldKill)

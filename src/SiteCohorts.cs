@@ -595,7 +595,7 @@ namespace Landis.Library.PnETCohorts
                         }
                     }
                     */
-                    MainLayerCanopyProp = CalcCanopyProp(tempMaxCanopyLayers);
+                    float[] MainLayerCanopyProp = CalcCanopyProp(tempMaxCanopyLayers);
                     /*
                     // Calculate new layer prop
                     float[] MainLayerCanopyProp = new float[tempMaxCanopyLayers];
@@ -1128,7 +1128,7 @@ namespace Landis.Library.PnETCohorts
                         inputMaxBiomass = cohortMaxBiomass * (cohort.Data.Biomass / cohortSpinupBiomass);
                     float cohortCanopyGrowingSpace = 1f;
                     bool addCohort = AddNewCohort(new Cohort(SpeciesParameters.SpeciesPnET[spp],
-                                                             age, cohort.Data.Biomass, (int)inputMaxBiomass,
+                                                             (ushort)age, cohort.Data.Biomass, (int)inputMaxBiomass,
                                                              cohortCanopyGrowingSpace, SiteOutputName,
                                                              (ushort)(StartDate.Year - cohort.Data.Age), 
                                                              CohortStacking, lastSeasonAvgFrad));
@@ -1463,7 +1463,7 @@ namespace Landis.Library.PnETCohorts
                 subcanopypar = data[m].PAR0;
                 interception = 0;
                 // Reset monthly variables that get reported as single year snapshots
-                if (data[m].Month == Constant.Month.January)
+                if (data[m].Month == Constants.Month.January)
                 {
                     folresp = new float[13];
                     netpsn = new float[13];

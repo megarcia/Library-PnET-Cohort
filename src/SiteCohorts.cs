@@ -1032,7 +1032,7 @@ namespace Landis.Library.PnETCohorts
         {
             List<double> CohortMaxBiomassList = new List<double>();
             foreach (Cohort cohort in AllCohorts)
-                CohortBiomassList.Add(cohort.BiomassMax);
+                CohortMaxBiomassList.Add(cohort.BiomassMax);
             return CohortMaxBiomassList;
         }
 
@@ -1463,7 +1463,7 @@ namespace Landis.Library.PnETCohorts
                 subcanopypar = data[m].PAR0;
                 interception = 0;
                 // Reset monthly variables that get reported as single year snapshots
-                if (data[m].Month == Constants.Month.January)
+                if (data[m].Month == Constants.Months.January)
                 {
                     folresp = new float[13];
                     netpsn = new float[13];
